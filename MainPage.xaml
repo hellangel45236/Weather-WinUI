@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="WeatherApp.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -1934,7 +1934,9 @@
                                     <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <Border Background="#451E293B" BorderBrush="#35FFFFFF" BorderThickness="1" CornerRadius="14" Padding="18,12" Width="320">
                                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                                                <Image Source="{x:Bind ViewModel.CurrentWeather.SvgIconPath, Mode=OneWay}" Width="40" Height="40"/>
+                                                <Border Width="40" Height="40" CornerRadius="10" Background="#20F59E0B">
+                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind ViewModel.CurrentWeather.IconGlyph, Mode=OneWay}" FontSize="22" Foreground="#F59E0B" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
                                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                     <TextBlock Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}" FontSize="13.5" FontWeight="Bold"/>
                                                     <TextBlock Text="{x:Bind ViewModel.CurrentWeather.ConditionText, Mode=OneWay}" FontSize="11" Opacity="0.8"/>

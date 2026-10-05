@@ -129,7 +129,7 @@ public partial class MainViewModel : ObservableObject
     private readonly UrbanFloodService _floodService = new();
 
     [ObservableProperty]
-    private UrbanFloodWarning? _urbanFloodWarning;
+    private UrbanFloodWarning _urbanFloodWarning = new();
 
     [ObservableProperty]
     private ObservableCollection<FloodHotspotRoad> _displayedFloodRoads = new();
