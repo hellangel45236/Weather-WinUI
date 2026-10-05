@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Application
+    x:Class="WeatherApp.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WeatherApp"
+    xmlns:helpers="using:WeatherApp.Helpers">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+            </ResourceDictionary.MergedDictionaries>
+            <helpers:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <helpers:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+            <helpers:HexToBrushConverter x:Key="HexToBrushConverter" />
+            <helpers:HexToColorConverter x:Key="HexToColorConverter" />
+            <helpers:BoolToMonthOpacityConverter x:Key="BoolToMonthOpacityConverter" />
+            <helpers:BoolToTodayBrushConverter x:Key="BoolToTodayBrushConverter" />
+            <helpers:BoolToTodayBorderBrushConverter x:Key="BoolToTodayBorderBrushConverter" />
+            <helpers:BoolToSpecialLunarBrushConverter x:Key="BoolToSpecialLunarBrushConverter" />
+            <helpers:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter" />
+            <helpers:BoolToSunColorConverter x:Key="BoolToSunColorConverter" />
+            <helpers:BoolToStrikeConverter x:Key="BoolToStrikeConverter" />
+            <FontFamily x:Key="FontAwesomeSolid">Font Awesome 6 Free Solid</FontFamily>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

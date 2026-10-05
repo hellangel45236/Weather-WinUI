@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Live Weather Radar</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        #map { width: 100%; height: 100%; z-index: 1; }
+
+        /* Floating Radar Controls */
+        .radar-bar {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+        }
+
+        .btn-play {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #3b82f6;
+            border: none;
+            color: #fff;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-play:hover { background: #2563eb; transform: scale(1.05); }
+
+        .time-label {
+            color: #f1f5f9;
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 90px;
+            text-align: center;
+        }
+
+        .legend {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 6px 10px;
+            color: #e2e8f0;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .legend-gradient {
+            width: 100px;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(to right, #00ffff, #0088ff, #ffff00, #ff8800, #ff0000, #ff00ff);
+        }
+        .legend-text { display: flex; justify-content: space-between; font-size: 9px; opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <div class="legend">
+        <span>Cường độ mây mưa</span>
+        <div class="legend-gradient"></div>
+        <div class="legend-text">
+            <span>Nhẹ</span>
+            <span>Vừa</span>
+            <span>Rất to</span>
+        </div>
+    </div>
+
+    <div class="radar-bar">
+        <button id="playBtn" class="btn-play" onclick="togglePlay()">▶</button>
+        <span id="timeLabel" class="time-label">Đang tải...</span>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map;
+        let radarLayers = [];
+        let radarTimestamps = [];
+        let currentFrameIndex = 0;
+        let isPlaying = true;
+        let playInterval = null;
+
+        // Khởi tạo bản đồ
+        function initMap(lat = 10.823, lon = 106.6296) {
+            map = L.map('map', {
+                zoomControl: false,
+                attributionControl: false
+            }).setView([lat, lon], 8);
+
+            L.control.zoom({ position: 'topleft' }).addTo(map);
+
+            // Nền bản đồ tối màu sang trọng (CartoDB Dark Matter)
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                maxZoom: 18,
+                subdomains: 'abcd'
+            }).addTo(map);
+
+            fetchRadarFrames();
+        }
+
+        // Tải danh sách các khung hình radar mây mưa thời gian thực từ RainViewer API
+        async function fetchRadarFrames() {
+            try {
+                const res = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+                const data = await res.json();
+                if (!data || !data.radar || !data.radar.past) return;
+
+                const frames = [...data.radar.past];
+                if (data.radar.nowcast) {
+                    frames.push(...data.radar.nowcast);
+                }
+
+                radarTimestamps = frames.map(f => f.time);
+
+                // Dọn dẹp các lớp cũ
+                radarLayers.forEach(l => map.removeLayer(l));
+                radarLayers = [];
+
+                frames.forEach((frame, idx) => {
+                    const layer = L.tileLayer(`https://tilecache.rainviewer.com/v2/radar/${frame.time}/256/{z}/{x}/{y}/2/1_1.png`, {
+                        opacity: idx === frames.length - 1 ? 0.75 : 0,
+                        zIndex: 10 + idx
+                    });
+                    layer.addTo(map);
+                    radarLayers.push(layer);
+                });
+
+                currentFrameIndex = frames.length - 1;
+                updateFrameDisplay();
+                startAnimation();
+            } catch (err) {
+                console.error("Lỗi nạp dữ liệu radar:", err);
+                document.getElementById('timeLabel').innerText = "Trực tiếp";
+            }
+        }
+
+        function showFrame(index) {
+            if (!radarLayers.length) return;
+            radarLayers.forEach((layer, idx) => {
+                layer.setOpacity(idx === index ? 0.78 : 0);
+            });
+            currentFrameIndex = index;
+            updateFrameDisplay();
+        }
+
+        function updateFrameDisplay() {
+            if (radarTimestamps[currentFrameIndex]) {
+                const date = new Date(radarTimestamps[currentFrameIndex] * 1000);
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                document.getElementById('timeLabel').innerText = `${hours}:${minutes} (Hôm nay)`;
+            }
+        }
+
+        function startAnimation() {
+            if (playInterval) clearInterval(playInterval);
+            playInterval = setInterval(() => {
+                if (radarLayers.length > 0) {
+                    let next = (currentFrameIndex + 1) % radarLayers.length;
+                    showFrame(next);
+                }
+            }, 750);
+            isPlaying = true;
+            document.getElementById('playBtn').innerText = '❚❚';
+        }
+
+        function stopAnimation() {
+            if (playInterval) clearInterval(playInterval);
+            playInterval = null;
+            isPlaying = false;
+            document.getElementById('playBtn').innerText = '▶';
+        }
+
+        function togglePlay() {
+            if (isPlaying) {
+                stopAnimation();
+            } else {
+                startAnimation();
+            }
+        }
+
+        // Hàm gọi từ C# WinUI 3 để di chuyển tâm bản đồ tới thành phố mới
+        function updateLocation(lat, lon, zoom = 9) {
+            if (map) {
+                map.flyTo([lat, lon], zoom, { duration: 1.2 });
+            }
+        }
+
+        // Tự động khởi tạo
+        window.addEventListener('DOMContentLoaded', () => {
+            initMap();
+        });
+    </script>
+</body>
+</html>
