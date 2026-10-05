@@ -80,6 +80,7 @@ public sealed partial class MainPage : Page
                 UpdateWeatherVisuals();
                 RenderHourlyTemperatureTrendline();
                 RenderSunArc();
+                UpdateWidgetCardsVisuals(ViewModel.Settings.WidgetStyle);
 
                 // 5. Khởi tạo khay hệ thống (System Tray Icon)
                 if (App.MainWindow != null && ViewModel.TrayService == null)
@@ -103,12 +104,10 @@ public sealed partial class MainPage : Page
         // 1. Tinh chỉnh Top Bar linh hoạt để thanh tìm kiếm luôn rộng rãi trên mọi độ phân giải
         if (width < 1220)
         {
-            if (BtnTextSettings != null) BtnTextSettings.Visibility = Visibility.Collapsed;
             if (BtnTextWidget != null) BtnTextWidget.Visibility = Visibility.Collapsed;
         }
         else
         {
-            if (BtnTextSettings != null) BtnTextSettings.Visibility = Visibility.Visible;
             if (BtnTextWidget != null) BtnTextWidget.Visibility = Visibility.Visible;
         }
 
@@ -768,21 +767,17 @@ public sealed partial class MainPage : Page
         _widgetWindow = null;
     }
 
-    private async void SettingsButton_Click(object sender, RoutedEventArgs e)
+    private void SettingsButton_Click(object sender, RoutedEventArgs e)
     {
         if (ViewModel == null) return;
 
         ViewModel.UpdateRamUsage();
         SyncSettingsControls();
-
-        if (SettingsNavListView != null)
+        ViewModel.SwitchNav("settings");
+        if (MainNavView != null)
         {
-            SettingsNavListView.SelectedIndex = 0;
-            SettingsNavListView_SelectionChanged(SettingsNavListView, null!);
+            MainNavView.SelectedItem = MainNavView.FooterMenuItems.OfType<NavigationViewItem>().FirstOrDefault(i => i.Tag?.ToString() == "settings");
         }
-
-        SettingsDialog.XamlRoot = this.XamlRoot;
-        await SettingsDialog.ShowAsync();
     }
 
     private void SettingsDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
@@ -2245,4 +2240,95 @@ public sealed partial class MainPage : Page
     }
 
     #endregion
+
+    private void SaveSettingsTab_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (ViewModel != null && SettingsUserNameBox != null)
+            {
+                ViewModel.Settings.UserName = SettingsUserNameBox.Text?.Trim() ?? "";
+            }
+            if (ViewModel != null && FirstDayOfWeekComboBox?.SelectedItem is ComboBoxItem fItem && fItem.Tag is string fTag)
+            {
+                ViewModel.Settings.FirstDayOfWeek = fTag;
+            }
+            ViewModel?.ApplySettings();
+            AutoSaveSettings(true);
+        }
+        catch { }
+    }
+
+    private void CardWidgetBryanC_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        SelectWidgetStyle("BryanCDynamic");
+    }
+
+    private void CardWidgetGlassCard_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        SelectWidgetStyle("GlassCard");
+    }
+
+    private void CardWidgetCompact_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        SelectWidgetStyle("Compact");
+    }
+
+    private void CardWidgetMiniIsland_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        SelectWidgetStyle("MiniIsland");
+    }
+
+    private void SelectWidgetStyle(string styleTag)
+    {
+        if (ViewModel == null) return;
+        ViewModel.Settings.WidgetStyle = styleTag;
+        ViewModel.ApplySettings();
+
+        if (StudioWidgetStyleComboBox != null)
+        {
+            for (int i = 0; i < StudioWidgetStyleComboBox.Items.Count; i++)
+            {
+                if (StudioWidgetStyleComboBox.Items[i] is ComboBoxItem item && item.Tag?.ToString() == styleTag)
+                {
+                    StudioWidgetStyleComboBox.SelectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        UpdateWidgetCardsVisuals(styleTag);
+        AutoSaveSettings();
+    }
+
+    private void UpdateWidgetCardsVisuals(string selectedTag)
+    {
+        var accentBrush = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["AccentFillColorDefaultBrush"];
+        var subtleBorderBrush = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["CardStrokeColorDefaultBrush"];
+
+        if (CardWidgetBryanC != null)
+        {
+            CardWidgetBryanC.BorderBrush = selectedTag == "BryanCDynamic" ? accentBrush : subtleBorderBrush;
+            CardWidgetBryanC.BorderThickness = selectedTag == "BryanCDynamic" ? new Thickness(2) : new Thickness(1);
+            if (BadgeWidgetBryanC != null) BadgeWidgetBryanC.Visibility = selectedTag == "BryanCDynamic" ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (CardWidgetGlassCard != null)
+        {
+            CardWidgetGlassCard.BorderBrush = selectedTag == "GlassCard" ? accentBrush : subtleBorderBrush;
+            CardWidgetGlassCard.BorderThickness = selectedTag == "GlassCard" ? new Thickness(2) : new Thickness(1);
+            if (BadgeWidgetGlassCard != null) BadgeWidgetGlassCard.Visibility = selectedTag == "GlassCard" ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (CardWidgetCompact != null)
+        {
+            CardWidgetCompact.BorderBrush = selectedTag == "Compact" ? accentBrush : subtleBorderBrush;
+            CardWidgetCompact.BorderThickness = selectedTag == "Compact" ? new Thickness(2) : new Thickness(1);
+            if (BadgeWidgetCompact != null) BadgeWidgetCompact.Visibility = selectedTag == "Compact" ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (CardWidgetMiniIsland != null)
+        {
+            CardWidgetMiniIsland.BorderBrush = selectedTag == "MiniIsland" ? accentBrush : subtleBorderBrush;
+            CardWidgetMiniIsland.BorderThickness = selectedTag == "MiniIsland" ? new Thickness(2) : new Thickness(1);
+            if (BadgeWidgetMiniIsland != null) BadgeWidgetMiniIsland.Visibility = selectedTag == "MiniIsland" ? Visibility.Visible : Visibility.Collapsed;
+        }
+    }
 }
