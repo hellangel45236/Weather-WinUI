@@ -294,10 +294,12 @@ public class WeatherService : IWeatherService
             string timeDisplay = "Bây giờ";
             bool isDayHour = true;
 
+            int hourNum = DateTime.Now.Hour;
             if (DateTime.TryParse(timeStr, out DateTime dt))
             {
-                timeDisplay = i == 0 ? "Bây giờ" : dt.ToString(settings.Is24HourFormat ? "HH:mm" : "hh:mm tt");
+                timeDisplay = i == 0 ? "Bây giờ" : dt.ToString((settings?.Is24HourFormat ?? true) ? "HH:mm" : "hh:mm tt");
                 isDayHour = dt.Hour >= 6 && dt.Hour < 18;
+                hourNum = dt.Hour;
             }
 
             double rawTemp = (idx < temps.Count) ? temps[idx] : 0;
@@ -312,6 +314,7 @@ public class WeatherService : IWeatherService
 
             list.Add(new HourlyForecastItem
             {
+                HourNumber = hourNum,
                 TimeDisplay = timeDisplay,
                 TempDisplay = $"{Math.Round(t)}{unit}",
                 TempValue = Math.Round(t, 1),

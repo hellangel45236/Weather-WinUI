@@ -5,8 +5,10 @@ using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.UI;
 using WeatherApp.Helpers;
 using WeatherApp.Models;
 using WeatherApp.Services;
@@ -94,70 +96,11 @@ public sealed partial class MainPage : Page
         catch { }
     }
 
-    private int _narrowSelectedTab = 0; // 0 = Overview, 1 = Calendar
-
     private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         double width = e.NewSize.Width;
 
-        if (MainContentGrid == null || LeftPanel == null || RightPanel == null) return;
-
-        // 1. Tự động chuyển đổi layout thích ứng theo độ phân giải màn hình (< FullHD, 1366x768, 1280x720)
-        if (width < 880)
-        {
-            // Chế độ 1 cột cho màn hình cực hẹp (< 880px như chia đôi cửa sổ)
-            if (NarrowViewSwitcher != null) NarrowViewSwitcher.Visibility = Visibility.Visible;
-
-            MainContentGrid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
-            MainContentGrid.ColumnDefinitions[1].Width = new GridLength(0, GridUnitType.Pixel);
-            MainContentGrid.ColumnSpacing = 0;
-
-            if (_narrowSelectedTab == 0)
-            {
-                LeftPanel.Visibility = Visibility.Visible;
-                RightPanel.Visibility = Visibility.Collapsed;
-                Grid.SetRow(LeftPanel, 0);
-                Grid.SetColumn(LeftPanel, 0);
-            }
-            else
-            {
-                LeftPanel.Visibility = Visibility.Collapsed;
-                RightPanel.Visibility = Visibility.Visible;
-                Grid.SetRow(RightPanel, 0);
-                Grid.SetColumn(RightPanel, 0);
-            }
-        }
-        else
-        {
-            // Chế độ 2 cột cho màn hình >= 880px (hiển thị đồng thời cả 2 cột trên laptop 1366x768, 1280x720 và FullHD)
-            if (NarrowViewSwitcher != null) NarrowViewSwitcher.Visibility = Visibility.Collapsed;
-
-            LeftPanel.Visibility = Visibility.Visible;
-            RightPanel.Visibility = Visibility.Visible;
-
-            if (width < 1350)
-            {
-                // Màn hình HD / laptop phổ thông 1366x768 hoặc 1280x720
-                MainContentGrid.ColumnDefinitions[0].Width = new GridLength(1.1, GridUnitType.Star);
-                MainContentGrid.ColumnDefinitions[1].Width = new GridLength(1.0, GridUnitType.Star);
-                MainContentGrid.ColumnSpacing = 14;
-            }
-            else
-            {
-                // Màn hình FullHD 1080p trở lên
-                MainContentGrid.ColumnDefinitions[0].Width = new GridLength(1.25, GridUnitType.Star);
-                MainContentGrid.ColumnDefinitions[1].Width = new GridLength(1.0, GridUnitType.Star);
-                MainContentGrid.ColumnSpacing = 20;
-            }
-
-            Grid.SetRow(LeftPanel, 0);
-            Grid.SetColumn(LeftPanel, 0);
-
-            Grid.SetRow(RightPanel, 0);
-            Grid.SetColumn(RightPanel, 1);
-        }
-
-        // 2. Tinh chỉnh Top Bar linh hoạt để thanh tìm kiếm luôn rộng rãi trên mọi độ phân giải
+        // 1. Tinh chỉnh Top Bar linh hoạt để thanh tìm kiếm luôn rộng rãi trên mọi độ phân giải
         if (width < 1220)
         {
             if (BtnTextSettings != null) BtnTextSettings.Visibility = Visibility.Collapsed;
@@ -180,48 +123,10 @@ public sealed partial class MainPage : Page
             if (ThemeComboBox != null) ThemeComboBox.Width = 110;
         }
 
-        // 3. Tinh chỉnh lề ngoài (Root Margin) gọn gàng trên màn hình nhỏ
+        // 2. Tinh chỉnh lề ngoài (Root Margin) gọn gàng trên màn hình nhỏ
         if (Content is Grid rootGrid)
         {
             rootGrid.Margin = width < 1250 ? new Thickness(14, 10, 14, 14) : new Thickness(24, 12, 24, 24);
-        }
-    }
-
-    private void NarrowTabOverview_Click(object sender, RoutedEventArgs e)
-    {
-        _narrowSelectedTab = 0;
-        if (NarrowTabOverview != null && NarrowTabCalendar != null)
-        {
-            NarrowTabOverview.Background = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["AccentFillColorDefaultBrush"];
-            NarrowTabOverview.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.White);
-            NarrowTabCalendar.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
-            NarrowTabCalendar.Foreground = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["TextFillColorPrimaryBrush"];
-        }
-        if (LeftPanel != null && RightPanel != null)
-        {
-            LeftPanel.Visibility = Visibility.Visible;
-            RightPanel.Visibility = Visibility.Collapsed;
-            Grid.SetRow(LeftPanel, 0);
-            Grid.SetColumn(LeftPanel, 0);
-        }
-    }
-
-    private void NarrowTabCalendar_Click(object sender, RoutedEventArgs e)
-    {
-        _narrowSelectedTab = 1;
-        if (NarrowTabOverview != null && NarrowTabCalendar != null)
-        {
-            NarrowTabCalendar.Background = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["AccentFillColorDefaultBrush"];
-            NarrowTabCalendar.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.White);
-            NarrowTabOverview.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
-            NarrowTabOverview.Foreground = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["TextFillColorPrimaryBrush"];
-        }
-        if (LeftPanel != null && RightPanel != null)
-        {
-            LeftPanel.Visibility = Visibility.Collapsed;
-            RightPanel.Visibility = Visibility.Visible;
-            Grid.SetRow(RightPanel, 0);
-            Grid.SetColumn(RightPanel, 0);
         }
     }
 
@@ -2064,6 +1969,279 @@ public sealed partial class MainPage : Page
             if (DayGoalInputTextBox != null) DayGoalInputTextBox.Text = quickGoal;
             ViewModel?.SetSelectedDayGoal(quickGoal);
         }
+    }
+
+    #endregion
+
+    #region Version 3.0 Beta - Navigation, Time Scrubber, Tidal Wave & Radar
+
+    private void MainNavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+    {
+        try
+        {
+            if (args.SelectedItem is NavigationViewItem item && item.Tag is string tag)
+            {
+                ViewModel?.SwitchNav(tag);
+                if (tag == "flood")
+                {
+                    DispatcherQueue.TryEnqueue(() => RenderTidalSineWave());
+                }
+                else if (tag == "radar")
+                {
+                    DispatcherQueue.TryEnqueue(() => RenderRadarSimulation());
+                }
+                else if (tag == "overview")
+                {
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        RenderHourlyTemperatureTrendline();
+                        RenderSunArc();
+                    });
+                }
+            }
+        }
+        catch { }
+    }
+
+    private void TimeScrubberSlider_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        try
+        {
+            int hour = (int)Math.Round(e.NewValue);
+            ViewModel?.ScrubToHour(hour);
+        }
+        catch { }
+    }
+
+    private void ResetScrubberButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            ViewModel?.ResetTimeScrubbing();
+            UpdateWeatherVisuals();
+        }
+        catch { }
+    }
+
+    private void FloodSearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        try
+        {
+            if (sender is TextBox tb && ViewModel != null)
+            {
+                ViewModel.FloodStreetSearchQuery = tb.Text ?? string.Empty;
+            }
+        }
+        catch { }
+    }
+
+    private void TidalSineWaveCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        RenderTidalSineWave();
+    }
+
+    private void RadarSimulationCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        RenderRadarSimulation();
+    }
+
+    private void RenderTidalSineWave()
+    {
+        try
+        {
+            if (TidalSineWaveCanvas == null || ViewModel?.UrbanFloodWarning == null) return;
+            TidalSineWaveCanvas.Children.Clear();
+
+            double width = TidalSineWaveCanvas.ActualWidth;
+            double height = TidalSineWaveCanvas.ActualHeight;
+            if (width <= 20 || height <= 20) return;
+
+            var points = ViewModel.UrbanFloodWarning.TideCurve24h;
+            if (points == null || points.Count == 0) return;
+
+            double minLevel = 0.70;
+            double maxLevel = 1.80;
+            double range = maxLevel - minLevel;
+
+            double GetY(double level) => Math.Max(5, Math.Min(height - 20, height - 20 - ((level - minLevel) / range * (height - 30))));
+            double GetX(int hour) => (hour / 23.0) * (width - 40) + 20;
+
+            // 1. Alarm lines
+            // BD 3: 1.60m
+            double yBd3 = GetY(1.60);
+            var lineBd3 = new Microsoft.UI.Xaml.Shapes.Line { X1 = 20, Y1 = yBd3, X2 = width - 20, Y2 = yBd3, Stroke = new SolidColorBrush(Color.FromArgb(160, 239, 68, 68)), StrokeDashArray = new DoubleCollection { 4, 3 }, StrokeThickness = 1 };
+            TidalSineWaveCanvas.Children.Add(lineBd3);
+            var labelBd3 = new TextBlock { Text = "Báo động III (1.60m)", FontSize = 10, Foreground = new SolidColorBrush(Color.FromArgb(220, 239, 68, 68)) };
+            Canvas.SetLeft(labelBd3, 24);
+            Canvas.SetTop(labelBd3, yBd3 - 14);
+            TidalSineWaveCanvas.Children.Add(labelBd3);
+
+            // BD 2: 1.55m
+            double yBd2 = GetY(1.55);
+            var lineBd2 = new Microsoft.UI.Xaml.Shapes.Line { X1 = 20, Y1 = yBd2, X2 = width - 20, Y2 = yBd2, Stroke = new SolidColorBrush(Color.FromArgb(140, 234, 88, 12)), StrokeDashArray = new DoubleCollection { 4, 3 }, StrokeThickness = 1 };
+            TidalSineWaveCanvas.Children.Add(lineBd2);
+
+            // BD 1: 1.40m
+            double yBd1 = GetY(1.40);
+            var lineBd1 = new Microsoft.UI.Xaml.Shapes.Line { X1 = 20, Y1 = yBd1, X2 = width - 20, Y2 = yBd1, Stroke = new SolidColorBrush(Color.FromArgb(140, 245, 158, 11)), StrokeDashArray = new DoubleCollection { 4, 3 }, StrokeThickness = 1 };
+            TidalSineWaveCanvas.Children.Add(lineBd1);
+            var labelBd1 = new TextBlock { Text = "Báo động I (1.40m)", FontSize = 10, Foreground = new SolidColorBrush(Color.FromArgb(180, 245, 158, 11)) };
+            Canvas.SetLeft(labelBd1, Math.Max(20, width - 140));
+            Canvas.SetTop(labelBd1, yBd1 - 14);
+            TidalSineWaveCanvas.Children.Add(labelBd1);
+
+            // 2. Fill Polygon
+            var polygon = new Microsoft.UI.Xaml.Shapes.Polygon();
+            var fillBrush = new LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(0, 1) };
+            fillBrush.GradientStops.Add(new GradientStop { Color = Color.FromArgb(90, 2, 132, 199), Offset = 0 });
+            fillBrush.GradientStops.Add(new GradientStop { Color = Color.FromArgb(15, 2, 132, 199), Offset = 1 });
+            polygon.Fill = fillBrush;
+
+            polygon.Points.Add(new Windows.Foundation.Point(GetX(0), height - 10));
+            foreach (var p in points)
+            {
+                polygon.Points.Add(new Windows.Foundation.Point(GetX(p.Hour), GetY(p.LevelMeters)));
+            }
+            polygon.Points.Add(new Windows.Foundation.Point(GetX(23), height - 10));
+            TidalSineWaveCanvas.Children.Add(polygon);
+
+            // 3. Wave Line
+            var polyline = new Microsoft.UI.Xaml.Shapes.Polyline
+            {
+                Stroke = new SolidColorBrush(Color.FromArgb(255, 56, 189, 248)),
+                StrokeThickness = 2.5
+            };
+            foreach (var p in points)
+            {
+                polyline.Points.Add(new Windows.Foundation.Point(GetX(p.Hour), GetY(p.LevelMeters)));
+            }
+            TidalSineWaveCanvas.Children.Add(polyline);
+
+            // 4. Markers
+            int currentHour = DateTime.Now.Hour;
+            foreach (var p in points)
+            {
+                double px = GetX(p.Hour);
+                double py = GetY(p.LevelMeters);
+
+                if (p.IsPeak)
+                {
+                    var peakDot = new Microsoft.UI.Xaml.Shapes.Ellipse { Width = 8, Height = 8, Fill = new SolidColorBrush(Color.FromArgb(255, 239, 68, 68)), Stroke = new SolidColorBrush(Microsoft.UI.Colors.White), StrokeThickness = 1.5 };
+                    Canvas.SetLeft(peakDot, px - 4);
+                    Canvas.SetTop(peakDot, py - 4);
+                    TidalSineWaveCanvas.Children.Add(peakDot);
+
+                    var peakLabel = new TextBlock { Text = $"{p.LevelMeters:F2}m", FontSize = 9.5, FontWeight = Microsoft.UI.Text.FontWeights.Bold, Foreground = new SolidColorBrush(Color.FromArgb(230, 239, 68, 68)) };
+                    Canvas.SetLeft(peakLabel, px - 12);
+                    Canvas.SetTop(peakLabel, py - 18);
+                    TidalSineWaveCanvas.Children.Add(peakLabel);
+                }
+
+                if (p.Hour == currentHour)
+                {
+                    var nowRing = new Microsoft.UI.Xaml.Shapes.Ellipse { Width = 18, Height = 18, Stroke = new SolidColorBrush(Color.FromArgb(160, 56, 189, 248)), StrokeThickness = 2, Fill = new SolidColorBrush(Color.FromArgb(40, 56, 189, 248)) };
+                    Canvas.SetLeft(nowRing, px - 9);
+                    Canvas.SetTop(nowRing, py - 9);
+                    TidalSineWaveCanvas.Children.Add(nowRing);
+
+                    var nowDot = new Microsoft.UI.Xaml.Shapes.Ellipse { Width = 10, Height = 10, Fill = new SolidColorBrush(Microsoft.UI.Colors.White), Stroke = new SolidColorBrush(Color.FromArgb(255, 2, 132, 199)), StrokeThickness = 2 };
+                    Canvas.SetLeft(nowDot, px - 5);
+                    Canvas.SetTop(nowDot, py - 5);
+                    TidalSineWaveCanvas.Children.Add(nowDot);
+
+                    var nowLabel = new TextBlock { Text = $"BÂY GIỜ: {p.LevelMeters:F2}m", FontSize = 10.5, FontWeight = Microsoft.UI.Text.FontWeights.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 56, 189, 248)) };
+                    Canvas.SetLeft(nowLabel, Math.Min(width - 110, Math.Max(10, px - 30)));
+                    Canvas.SetTop(nowLabel, Math.Max(2, py - 20));
+                    TidalSineWaveCanvas.Children.Add(nowLabel);
+                }
+
+                if (p.Hour % 4 == 0 || p.Hour == 23)
+                {
+                    var timeTxt = new TextBlock { Text = $"{p.Hour:D2}:00", FontSize = 9.5, Opacity = 0.65 };
+                    Canvas.SetLeft(timeTxt, px - 12);
+                    Canvas.SetTop(timeTxt, height - 16);
+                    TidalSineWaveCanvas.Children.Add(timeTxt);
+                }
+            }
+        }
+        catch { }
+    }
+
+    private void RenderRadarSimulation()
+    {
+        try
+        {
+            if (RadarSimulationCanvas == null) return;
+            RadarSimulationCanvas.Children.Clear();
+
+            double w = RadarSimulationCanvas.ActualWidth;
+            double h = RadarSimulationCanvas.ActualHeight;
+            if (w <= 20 || h <= 20) return;
+
+            double cx = w / 2;
+            double cy = h / 2;
+            double maxRadius = Math.Min(cx, cy) - 20;
+
+            // 1. Range rings
+            for (int i = 1; i <= 4; i++)
+            {
+                double r = maxRadius * (i / 4.0);
+                var circle = new Microsoft.UI.Xaml.Shapes.Ellipse
+                {
+                    Width = r * 2,
+                    Height = r * 2,
+                    Stroke = new SolidColorBrush(Color.FromArgb(70, 56, 189, 248)),
+                    StrokeThickness = 1,
+                    StrokeDashArray = new DoubleCollection { 3, 3 }
+                };
+                Canvas.SetLeft(circle, cx - r);
+                Canvas.SetTop(circle, cy - r);
+                RadarSimulationCanvas.Children.Add(circle);
+
+                var kmLabel = new TextBlock { Text = $"{i * 50}km", FontSize = 9, Opacity = 0.5 };
+                Canvas.SetLeft(kmLabel, cx + 4);
+                Canvas.SetTop(kmLabel, cy - r + 2);
+                RadarSimulationCanvas.Children.Add(kmLabel);
+            }
+
+            // 2. Crosshairs
+            var hLine = new Microsoft.UI.Xaml.Shapes.Line { X1 = cx - maxRadius, Y1 = cy, X2 = cx + maxRadius, Y2 = cy, Stroke = new SolidColorBrush(Color.FromArgb(50, 255, 255, 255)), StrokeThickness = 1 };
+            var vLine = new Microsoft.UI.Xaml.Shapes.Line { X1 = cx, Y1 = cy - maxRadius, X2 = cx, Y2 = cy + maxRadius, Stroke = new SolidColorBrush(Color.FromArgb(50, 255, 255, 255)), StrokeThickness = 1 };
+            RadarSimulationCanvas.Children.Add(hLine);
+            RadarSimulationCanvas.Children.Add(vLine);
+
+            // 3. Simulated clouds & precipitation echoes
+            var blob1 = new Microsoft.UI.Xaml.Shapes.Ellipse { Width = 90, Height = 60, Fill = new SolidColorBrush(Color.FromArgb(80, 16, 185, 129)) };
+            Canvas.SetLeft(blob1, cx + 20);
+            Canvas.SetTop(blob1, cy - 70);
+            RadarSimulationCanvas.Children.Add(blob1);
+
+            var blob2 = new Microsoft.UI.Xaml.Shapes.Ellipse { Width = 60, Height = 45, Fill = new SolidColorBrush(Color.FromArgb(90, 245, 158, 11)) };
+            Canvas.SetLeft(blob2, cx + 35);
+            Canvas.SetTop(blob2, cy - 60);
+            RadarSimulationCanvas.Children.Add(blob2);
+
+            var blob3 = new Microsoft.UI.Xaml.Shapes.Ellipse { Width = 28, Height = 22, Fill = new SolidColorBrush(Color.FromArgb(120, 239, 68, 68)) };
+            Canvas.SetLeft(blob3, cx + 48);
+            Canvas.SetTop(blob3, cy - 50);
+            RadarSimulationCanvas.Children.Add(blob3);
+
+            // 4. Center beacon
+            var centerDot = new Microsoft.UI.Xaml.Shapes.Ellipse { Width = 10, Height = 10, Fill = new SolidColorBrush(Color.FromArgb(255, 56, 189, 248)), Stroke = new SolidColorBrush(Microsoft.UI.Colors.White), StrokeThickness = 2 };
+            Canvas.SetLeft(centerDot, cx - 5);
+            Canvas.SetTop(centerDot, cy - 5);
+            RadarSimulationCanvas.Children.Add(centerDot);
+
+            var centerLabel = new TextBlock { Text = "VỊ TRÍ HIỆN TẠI", FontSize = 9.5, FontWeight = Microsoft.UI.Text.FontWeights.Bold, Foreground = new SolidColorBrush(Color.FromArgb(255, 56, 189, 248)) };
+            Canvas.SetLeft(centerLabel, cx - 35);
+            Canvas.SetTop(centerLabel, cy + 8);
+            RadarSimulationCanvas.Children.Add(centerLabel);
+
+            // 5. Radar sweep beam
+            var sweepLine = new Microsoft.UI.Xaml.Shapes.Line { X1 = cx, Y1 = cy, X2 = cx + maxRadius * 0.7, Y2 = cy - maxRadius * 0.7, Stroke = new SolidColorBrush(Color.FromArgb(200, 56, 189, 248)), StrokeThickness = 2 };
+            RadarSimulationCanvas.Children.Add(sweepLine);
+        }
+        catch { }
     }
 
     #endregion

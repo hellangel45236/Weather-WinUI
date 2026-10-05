@@ -146,6 +146,60 @@ public class UrbanFloodService
             bool isPeakEveningNow = (curHourVal >= ePeakVal - 0.75 && curHourVal <= ePeakVal + 1.5);
             warning.IsCurrentlyPeakTide = isPeakMorningNow || isPeakEveningNow;
 
+            warning.PeakTideMeters = estimatedMaxTide;
+
+            // v3.0 Beta: Tính toán 24 điểm mô phỏng sóng bán nhật triều trong ngày (Sine Wave Curve)
+            double minTide = 0.85;
+            double amplitude = (estimatedMaxTide - minTide) / 2.0;
+            double meanLevel = minTide + amplitude;
+
+            warning.TideCurve24h.Clear();
+            for (int h = 0; h < 24; h++)
+            {
+                double phase12 = 2.0 * Math.PI * (h - mPeakVal) / 12.0;
+                double phase24 = 2.0 * Math.PI * (h - ePeakVal) / 24.0;
+                double level = meanLevel + (amplitude * Math.Cos(phase12)) + (0.04 * Math.Cos(phase24));
+                level = Math.Max(0.80, Math.Min(estimatedMaxTide, level));
+                warning.TideCurve24h.Add(new TideHourlyPoint
+                {
+                    Hour = h,
+                    LevelMeters = Math.Round(level, 2),
+                    IsCurrentHour = (h == now.Hour),
+                    IsPeak = (h == morningPeakH || h == eveningPeakH)
+                });
+            }
+
+            // Tính thời gian đếm ngược đến đỉnh triều tiếp theo
+            double nextPeakTimeVal;
+            string nextPeakTimeStr;
+            if (curHourVal <= mPeakVal)
+            {
+                nextPeakTimeVal = mPeakVal;
+                nextPeakTimeStr = $"{morningPeakH:D2}:{morningPeakM:D2}";
+            }
+            else if (curHourVal <= ePeakVal)
+            {
+                nextPeakTimeVal = ePeakVal;
+                nextPeakTimeStr = $"{eveningPeakH:D2}:{eveningPeakM:D2}";
+            }
+            else
+            {
+                nextPeakTimeVal = mPeakVal + 24.0;
+                nextPeakTimeStr = $"{morningPeakH:D2}:{morningPeakM:D2} (Sáng mai)";
+            }
+
+            double diffHoursTotal = Math.Max(0, nextPeakTimeVal - curHourVal);
+            int diffH = (int)diffHoursTotal;
+            int diffM = (int)((diffHoursTotal - diffH) * 60);
+            if (diffH == 0 && diffM <= 15)
+            {
+                warning.NextPeakCountdown = $"⚠️ Đang diễn ra đỉnh triều ({nextPeakTimeStr})";
+            }
+            else
+            {
+                warning.NextPeakCountdown = $"Đỉnh kế tiếp: {nextPeakTimeStr} (còn ~{diffH}h {diffM:D2}p)";
+            }
+
             if (warning.IsCurrentlyPeakTide)
             {
                 warning.TideStatusText = estimatedMaxTide >= 1.60 
