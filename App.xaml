@@ -21,6 +21,7 @@
             <helpers:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter" />
             <helpers:BoolToSunColorConverter x:Key="BoolToSunColorConverter" />
             <helpers:BoolToStrikeConverter x:Key="BoolToStrikeConverter" />
+            <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
             <FontFamily x:Key="FontAwesomeSolid">Font Awesome 6 Free Solid</FontFamily>
         </ResourceDictionary>
     </Application.Resources>

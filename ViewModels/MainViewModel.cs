@@ -1879,6 +1879,7 @@ public partial class MainViewModel : ObservableObject
             {
                 DailyForecast.Add(item);
             }
+            OnPropertyChanged(nameof(DailyForecast));
 
             // Cập nhật lại toàn bộ Lịch Tháng với dữ liệu thời tiết của thành phố mới
             CalendarLocationSubtitle = LocationTitle;
@@ -2198,6 +2199,16 @@ public partial class MainViewModel : ObservableObject
             AttachWeatherToCalendarDay(item);
             EvaluateWeatherConflict(item);
             CalendarDays.Add(item);
+        }
+
+        if (SelectedCalendarDay == null || SelectedCalendarDay.Date.Month != _calendarMonth || SelectedCalendarDay.Date.Year != _calendarYear)
+        {
+            var targetDay = CalendarDays.FirstOrDefault(d => d.IsToday) ?? CalendarDays.FirstOrDefault(d => d.IsCurrentMonth) ?? CalendarDays.FirstOrDefault();
+            if (targetDay != null)
+            {
+                SelectedCalendarDay = targetDay;
+                EvaluateWeatherConflict(SelectedCalendarDay);
+            }
         }
     }
 

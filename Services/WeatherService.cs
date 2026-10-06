@@ -277,7 +277,8 @@ public class WeatherService : IWeatherService
         int startIndex = 0;
         for (int i = 0; i < times.Count; i++)
         {
-            if (DateTime.TryParse(times[i], out DateTime dt) && dt >= now.AddMinutes(-30))
+            if ((DateTime.TryParse(times[i], CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt) ||
+                 DateTime.TryParse(times[i], out dt)) && dt >= now.AddMinutes(-30))
             {
                 startIndex = i;
                 break;
@@ -285,7 +286,7 @@ public class WeatherService : IWeatherService
         }
 
         string unit = isFahrenheit ? "°" : "°";
-        int count = Math.Min(24, times.Count - startIndex);
+        int count = Math.Min(24, Math.Max(0, times.Count - startIndex));
 
         for (int i = 0; i < count; i++)
         {
@@ -295,7 +296,8 @@ public class WeatherService : IWeatherService
             bool isDayHour = true;
 
             int hourNum = DateTime.Now.Hour;
-            if (DateTime.TryParse(timeStr, out DateTime dt))
+            if (DateTime.TryParse(timeStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt) ||
+                DateTime.TryParse(timeStr, out dt))
             {
                 timeDisplay = i == 0 ? "Bây giờ" : dt.ToString((settings?.Is24HourFormat ?? true) ? "HH:mm" : "hh:mm tt");
                 isDayHour = dt.Hour >= 6 && dt.Hour < 18;
@@ -371,7 +373,9 @@ public class WeatherService : IWeatherService
             string dayName;
             string dateDisplay = "";
 
-            if (DateTime.TryParse(times[i], out DateTime dt))
+            if (DateTime.TryParseExact(times[i], "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt) ||
+                DateTime.TryParse(times[i], CultureInfo.InvariantCulture, DateTimeStyles.None, out dt) ||
+                DateTime.TryParse(times[i], out dt))
             {
                 dateDisplay = dt.ToString("dd/MM");
                 if (i == 0)
@@ -400,6 +404,7 @@ public class WeatherService : IWeatherService
             else
             {
                 dayName = $"Ngày {i + 1}";
+                dateDisplay = DateTime.Today.AddDays(i).ToString("dd/MM");
             }
 
             double max = dayMaxs[i];
@@ -455,7 +460,8 @@ public class WeatherService : IWeatherService
 
     private static string FormatTimeOnly(string isoDateTime)
     {
-        if (DateTime.TryParse(isoDateTime, out DateTime dt))
+        if (DateTime.TryParse(isoDateTime, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt) ||
+            DateTime.TryParse(isoDateTime, out dt))
         {
             return dt.ToString("HH:mm");
         }
