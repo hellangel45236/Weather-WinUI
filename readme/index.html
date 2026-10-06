@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather WinUI v3.0.1 Beta - Báo Cáo Tính Năng, Giao Diện & Tech Stack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #0f172a;
+            --bg-card: rgba(15, 23, 42, 0.75);
+            --bg-card-hover: rgba(30, 41, 59, 0.85);
+            --border-card: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(56, 189, 248, 0.3);
+            --accent-blue: #38bdf8;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #a855f7;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --glass-blur: blur(16px);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 35%, rgba(168, 85, 247, 0.07) 0%, transparent 45%),
+                radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header & Hero */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--border-card);
+            padding: 16px 0;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+        }
+
+        .logo-title {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-beta {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 7px;
+            border-radius: 6px;
+            background: rgba(168, 85, 247, 0.2);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        nav a:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Hero Banner */
+        .hero-section {
+            padding: 70px 0 50px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-bottom: 24px;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 17px;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 36px;
+            line-height: 1.6;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            color: white;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-card);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Metric cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin: 45px 0 70px;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: left;
+            transition: var(--transition-smooth);
+        }
+
+        .metric-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-3px);
+        }
+
+        .metric-num {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent-blue);
+            font-family: var(--font-mono);
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Section Headings */
+        .section-header {
+            margin-bottom: 36px;
+            text-align: left;
+        }
+
+        .section-tag {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--accent-blue);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+        }
+
+        .section-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        /* Tech Stack Table & Badges */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-card);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 40px;
+            transition: var(--transition-smooth);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .tech-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .tech-icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .tech-content h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .tech-content p {
+            font-size: 12.5px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .tech-version {
+            font-size: 11px;
+            font-family: var(--font-mono);
+            color: var(--accent-cyan);
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        /* Core 7 Modules Showcase */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .module-card {
+            background: var(--bg-card);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-card);
+            border-radius: 20px;
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .module-card:hover::before {
+            opacity: 1;
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .module-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .module-title-wrap h3 {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .module-title-wrap span {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .module-body {
+            flex: 1;
+        }
+
+        .module-feature-list {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .module-feature-list li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.45;
+        }
+
+        .module-feature-list li i {
+            color: var(--accent-emerald);
+            font-size: 11px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        /* Mockup Interactive Visuals */
+        .mockup-display {
+            background: rgba(10, 15, 28, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 16px;
+            margin-top: 18px;
+        }
+
+        /* Doppler Radar Canvas Simulation in CSS/HTML */
+        .radar-box {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            background: #080d1a;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .radar-circle {
+            position: absolute;
+            border: 1px dashed rgba(56, 189, 248, 0.25);
+            border-radius: 50%;
+        }
+
+        .radar-sweep {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, rgba(16, 185, 129, 0.4) 0deg, transparent 55deg, transparent 360deg);
+            animation: radarRotate 4s linear infinite;
+        }
+
+        @keyframes radarRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .radar-echo {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(4px);
+        }
+
+        /* Timeline History */
+        .timeline {
+            position: relative;
+            padding-left: 28px;
+            margin: 30px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent-blue) 0%, rgba(56, 189, 248, 0.1) 100%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 28px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -28px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            border: 2px solid var(--accent-blue);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+
+        .timeline-dot.highlight {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.7);
+            background: var(--accent-purple);
+        }
+
+        .timeline-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            padding: 16px 20px;
+        }
+
+        .timeline-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .version-badge {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag-pill {
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-blue);
+        }
+
+        .timeline-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Comparison Table */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 14px;
+            border: 1px solid var(--border-card);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13.5px;
+        }
+
+        th {
+            background: rgba(30, 41, 59, 0.7);
+            padding: 14px 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-card);
+        }
+
+        td {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-card);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 80px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 34px;
+            }
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+            nav ul {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="container header-inner">
+            <a href="#" class="logo-wrap">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-cloud-sun"></i>
+                </div>
+                <div class="logo-title">
+                    Weather WinUI
+                    <span class="badge-beta">v3.0.1-beta</span>
+                </div>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#overview"><i class="fa-solid fa-compass"></i> Tổng Quan</a></li>
+                    <li><a href="#techstack"><i class="fa-solid fa-microchip"></i> Tech Stack</a></li>
+                    <li><a href="#features"><i class="fa-solid fa-cubes"></i> 7 Phân Hệ</a></li>
+                    <li><a href="#history"><i class="fa-solid fa-clock-rotate-left"></i> Lịch Sử Phiên Bản</a></li>
+                    <li><a href="#download"><i class="fa-solid fa-download"></i> Bản Portable</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero-section" id="overview">
+            <div class="hero-badge-pill">
+                <i class="fa-solid fa-sparkles"></i>
+                ĐẠI TU TOÀN DIỆN GIAO DIỆN & TÍNH NĂNG THỜI TIẾT ĐÔ THỊ
+            </div>
+            <h1 class="hero-title">
+                Hệ Điều Hành Vi Khí Hậu Cá Nhân Hóa<br>
+                <span>Weather WinUI 3.0.1 Beta</span>
+            </h1>
+            <p class="hero-subtitle">
+                Được xây dựng trên nền tảng <strong>Windows App SDK (WinUI 3) & .NET 8</strong>. Kết hợp công nghệ mô phỏng thủy triều thiên văn bán nhật triều, cảnh báo ngập úng đô thị tại TP.HCM & Hà Nội, Radar Doppler 360°, trợ lý trang phục OOTD và Lịch Vạn Niên Việt Nam.
+            </p>
+            <div class="hero-actions">
+                <a href="#download" class="btn btn-primary">
+                    <i class="fa-solid fa-download"></i> Tải Ngay Bản Portable (97MB)
+                </a>
+                <a href="#features" class="btn btn-secondary">
+                    <i class="fa-solid fa-layer-group"></i> Khám Phá Tính Năng
+                </a>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-num">7</div>
+                    <div class="metric-label">Phân Hệ Điều Hướng Chuyên Sâu (Navigation Shell)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-num">360°</div>
+                    <div class="metric-label">Radar Khí Tượng Quét Doppler Thời Gian Thực</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-num">40+</div>
+                    <div class="metric-label">Tuyến Phố Ngập Trọng Điểm TP.HCM & Hà Nội</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-num">18+</div>
+                    <div class="metric-label">Phiên Bản Đã Tiến Hóa Bền Vững (v1.0 ➔ v3.0.1)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Stack Section -->
+        <section class="section-wrap" id="techstack">
+            <div class="section-header">
+                <div class="section-tag"><i class="fa-solid fa-code"></i> KIẾN TRÚC KỸ THUẬT</div>
+                <h2 class="section-title">Ngăn Xếp Công Nghệ (Modern Tech Stack)</h2>
+                <p class="section-desc">Khai thác tối đa sức mạnh phần cứng desktop và các API thế hệ mới của hệ điều hành Windows 10/11</p>
+            </div>
+
+            <div class="glass-card">
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <div class="tech-icon-box" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8;">
+                            <i class="fa-brands fa-windows"></i>
+                        </div>
+                        <div class="tech-content">
+                            <h4>WinUI 3 & WinAppSDK</h4>
+                            <p>Native UI framework thế hệ mới nhất của Microsoft, hỗ trợ hiệu ứng Mica Alt & Acrylic.</p>
+                            <span class="tech-version">v1.8.250907003</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div class="tech-icon-box" style="background: rgba(168, 85, 247, 0.15); color: #c084fc;">
+                            <i class="fa-solid fa-code-branch"></i>
+                        </div>
+                        <div class="tech-content">
+                            <h4>.NET 8 & C# 12</h4>
+                            <p>Bộ biên dịch JIT tối ưu hóa, hỗ trợ Native AOT/Self-contained, tiêu thụ RAM chỉ ~80MB.</p>
+                            <span class="tech-version">net8.0-windows10.0.26100</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div class="tech-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+                            <i class="fa-solid fa-diagram-project"></i>
+                        </div>
+                        <div class="tech-content">
+                            <h4>CommunityToolkit.Mvvm</h4>
+                            <p>Mẫu kiến trúc MVVM tiêu chuẩn Microsoft với Source Generators và Data Binding 2 chiều.</p>
+                            <span class="tech-version">v8.4.2</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div class="tech-icon-box" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
+                            <i class="fa-solid fa-cloud-bolt"></i>
+                        </div>
+                        <div class="tech-content">
+                            <h4>Open-Meteo Weather API</h4>
+                            <p>Dữ liệu khí hậu toàn cầu độ phân giải cao kết hợp ECMWF/GFS ensemble, không cần API Key.</p>
+                            <span class="tech-version">High-Res Ensemble</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div class="tech-icon-box" style="background: rgba(244, 63, 94, 0.15); color: #fb7185;">
+                            <i class="fa-solid fa-water"></i>
+                        </div>
+                        <div class="tech-content">
+                            <h4>Thuật Toán Thủy Triều & Lịch</h4>
+                            <p>Mô hình sóng bán nhật triều hình sin và thuật toán tính Lịch Âm, Can Chi, 24 Tiết khí.</p>
+                            <span class="tech-version">Jean Meeus & Hồ Ngọc Đức</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div class="tech-icon-box" style="background: rgba(99, 102, 241, 0.15); color: #818cf8;">
+                            <i class="fa-solid fa-window-restore"></i>
+                        </div>
+                        <div class="tech-content">
+                            <h4>WinUIEx Window Extensions</h4>
+                            <p>Quản lý cửa sổ nổi không viền, trong suốt DWM, căn chỉnh Desktop Widget siêu mượt.</p>
+                            <span class="tech-version">v2.9.3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7 Core Modules Section -->
+        <section class="section-wrap" id="features">
+            <div class="section-header">
+                <div class="section-tag"><i class="fa-solid fa-layer-group"></i> TRẢI NGHIỆM ĐA TẦNG</div>
+                <h2 class="section-title">7 Phân Hệ Chuyên Sâu Trong Version 3.0.1 Beta</h2>
+                <p class="section-desc">Đại tu toàn diện thanh điều hướng NavigationView Shell chuyển đổi mượt mà giữa các tính năng</p>
+            </div>
+
+            <div class="modules-grid">
+                <!-- Tab 1 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #0284c7, #38bdf8);">
+                            <i class="fa-solid fa-cloud-sun"></i>
+                        </div>
+                        <div class="module-title-wrap">
+                            <h3>Tổng Quan Vi Khí Hậu</h3>
+                            <span>TAB 1 • OVERVIEW & SCRUBBER</span>
+                        </div>
+                    </div>
+                    <div class="module-body">
+                        <p style="font-size: 13.5px; color: var(--text-secondary);">Thẻ Hero khí quyển với Dynamic Chromatic Sky đổi màu theo góc mặt trời thực tế kết hợp thanh tua thời gian 24h.</p>
+                        <ul class="module-feature-list">
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>24h Interactive Scrubber</strong>: Kéo tua nhanh thời gian để đổi màu trời và cập nhật nhiệt độ thời gian thực.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Đường cong nhiệt độ 24h</strong>: Spline Bezier mượt mà hiển thị cùng xác suất mưa.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Dự báo 7 ngày tới</strong>: Bổ sung thanh đo Weekly Min-Max Range Bar trực quan.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>8 Chỉ số chuyên sâu</strong>: UV, độ ẩm, áp suất, gió, tầm nhìn, điểm sương.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tab 2 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #0d9488, #2dd4bf);">
+                            <i class="fa-solid fa-water-ladder"></i>
+                        </div>
+                        <div class="module-title-wrap">
+                            <h3>Ngập Úng & Triều Cường Đô Thị</h3>
+                            <span>TAB 2 • URBAN FLOOD HUB</span>
+                        </div>
+                    </div>
+                    <div class="module-body">
+                        <p style="font-size: 13.5px; color: var(--text-secondary);">Hệ thống cảnh báo ngập lụt thủy triều thiên văn chuyên sâu cho người dân TP.HCM & Hà Nội khi đi làm, đi học.</p>
+                        <ul class="module-feature-list">
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Sóng bán nhật triều 24h</strong>: Đồ thị đường sin hiển thị 2 đỉnh triều sông Sài Gòn / Đồng Nai.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Đếm ngược đỉnh triều</strong>: Cảnh báo 3 cấp độ (Báo động 1, 2 và 3 vượt 1.60m).</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Tra cứu 40+ tuyến đường</strong>: Huỳnh Tấn Phát, Nguyễn Hữu Cảnh, Thái Hà...</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Lời khuyên di chuyển</strong>: Kỹ thuật chống thủy kích ô tô & sặc pô xe máy.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tab 3 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #059669, #10b981);">
+                            <i class="fa-solid fa-satellite-dish"></i>
+                        </div>
+                        <div class="module-title-wrap">
+                            <h3>Bản Đồ & Radar Khí Tượng</h3>
+                            <span>TAB 3 • 360° DOPPLER RADAR</span>
+                        </div>
+                    </div>
+                    <div class="module-body">
+                        <p style="font-size: 13.5px; color: var(--text-secondary);">Mô phỏng radar khí tượng chuyên dụng quét thời gian thực 360 độ trên nền Canvas tối ưu hóa phần cứng.</p>
+                        
+                        <div class="radar-box">
+                            <div class="radar-circle" style="width: 50px; height: 50px;"></div>
+                            <div class="radar-circle" style="width: 100px; height: 100px;"></div>
+                            <div class="radar-circle" style="width: 150px; height: 150px;"></div>
+                            <div class="radar-circle" style="width: 190px; height: 190px;"></div>
+                            <div class="radar-sweep"></div>
+                            <div class="radar-echo" style="width: 35px; height: 25px; background: rgba(245, 158, 11, 0.7); left: 35px; top: 120px;"></div>
+                            <div class="radar-echo" style="width: 20px; height: 16px; background: rgba(239, 68, 68, 0.85); left: 42px; top: 125px;"></div>
+                            <div style="position: absolute; font-size: 10px; font-weight: bold; color: #10b981; bottom: 8px; right: 12px;">Đang quét 360° Realtime</div>
+                        </div>
+
+                        <ul class="module-feature-list" style="margin-top: 14px;">
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>4 Vòng cự ly</strong>: 50km, 100km, 150km, 200km kèm la bàn 8 hướng.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Phản xạ đa tầng dBZ</strong>: Xanh ngọc (mưa nhẹ) ➔ Vàng (mưa to) ➔ Đỏ (tâm bão).</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Vệt sáng Phosphor Trail</strong>: 12 lát cắt góc xoay tan dần chân thực.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tab 4 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">
+                            <i class="fa-solid fa-shirt"></i>
+                        </div>
+                        <div class="module-title-wrap">
+                            <h3>Đời Sống & Trang Phục (OOTD)</h3>
+                            <span>TAB 4 • OOTD ADVISOR v2.1</span>
+                        </div>
+                    </div>
+                    <div class="module-body">
+                        <p style="font-size: 13.5px; color: var(--text-secondary);">Trợ lý AI thời trang vi khí hậu "Hôm Nay Mặc Gì?" phân tích nhiệt độ, gió, độ ẩm, UV để gợi ý phối đồ.</p>
+                        <ul class="module-feature-list">
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>4 Phân vùng trang phục</strong>: Thân trên, thân dưới, áo khoác, giày dép.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>3 Dịp sinh hoạt</strong>: Công sở, Đi học, Dạo phố (độ tương phản cao trên Light/Dark).</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Checklist vật dụng</strong>: Nhắc mang ô, kính mát, kem chống nắng, áo mưa.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Chỉ số AQI & Bụi mịn PM2.5</strong>: Lời khuyên đeo khẩu trang N95 bảo vệ phổi.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tab 5 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #2563eb, #60a5fa);">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+                        <div class="module-title-wrap">
+                            <h3>Lịch Vạn Niên & Kế Hoạch</h3>
+                            <span>TAB 5 • CALENDAR & INLINE DETAILS</span>
+                        </div>
+                    </div>
+                    <div class="module-body">
+                        <p style="font-size: 13.5px; color: var(--text-secondary);">Lưới lịch 42 ô ngày kết hợp đồng bộ Âm - Dương lịch, 24 Tiết khí và phát hiện xung đột thời tiết với lịch trình.</p>
+                        <ul class="module-feature-list">
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Inline Day Details Panel</strong>: Hiển thị chi tiết ngày ngay dưới lưới lịch thay vì popup.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Âm lịch & Ngày lễ Việt Nam</strong>: Mùng 1, Rằm, Can Chi ngày/tháng/năm.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Cảnh báo xung đột</strong>: Nhắc nhở khi lịch ngoài trời trùng ngày mưa bão.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Mục tiêu trong ngày (Daily Goals)</strong>: Ghi chú to-do list kèm checkbox.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tab 6 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #c026d3, #f472b6);">
+                            <i class="fa-solid fa-table-cells-large"></i>
+                        </div>
+                        <div class="module-title-wrap">
+                            <h3>Widget Studio Showcase</h3>
+                            <span>TAB 6 • 4 PRESETS & LIVE PIN</span>
+                        </div>
+                    </div>
+                    <div class="module-body">
+                        <p style="font-size: 13.5px; color: var(--text-secondary);">Phòng trưng bày và thiết kế Desktop Widget trực quan. Chọn mẫu nào ghim ra Desktop đúng chuẩn mẫu đó.</p>
+                        <ul class="module-feature-list">
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>BryanC Dynamic</strong>: Phong cách Dribbble đổi màu bầu trời thiên văn.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Fluent Glass Card</strong>: Kính mờ Aero Acrylic với đầy đủ chi tiết khí tượng.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Compact Bar & Mini Island</strong>: Thanh ngang & viên thuốc siêu gọn.</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <strong>Đồng bộ độ mờ (Opacity)</strong>: Thanh trượt 20% - 100% phản hồi tức thì.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tab 7 -->
+                <div class="module-card" style="grid-column: 1 / -1;">
+                    <div class="module-header">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #475569, #94a3b8);">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                        <div class="module-title-wrap">
+                            <h3>Trung Tâm Cài Đặt Toàn Trang (Settings Hub)</h3>
+                            <span>TAB 7 • FULL-PAGE FLUENT 2-COLUMN HUB</span>
+                        </div>
+                    </div>
+                    <div class="module-body">
+                        <p style="font-size: 13.5px; color: var(--text-secondary);">Thay thế hoàn toàn hộp thoại nhỏ cũ bằng giao diện cài đặt toàn màn hình chuẩn Windows 11 với 8 phân mục chuyên sâu.</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px;">
+                            <div style="background: rgba(15, 23, 42, 0.5); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px;">
+                                <i class="fa-solid fa-user" style="color: #38bdf8; margin-right: 6px;"></i> <strong>Cá nhân hóa</strong>: Tên người dùng, lời chào
+                            </div>
+                            <div style="background: rgba(15, 23, 42, 0.5); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px;">
+                                <i class="fa-solid fa-icons" style="color: #f43f5e; margin-right: 6px;"></i> <strong>Giao diện & Biểu tượng</strong>: Meteocons SVG, 3D
+                            </div>
+                            <div style="background: rgba(15, 23, 42, 0.5); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px;">
+                                <i class="fa-solid fa-clock" style="color: #f59e0b; margin-right: 6px;"></i> <strong>Thời gian & Đơn vị</strong>: °C/°F, 24h/12h
+                            </div>
+                            <div style="background: rgba(15, 23, 42, 0.5); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px;">
+                                <i class="fa-solid fa-image" style="color: #ec4899; margin-right: 6px;"></i> <strong>Hình nền thành phố</strong>: Ảnh nền động
+                            </div>
+                            <div style="background: rgba(15, 23, 42, 0.5); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px;">
+                                <i class="fa-solid fa-window-maximize" style="color: #a855f7; margin-right: 6px;"></i> <strong>Widget Desktop</strong>: Cấu hình mặc định
+                            </div>
+                            <div style="background: rgba(15, 23, 42, 0.5); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px;">
+                                <i class="fa-solid fa-bell" style="color: #ef4444; margin-right: 6px;"></i> <strong>Thông báo & Khay</strong>: Toast bão, System Tray
+                            </div>
+                            <div style="background: rgba(15, 23, 42, 0.5); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px;">
+                                <i class="fa-solid fa-microchip" style="color: #10b981; margin-right: 6px;"></i> <strong>Hiệu năng & Tự chạy</strong>: Khởi động cùng Win
+                            </div>
+                            <div style="background: rgba(15, 23, 42, 0.5); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px;">
+                                <i class="fa-solid fa-circle-info" style="color: #6366f1; margin-right: 6px;"></i> <strong>Giới thiệu & Changelog</strong>: Bản quyền, lịch sử
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Version History Section -->
+        <section class="section-wrap" id="history">
+            <div class="section-header">
+                <div class="section-tag"><i class="fa-solid fa-timeline"></i> LỊCH SỬ TIẾN HÓA</div>
+                <h2 class="section-title">Biên Niên Sử Phát Triển Toàn Bộ Phiên Bản</h2>
+                <p class="section-desc">Hành trình nâng cấp liên tục từ phiên bản đầu tiên đến hệ điều hành vi khí hậu hoàn chỉnh</p>
+            </div>
+
+            <div class="timeline">
+                <!-- v3.0.1-beta -->
+                <div class="timeline-item">
+                    <div class="timeline-dot highlight"></div>
+                    <div class="timeline-card" style="border-color: rgba(168, 85, 247, 0.4); background: rgba(168, 85, 247, 0.05);">
+                        <div class="timeline-head">
+                            <div class="version-badge">
+                                <span>Version 3.0.1-Beta</span>
+                                <span class="badge-beta">MỚI NHẤT</span>
+                            </div>
+                            <span class="tag-pill" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">Đại Tu UI & Khắc Phục Lỗi Toàn Diện</span>
+                        </div>
+                        <p>Khắc phục lỗi font chữ UTF-8; sửa lỗi icon 24h và bảng 7 ngày; thiết kế Radar Doppler khí tượng 360° có vệt sáng phosphor trail 12 lát cắt; thay thế popup bằng khung chi tiết Lịch trực tiếp (Inline Day Details); tăng tương phản OOTD trên Light Mode; Widget Studio ghim chuẩn xác 4 kiểu dáng và lưu độ mờ; Trung tâm cài đặt 2 cột Win11 toàn trang.</p>
+                    </div>
+                </div>
+
+                <!-- v3.0.0-beta -->
+                <div class="timeline-item">
+                    <div class="timeline-dot highlight"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-head">
+                            <div class="version-badge">Version 3.0.0-Beta</div>
+                            <span class="tag-pill">UI Overhaul</span>
+                        </div>
+                        <p>Khởi dựng khung điều hướng Fluent NavigationView Shell 7 tab chuyên biệt; tích hợp thanh tua thời gian tương tác 24h Time-Scrubber; thiết kế Widget Studio.</p>
+                    </div>
+                </div>
+
+                <!-- v2.2.3 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-head">
+                            <div class="version-badge">Version 2.2.3 (Bản Ổn Định main)</div>
+                            <span class="tag-pill">Dân Sinh & Khắc Phục Lỗi Chí Mạng</span>
+                        </div>
+                        <p><strong>Fix lỗi chí mạng</strong>: Khắc phục triệt để lỗi không lưu cài đặt và lỗi Widget Opacity bị ép về 20% khi mở lại app. <strong>Tính năng mới</strong>: Cảnh báo ngập úng triều cường đô thị tại TP.HCM & Hà Nội (đồ thị sóng bán nhật triều 24h, đếm ngược đỉnh triều, danh sách tuyến đường ngập trọng điểm).</p>
+                    </div>
+                </div>
+
+                <!-- v2.2.2 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-head">
+                            <div class="version-badge">Version 2.2.2</div>
+                            <span class="tag-pill">Âm Thanh Vi Khí Hậu</span>
+                        </div>
+                        <p>Tích hợp hệ thống âm thanh môi trường thư giãn Ambient Weather Sounds (mưa, sấm chớp, gió, sóng biển, rừng thông); cửa sổ nổi Quick Peek thumbnail tại khay hệ thống Taskbar.</p>
+                    </div>
+                </div>
+
+                <!-- v2.2.1 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-head">
+                            <div class="version-badge">Version 2.2.1</div>
+                            <span class="tag-pill">Tìm Kiếm & Tương Thích</span>
+                        </div>
+                        <p>Sửa lỗi font icon trên Windows 10, nâng cấp tìm kiếm địa phương hỗ trợ tiếng Việt không dấu (Ha Noi, Da Nang...), tối ưu responsive cho màn hình dưới Full HD, fix cảnh báo nhầm của phần mềm diệt virus.</p>
+                    </div>
+                </div>
+
+                <!-- v2.2.0 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-head">
+                            <div class="version-badge">Version 2.2.0</div>
+                            <span class="tag-pill">BryanC Dynamic Widget</span>
+                        </div>
+                        <p>Bổ sung phong cách widget BryanC Dynamic đổi màu theo bầu trời thực tế, tích hợp gói biểu tượng Meteocons Animated SVG, triệt tiêu viền trắng trên Taskbar.</p>
+                    </div>
+                </div>
+
+                <!-- v2.1.0 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-head">
+                            <div class="version-badge">Version 2.1.0</div>
+                            <span class="tag-pill">Trang Phục OOTD & Thẻ Full HD</span>
+                        </div>
+                        <p>Ra mắt trợ lý thông minh "Hôm Nay Mặc Gì?" (OOTD Advisor); bộ công cụ kết xuất thẻ thời tiết Full HD 1080p (Story dọc & Landscape ngang) hỗ trợ sao chép vào Clipboard.</p>
+                    </div>
+                </div>
+
+                <!-- v2.0.0 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-head">
+                            <div class="version-badge">Version 2.0.0</div>
+                            <span class="tag-pill">Cột Mốc Lịch & Mục Tiêu</span>
+                        </div>
+                        <p>Thêm Mục Tiêu Ngày (Daily Goals), nhắc nhở giờ đi làm (Commute alerts), hỗ trợ mở cùng lúc nhiều widget cho các thành phố khác nhau trên Desktop.</p>
+                    </div>
+                </div>
+
+                <!-- v1.8.0 - v1.9.0 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-head">
+                            <div class="version-badge">Version 1.8.0 - 1.9.0</div>
+                            <span class="tag-pill">Lịch Âm Dương & Kế Hoạch</span>
+                        </div>
+                        <p>Lịch Tháng Đa Niên (42 ô ngày) tích hợp Âm Lịch, Can Chi, 24 Tiết Khí, Ngày lễ Việt Nam; sổ tay ghi chú kế hoạch theo ngày, cảnh báo xung đột thời tiết; widget Mini Island.</p>
+                    </div>
+                </div>
+
+                <!-- v1.0.0 - v1.7.0 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-head">
+                            <div class="version-badge">Version 1.0.0 - 1.7.0</div>
+                            <span class="tag-pill">Giai Đoạn Nền Tảng</span>
+                        </div>
+                        <p>Khởi tạo ứng dụng WinUI 3; kết nối Open-Meteo API; Windows Toast Notifications, System Tray icon; biểu đồ nhiệt độ Spline; tương thích Windows 10; tích hợp AQI & bụi mịn PM2.5/PM10, chu kỳ Mặt trời mọc/lặn.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Download & Instructions Section -->
+        <section class="section-wrap" id="download" style="margin-bottom: 60px;">
+            <div class="section-header">
+                <div class="section-tag"><i class="fa-solid fa-box-archive"></i> TẢI VỀ & PHÁT HÀNH</div>
+                <h2 class="section-title">Gói Phát Hành Portable & Hướng Dẫn Vận Hành</h2>
+                <p class="section-desc">Cả 2 phiên bản Portable (Beta 3.0.1) và Bản Cài Đặt Ổn Định (v2.2.3) đều được chuẩn bị đầy đủ</p>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Phiên Bản</th>
+                            <th>Định Dạng</th>
+                            <th>Dung Lượng</th>
+                            <th>Đặc Điểm & Hướng Dẫn Sử Dụng</th>
+                            <th>Đường Dẫn Trong Repo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Version 3.0.1-Beta</strong> <span class="badge-beta">Mới</span></td>
+                            <td>File nén ZIP Portable</td>
+                            <td><strong>~93.0 MB</strong></td>
+                            <td>Giải nén và chạy ngay `WeatherApp.exe`. Tách biệt hoàn toàn, không đè cài đặt cũ.</td>
+                            <td><code>Output/Beta/WeatherApp_Portable_v3.0.1-beta.zip</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Version 2.2.3 Stable</strong></td>
+                            <td>Bộ cài Inno Setup (.exe)</td>
+                            <td><strong>~81.3 MB</strong></td>
+                            <td>Cài đặt chuẩn Windows 10/11, tự tạo shortcut Desktop & Start Menu, tự khởi động cùng Win.</td>
+                            <td><code>Output/WeatherApp_Setup_v2.2.3.exe</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Version 2.2.3 Stable</strong></td>
+                            <td>File nén ZIP Portable</td>
+                            <td><strong>~97.3 MB</strong></td>
+                            <td>Bản di động không cần cài đặt, chứa đầy đủ runtime self-contained.</td>
+                            <td><code>Output/WeatherApp_Portable_v2.2.3.zip</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p style="margin-bottom: 6px;"><strong>Weather WinUI Team (2026)</strong> — Hệ Điều Hành Vi Khí Hậu Cá Nhân Hóa Dành Cho Windows</p>
+            <p>Phát triển với .NET 8, C# 12, WinUI 3 (Windows App SDK) & Open-Meteo High-Resolution Ensemble Models.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
