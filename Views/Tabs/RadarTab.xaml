@@ -1,0 +1,86 @@
+<UserControl
+    x:Class="WeatherApp.Views.Tabs.RadarTab"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:WeatherApp.ViewModels"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="16" Padding="0,0,16,24">
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <Border Width="36" Height="36" CornerRadius="10" Background="#2010B981">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" Foreground="#10B981" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="Mô Phỏng Radar Doppler &amp; Bản Đồ Mây Mưa Tự Động" FontSize="15" FontWeight="Bold"/>
+                                <TextBlock Text="Quét radar đối lưu thời gian thực trong phạm vi bán kính 200km" FontSize="11" Opacity="0.65"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <Border Grid.Column="1" Background="#2010B981" BorderBrush="#4010B981" BorderThickness="1" CornerRadius="8" Padding="10,4">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <Ellipse Width="8" Height="8" Fill="#10B981"/>
+                                <TextBlock Text="Đang Quét 360° Realtime" FontSize="12" FontWeight="Bold" Foreground="#10B981"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <Border Height="340" Background="#150F172A" CornerRadius="12" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                        <Canvas x:Name="RadarSimulationCanvas" Height="340" HorizontalAlignment="Stretch" SizeChanged="RadarSimulationCanvas_SizeChanged"/>
+                    </Border>
+
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Grid.Column="0" Text="Cường độ phản hồi dBZ:" FontSize="11" Opacity="0.7" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Height="8" CornerRadius="4" Margin="14,0" VerticalAlignment="Center">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#10B981" Offset="0"/>
+                                    <GradientStop Color="#38BDF8" Offset="0.3"/>
+                                    <GradientStop Color="#F59E0B" Offset="0.7"/>
+                                    <GradientStop Color="#EF4444" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <TextBlock Text="Mưa nhỏ (15-30 dBZ)" FontSize="10" Opacity="0.7"/>
+                            <TextBlock Text="→" FontSize="10" Opacity="0.5"/>
+                            <TextBlock Text="Mưa to / Dông bão (50-65 dBZ)" FontSize="10" FontWeight="SemiBold" Foreground="#EF4444"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                <Border Grid.Column="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="14" Padding="14">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Cấp Gió Beaufort" FontSize="11" Opacity="0.6"/>
+                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WindText, Mode=OneWay}" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WindDirectionText, Mode=OneWay}" FontSize="11" Foreground="#38BDF8" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="14" Padding="14">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Áp Suất Khí Quyển" FontSize="11" Opacity="0.6"/>
+                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.PressureText, Mode=OneWay}" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock Text="Trạng thái ổn định" FontSize="11" Foreground="#10B981" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="14" Padding="14">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Chỉ Số Cực Đoan" FontSize="11" Opacity="0.6"/>
+                        <TextBlock Text="Bình Thường" FontSize="18" FontWeight="Bold" Foreground="#10B981"/>
+                        <TextBlock Text="Không có áp thấp nhiệt đới" FontSize="11" Opacity="0.75"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

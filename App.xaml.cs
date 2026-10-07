@@ -22,7 +22,11 @@ public partial class App : Application
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
             // Đăng ký Font Awesome vào bảng font tiến trình qua Win32 GDI/DirectWrite cho Windows 10 & 11
-            string fontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Fonts", "fa-solid-900.ttf");
+            string fontPath = Path.Combine(AppContext.BaseDirectory, "Assets", "Fonts", "fa-solid-900.ttf");
+            if (!File.Exists(fontPath))
+            {
+                fontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Fonts", "fa-solid-900.ttf");
+            }
             if (File.Exists(fontPath))
             {
                 AddFontResourceEx(fontPath, FR_PRIVATE, IntPtr.Zero);

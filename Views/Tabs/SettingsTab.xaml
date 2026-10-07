@@ -1,0 +1,794 @@
+<UserControl
+    x:Class="WeatherApp.Views.Tabs.SettingsTab"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:WeatherApp.ViewModels"
+    xmlns:models="using:WeatherApp.Models"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="16" Padding="0,0,16,24">
+                        <!-- HEADER CÀI ĐẶT -->
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="16"
+                                Padding="18,16">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                    <Border Width="36" Height="36" CornerRadius="10" Background="#2094A3B8">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf013;" Foreground="#94A3B8" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="Trung Tâm Cài Đặt &amp; Cá Nhân Hóa (Version 3.0.1 Beta)" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Quản lý giao diện, biểu tượng, đơn vị, ảnh nền, thông báo và hiệu năng hệ thống" FontSize="11.5" Opacity="0.65"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                    <Button Click="SaveSettingsTab_Click" Style="{ThemeResource AccentButtonStyle}" CornerRadius="10" Padding="14,6">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c7;" FontSize="11"/>
+                                            <TextBlock Text="Lưu &amp; Áp Dụng" FontWeight="Bold"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Border Background="#258B5CF6" BorderBrush="#8B5CF6" BorderThickness="1" CornerRadius="8" Padding="10,6">
+                                        <TextBlock Text="Version 3.0.1-Beta" FontSize="12" FontWeight="Bold" Foreground="#A78BFA"/>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- KHUNG 2 CỘT CÀI ĐẶT ĐẦY ĐỦ TỪ SETTINGS DIALOG GỐC (KHÔNG CỐ ĐỊNH CHIỀU CAO - MƯỢT MÀ WIN11) -->
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="16"
+                                Padding="16">
+            <Grid ColumnDefinitions="230,*" MinHeight="620" ColumnSpacing="16" Margin="0,8,0,0">
+                <!-- CỘT 1: THANH ĐIỀU HƯỚNG DANH MỤC CÀI ĐẶT (SIDEBAR) -->
+                <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="6">
+                    <ListView x:Name="SettingsNavListView" SelectionChanged="SettingsNavListView_SelectionChanged" SelectionMode="Single" SelectedIndex="0">
+                        <ListViewItem Tag="0">
+                            <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf007;" FontSize="14" Foreground="#38BDF8"/>
+                                <TextBlock Text="Cá nhân hóa" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </ListViewItem>
+                        <ListViewItem Tag="7">
+                            <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf53f;" FontSize="14" Foreground="#F43F5E"/>
+                                <TextBlock Text="Giao diện &amp; Biểu tượng" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </ListViewItem>
+                        <ListViewItem Tag="1">
+                            <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf017;" FontSize="14" Foreground="#F59E0B"/>
+                                <TextBlock Text="Thời gian &amp; Đơn vị" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </ListViewItem>
+                        <ListViewItem Tag="2">
+                            <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf03e;" FontSize="14" Foreground="#EC4899"/>
+                                <TextBlock Text="Hình nền thành phố" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </ListViewItem>
+                        <ListViewItem Tag="3">
+                            <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" FontSize="14" Foreground="#A855F7"/>
+                                <TextBlock Text="Widget Desktop" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </ListViewItem>
+                        <ListViewItem Tag="4">
+                            <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0f3;" FontSize="14" Foreground="#EF4444"/>
+                                <TextBlock Text="Thông báo &amp; Khay" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </ListViewItem>
+                        <ListViewItem Tag="5">
+                            <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf011;" FontSize="14" Foreground="#10B981"/>
+                                <TextBlock Text="Hiệu năng &amp; Khởi động" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </ListViewItem>
+                        <ListViewItem Tag="6">
+                            <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf05a;" FontSize="14" Foreground="#6366F1"/>
+                                <TextBlock Text="Giới thiệu &amp; Changelog" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </ListViewItem>
+                    </ListView>
+                </Border>
+
+                <!-- CỘT 2: CHI TIẾT TỪNG DANH MỤC -->
+                <Border Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="16,14">
+                    <Grid>
+                        <!-- PANEL 0: CÁ NHÂN HÓA -->
+                        <ScrollViewer x:Name="PanelPersonalization" VerticalScrollBarVisibility="Auto">
+                            <StackPanel Spacing="14">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Cá Nhân Hóa" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="Thiết lập tên hiển thị và trải nghiệm cá nhân của bạn" FontSize="12" Opacity="0.7"/>
+                                </StackPanel>
+
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,12">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf007;" FontSize="16" Foreground="#38BDF8" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Tên của bạn" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Tên hiển thị trong lời chào và các thông báo hàng ngày" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <TextBox Grid.Column="2" x:Name="SettingsUserNameBox" Width="180" PlaceholderText="Nhập tên..." VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- PANEL 1: THỜI GIAN & ĐƠN VỊ -->
+                        <ScrollViewer x:Name="PanelTimeUnits" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                            <StackPanel Spacing="12">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Thời Gian &amp; Đơn Vị Đo Lường" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="Tùy chỉnh định dạng giờ, múi giờ và các đơn vị thời tiết" FontSize="12" Opacity="0.7"/>
+                                </StackPanel>
+
+                                <!-- Múi giờ -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0ac;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Múi giờ đồng hồ" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Chọn múi giờ hiển thị trên đồng hồ thời tiết" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ComboBox Grid.Column="2" x:Name="TimezoneComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="TimezoneComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="🌐 Tự động (Hệ thống)" Tag="Auto"/>
+                                            <ComboBoxItem Content="🇻🇳 GMT+7 (Việt Nam, BKK)" Tag="GMT+7"/>
+                                            <ComboBoxItem Content="🇸🇬 GMT+8 (Singapore)" Tag="GMT+8"/>
+                                            <ComboBoxItem Content="🇯🇵 GMT+9 (Tokyo, Seoul)" Tag="GMT+9"/>
+                                            <ComboBoxItem Content="🇬🇧 GMT+0 (London, UTC)" Tag="GMT+0"/>
+                                            <ComboBoxItem Content="🇺🇸 GMT-5 (New York)" Tag="GMT-5"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Định dạng giờ -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf017;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Định dạng giờ" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Hiển thị theo chuẩn 24 giờ hoặc 12 giờ AM/PM" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="2" x:Name="HourFormatToggle" OnContent="24 Giờ" OffContent="12 Giờ" IsOn="{x:Bind ViewModel.Settings.Is24HourFormat, Mode=TwoWay}" Toggled="HourFormatToggle_Toggled" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Định dạng ngày -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Định dạng ngày tháng" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Kiểu hiển thị ngày tháng trên màn hình" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ComboBox Grid.Column="2" x:Name="DateFormatComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="DateFormatComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="dd/MM/yyyy (30/09/2026)" Tag="dd/MM/yyyy"/>
+                                            <ComboBoxItem Content="MM/dd/yyyy (09/30/2026)" Tag="MM/dd/yyyy"/>
+                                            <ComboBoxItem Content="yyyy-MM-dd (2026-09-30)" Tag="yyyy-MM-dd"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Ngày bắt đầu của tuần (First Day of Week) v1.8 -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" FontSize="15" Foreground="{ThemeResource AccentFillColorDefaultBrush}" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Ngày bắt đầu tuần" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Chọn ngày đầu tiên hiển thị trên Lịch tháng" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ComboBox Grid.Column="2" x:Name="FirstDayOfWeekComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="FirstDayOfWeekComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="📅 Thứ Hai (Mặc định)" Tag="Monday"/>
+                                            <ComboBoxItem Content="📅 Chủ Nhật (Quốc tế)" Tag="Sunday"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Đơn vị nhiệt độ -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2c9;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Đơn vị nhiệt độ" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Hiển thị độ Celsius (°C) hoặc Fahrenheit (°F)" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ComboBox Grid.Column="2" x:Name="TempUnitComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="TempUnitComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="Độ C (°C)" Tag="C"/>
+                                            <ComboBoxItem Content="Độ F (°F)" Tag="F"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Đơn vị gió & áp suất -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Đơn vị tốc độ gió" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="km/h, m/s hoặc mph" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ComboBox Grid.Column="2" x:Name="WindUnitComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="WindUnitComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="km/h" Tag="kmh"/>
+                                            <ComboBoxItem Content="m/s" Tag="ms"/>
+                                            <ComboBoxItem Content="mph" Tag="mph"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Đơn vị áp suất -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e4;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Đơn vị áp suất khí quyển" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="hPa hoặc mmHg" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ComboBox Grid.Column="2" x:Name="PressureUnitComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="PressureUnitComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="hPa (chuẩn)" Tag="hPa"/>
+                                            <ComboBoxItem Content="mmHg (thủy ngân)" Tag="mmHg"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Đơn vị lượng mưa -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Đơn vị lượng mưa" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Milimét (mm) hoặc Inch (in)" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ComboBox Grid.Column="2" x:Name="PrecipUnitComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="PrecipUnitComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="mm (milimét)" Tag="mm"/>
+                                            <ComboBoxItem Content="inch" Tag="inch"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- PANEL 2: HÌNH NỀN THÀNH PHỐ -->
+                        <ScrollViewer x:Name="PanelCityBg" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                            <StackPanel Spacing="14">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Hình Nền Thành Phố (City Picture)" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="Hiện ảnh nền mờ nghệ thuật phía sau thẻ thời tiết hiện tại" FontSize="12" Opacity="0.7"/>
+                                </StackPanel>
+
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,12">
+                                    <StackPanel Spacing="12">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                            <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf03e;" FontSize="16" Foreground="#EC4899" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Hình nền mờ theo địa điểm" FontWeight="SemiBold" FontSize="13"/>
+                                                <TextBlock Text="Tự động áp dụng ảnh thành phố tương ứng với vị trí đang xem" FontSize="11" Opacity="0.7"/>
+                                            </StackPanel>
+                                            <ToggleSwitch Grid.Column="2" x:Name="CityBgToggle" Toggled="CityBgToggle_Toggled" VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" x:Name="CityBgControlsPanel">
+                                            <ComboBox x:Name="CityImageModeComboBox" SelectionChanged="CityImageModeComboBox_SelectionChanged" HorizontalAlignment="Stretch">
+                                                <ComboBoxItem Content="🌐 Tự động theo địa điểm thời tiết" Tag="Auto"/>
+                                                <ComboBoxItem Content="🌆 Chọn trong danh sách ảnh mẫu" Tag="Preset"/>
+                                                <ComboBoxItem Content="📁 Tự chọn hình ảnh từ máy tính..." Tag="Custom"/>
+                                            </ComboBox>
+                                            <ComboBox Grid.Column="1" x:Name="PresetCityImageComboBox" Width="180" SelectionChanged="PresetCityImageComboBox_SelectionChanged" Visibility="Collapsed"/>
+                                            <Button Grid.Column="1" x:Name="BrowseCustomImageButton" Content="Chọn ảnh..." Click="BrowseCustomImageButton_Click" Visibility="Collapsed"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- PANEL 3: WIDGET DESKTOP -->
+                        <ScrollViewer x:Name="PanelWidget" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                            <StackPanel Spacing="14">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Widget Mini Desktop" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="Tùy chỉnh tiện ích thời tiết mini nổi trên màn hình Desktop" FontSize="12" Opacity="0.7"/>
+                                </StackPanel>
+
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,12">
+                                    <StackPanel Spacing="14">
+                                        <!-- Kiểu dáng Widget -->
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                            <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" FontSize="16" Foreground="#A855F7" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Kiểu dáng Widget" FontWeight="SemiBold" FontSize="13"/>
+                                                <TextBlock Text="Glass Card đầy đủ hoặc Compact Bar thanh gọn" FontSize="11" Opacity="0.7"/>
+                                            </StackPanel>
+                                            <ComboBox Grid.Column="2" x:Name="WidgetStyleComboBox" Width="180" SelectionChanged="WidgetStyleComboBox_SelectionChanged">
+                                                <ComboBoxItem Content="✨ Dribbble Dynamic (Đổi màu)" Tag="BryanCDynamic"/>
+                                                <ComboBoxItem Content="🪟 Glass Card (Đầy đủ)" Tag="GlassCard"/>
+                                                <ComboBoxItem Content="➖ Compact Bar (Gọn)" Tag="Compact"/>
+                                                <ComboBoxItem Content="💊 Mini Island (Viên thuốc)" Tag="MiniIsland"/>
+                                            </ComboBox>
+                                        </Grid>
+
+                                        <!-- Độ mờ đục Widget -->
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                            <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf042;" FontSize="16" Foreground="#A855F7" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Độ trong suốt Widget (Opacity)" FontWeight="SemiBold" FontSize="13"/>
+                                                <TextBlock Text="Tự động sáng rõ 100% khi rê chuột vào" FontSize="11" Opacity="0.7"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                <Slider x:Name="WidgetOpacitySlider" Minimum="20" Maximum="100" Value="100" StepFrequency="5" Width="120" ValueChanged="WidgetOpacitySlider_ValueChanged"/>
+                                                <TextBlock x:Name="WidgetOpacityValueText" Text="100%" Width="42" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- PANEL 4: THÔNG BÁO & KHAY HỆ THỐNG -->
+                        <ScrollViewer x:Name="PanelNotifications" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                            <StackPanel Spacing="14">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Thông Báo &amp; Khay Hệ Thống" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="Quản lý thông báo Windows Toast và hành vi khay Taskbar" FontSize="12" Opacity="0.7"/>
+                                </StackPanel>
+
+                                <!-- Thông báo Toast -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,12">
+                                    <StackPanel Spacing="10">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                            <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0f3;" FontSize="16" Foreground="#EF4444" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Cảnh báo Windows Toast" FontWeight="SemiBold" FontSize="13"/>
+                                                <TextBlock Text="Gửi cảnh báo mưa, nắng gắt và tóm tắt đầu ngày" FontSize="11" Opacity="0.7"/>
+                                            </StackPanel>
+                                            <ToggleSwitch Grid.Column="2" x:Name="ToastNotificationToggle" Toggled="ToastNotificationToggle_Toggled" VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <StackPanel x:Name="ToastOptionsPanel" Spacing="6" Margin="28,0,0,0">
+                                            <CheckBox x:Name="RainAlarmCheckBox" Content="🌧️ Cảnh báo mưa sắp đến trong 20-30 phút tới" Click="ToastOptionCheckBox_Click"/>
+                                            <CheckBox x:Name="UvAlertCheckBox" Content="🔥 Cảnh báo tia cực tím UV rất cao buổi trưa (11h-14h)" Click="ToastOptionCheckBox_Click"/>
+                                            <CheckBox x:Name="MorningBriefingCheckBox" Content="☀️ Tóm tắt dự báo đầu ngày (buổi sáng 07h00)" Click="ToastOptionCheckBox_Click"/>
+
+                                            <Button Command="{x:Bind ViewModel.TestToastNotificationCommand}" Style="{ThemeResource AccentButtonStyle}" Padding="12,6" CornerRadius="8" Margin="0,6,0,0">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0f3;" FontSize="11"/>
+                                                    <TextBlock Text="Thử gửi thông báo kiểm tra ngay" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Cảnh báo Thời tiết Lịch trình Đi làm / Đi học / Tan ca (Commute Weather Alerts v2.0) -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,12">
+                                    <StackPanel Spacing="10">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                            <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf1b9;" FontSize="16" Foreground="#38BDF8" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Nhắc nhở thời tiết Đi làm &amp; Tan ca" FontWeight="SemiBold" FontSize="13"/>
+                                                <TextBlock Text="Báo trước thời tiết (mưa, nắng, gió) trước giờ xuất phát để kịp chuẩn bị áo mưa, ô che" FontSize="11" Opacity="0.7"/>
+                                            </StackPanel>
+                                            <ToggleSwitch Grid.Column="2" x:Name="CommuteAlertToggle" Toggled="CommuteAlertToggle_Toggled" VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <StackPanel x:Name="CommuteOptionsPanel" Spacing="8" Margin="28,0,0,0">
+                                            <!-- Giờ đi sáng & Giờ tan ca chiều -->
+                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                                <StackPanel Grid.Column="0" Spacing="4">
+                                                    <TextBlock Text="Giờ đi làm / đi học sáng:" FontSize="11" FontWeight="SemiBold"/>
+                                                    <TimePicker x:Name="MorningCommuteTimePicker" ClockIdentifier="24HourClock" SelectedTimeChanged="CommuteTime_Changed"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Spacing="4">
+                                                    <TextBlock Text="Giờ tan ca buổi chiều:" FontSize="11" FontWeight="SemiBold"/>
+                                                    <TimePicker x:Name="EveningCommuteTimePicker" ClockIdentifier="24HourClock" SelectedTimeChanged="CommuteTime_Changed"/>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Thời gian báo trước -->
+                                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
+                                                <TextBlock Text="Thông báo trước:" FontSize="11" VerticalAlignment="Center"/>
+                                                <ComboBox Grid.Column="1" x:Name="CommuteLeadTimeComboBox" SelectionChanged="CommuteLeadTimeComboBox_SelectionChanged" SelectedIndex="1" HorizontalAlignment="Stretch" FontSize="11.5">
+                                                    <ComboBoxItem Content="Trước 15 phút" Tag="15"/>
+                                                    <ComboBoxItem Content="Trước 30 phút (Khuyên dùng)" Tag="30"/>
+                                                    <ComboBoxItem Content="Trước 45 phút" Tag="45"/>
+                                                    <ComboBoxItem Content="Trước 1 tiếng" Tag="60"/>
+                                                </ComboBox>
+                                            </Grid>
+
+                                            <!-- Các ngày trong tuần -->
+                                            <TextBlock Text="Áp dụng vào các ngày:" FontSize="11" Opacity="0.8" Margin="0,2,0,0"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <CheckBox x:Name="CommuteMonCheck" Content="T2" IsChecked="True" Click="CommuteDays_Click"/>
+                                                <CheckBox x:Name="CommuteTueCheck" Content="T3" IsChecked="True" Click="CommuteDays_Click"/>
+                                                <CheckBox x:Name="CommuteWedCheck" Content="T4" IsChecked="True" Click="CommuteDays_Click"/>
+                                                <CheckBox x:Name="CommuteThuCheck" Content="T5" IsChecked="True" Click="CommuteDays_Click"/>
+                                                <CheckBox x:Name="CommuteFriCheck" Content="T6" IsChecked="True" Click="CommuteDays_Click"/>
+                                                <CheckBox x:Name="CommuteSatCheck" Content="T7" IsChecked="False" Click="CommuteDays_Click"/>
+                                                <CheckBox x:Name="CommuteSunCheck" Content="CN" IsChecked="False" Click="CommuteDays_Click"/>
+                                            </StackPanel>
+
+                                            <Button Click="TestCommuteAlertButton_Click" Style="{ThemeResource AccentButtonStyle}" Padding="12,6" CornerRadius="8" Margin="0,4,0,0">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf1b9;" FontSize="11"/>
+                                                    <TextBlock Text="🔔 Thử gửi thông báo lịch trình ngay" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Khay hệ thống -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,12">
+                                    <StackPanel Spacing="10">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                            <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d2;" FontSize="16" Foreground="#EF4444" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Thu nhỏ xuống khay hệ thống" FontWeight="SemiBold" FontSize="13"/>
+                                                <TextBlock Text="Ẩn cửa sổ vào khay taskbar khi bấm nút thu nhỏ" FontSize="11" Opacity="0.7"/>
+                                            </StackPanel>
+                                            <ToggleSwitch Grid.Column="2" x:Name="MinimizeToTrayToggle" Toggled="MinimizeToTrayToggle_Toggled" VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                            <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00d;" FontSize="16" Foreground="#EF4444" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Đóng ứng dụng về khay hệ thống" FontWeight="SemiBold" FontSize="13"/>
+                                                <TextBlock Text="Bấm nút X sẽ ẩn app về khay thay vì thoát hẳn" FontSize="11" Opacity="0.7"/>
+                                            </StackPanel>
+                                            <ToggleSwitch Grid.Column="2" x:Name="CloseToTrayToggle" Toggled="CloseToTrayToggle_Toggled" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- PANEL 5: HIỆU NĂNG & KHỞI ĐỘNG -->
+                        <ScrollViewer x:Name="PanelPerformance" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                            <StackPanel Spacing="12">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Hiệu Năng &amp; Khởi Động" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="Tối ưu tài nguyên hệ thống, mức RAM và tần suất làm mới" FontSize="12" Opacity="0.7"/>
+                                </StackPanel>
+
+                                <!-- Khởi động cùng Windows -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf011;" FontSize="15" Foreground="#10B981" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Khởi động cùng Windows" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Tự động mở ứng dụng thời tiết khi bật máy tính" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="2" x:Name="StartupToggle" IsOn="{x:Bind ViewModel.Settings.LaunchAtStartup, Mode=TwoWay}" Toggled="StartupToggle_Toggled" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Chủ đề -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf186;" FontSize="15" Foreground="#10B981" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Chủ đề hiển thị" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Sáng, Tối hoặc Tự động theo Windows" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ComboBox Grid.Column="2" x:Name="SettingsThemeComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="SettingsThemeComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="💻 Theo hệ thống" Tag="system"/>
+                                            <ComboBoxItem Content="☀️ Chế độ Sáng" Tag="light"/>
+                                            <ComboBoxItem Content="🌙 Chế độ Tối" Tag="dark"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Tần suất làm mới -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="15" Foreground="#10B981" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Tự động cập nhật thời tiết" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Khoảng thời gian tự động đồng bộ thời tiết mới" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ComboBox Grid.Column="2" x:Name="RefreshIntervalComboBox" SelectedIndex="1" Width="180" VerticalAlignment="Center" SelectionChanged="RefreshIntervalComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="15 phút" Tag="15"/>
+                                            <ComboBoxItem Content="30 phút (Khuyên dùng)" Tag="30"/>
+                                            <ComboBoxItem Content="1 giờ" Tag="60"/>
+                                            <ComboBoxItem Content="2 giờ" Tag="120"/>
+                                            <ComboBoxItem Content="Chỉ làm mới thủ công" Tag="0"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Bật/tắt hiệu ứng động -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e7;" FontSize="15" Foreground="#10B981" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Hiệu ứng khí quyển động" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Mưa rơi, sấm sét, vầng nắng (Tắt để tiết kiệm pin/RAM)" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="2" x:Name="EffectsToggle" IsOn="{x:Bind ViewModel.Settings.EnableWeatherEffects, Mode=TwoWay}" Toggled="EffectsToggle_Toggled" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Mức RAM tiêu thụ -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2db;" FontSize="15" Foreground="#10B981" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Mức chiếm dụng RAM hiện tại" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Đã tối ưu Native Engine, không chạy WebView2 Chrome nền" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Background="#2010B981" CornerRadius="8" Padding="10,4" VerticalAlignment="Center">
+                                            <TextBlock Text="{x:Bind ViewModel.RamUsageDisplay, Mode=OneWay}" FontSize="12" FontWeight="Bold" Foreground="#10B981"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- PANEL 6: GIỚI THIỆU & CHANGELOG -->
+                        <ScrollViewer x:Name="PanelAbout" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                            <StackPanel Spacing="14">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Giới Thiệu &amp; Nhật Ký Phiên Bản" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="Thông tin phiên bản, bản quyền và nhật ký thay đổi" FontSize="12" Opacity="0.7"/>
+                                </StackPanel>
+
+                                <!-- Card Thông tin phiên bản -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="16,14">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <Border Grid.Column="0" Width="48" Height="48" CornerRadius="12" Margin="0,0,14,0">
+                                            <Image Source="ms-appx:///Assets/Square44x44Logo.scale-200.png" Width="48" Height="48" Stretch="Uniform"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="Weather WinUI" FontSize="16" FontWeight="Bold"/>
+                                                <Border Background="#6366F1" CornerRadius="6" Padding="6,1">
+                                                    <TextBlock Text="v2.0.0" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock Text="Ứng dụng thời tiết hiện đại, siêu nhẹ, tương thích hoàn hảo Windows 10 &amp; 11" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Nút mở Nhật ký phiên bản (Changelog) -->
+                                <Button x:Name="OpenChangelogFromSettingsButton"
+                                        Click="OpenChangelogFromSettingsButton_Click"
+                                        Style="{ThemeResource AccentButtonStyle}"
+                                        HorizontalAlignment="Stretch"
+                                        Padding="14,10"
+                                        CornerRadius="8">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf02d;" FontSize="14"/>
+                                        <TextBlock Text="📜 Xem Nhật Ký Thay Đổi Các Phiên Bản (Changelog)" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Nút mở lại Onboarding -->
+                                <Button x:Name="ReopenOnboardingButton"
+                                        Click="ReopenOnboardingButton_Click"
+                                        HorizontalAlignment="Stretch"
+                                        Padding="14,10"
+                                        CornerRadius="8">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf05a;" FontSize="14" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                        <TextBlock Text="🚀 Mở lại trang hướng dẫn ban đầu (Onboarding)" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- PANEL 7: GIAO DIỆN & BỘ BIỂU TƯỢNG (ICON PACK) -->
+                        <ScrollViewer x:Name="PanelAppearance" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                            <StackPanel Spacing="16">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Giao Diện &amp; Biểu Tượng" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="Tùy biến bộ icon thời tiết trực quan và phong cách hiển thị của toàn bộ ứng dụng" FontSize="12" Opacity="0.7"/>
+                                </StackPanel>
+
+                                <!-- MỤC ĐẦU: BỘ BIỂU TƯỢNG THỜI TIẾT (ICON PACK) VỚI CÁC THẺ TRỰC QUAN -->
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="Bộ Biểu Tượng Thời Tiết (Icon Pack)" FontWeight="Bold" FontSize="14"/>
+                                    <TextBlock Text="Chọn bộ biểu tượng yêu thích để hiển thị trên màn hình chính, thanh dự báo và widget desktop:" FontSize="12" Opacity="0.75"/>
+
+                                    <!-- 1. THẺ METEOCONS ANIMATED (BAS MILIUS) -->
+                                    <Border x:Name="CardIconPackMeteocons"
+                                            Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                            BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                                            BorderThickness="2"
+                                            CornerRadius="12"
+                                            Padding="14,12"
+                                            PointerPressed="CardIconPackMeteocons_PointerPressed">
+                                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+                                            <!-- Dòng 1: Tiêu đề + Huy hiệu khuyên dùng + Checkmark -->
+                                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                    <TextBlock Text="Meteocons Animated" FontSize="14" FontWeight="Bold"/>
+                                                    <Border Background="#10B981" CornerRadius="4" Padding="6,2">
+                                                        <TextBlock Text="✨ ĐỘC QUYỀN &amp; SỐNG ĐỘNG" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                                    </Border>
+                                                </StackPanel>
+                                                <Border x:Name="BadgeSelectedMeteocons" Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="12" Padding="8,3" Visibility="Visible">
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00c;" FontSize="11" Foreground="White"/>
+                                                        <TextBlock Text="Đang dùng" FontSize="11" FontWeight="Bold" Foreground="White"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </Grid>
+
+                                            <!-- Dòng 2: Mô tả -->
+                                            <TextBlock Grid.Row="1" Text="Bộ icon vector thời tiết hoạt họa mượt mà, sắc nét đỉnh cao từ Bas Milius (GitHub basmilius/meteocons). Hiển thị sống động mọi sắc thái nắng mưa." FontSize="11.5" Opacity="0.75" TextWrapping="Wrap"/>
+
+                                            <!-- Dòng 3: Dải hình ảnh xem trước (Preview Icons) -->
+                                            <Border Grid.Row="2" Background="#14000000" CornerRadius="8" Padding="12,8">
+                                                <Grid ColumnDefinitions="*,*,*,*" HorizontalAlignment="Stretch">
+                                                    <StackPanel Grid.Column="0" HorizontalAlignment="Center" Spacing="3">
+                                                        <Image Source="ms-appx:///Assets/Meteocons/clear-day.svg" Width="38" Height="38" Stretch="Uniform"/>
+                                                        <TextBlock Text="Nắng" FontSize="10" Opacity="0.7" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="1" HorizontalAlignment="Center" Spacing="3">
+                                                        <Image Source="ms-appx:///Assets/Meteocons/partly-cloudy-day.svg" Width="38" Height="38" Stretch="Uniform"/>
+                                                        <TextBlock Text="Nắng mây" FontSize="10" Opacity="0.7" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="2" HorizontalAlignment="Center" Spacing="3">
+                                                        <Image Source="ms-appx:///Assets/Meteocons/partly-cloudy-day-rain.svg" Width="38" Height="38" Stretch="Uniform"/>
+                                                        <TextBlock Text="Mưa rào" FontSize="10" Opacity="0.7" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="3" HorizontalAlignment="Center" Spacing="3">
+                                                        <Image Source="ms-appx:///Assets/Meteocons/thunderstorms-day-rain.svg" Width="38" Height="38" Stretch="Uniform"/>
+                                                        <TextBlock Text="Dông bão" FontSize="10" Opacity="0.7" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- 2. THẺ FLUENT WEATHER 3D -->
+                                    <Border x:Name="CardIconPackFluent3D"
+                                            Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="12"
+                                            Padding="14,12"
+                                            PointerPressed="CardIconPackFluent3D_PointerPressed">
+                                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+                                            <!-- Dòng 1: Tiêu đề + Huy hiệu + Checkmark -->
+                                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                    <TextBlock Text="Fluent Weather 3D" FontSize="14" FontWeight="Bold"/>
+                                                    <Border Background="#6366F1" CornerRadius="4" Padding="6,2">
+                                                        <TextBlock Text="🎨 3D HIỆN ĐẠI" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                                    </Border>
+                                                </StackPanel>
+                                                <Border x:Name="BadgeSelectedFluent3D" Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="12" Padding="8,3" Visibility="Collapsed">
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00c;" FontSize="11" Foreground="White"/>
+                                                        <TextBlock Text="Đang dùng" FontSize="11" FontWeight="Bold" Foreground="White"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </Grid>
+
+                                            <!-- Dòng 2: Mô tả -->
+                                            <TextBlock Grid.Row="1" Text="Bộ icon 3D sắc màu phong phú với chiều sâu bóng đổ, mang lại cảm giác hiện đại và trực quan." FontSize="11.5" Opacity="0.75" TextWrapping="Wrap"/>
+
+                                            <!-- Dòng 3: Dải hình ảnh xem trước (Preview Icons) -->
+                                            <Border Grid.Row="2" Background="#14000000" CornerRadius="8" Padding="12,8">
+                                                <Grid ColumnDefinitions="*,*,*,*" HorizontalAlignment="Stretch">
+                                                    <StackPanel Grid.Column="0" HorizontalAlignment="Center" Spacing="3">
+                                                        <Image Source="ms-appx:///Assets/weather-icons-main/static/clear-day.svg" Width="38" Height="38" Stretch="Uniform"/>
+                                                        <TextBlock Text="Nắng" FontSize="10" Opacity="0.7" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="1" HorizontalAlignment="Center" Spacing="3">
+                                                        <Image Source="ms-appx:///Assets/weather-icons-main/static/cloudy-1-day.svg" Width="38" Height="38" Stretch="Uniform"/>
+                                                        <TextBlock Text="Ít mây" FontSize="10" Opacity="0.7" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="2" HorizontalAlignment="Center" Spacing="3">
+                                                        <Image Source="ms-appx:///Assets/weather-icons-main/static/rainy-2-day.svg" Width="38" Height="38" Stretch="Uniform"/>
+                                                        <TextBlock Text="Mưa vừa" FontSize="10" Opacity="0.7" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="3" HorizontalAlignment="Center" Spacing="3">
+                                                        <Image Source="ms-appx:///Assets/weather-icons-main/static/isolated-thunderstorms-day.svg" Width="38" Height="38" Stretch="Uniform"/>
+                                                        <TextBlock Text="Sấm sét" FontSize="10" Opacity="0.7" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- 3. THẺ FONTAWESOME MINIMALIST -->
+                                    <Border x:Name="CardIconPackFontAwesome"
+                                            Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="12"
+                                            Padding="14,12"
+                                            PointerPressed="CardIconPackFontAwesome_PointerPressed">
+                                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+                                            <!-- Dòng 1: Tiêu đề + Huy hiệu + Checkmark -->
+                                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                    <TextBlock Text="FontAwesome Minimalist" FontSize="14" FontWeight="Bold"/>
+                                                    <Border Background="#64748B" CornerRadius="4" Padding="6,2">
+                                                        <TextBlock Text="⚡ TỐI GIẢN" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                                    </Border>
+                                                </StackPanel>
+                                                <Border x:Name="BadgeSelectedFontAwesome" Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="12" Padding="8,3" Visibility="Collapsed">
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00c;" FontSize="11" Foreground="White"/>
+                                                        <TextBlock Text="Đang dùng" FontSize="11" FontWeight="Bold" Foreground="White"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </Grid>
+
+                                            <!-- Dòng 2: Mô tả -->
+                                            <TextBlock Grid.Row="1" Text="Biểu tượng glyph phẳng tối giản, tải cực nhanh, tương thích 100% mọi độ phân giải màn hình." FontSize="11.5" Opacity="0.75" TextWrapping="Wrap"/>
+
+                                            <!-- Dòng 3: Dải hình ảnh xem trước (Preview Glyphs) -->
+                                            <Border Grid.Row="2" Background="#14000000" CornerRadius="8" Padding="12,8">
+                                                <Grid ColumnDefinitions="*,*,*,*" HorizontalAlignment="Stretch">
+                                                    <StackPanel Grid.Column="0" HorizontalAlignment="Center" Spacing="5">
+                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="28" Foreground="#F59E0B"/>
+                                                        <TextBlock Text="Nắng" FontSize="10" Opacity="0.7" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="1" HorizontalAlignment="Center" Spacing="5">
+                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6c4;" FontSize="28" Foreground="#38BDF8"/>
+                                                        <TextBlock Text="Ít mây" FontSize="10" Opacity="0.7" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="2" HorizontalAlignment="Center" Spacing="5">
+                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" FontSize="28" Foreground="#60A5FA"/>
+                                                        <TextBlock Text="Mưa rào" FontSize="10" Opacity="0.7" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="3" HorizontalAlignment="Center" Spacing="5">
+                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf76c;" FontSize="28" Foreground="#EF4444"/>
+                                                        <TextBlock Text="Sấm chớp" FontSize="10" Opacity="0.7" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- MỤC 2: CHỦ ĐỀ MÀU SẮC -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf186;" FontSize="15" Foreground="#F43F5E" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Chủ đề hiển thị ứng dụng" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Chế độ màu Sáng, Tối hoặc Tự động thích ứng Windows" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ComboBox Grid.Column="2" x:Name="AppearanceThemeComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="AppearanceThemeComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="💻 Theo hệ thống" Tag="system"/>
+                                            <ComboBoxItem Content="☀️ Chế độ Sáng" Tag="light"/>
+                                            <ComboBoxItem Content="🌙 Chế độ Tối" Tag="dark"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </Border>
+
+                                <!-- MỤC 3: HIỆU ỨNG KHÍ QUYỂN ĐỘNG -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e7;" FontSize="15" Foreground="#F43F5E" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Hiệu ứng hoạt họa khí quyển" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Mưa rơi, sấm sét, vầng nắng (Tắt để tiết kiệm pin/RAM)" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="2" x:Name="AppearanceEffectsToggle" IsOn="{x:Bind ViewModel.Settings.EnableWeatherEffects, Mode=TwoWay}" Toggled="EffectsToggle_Toggled" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+                        </Border>
+                    </StackPanel>
+    </ScrollViewer>
+</UserControl>

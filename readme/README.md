@@ -1,7 +1,7 @@
-# 🌤️ Weather WinUI (Version 3.0.1 Beta)
+# 🌤️ Weather WinUI (Version 3.0.2 Beta)
 ### Hệ Điều Hành Vi Khí Hậu Cá Nhân Hóa & Trực Quan Hóa Đô Thị Dành Cho Windows
 > **Nền tảng:** Windows App SDK (WinUI 3) • .NET 8 • C# 12 • Fluent Design System 2.0  
-> **Nhánh phát triển:** `v3.0-beta` | **Phiên bản hiện tại:** `v3.0.1-beta`  
+> **Nhánh phát triển:** `v3.0-beta` | **Phiên bản hiện tại:** `v3.0.2-beta`  
 > **Bản phát hành ổn định song song:** `v2.2.3` (nhánh `main`)
 
 ---
@@ -9,7 +9,7 @@
 ## 📑 Mục Lục
 1. [Giới Thiệu Tổng Quan & Tầm Nhìn Dự Án](#-1-giới-thiệu-tổng-quan--tầm-nhìn-dự-án)
 2. [Ngăn Xếp Công Nghệ (Tech Stack) & Kiến Trúc Phần Mềm](#-2-ngăn-xếp-công-nghệ-tech-stack--kiến-trúc-phần-mềm)
-3. [Đại Tu Giao Diện & Tính Năng Nổi Bật Trên Bản Beta 3.0.1](#-3-đại-tu-giao-diện--tính-năng-nổi-bật-trên-bản-beta-301)
+3. [Đại Tu Kiến Trúc & Tính Năng Nổi Bật Trên Bản Beta 3.0.2](#-3-đại-tu-kiến-trúc--tính-năng-nổi-bật-trên-bản-beta-302)
 4. [Khám Phá Chi Tiết 7 Phân Hệ Chính (7 Core Modules)](#-4-khám-phá-chi-tiết-7-phân-hệ-chính-7-core-modules)
    - [Tab 1: Tổng Quan Vi Khí Hậu & 24h Interactive Scrubber](#tab-1-tổng-quan-vi-khí-hậu--24h-interactive-scrubber)
    - [Tab 2: Cảnh Báo Ngập Úng & Triều Cường Đô Thị (Urban Flood Hub)](#tab-2-cảnh-báo-ngập-úng--triều-cường-đô-thị-urban-flood-hub)
@@ -19,7 +19,7 @@
    - [Tab 6: Widget Studio Showcase & Ghim Desktop Đa Dạng](#tab-6-widget-studio-showcase--ghim-desktop-đa-dạng)
    - [Tab 7: Trung Tâm Cài Đặt & Cá Nhân Hóa Toàn Trang (Settings Hub)](#tab-7-trung-tâm-cài-đặt--cá-nhân-hóa-toàn-trang-settings-hub)
 5. [Hệ Thống Tiện Ích Độc Quyền (Exclusive Ecosystem)](#-5-hệ-thống-tiện-ích-độc-quyền-exclusive-ecosystem)
-6. [Biên Niên Sử Phát Triển Toàn Diện (Full Version History: v1.0.0 ➔ v3.0.1-beta)](#-6-biên-niên-sử-phát-triển-toàn-diện-full-version-history-v100--v301-beta)
+6. [Biên Niên Sử Phát Triển Toàn Diện (Full Version History: v1.0.0 ➔ v3.0.2-beta)](#-6-biên-niên-sử-phát-triển-toàn-diện-full-version-history-v100--v302-beta)
 7. [Hướng Dẫn Cài Đặt, Build & Khởi Chạy](#-7-hướng-dẫn-cài-đặt-build--khởi-chạy)
 
 ---
@@ -66,18 +66,34 @@ graph TD
 
 ---
 
-## 🚀 3. Đại Tu Giao Diện & Tính Năng Nổi Bật Trên Bản Beta 3.0.1
+## 🚀 3. Đại Tu Kiến Trúc & Tính Năng Nổi Bật Trên Bản Beta 3.0.2
 
-Phiên bản **Version 3.0.1 Beta** là bước chuyển mình toàn diện về mặt UI/UX với 8 cải tiến trọng tâm:
+Phiên bản **Version 3.0.2 Beta** đánh dấu bước tiến mang tính bước ngoặt về kiến trúc phần mềm, hiệu năng khởi động và khả năng tương thích toàn diện:
 
-1. **Fluent NavigationView Shell 7 Phân Hệ Chuyên Biệt**: Loại bỏ thanh cuộn dọc đơn điệu dài hàng ngàn dòng, chia tách ứng dụng thành 7 tab điều hướng chuyên sâu, có thể mở rộng hoặc thu gọn Sidebar linh hoạt.
-2. **Khắc Phục 100% Lỗi Hiển Thị 24h & 7 Ngày**: Tích hợp icon vector dự phòng FontAwesome kết hợp phân tích chuỗi thời gian `CultureInfo.InvariantCulture`, đảm bảo mốc thời gian và biểu tượng thời tiết không bao giờ bị trắng hay mất icon.
-3. **Thanh Tua Nhanh Thời Gian (Interactive 24h Time-Scrubber)**: Cho phép kéo trượt qua các mốc giờ trong ngày để xem trước nhiệt độ, xác suất mưa và chiêm ngưỡng sự chuyển đổi màu sắc bầu trời thời gian thực.
-4. **Bản Đồ Radar Doppler Khí Tượng 360° Realtime**: Canvas quét Doppler 360 độ chân thực với 4 vòng cự ly (50km - 200km), 8 hướng la bàn, các khối mây phản hồi đa tầng màu (dBZ) và dải quạt vệt sáng phosphor trail 12 lát cắt xoay mượt mà.
-5. **Khung Chi Tiết Lịch Trực Tiếp (Inline Day Details)**: Xóa bỏ hoàn toàn modal popup gây che khuất tầm nhìn, chuyển sang khung thông tin 2 cột thông minh nằm ngay dưới lưới lịch vạn niên.
-6. **Cải Thiện Độ Tương Phản Cho Trợ Lý Trang Phục (OOTD Advisor)**: Hiển thị chữ và các nút chọn dịp (*Công sở*, *Đi học*, *Dạo phố*) với độ tương phản cao, sắc nét trên cả nền sáng (Light Theme) lẫn tối (Dark Theme).
-7. **Widget Studio Đa Dạng & Đồng Bộ Tuyệt Đối**: Cung cấp 4 mẫu widget thời trang (*BryanC Dynamic*, *Glass Card*, *Compact Bar*, *Mini Island*), chọn mẫu nào ghim ra Desktop đúng chuẩn mẫu đó, ghi nhớ độ mờ (Opacity) bền vững.
-8. **Trung Tâm Cài Đặt 2 Cột Toàn Trang**: Thay thế hộp thoại chật hẹp cũ bằng giao diện cài đặt Win11 toàn màn hình, 8 danh mục rõ ràng, tự động cuộn về đầu trang và có nút lưu cấu hình tức thì.
+### 🌟 Ba Nâng Cấp Cốt Lõi Trên Beta 3.0.2:
+1. **Kiến Trúc Module Hóa Toàn Diện (Phương Án B: Modular UserControls + Lazy Loading)**:
+   - **Xóa bỏ mã nguồn nguyên khối (Monolithic XAML)**: Tách toàn bộ 7 phân hệ giao diện từ `MainPage.xaml` thành 7 `UserControl` độc lập đặt gọn gàng trong thư mục `Views/Tabs/` (`OverviewTab`, `UrbanFloodTab`, `RadarTab`, `LifestyleTab`, `CalendarTab`, `WidgetStudioTab`, `SettingsTab`).
+   - **Tối ưu thời gian khởi động (Cold Start) với `x:DeferLoadStrategy="Lazy"`**: Chỉ Tab 1 (Tổng quan) được biên dịch và khởi tạo ngay khi mở ứng dụng. Các Tab từ 2 đến 7 được hoãn tải và chỉ nạp vào bộ nhớ theo nhu cầu (`FindName`) khi người dùng bấm chuyển tab.
+   - **Giảm 63% kích thước file MainPage**: Cắt giảm từ **4.648 dòng** xuống chỉ còn **1.744 dòng**, giúp bộ biên dịch `XamlCompiler` hoạt động tức thì, code sạch sẽ và cực kỳ dễ dàng mở rộng thêm các tab tính năng mới trong tương lai.
+   - **Tiết kiệm tài nguyên & Pin laptop**: Các tác vụ ngầm như vòng quét Radar Doppler 360° và hạt vi khí quyển chỉ chạy khi người dùng đang xem tab tương ứng, tự động tạm dừng khi rời tab giúp CPU luôn ở mức **0% khi nhàn rỗi**.
+
+2. **Tối Ưu Thị Giác Thích Ứng Toàn Diện Cho Cả Windows 10 & Windows 11**:
+   - **Nhận diện OS Build thông minh tại Runtime**: Kiểm tra tự động phiên bản hệ điều hành (`Environment.OSVersion.Version.Build >= 22000`).
+   - **Windows 11 (Build 22000+)**: Tận dụng chất liệu `MicaBackdrop` (Mica Alt) cao cấp với hiệu ứng khúc xạ chiều sâu Fluent Design 2.0.
+   - **Windows 10 (Build 17763 - 19045)**: Tự động fallback sang `DesktopAcrylicBackdrop` được gia cố lớp đệm màu Slate Dark chuyên sâu (`#0F172A`). Nhờ đó, các thẻ giao diện Glassmorphism trên Windows 10 luôn giữ được viền sắc nét, độ tương phản hoàn hảo và triệt tiêu 100% hiện tượng chói mắt hoặc xuyên thấu lộ hình nền desktop.
+
+3. **Cơ Chế Nạp Font Đa Tầng — Triệt Tiêu Lỗi Mất Biểu Tượng (Icon Fallback)**:
+   - **Đăng ký Font động tại Runtime**: `App.xaml.cs` tự động gọi hàm Win32 `AddFontResourceEx` nạp trực tiếp file `Assets/Fonts/fa-solid-900.ttf` ngay khi tiến trình khởi chạy, xử lý lỗi trên các máy Windows bị kẹt Font Cache hoặc chưa cài font bên thứ ba.
+   - **Chuỗi Fallback FontFamily kiên cố trong XAML**: Khai báo chuỗi dự phòng đa cấp `ms-appx:///Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, ms-appx:///Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free, Font Awesome 6 Free Solid, Segoe Fluent Icons, Segoe MDL2 Assets`. Biểu tượng luôn hiển thị chuẩn xác, không bao giờ xuất hiện ô vuông lỗi chữ `[?]`.
+
+### 💎 Kế Thừa Trọn Vẹn Các Cải Tiến Từ Beta 3.0.1:
+4. **Fluent NavigationView Shell 7 Phân Hệ Chuyên Biệt**: Bố cục Sidebar hiện đại, co giãn linh hoạt chuẩn Fluent Design.
+5. **Thanh Tua Nhanh Thời Gian (Interactive 24h Time-Scrubber)**: Kéo trượt xem trước nhiệt độ, xác suất mưa và chuyển sắc bầu trời 24h.
+6. **Bản Đồ Radar Doppler Khí Tượng 360° Realtime**: Canvas Doppler 360 độ chân thực với 4 vòng cự ly, 12 lát cắt phosphor trail xoay mượt mà.
+7. **Khung Chi Tiết Lịch Trực Tiếp (Inline Day Details)**: Thay thế popup che khuất bằng khung thông tin 2 cột thông minh dưới lưới lịch vạn niên.
+8. **Trợ Lý Trang Phục (OOTD Advisor) Độ Tương Phản Cao**: Hiển thị sắc nét trên cả Light và Dark Theme.
+9. **Widget Studio Đa Dạng & Đồng Bộ Tuyệt Đối**: Ghim chuẩn xác cả 4 kiểu dáng widget ra Desktop và ghi nhớ độ mờ (Opacity).
+10. **Trung Tâm Cài Đặt 2 Cột Toàn Trang**: Giao diện cài đặt Win11 toàn màn hình với 8 danh mục chuyên sâu.
 
 ---
 
@@ -214,7 +230,7 @@ Phiên bản **Version 3.0.1 Beta** là bước chuyển mình toàn diện về
 
 ---
 
-## 📜 6. Biên Niên Sử Phát Triển Toàn Diện (Full Version History: v1.0.0 ➔ v3.0.1-beta)
+## 📜 6. Biên Niên Sử Phát Triển Toàn Diện (Full Version History: v1.0.0 ➔ v3.0.2-beta)
 
 ```mermaid
 timeline
@@ -237,6 +253,7 @@ timeline
             : v2.2.3 (Fix Lưu Cài Đặt & Cảnh Báo Ngập Triều Cường)
             : v3.0.0-beta (Đại tu giao diện Fluent Navigation Shell)
             : v3.0.1-beta (Radar 360, Inline Calendar, Widget Studio, OOTD High Contrast)
+            : v3.0.2-beta (Modular UserControl, Lazy Loading, Win10/11 Adaptive, Font Fallback)
 ```
 
 ### Bảng Chi Tiết Toàn Bộ Lịch Sử Phiên Bản:
@@ -260,15 +277,16 @@ timeline
 | **v2.2.2** | Bản trải nghiệm | Âm thanh & Quick Peek | Tích hợp hệ thống âm thanh môi trường Ambient Weather Sounds (mưa, sấm, gió, sóng biển, rừng thông), cửa sổ Quick Peek thumbnail nhanh tại khay hệ thống. |
 | **v2.2.3** | Bản dân sinh & Ổn định | Fix lưu cài đặt & Triều cường | **Fix lỗi chí mạng**: Xử lý triệt để lỗi không lưu cài đặt và lỗi Widget Opacity bị ép về 20% khi mở lại app; **Tính năng mới**: Cảnh báo ngập úng triều cường đô thị tại TP.HCM & Hà Nội (đồ thị sóng bán nhật triều 24h, đếm ngược đỉnh triều, danh sách tuyến đường ngập). |
 | **v3.0.0-beta** | Bản đại tu UI Beta | Khung NavigationView Shell | Đại tu toàn bộ giao diện thành bố cục Fluent NavigationView 7 tab chuyên biệt, xây dựng thanh tua thời gian 24h Time-Scrubber, thiết kế Widget Studio. |
-| **v3.0.1-beta** | **Bản Beta Hoàn Thiện** | **Chau chuốt toàn diện** | **Khắc phục lỗi font chữ UTF-8**, sửa lỗi hiển thị icon 24h và bảng 7 ngày, thiết kế Radar Doppler khí quyển 360° có vệt sáng phosphor trail, khung chi tiết Lịch trực tiếp (Inline Day Details) thay thế popup, tăng độ tương phản OOTD trên Light Mode, Widget Studio ghim chính xác cả 4 kiểu dáng và lưu độ mờ, Trung tâm cài đặt 2 cột Win11 toàn trang. |
+| **v3.0.1-beta** | Bản Beta Hoàn Thiện | Chau chuốt toàn diện | Khắc phục lỗi font chữ UTF-8, sửa lỗi hiển thị icon 24h và bảng 7 ngày, thiết kế Radar Doppler khí quyển 360° có vệt sáng phosphor trail, khung chi tiết Lịch trực tiếp (Inline Day Details) thay thế popup, tăng độ tương phản OOTD trên Light Mode, Widget Studio ghim chính xác cả 4 kiểu dáng và lưu độ mờ, Trung tâm cài đặt 2 cột Win11 toàn trang. |
+| **v3.0.2-beta** | **Bản Tối Ưu Kiến Trúc** | **Module Hóa & Tương Thích Win10/11** | **Phương Án B Modular UserControl**: Tách biệt 7 tab độc lập vào `Views/Tabs/`, áp dụng `x:DeferLoadStrategy="Lazy"` tải theo nhu cầu (on-demand via `FindName`), giảm 63% kích thước XAML MainPage (từ 4.648 dòng xuống 1.744 dòng), tiết kiệm RAM khởi động; **Tối ưu Windows 10 & 11**: Tự động nhận diện OS Build (MicaAlt trên Win11, Desktop Acrylic + Slate tint chống lóa trên Win10); **Sửa triệt để lỗi mất biểu tượng**: Cơ chế nạp FontAwesome đa tầng (`AddFontResourceEx` runtime fallback + Segoe Fluent Icons fallback). |
 
 ---
 
 ## 💻 7. Hướng Dẫn Cài Đặt, Build & Khởi Chạy
 
 ### A. Tải & Sử Dụng Bản Đóng Gói Sẵn (Portable / Setup)
-- **Bản Beta 3.0.1 Portable**:
-  - Tải file nén `Output/Beta/WeatherApp_Portable_v3.0.1-beta.zip` (~93 MB).
+- **Bản Beta 3.0.2 Portable**:
+  - Tải file nén `Output/Beta/WeatherApp_Portable_v3.0.2-beta.zip` (~97.4 MB).
   - Giải nén ra bất kỳ thư mục nào trên máy tính.
   - Chạy trực tiếp `WeatherApp.exe` (không cần cài đặt, không ghi rác vào Registry).
 - **Bản Ổn Định v2.2.3 (Nhánh `main`)**:
@@ -292,7 +310,7 @@ dotnet restore
 dotnet build -p:Platform=x64
 
 # 4. Xuất bản gói Release x64 Self-Contained (Bản Portable)
-dotnet publish -c Release -p:Platform=x64 -r win-x64 --self-contained true -o Output/Beta/WeatherApp_Portable_v3.0.1-beta
+dotnet publish -c Release -p:Platform=x64 -r win-x64 --self-contained true -o Output/Beta/WeatherApp_Portable_v3.0.2-beta
 ```
 
 ---
