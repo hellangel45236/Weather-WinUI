@@ -736,6 +736,7 @@ public sealed partial class MainPage : Page
     {
         var panels = new[]
         {
+            (ChangelogContent_v302, "3.0.2"),
             (ChangelogContent_v301, "3.0.1"),
             (ChangelogContent_v300, "3.0.0"),
             (ChangelogContent_v223, "2.2.3"),
@@ -767,6 +768,7 @@ public sealed partial class MainPage : Page
         {
             ChangelogHeaderTitle.Text = versionTag switch
             {
+                "3.0.2" => "Chi Tiết Bản Phát Hành Chính Thức v3.0.2",
                 "3.0.1" => "Chi Tiết Bản Phát Hành Chính Thức v3.0.1",
                 "3.0.0" => "Chi Tiết Bản Phát Hành Chính Thức v3.0.0",
                 "2.2.3" => "Chi Tiết Bản Cập Nhật v2.2.3",

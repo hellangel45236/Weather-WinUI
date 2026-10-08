@@ -243,21 +243,67 @@ public class WeatherService : IWeatherService
         }
         catch { }
 
-        // Câu tóm tắt thông minh đầu ngày (AI Weather Glance Summary)
+        // Câu tóm tắt thông minh đầu ngày (AI Weather Glance Summary - v3.0.2)
         try
         {
-            string userName = string.IsNullOrWhiteSpace(settings.UserName) ? "bạn" : settings.UserName;
-            string greeting = DateTime.Now.Hour switch
-            {
-                < 12 => $"Chào buổi sáng, {userName}!",
-                < 18 => $"Chào buổi chiều, {userName}!",
-                _ => $"Buổi tối an lành, {userName}!"
-            };
-            display.SmartSummaryText = $"{greeting} Hiện tại {display.TemperatureText.ToLowerInvariant()}, {display.ConditionText.ToLowerInvariant()}. {display.MinMaxText.ToLowerInvariant()}.";
+            display.SmartSummaryText = GenerateSmartSummaryText(display, data, settings);
         }
         catch { }
 
         return display;
+    }
+
+    private static string GenerateSmartSummaryText(CurrentWeatherDisplay display, OpenMeteoResponse data, AppSettings settings)
+    {
+        string userName = string.IsNullOrWhiteSpace(settings.UserName) ? "bạn" : settings.UserName;
+        int hour = DateTime.Now.Hour;
+        string greeting = hour switch
+        {
+            < 11 => $"Chào buổi sáng, {userName}!",
+            < 14 => $"Chào buổi trưa, {userName}!",
+            < 18 => $"Chào buổi chiều, {userName}!",
+            _ => $"Buổi tối an lành, {userName}!"
+        };
+
+        string tempInfo = $"Hiện tại {display.TemperatureText.ToLowerInvariant()}, {display.ConditionText.ToLowerInvariant()}. {display.MinMaxText}.";
+
+        int rainProb = 0;
+        if (data.Daily?.PrecipitationProbabilityMax?.Count > 0)
+        {
+            rainProb = data.Daily.PrecipitationProbabilityMax[0];
+        }
+
+        string advice;
+        if (display.WeatherEffect == WeatherEffectType.Thunderstorm)
+        {
+            advice = "Khu vực đang có dông sét mạnh, bạn nên hạn chế di chuyển ngoài trời và tìm chỗ trú an toàn.";
+        }
+        else if (rainProb >= 60 || display.WeatherEffect == WeatherEffectType.HeavyRain || display.WeatherEffect == WeatherEffectType.ModerateRain)
+        {
+            advice = $"Khả năng có mưa cao ({rainProb}%), đừng quên mang theo ô (dù) hoặc áo mưa khi ra ngoài.";
+        }
+        else if (rainProb >= 30 || display.WeatherEffect == WeatherEffectType.LightRain)
+        {
+            advice = $"Có thể có mưa rào rải rác ({rainProb}%), bạn nên chuẩn bị sẵn áo mưa tiện lợi.";
+        }
+        else if (double.TryParse(display.UvIndexText, NumberStyles.Any, CultureInfo.InvariantCulture, out double uv) && uv >= 6.0)
+        {
+            advice = $"Chỉ số tia cực tím UV ở mức cao ({uv:F1}), hãy bôi kem chống nắng và che chắn cẩn thận khi ra đường.";
+        }
+        else if (display.TemperatureValue >= 34.0)
+        {
+            advice = "Thời tiết khá oi bức, hãy nhớ bổ sung đủ nước và tránh hoạt động gắng sức dưới nắng.";
+        }
+        else if (display.TemperatureValue <= 17.0)
+        {
+            advice = "Thời tiết se lạnh, hãy nhớ mặc thêm áo khoác ấm để bảo vệ sức khỏe nhé.";
+        }
+        else
+        {
+            advice = "Thời tiết hôm nay rất dễ chịu và thuận lợi cho mọi hoạt động học tập, làm việc ngoài trời!";
+        }
+
+        return $"{greeting} {tempInfo} {advice}";
     }
 
     public List<HourlyForecastItem> CreateHourlyForecast(OpenMeteoResponse data, AppSettings? settings = null)

@@ -192,39 +192,71 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <!-- HÀNG 2: THANH THÔNG TIN THỜI GIAN, LỊCH ÂM & ĐỊNH DẠNG 12/24H (DÀN NGANG KÍNH MỜ THANH LỊCH) -->
-                                <Border Background="#20FFFFFF" BorderBrush="#25FFFFFF" BorderThickness="1" CornerRadius="10" Padding="12,6">
+                                <!-- HÀNG 2: THANH THÔNG TIN THỜI GIAN, LỊCH ÂM & ĐỊNH DẠNG 12/24H (PHÂN TÁCH KÍNH MỜ SANG TRỌNG) -->
+                                <Border Background="#200F172A" BorderBrush="#3038BDF8" BorderThickness="1" CornerRadius="12" Padding="12,7">
                                     <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                                         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf017;" Foreground="#38BDF8" FontSize="12" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentTimeDisplay, Mode=OneWay}" FontSize="14" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
-                                            <TextBlock Text="•" Foreground="White" Opacity="0.4" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentDateDisplay, Mode=OneWay}" FontSize="12" Foreground="White" Opacity="0.9" VerticalAlignment="Center"/>
-                                            <TextBlock Text="•" Foreground="White" Opacity="0.4" VerticalAlignment="Center"/>
-                                            <!-- Lịch Âm & Tiết Khí truyền thống Việt Nam -->
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.LunarDateText, Mode=OneWay}" FontSize="11.5" Foreground="#FEF08A" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                            <!-- Capsule Đồng hồ số phát sáng -->
+                                            <Border Background="#2A38BDF8" BorderBrush="#5038BDF8" BorderThickness="1" CornerRadius="8" Padding="8,3" VerticalAlignment="Center">
+                                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf017;" Foreground="#38BDF8" FontSize="11.5" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{x:Bind ViewModel.CurrentTimeDisplay, Mode=OneWay}" FontSize="13.5" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+
+                                            <!-- Ngày dương lịch -->
+                                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="2,0">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" Foreground="White" Opacity="0.75" FontSize="11" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentDateDisplay, Mode=OneWay}" FontSize="12.5" Foreground="White" Opacity="0.95" FontWeight="Medium" VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <TextBlock Text="•" Foreground="White" Opacity="0.35" VerticalAlignment="Center"/>
+
+                                            <!-- Lịch Âm & 24 Tiết Khí truyền thống Việt Nam -->
+                                            <Border Background="#20FEF08A" BorderBrush="#35FEF08A" BorderThickness="1" CornerRadius="8" Padding="8,3" VerticalAlignment="Center">
+                                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf186;" Foreground="#FEF08A" FontSize="11" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.LunarDateText, Mode=OneWay}" FontSize="11.5" Foreground="#FEF08A" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
                                         </StackPanel>
 
-                                        <!-- Nút đổi định dạng 12h / 24h -->
-                                        <Button Command="{x:Bind ViewModel.ToggleTimeFormatCommand}"
+                                        <!-- Nút đổi định dạng 12h / 24h - CỐ ĐỊNH Ở COLUMN 1 CÓ VIỀN RIÊNG RÕ RÀNG -->
+                                        <Button Grid.Column="1"
+                                                Command="{x:Bind ViewModel.ToggleTimeFormatCommand}"
                                                 Background="#25FFFFFF"
+                                                BorderBrush="#40FFFFFF"
+                                                BorderThickness="1"
                                                 Foreground="White"
-                                                CornerRadius="6"
-                                                Padding="6,2"
-                                                FontSize="10.5"
+                                                CornerRadius="8"
+                                                Padding="9,4"
+                                                FontSize="11"
                                                 FontWeight="Bold"
-                                                ToolTipService.ToolTip="Nhấp để đổi giữa định dạng 24 Giờ và 12 Giờ (AM/PM)"
+                                                ToolTipService.ToolTip="Nhấp để chuyển đổi giữa định dạng 24 Giờ và 12 Giờ (AM/PM)"
                                                 VerticalAlignment="Center">
-                                            <TextBlock Text="{x:Bind ViewModel.TimeFormatLabel, Mode=OneWay}"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f2;" FontSize="10" Foreground="#38BDF8"/>
+                                                <TextBlock Text="{x:Bind ViewModel.TimeFormatLabel, Mode=OneWay}"/>
+                                            </StackPanel>
                                         </Button>
                                     </Grid>
                                 </Border>
 
-                                <!-- TÓM TẮT THÔNG MINH ĐẦU NGÀY (AI GLANCE SUMMARY - MỚI v1.7) -->
-                                <Border Background="#1AFFFFFF" CornerRadius="10" Padding="12,7" Margin="0,2,0,2">
-                                    <Grid ColumnDefinitions="Auto,*">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0eb;" FontSize="12" Foreground="#FBBF24" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.SmartSummaryText, Mode=OneWay}" FontSize="12" Foreground="White" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                <!-- TÓM TẮT THÔNG MINH ĐẦU NGÀY (AI WEATHER BRIEFING & ADVICE) -->
+                                <Border Background="#200F172A" BorderBrush="#3538BDF8" BorderThickness="1" CornerRadius="12" Padding="14,10" Margin="0,2,0,2">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                        <Border Grid.Column="0" Width="34" Height="34" CornerRadius="10" Background="#2A38BDF8" BorderBrush="#5038BDF8" BorderThickness="1" VerticalAlignment="Center">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0eb;" FontSize="14" Foreground="#FBBF24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                <Border Background="#FBBF24" CornerRadius="4" Padding="5,1">
+                                                    <TextBlock Text="AI BRIEFING" FontSize="8.5" FontWeight="Bold" Foreground="#0F172A"/>
+                                                </Border>
+                                                <TextBlock Text="Dự Báo &amp; Lời Khuyên Khí Tượng Hôm Nay" FontSize="11" FontWeight="SemiBold" Foreground="#38BDF8" Opacity="0.95"/>
+                                            </StackPanel>
+                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.SmartSummaryText, Mode=OneWay}" FontSize="12.5" Foreground="White" TextWrapping="Wrap" LineHeight="19"/>
+                                        </StackPanel>
                                     </Grid>
                                 </Border>
 
@@ -521,90 +553,116 @@
                             CornerRadius="16"
                             Padding="20">
                         <StackPanel Spacing="16">
-                            <TextBlock Text="Chi Tiết Thời Tiết Hôm Nay" FontSize="16" FontWeight="Bold"/>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf080;" FontSize="15" Foreground="#38BDF8"/>
+                                    <TextBlock Text="Chi Tiết Thời Tiết Hôm Nay" FontSize="16" FontWeight="Bold"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="#1838BDF8" BorderBrush="#3538BDF8" BorderThickness="1" CornerRadius="8" Padding="8,2">
+                                    <TextBlock Text="8 Chỉ Số Khí Tượng Thiết Yếu" FontSize="11" FontWeight="SemiBold" Foreground="#38BDF8"/>
+                                </Border>
+                            </Grid>
 
                             <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*,*,*" RowSpacing="12" ColumnSpacing="12">
 
                                 <!-- 1. Độ ẩm -->
-                                <Border Grid.Row="0" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14">
-                                    <StackPanel Spacing="6">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf043;" Foreground="#0078D4" FontSize="14"/>
-                                            <TextBlock Text="Độ ẩm" FontSize="12" Opacity="0.7"/>
-                                        </StackPanel>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.HumidityText, Mode=OneWay}" FontSize="20" FontWeight="Bold"/>
+                                <Border Grid.Row="0" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="14" Padding="14,12">
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
+                                            <Border Grid.Column="0" Width="32" Height="32" CornerRadius="8" Background="#200284C7" BorderBrush="#400284C7" BorderThickness="1">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf043;" Foreground="#38BDF8" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Text="Độ ẩm" FontSize="12.5" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.HumidityText, Mode=OneWay}" FontSize="22" FontWeight="Bold"/>
+                                        <TextBlock Text="Độ ẩm tương đối không khí" FontSize="11" Opacity="0.6"/>
                                     </StackPanel>
                                 </Border>
 
                                 <!-- 2. Tốc độ gió -->
-                                <Border Grid.Row="0" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14">
-                                    <StackPanel Spacing="6">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" Foreground="#107C41" FontSize="14"/>
-                                            <TextBlock Text="Gió" FontSize="12" Opacity="0.7"/>
-                                        </StackPanel>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WindText, Mode=OneWay}" FontSize="18" FontWeight="Bold"/>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WindDirectionText, Mode=OneWay}" FontSize="11" Opacity="0.7"/>
+                                <Border Grid.Row="0" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="14" Padding="14,12">
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
+                                            <Border Grid.Column="0" Width="32" Height="32" CornerRadius="8" Background="#20059669" BorderBrush="#40059669" BorderThickness="1">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" Foreground="#10B981" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Text="Gió &amp; Hướng" FontSize="12.5" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WindText, Mode=OneWay}" FontSize="20" FontWeight="Bold"/>
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WindDirectionText, Mode=OneWay}" FontSize="11" Opacity="0.75" FontWeight="Medium"/>
                                     </StackPanel>
                                 </Border>
 
                                 <!-- 3. Chỉ số UV -->
-                                <Border Grid.Row="0" Grid.Column="2" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14">
-                                    <StackPanel Spacing="6">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#FF8C00" FontSize="14"/>
-                                            <TextBlock Text="Chỉ số UV" FontSize="12" Opacity="0.7"/>
-                                        </StackPanel>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.UvIndexText, Mode=OneWay}" FontSize="20" FontWeight="Bold"/>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.UvIndexDescription, Mode=OneWay}" FontSize="11" Opacity="0.7"/>
+                                <Border Grid.Row="0" Grid.Column="2" Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="14" Padding="14,12">
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
+                                            <Border Grid.Column="0" Width="32" Height="32" CornerRadius="8" Background="#20D97706" BorderBrush="#40D97706" BorderThickness="1">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#F59E0B" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Text="Chỉ số tia UV" FontSize="12.5" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.UvIndexText, Mode=OneWay}" FontSize="22" FontWeight="Bold"/>
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.UvIndexDescription, Mode=OneWay}" FontSize="11" Opacity="0.75" FontWeight="Medium"/>
                                     </StackPanel>
                                 </Border>
 
                                 <!-- 4. Xác suất mưa -->
-                                <Border Grid.Row="0" Grid.Column="3" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14">
-                                    <StackPanel Spacing="6">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" Foreground="#0099BC" FontSize="14"/>
-                                            <TextBlock Text="Khả năng mưa" FontSize="12" Opacity="0.7"/>
-                                        </StackPanel>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.RainProbabilityText, Mode=OneWay}" FontSize="20" FontWeight="Bold"/>
+                                <Border Grid.Row="0" Grid.Column="3" Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="14" Padding="14,12">
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
+                                            <Border Grid.Column="0" Width="32" Height="32" CornerRadius="8" Background="#200284C7" BorderBrush="#400284C7" BorderThickness="1">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" Foreground="#0EA5E9" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Text="Khả năng mưa" FontSize="12.5" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.RainProbabilityText, Mode=OneWay}" FontSize="22" FontWeight="Bold"/>
+                                        <TextBlock Text="Xác suất kết tủa hôm nay" FontSize="11" Opacity="0.6"/>
                                     </StackPanel>
                                 </Border>
 
                                 <!-- 5. Áp suất khí quyển -->
-                                <Border Grid.Row="1" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14">
-                                    <StackPanel Spacing="6">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf14e;" Foreground="#8E8CD8" FontSize="14"/>
-                                            <TextBlock Text="Áp suất" FontSize="12" Opacity="0.7"/>
-                                        </StackPanel>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.PressureText, Mode=OneWay}" FontSize="18" FontWeight="Bold"/>
+                                <Border Grid.Row="1" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="14" Padding="14,12">
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
+                                            <Border Grid.Column="0" Width="32" Height="32" CornerRadius="8" Background="#207C3AED" BorderBrush="#407C3AED" BorderThickness="1">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf14e;" Foreground="#A78BFA" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Text="Áp suất" FontSize="12.5" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.PressureText, Mode=OneWay}" FontSize="20" FontWeight="Bold"/>
+                                        <TextBlock Text="Chuẩn khí quyển biển" FontSize="11" Opacity="0.6"/>
                                     </StackPanel>
                                 </Border>
 
                                 <!-- 6. Lượng mưa -->
-                                <Border Grid.Row="1" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14">
-                                    <StackPanel Spacing="6">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf043;" Foreground="#00B294" FontSize="14"/>
-                                            <TextBlock Text="Lượng mưa" FontSize="12" Opacity="0.7"/>
-                                        </StackPanel>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.PrecipitationText, Mode=OneWay}" FontSize="18" FontWeight="Bold"/>
+                                <Border Grid.Row="1" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="14" Padding="14,12">
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
+                                            <Border Grid.Column="0" Width="32" Height="32" CornerRadius="8" Background="#200D9488" BorderBrush="#400D9488" BorderThickness="1">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf043;" Foreground="#14B8A6" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Text="Lượng mưa" FontSize="12.5" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.PrecipitationText, Mode=OneWay}" FontSize="20" FontWeight="Bold"/>
+                                        <TextBlock Text="Lũy kế 24 giờ qua" FontSize="11" Opacity="0.6"/>
                                     </StackPanel>
                                 </Border>
 
-                                <!-- 7. Vòng Cung Mặt Trời & Mặt Trăng (Sun & Moon Arc Tracker - Mới v1.7) -->
-                                <Border Grid.Row="1" Grid.Column="2" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,10">
-                                    <StackPanel Spacing="4">
+                                <!-- 7. Vòng Cung Mặt Trời & Mặt Trăng (Sun & Moon Arc Tracker) -->
+                                <Border Grid.Row="1" Grid.Column="2" Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="14" Padding="14,10">
+                                    <StackPanel Spacing="5">
                                         <Grid ColumnDefinitions="*,Auto">
-                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
-                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#FFB900" FontSize="13"/>
-                                                <TextBlock Text="Mặt Trời &amp; Lặn" FontSize="11.5" Opacity="0.7"/>
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                                                <Border Width="26" Height="26" CornerRadius="6" Background="#20EAB308" BorderBrush="#40EAB308" BorderThickness="1">
+                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#FACC15" FontSize="11.5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <TextBlock Text="Mặt Trời &amp; Lặn" FontSize="12" Opacity="0.85" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                             </StackPanel>
-                                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.SunStatusText, Mode=OneWay}" FontSize="10.5" Foreground="#38BDF8" FontWeight="SemiBold"/>
+                                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.SunStatusText, Mode=OneWay}" FontSize="10" Foreground="#38BDF8" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                         </Grid>
                                         <!-- Canvas vẽ quỹ đạo vòm trời hình cung và vị trí mặt trời/mặt trăng hiện tại -->
-                                        <Canvas x:Name="SunArcCanvas" Height="36" Margin="2,2" HorizontalAlignment="Stretch"/>
+                                        <Canvas x:Name="SunArcCanvas" Height="34" Margin="2,2" HorizontalAlignment="Stretch"/>
                                         <Grid ColumnDefinitions="Auto,*,Auto">
                                             <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.CurrentWeather.SunriseText, Mode=OneWay}" FontSize="11" FontWeight="Bold" Opacity="0.85"/>
                                             <TextBlock Grid.Column="2" Text="{x:Bind ViewModel.CurrentWeather.SunsetText, Mode=OneWay}" FontSize="11" FontWeight="Bold" Opacity="0.85"/>
@@ -613,21 +671,24 @@
                                 </Border>
 
                                 <!-- 8. Chất lượng không khí (AQI & Bụi mịn PM2.5) -->
-                                <Border Grid.Row="1" Grid.Column="3" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14">
-                                    <StackPanel Spacing="6">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75f;" Foreground="#10B981" FontSize="14"/>
-                                            <TextBlock Text="Không khí (AQI)" FontSize="12" Opacity="0.7"/>
-                                        </StackPanel>
-                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" VerticalAlignment="Center">
-                                            <Border Grid.Column="0" Background="{x:Bind ViewModel.CurrentWeather.AqiColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}" CornerRadius="6" Padding="6,2">
+                                <Border Grid.Row="1" Grid.Column="3" Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="14" Padding="14,12">
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
+                                            <Border Grid.Column="0" Width="32" Height="32" CornerRadius="8" Background="#2010B981" BorderBrush="#4010B981" BorderThickness="1">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75f;" Foreground="#10B981" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="1" Text="Không khí (AQI)" FontSize="12.5" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" VerticalAlignment="Center">
+                                            <Border Grid.Column="0" Background="{x:Bind ViewModel.CurrentWeather.AqiColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}" CornerRadius="6" Padding="7,2">
                                                 <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiValue, Mode=OneWay}" FontSize="13" FontWeight="Bold" Foreground="White"/>
                                             </Border>
                                             <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.AqiDescription, Mode=OneWay}" 
-                                                       FontSize="11.5" FontWeight="SemiBold" VerticalAlignment="Center" 
+                                                       FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" 
                                                        TextTrimming="CharacterEllipsis"
                                                        ToolTipService.ToolTip="{x:Bind ViewModel.CurrentWeather.AqiDescription, Mode=OneWay}"/>
                                         </Grid>
+                                        <TextBlock Text="Thang đo chất lượng US-EPA" FontSize="11" Opacity="0.6"/>
                                     </StackPanel>
                                 </Border>
 

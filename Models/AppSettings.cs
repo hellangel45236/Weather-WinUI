@@ -122,8 +122,20 @@ public partial class QuickLocationChipItem : ObservableObject
     public bool IsFavorite { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ChipBackgroundHex))]
+    [NotifyPropertyChangedFor(nameof(ChipBorderHex))]
+    [NotifyPropertyChangedFor(nameof(ChipForegroundHex))]
+    [NotifyPropertyChangedFor(nameof(ChipFontWeight))]
+    [NotifyPropertyChangedFor(nameof(ActiveIndicatorVisibility))]
+    [NotifyPropertyChangedFor(nameof(IconColor))]
     private bool _isSelected;
 
     public string IconGlyph => IsFavorite ? "\uf004" : "\uf3c5";
-    public string IconColor => IsFavorite ? "#F43F5E" : "#38BDF8";
+    public string IconColor => IsSelected ? "#38BDF8" : (IsFavorite ? "#F43F5E" : "#38BDF8");
+
+    public string ChipBackgroundHex => IsSelected ? "#3538BDF8" : "#1AFFFFFF";
+    public string ChipBorderHex => IsSelected ? "#38BDF8" : "#2EFFFFFF";
+    public string ChipForegroundHex => IsSelected ? "#38BDF8" : "#F1F5F9";
+    public string ChipFontWeight => IsSelected ? "Bold" : "SemiBold";
+    public bool ActiveIndicatorVisibility => IsSelected;
 }

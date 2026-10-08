@@ -130,7 +130,17 @@ public partial class MainViewModel : ObservableObject
     private readonly PowerManagementService _powerService = new();
 
     [ObservableProperty]
-    private string _appVersionDisplay = "v3.0.1";
+    private string _appVersionDisplay = "v3.0.2";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(GpsButtonBackground))]
+    [NotifyPropertyChangedFor(nameof(GpsButtonBorderBrush))]
+    [NotifyPropertyChangedFor(nameof(GpsButtonFontWeight))]
+    private bool _isGpsLocationSelected = true;
+
+    public string GpsButtonBackground => IsGpsLocationSelected ? "#3538BDF8" : "#1AFFFFFF";
+    public string GpsButtonBorderBrush => IsGpsLocationSelected ? "#38BDF8" : "#3038BDF8";
+    public string GpsButtonFontWeight => IsGpsLocationSelected ? "Bold" : "SemiBold";
 
     [ObservableProperty]
     private bool _isCheckingForUpdates;
@@ -765,6 +775,7 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     public async Task LoadCurrentLocationWeatherAsync()
     {
+        IsGpsLocationSelected = true;
         IsLoading = true;
         HasError = false;
         ErrorMessage = string.Empty;
@@ -817,6 +828,7 @@ public partial class MainViewModel : ObservableObject
 
         SearchResults.Clear();
         SearchText = string.Empty;
+        IsGpsLocationSelected = false;
 
         string displayName = item.DisplayText;
         LocationTitle = displayName;
@@ -893,6 +905,7 @@ public partial class MainViewModel : ObservableObject
     public async Task SelectFavoriteLocationAsync(FavoriteLocationItem item)
     {
         if (item == null) return;
+        IsGpsLocationSelected = false;
         _currentLatitude = item.Latitude;
         _currentLongitude = item.Longitude;
         LocationTitle = item.Name;
@@ -984,12 +997,19 @@ public partial class MainViewModel : ObservableObject
             });
             addedNames.Add(preset.Name);
         }
+
+        bool hasSelectedChip = QuickChips.Any(c => c.IsSelected);
+        if (hasSelectedChip)
+        {
+            IsGpsLocationSelected = false;
+        }
     }
 
     [RelayCommand]
     public async Task SelectQuickChipAsync(QuickLocationChipItem chip)
     {
         if (chip == null) return;
+        IsGpsLocationSelected = false;
         _currentLatitude = chip.Latitude;
         _currentLongitude = chip.Longitude;
         LocationTitle = chip.Name;

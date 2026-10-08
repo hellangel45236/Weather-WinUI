@@ -119,15 +119,15 @@
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                 <!-- 1. Nút Vị trí GPS thực tế -->
                 <Button Command="{x:Bind ViewModel.LoadCurrentLocationWeatherCommand}"
-                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                        BorderBrush="#38BDF8"
+                        Background="{x:Bind ViewModel.GpsButtonBackground, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                        BorderBrush="{x:Bind ViewModel.GpsButtonBorderBrush, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
                         BorderThickness="1"
                         CornerRadius="14"
                         Padding="12,5"
                         ToolTipService.ToolTip="Bấm để lấy lại thời tiết tại vị trí GPS thực tế của bạn">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="11" Foreground="#38BDF8"/>
-                        <TextBlock Text="Vị trí GPS" FontSize="12" FontWeight="SemiBold"/>
+                        <TextBlock Text="Vị trí GPS" FontSize="12" FontWeight="{x:Bind ViewModel.GpsButtonFontWeight, Mode=OneWay}"/>
                     </StackPanel>
                 </Button>
 
@@ -145,14 +145,15 @@
                         <DataTemplate x:DataType="models:QuickLocationChipItem">
                             <Button Click="QuickLocationChip_Click"
                                     Tag="{x:Bind}"
-                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    Background="{x:Bind ChipBackgroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                    BorderBrush="{x:Bind ChipBorderHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
                                     BorderThickness="1"
                                     CornerRadius="14"
                                     Padding="11,5">
-                                <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}" FontSize="10.5" Foreground="{x:Bind IconColor}"/>
-                                    <TextBlock Text="{x:Bind Name}" FontSize="12" FontWeight="SemiBold"/>
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}" FontSize="10.5" Foreground="{x:Bind IconColor, Mode=OneWay}"/>
+                                    <TextBlock Text="{x:Bind Name}" FontSize="12" FontWeight="{x:Bind ChipFontWeight, Mode=OneWay}" Foreground="{x:Bind ChipForegroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
+                                    <Ellipse Width="5" Height="5" Fill="#38BDF8" Visibility="{x:Bind ActiveIndicatorVisibility, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                         </DataTemplate>
@@ -637,6 +638,7 @@
                               SelectionChanged="ChangelogVersionComboBox_SelectionChanged"
                               MinWidth="240"
                               CornerRadius="8">
+                        <ComboBoxItem Content="v3.0.2 (Smart Multi-City Bar, AI Weather Natural Summary &amp; Overview Tab Overhaul)" Tag="3.0.2"/>
                         <ComboBoxItem Content="v3.0.1 (Dynamic Day &amp; Night Wallpapers, Ambient Soundscapes Flyout, GitHub Update Checker, Battery Saver)" Tag="3.0.1"/>
                         <ComboBoxItem Content="v3.0.0 (Đại Tu Kiến Trúc Modular 7 Tab, Sóng Triều 24h, Radar 360°, Tối Ưu Win10/11)" Tag="3.0.0"/>
                         <ComboBoxItem Content="v2.2.3 (Fix Lưu Cài Đặt &amp; Widget 20%, Cảnh Báo Ngập Úng &amp; Triều Cường Đô Thị)" Tag="2.2.3"/>
@@ -665,13 +667,13 @@
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Có gì mới trong Weather WinUI 3.0.1?" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Có gì mới trong Weather WinUI 3.0.2?" FontSize="16" FontWeight="Bold" Foreground="White"/>
                                 <Border Background="#10B981" CornerRadius="6" Padding="6,2">
-                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.0.1 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.0.2 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
                                 </Border>
                             </StackPanel>
                             <TextBlock x:Name="ChangelogHeaderSubtitle"
-                                       Text="Nâng tầm trải nghiệm thị giác &amp; âm thanh: Hình nền thành phố động theo giờ Mặt Trời (Dynamic Day &amp; Night), bộ âm thanh thiên nhiên Fluent Flyout với 5 cảnh âm thanh, tự động kiểm tra bản cập nhật mới trên GitHub (In-App Update Checker), khởi động thu nhỏ vào khay và chế độ tối ưu tiết kiệm pin Laptop thông minh."
+                                       Text="Tính năng thông minh &amp; tiện ích người dùng: Thanh chuyển nhanh đa thành phố với đèn báo trực quan (Active City Switcher), câu tóm tắt thời tiết tự nhiên AI đa chiều (Natural Language Weather Summary), và đại tu chau chuốt toàn diện trang Tổng Quan (Hero Card tách đồng hồ độc lập, 8 thẻ chỉ số Icon Pod rực rỡ sắc màu)."
                                        FontSize="11.5" Foreground="White" Opacity="0.88" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Grid>
@@ -680,8 +682,65 @@
                 <!-- NỘI DUNG CHANGELOG THEO TỪNG PHIÊN BẢN -->
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                     <Grid Padding="2">
+                        <!-- ==================== CHANGELOG v3.0.2 ==================== -->
+                        <StackPanel x:Name="ChangelogContent_v302" Spacing="10" Visibility="Visible">
+                            <!-- 1. Smart Multi-City Bar -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#2538BDF8">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" Foreground="#38BDF8" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#38BDF8" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="ĐA THÀNH PHỐ" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Thanh Chuyển Nhanh Đa Thành Phố Thông Minh (Active City Switcher)" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Nổi bật trực quan thành phố đang được kích hoạt với hiệu ứng viền phát sáng Cyan, nền Accent kính mờ và chấm trạng thái hoạt động. Tự động nhận diện và làm nổi bật nút Vị trí GPS khi đang xem vị trí thực tế của bạn." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 2. AI Weather Natural Summary -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#25FBBF24">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0eb;" Foreground="#FBBF24" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#FBBF24" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="AI TỰ NHIÊN" FontSize="9" FontWeight="Bold" Foreground="#1E293B"/>
+                                            </Border>
+                                            <TextBlock Text="Tóm Tắt Khí Tượng &amp; Lời Khuyên Sinh Hoạt Đa Chiều" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Hệ thống tự động sinh lời tóm tắt tự nhiên đa chiều mỗi ngày: tổng hợp biến động nhiệt độ, dự báo mưa rải rác theo giờ, cường độ tia cực tím UV và đưa ra lời khuyên sinh hoạt, trang phục, vật dụng phòng tránh thời tiết cực kỳ thiết thực." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 3. Overview Tab Overhaul -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#2510B981">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf005;" Foreground="#10B981" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#10B981" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="FLUENT 2 UI" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Đại Tu Toàn Diện Trang Tổng Quan (Hero Card &amp; 8 Detail Cards Grid)" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Sửa triệt để lỗi đè nút 12h/24h lên đồng hồ thời gian; phân tách đồng hồ, ngày dương lịch và âm lịch thành các capsule kính mờ sang trọng; nâng cấp 8 thẻ chỉ số chi tiết thời tiết với hệ thống Icon Pod rực rỡ sắc màu (Cyan, Emerald, Amber, Violet, Teal, Gold) và độ tương phản chuẩn mực." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
                         <!-- ==================== CHANGELOG v3.0.1 ==================== -->
-                        <StackPanel x:Name="ChangelogContent_v301" Spacing="10" Visibility="Visible">
+                        <StackPanel x:Name="ChangelogContent_v301" Spacing="10" Visibility="Collapsed">
                             <!-- 1. Dynamic Day & Night Wallpapers -->
                             <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">

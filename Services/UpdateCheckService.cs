@@ -9,7 +9,7 @@ namespace WeatherApp.Services;
 public class UpdateInfo
 {
     public bool HasUpdate { get; set; }
-    public string CurrentVersion { get; set; } = "3.0.1";
+    public string CurrentVersion { get; set; } = "3.0.2";
     public string LatestVersion { get; set; } = string.Empty;
     public string ReleaseTitle { get; set; } = string.Empty;
     public string Changelog { get; set; } = string.Empty;
@@ -27,7 +27,7 @@ public class UpdateCheckService
         Timeout = TimeSpan.FromSeconds(12)
     };
 
-    public const string CurrentAppVersion = "3.0.1";
+    public const string CurrentAppVersion = "3.0.2";
     private const string GitHubApiUrl = "https://api.github.com/repos/hellangel45236/Weather-WinUI/releases/latest";
 
     public async Task<UpdateInfo> CheckForUpdatesAsync()
