@@ -346,4 +346,60 @@ public class LocalizationService : INotifyPropertyChanged
     public string RadarDisasterRisk => IsVietnamese ? "Rủi Ro Thiên Tai" : "Disaster Risk";
 
     #endregion
+
+    #region Calendar Tab Strings
+    public string CalendarTitle => IsVietnamese ? "Lịch Vạn Niên & Thời Tiết" : "Lunisolar Calendar & Weather";
+    public string CalendarSubtitle => IsVietnamese ? "Tra cứu âm dương, can chi, tiết khí, hoàng đạo và lập kế hoạch theo thời tiết" : "Lunisolar dates, heavenly stems & earthly branches, zodiac hours & weather-aware planning";
+    public string CalendarBadge => "Vạn Niên v3.0 Pro";
+    public string CalendarSelectMonth => IsVietnamese ? "Chọn tháng" : "Select month";
+    public string CalendarSelectYear => IsVietnamese ? "Chọn năm" : "Select year";
+    public string CalendarGoToToday => IsVietnamese ? "Hôm nay" : "Today";
+    public string CalendarPrevMonth => IsVietnamese ? "Tháng trước" : "Prev Month";
+    public string CalendarNextMonth => IsVietnamese ? "Tháng sau" : "Next Month";
+    public string CalendarLegend1st15th => IsVietnamese ? "Mùng 1 & Rằm" : "1st & 15th Lunar";
+    public string CalendarLegendHoliday => IsVietnamese ? "Ngày Lễ" : "Holidays";
+    public string CalendarLegendGoal => IsVietnamese ? "Mục tiêu" : "Daily Goal";
+    public string CalendarLegendNotes => IsVietnamese ? "Ghi chú" : "Events";
+    public string CalendarLegendWeatherConflict => IsVietnamese ? "Cảnh báo thời tiết" : "Weather Alert";
+    public string CalendarClickHint => IsVietnamese ? "💡 Bấm vào ô ngày để xem chi tiết, giờ hoàng đạo & ghi chú" : "💡 Click a day cell to inspect details, zodiac hours & events";
+
+    public string CalendarDayDetailHeader => IsVietnamese ? "Chi Tiết Ngày & Giờ Hoàng Đạo" : "Day Details & Auspicious Hours";
+    public string CalendarTodayTag => IsVietnamese ? "Hôm nay" : "Today";
+    public string CalendarSolarDateLabel => IsVietnamese ? "Dương lịch" : "Solar Date";
+    public string CalendarLunarDateLabel => IsVietnamese ? "Âm lịch" : "Lunar Date";
+    public string CalendarCanChiLabel => IsVietnamese ? "Can Chi Ba Trụ" : "Three Pillars (Year, Month, Day)";
+    public string CalendarSolarTermLabel => IsVietnamese ? "Tiết Khí" : "Solar Term";
+    public string CalendarAuspiciousDayLabel => IsVietnamese ? "Trực Ngày" : "Zodiac Status";
+    public string CalendarAuspiciousHoursHeader => IsVietnamese ? "Giờ Hoàng Đạo Khởi Sự" : "Auspicious Zodiac Hours";
+    public string CalendarAuspiciousHoursSub => IsVietnamese ? "Khung giờ vượng khí, thuận lợi xuất hành, ký hợp đồng & khai trương" : "Optimal golden hours for travel, business & celebrations";
+    public string CalendarMoonPhaseHeader => IsVietnamese ? "Tuần Trăng & Độ Sáng" : "Moon Phase & Illumination";
+
+    public string CalendarWeatherForecastHeader => IsVietnamese ? "Dự Báo Khí Tượng Chi Tiết" : "Detailed Weather Forecast";
+    public string CalendarWeatherRainProb => IsVietnamese ? "Khả năng mưa" : "Rain Probability";
+    public string CalendarWeatherUv => IsVietnamese ? "Chỉ số UV" : "UV Index";
+    public string CalendarWeatherOutOfRange => IsVietnamese ? "Dữ liệu thời tiết chi tiết áp dụng cho 7 ngày tới. Khi ngày này đến gần sẽ tự động cập nhật." : "Detailed forecast available for the next 7 days. Will update automatically as date approaches.";
+
+    public string CalendarDailyGoalHeader => IsVietnamese ? "Mục Tiêu Cá Nhân Trong Ngày" : "Daily Focus Goal";
+    public string CalendarDailyGoalHasGoal => IsVietnamese ? "Đã đặt mục tiêu" : "Goal active";
+    public string CalendarDailyGoalPlaceholder => IsVietnamese ? "Đặt mục tiêu cho ngày này..." : "Set goal for this day...";
+    public string CalendarSaveGoal => IsVietnamese ? "Lưu" : "Save";
+
+    public string CalendarUserEventsHeader => IsVietnamese ? "Kế Hoạch & Ghi Chú Cá Nhân" : "Personal Schedule & Events";
+    public string CalendarNewEventPlaceholder => IsVietnamese ? "Nhập tên sự kiện / việc cần làm..." : "Enter event or task name...";
+    public string CalendarCategoryOutdoor => IsVietnamese ? "🌲 Ngoài trời / Dã ngoại" : "🌲 Outdoor / Picnic";
+    public string CalendarCategoryWork => IsVietnamese ? "💼 Công việc / Học tập" : "💼 Work / Study";
+    public string CalendarCategoryFamily => IsVietnamese ? "👥 Gia đình / Bạn bè" : "👥 Family / Friends";
+    public string CalendarCategorySport => IsVietnamese ? "🏃 Thể thao / Rèn luyện" : "🏃 Sports / Fitness";
+    public string CalendarCategoryCeremony => IsVietnamese ? "🎉 Kỷ niệm / Tiệc tùng" : "🎉 Celebration / Party";
+    public string CalendarCategorySpiritual => IsVietnamese ? "🏮 Cúng lễ / Tâm linh" : "🏮 Traditional / Spiritual";
+    public string CalendarIsOutdoorLabel => IsVietnamese ? "Ngoài trời" : "Outdoor";
+    public string CalendarHasTimeLabel => IsVietnamese ? "Có giờ" : "Has Time";
+    public string CalendarSavePlanBtn => IsVietnamese ? "Lưu Kế Hoạch 📌" : "Save Plan 📌";
+    public string CalendarCopyDayInfoBtn => IsVietnamese ? "Sao chép ngày âm & giờ tốt" : "Copy Date & Auspicious Hours";
+
+    public string CalendarCountdownHeader => IsVietnamese ? "Đếm Ngược Sự Kiện & Lễ Hội Cổ Truyền" : "Upcoming Festivals & Cultural Events";
+    public string CalendarConverterHeader => IsVietnamese ? "Bộ Tra Cứu & Đổi Ngày Âm ↔ Dương Nhanh" : "Lunisolar Date Converter";
+    public string CalendarConvertSolarToLunarBtn => IsVietnamese ? "Dương sang Âm" : "Solar to Lunar";
+    public string CalendarConvertLunarToSolarBtn => IsVietnamese ? "Âm sang Dương" : "Lunar to Solar";
+    #endregion
 }

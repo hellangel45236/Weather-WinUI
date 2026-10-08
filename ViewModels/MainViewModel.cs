@@ -151,7 +151,7 @@ public partial class MainViewModel : ObservableObject
     private readonly PowerManagementService _powerService = new();
 
     [ObservableProperty]
-    private string _appVersionDisplay = "v3.0.3 Official";
+    private string _appVersionDisplay = "v3.0.4 Official";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(GpsButtonBackground))]
@@ -282,6 +282,8 @@ public partial class MainViewModel : ObservableObject
             OnPropertyChanged(nameof(FavoriteButtonToolTip));
             UpdateClock();
             UpdateDisplayedFloodRoads();
+            UpdateAvailableMonths();
+            GenerateCalendar();
             if (_rawWeatherData != null)
             {
                 UpdateDisplaysFromRawData(_rawWeatherData, LocationTitle);
@@ -2359,11 +2361,51 @@ public partial class MainViewModel : ObservableObject
     }
 
     public List<int> AvailableYears { get; } = Enumerable.Range(1950, 151).ToList();
-    public List<string> AvailableMonths { get; } = new()
+    public ObservableCollection<string> AvailableMonths { get; } = new();
+
+    public void UpdateAvailableMonths()
     {
-        "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
-        "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
-    };
+        AvailableMonths.Clear();
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        for (int i = 1; i <= 12; i++)
+        {
+            if (isVi)
+                AvailableMonths.Add($"Tháng {i}");
+            else
+                AvailableMonths.Add(new DateTime(2026, i, 1).ToString("MMM (M)", System.Globalization.CultureInfo.InvariantCulture));
+        }
+    }
+
+    // ==================== TÍNH NĂNG MỚI v3.0.4: LỊCH VẠN NIÊN & ĐẾM NGƯỢC LỄ HỘI & CHUYỂN ĐỔI ÂM DƯƠNG ====================
+    [ObservableProperty]
+    private ObservableCollection<CalendarFestivalCountdown> _festivalCountdowns = new();
+
+    [ObservableProperty]
+    private DateTimeOffset _converterSolarDate = DateTimeOffset.Now;
+
+    [ObservableProperty]
+    private int _converterLunarDay = 1;
+
+    [ObservableProperty]
+    private int _converterLunarMonth = 1;
+
+    [ObservableProperty]
+    private int _converterLunarYear = DateTime.Today.Year;
+
+    [ObservableProperty]
+    private bool _converterIsLunarLeap = false;
+
+    [ObservableProperty]
+    private string _converterSolarToLunarResult = string.Empty;
+
+    [ObservableProperty]
+    private string _converterLunarToSolarResult = string.Empty;
+
+    [ObservableProperty]
+    private bool _isCalendarCopiedOpen = false;
+
+    [ObservableProperty]
+    private string _calendarCopiedMessage = string.Empty;
 
     public void InitializeCalendar()
     {
@@ -2371,6 +2413,7 @@ public partial class MainViewModel : ObservableObject
         _calendarMonth = DateTime.Today.Month;
         SelectedYear = _calendarYear;
         SelectedMonthIndex = _calendarMonth - 1;
+        UpdateAvailableMonths();
         GenerateCalendar();
     }
 
@@ -2433,32 +2476,158 @@ public partial class MainViewModel : ObservableObject
         IsDayDetailOpen = false;
     }
 
+    [RelayCommand]
+    public void CopySelectedDayInfo()
+    {
+        if (SelectedCalendarDay == null) return;
+        try
+        {
+            var day = SelectedCalendarDay;
+            bool isVi = LocalizationService.Instance.IsVietnamese;
+            string text = isVi
+                ? $"{day.DayOfWeekName}, {day.SolarDay:D2}/{day.SolarMonth:D2}/{day.SolarYear}\n" +
+                  $"Âm lịch: Ngày {day.LunarDay:D2} tháng {day.LunarMonth:D2} năm {day.CanChiYear}\n" +
+                  $"Can Chi: Ngày {day.CanChiDay}, Tháng {day.CanChiMonth}\n" +
+                  $"Tiết khí: {day.SolarTerm}\n" +
+                  $"Trực ngày: {day.AuspiciousDayName}\n" +
+                  $"Giờ Hoàng Đạo: {day.AuspiciousHoursFormatted}\n" +
+                  $"Tuần trăng: {day.MoonPhaseIcon} {day.MoonPhaseName}"
+                : $"{day.DayOfWeekName}, {day.SolarDay:D2}/{day.SolarMonth:D2}/{day.SolarYear}\n" +
+                  $"Lunar: Day {day.LunarDay:D2}/{day.LunarMonth:D2} Year {day.CanChiYear}\n" +
+                  $"Stems & Branches: Day {day.CanChiDay}, Month {day.CanChiMonth}\n" +
+                  $"Solar Term: {day.SolarTerm}\n" +
+                  $"Zodiac Status: {day.AuspiciousDayName}\n" +
+                  $"Auspicious Hours: {day.AuspiciousHoursFormatted}\n" +
+                  $"Moon Phase: {day.MoonPhaseIcon} {day.MoonPhaseName}";
+
+            if (day.HasHoliday)
+            {
+                text += isVi ? $"\nNgày lễ: {day.HolidayName} ({day.HolidayDescription})" : $"\nHoliday: {day.HolidayName} ({day.HolidayDescription})";
+            }
+            if (day.HasWeatherForecast)
+            {
+                text += isVi ? $"\nDự báo: {day.WeatherCondition}, {day.TempRangeText}" : $"\nForecast: {day.WeatherCondition}, {day.TempRangeText}";
+            }
+
+            var dp = new Windows.ApplicationModel.DataTransfer.DataPackage();
+            dp.RequestedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+            dp.SetText(text);
+            Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dp);
+
+            CalendarCopiedMessage = isVi
+                ? "Đã sao chép chi tiết ngày & giờ hoàng đạo vào Clipboard!"
+                : "Day details & auspicious hours copied to clipboard!";
+            IsCalendarCopiedOpen = true;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[MainViewModel] CopySelectedDayInfo error: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    public void ConvertSolarToLunar()
+    {
+        try
+        {
+            DateTime dt = ConverterSolarDate.DateTime;
+            var l = VietnameseLunarHelper.ConvertSolarToLunar(dt);
+            ConverterSolarToLunarResult = LocalizationService.Instance.IsVietnamese
+                ? $"Âm lịch: Ngày {l.Day:D2}/{l.Month:D2}/{l.Year} ({l.CanChiYear})\nCan Chi Ngày: {l.CanChiDay} • Tiết {l.SolarTerm} • {l.AuspiciousDayName}"
+                : $"Lunar: Day {l.Day:D2}/{l.Month:D2}/{l.Year} ({l.CanChiYear})\nDay Branch: {l.CanChiDay} • Term {l.SolarTerm} • {l.AuspiciousDayName}";
+        }
+        catch (Exception ex)
+        {
+            ConverterSolarToLunarResult = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    public void ConvertLunarToSolar()
+    {
+        try
+        {
+            DateTime? solar = VietnameseLunarHelper.ConvertLunarToSolar(ConverterLunarDay, ConverterLunarMonth, ConverterLunarYear, ConverterIsLunarLeap);
+            if (solar.HasValue)
+            {
+                var l = VietnameseLunarHelper.ConvertSolarToLunar(solar.Value);
+                ConverterLunarToSolarResult = LocalizationService.Instance.IsVietnamese
+                    ? $"Dương lịch: {solar.Value:dddd, dd/MM/yyyy}\nCan Chi: Ngày {l.CanChiDay}, Năm {l.CanChiYear} • {l.AuspiciousDayName}"
+                    : $"Solar: {solar.Value:dddd, dd/MM/yyyy}\nBranches: Day {l.CanChiDay}, Year {l.CanChiYear} • {l.AuspiciousDayName}";
+            }
+            else
+            {
+                ConverterLunarToSolarResult = LocalizationService.Instance.IsVietnamese
+                    ? "Không tìm thấy ngày Dương lịch phù hợp cho ngày Âm này."
+                    : "No matching Solar date found for this Lunar date.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ConverterLunarToSolarResult = $"Lỗi: {ex.Message}";
+        }
+    }
+
     public void GenerateCalendar()
     {
-        CalendarMonthTitle = $"Tháng {_calendarMonth:D2}, {_calendarYear}";
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        if (isVi)
+        {
+            CalendarMonthTitle = $"Tháng {_calendarMonth:D2}, {_calendarYear}";
+        }
+        else
+        {
+            CalendarMonthTitle = new DateTime(_calendarYear, _calendarMonth, 1).ToString("MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture);
+        }
 
         bool startMonday = (Settings?.FirstDayOfWeek ?? "Monday").Equals("Monday", StringComparison.OrdinalIgnoreCase);
 
         CalendarDayHeaders.Clear();
-        if (startMonday)
+        if (isVi)
         {
-            CalendarDayHeaders.Add("T2");
-            CalendarDayHeaders.Add("T3");
-            CalendarDayHeaders.Add("T4");
-            CalendarDayHeaders.Add("T5");
-            CalendarDayHeaders.Add("T6");
-            CalendarDayHeaders.Add("T7");
-            CalendarDayHeaders.Add("CN");
+            if (startMonday)
+            {
+                CalendarDayHeaders.Add("T2");
+                CalendarDayHeaders.Add("T3");
+                CalendarDayHeaders.Add("T4");
+                CalendarDayHeaders.Add("T5");
+                CalendarDayHeaders.Add("T6");
+                CalendarDayHeaders.Add("T7");
+                CalendarDayHeaders.Add("CN");
+            }
+            else
+            {
+                CalendarDayHeaders.Add("CN");
+                CalendarDayHeaders.Add("T2");
+                CalendarDayHeaders.Add("T3");
+                CalendarDayHeaders.Add("T4");
+                CalendarDayHeaders.Add("T5");
+                CalendarDayHeaders.Add("T6");
+                CalendarDayHeaders.Add("T7");
+            }
         }
         else
         {
-            CalendarDayHeaders.Add("CN");
-            CalendarDayHeaders.Add("T2");
-            CalendarDayHeaders.Add("T3");
-            CalendarDayHeaders.Add("T4");
-            CalendarDayHeaders.Add("T5");
-            CalendarDayHeaders.Add("T6");
-            CalendarDayHeaders.Add("T7");
+            if (startMonday)
+            {
+                CalendarDayHeaders.Add("Mon");
+                CalendarDayHeaders.Add("Tue");
+                CalendarDayHeaders.Add("Wed");
+                CalendarDayHeaders.Add("Thu");
+                CalendarDayHeaders.Add("Fri");
+                CalendarDayHeaders.Add("Sat");
+                CalendarDayHeaders.Add("Sun");
+            }
+            else
+            {
+                CalendarDayHeaders.Add("Sun");
+                CalendarDayHeaders.Add("Mon");
+                CalendarDayHeaders.Add("Tue");
+                CalendarDayHeaders.Add("Wed");
+                CalendarDayHeaders.Add("Thu");
+                CalendarDayHeaders.Add("Fri");
+                CalendarDayHeaders.Add("Sat");
+            }
         }
 
         DateTime firstDayOfMonth;
@@ -2483,10 +2652,31 @@ public partial class MainViewModel : ObservableObject
         _allUserEvents = _calendarEventService.LoadEvents();
         _allDailyGoals = _calendarEventService.LoadGoals();
 
+        // Cập nhật danh sách đếm ngược lễ hội truyền thống
+        try
+        {
+            var countList = VietnameseLunarHelper.GetUpcomingFestivals(today, isVi);
+            FestivalCountdowns.Clear();
+            foreach (var c in countList)
+            {
+                FestivalCountdowns.Add(new CalendarFestivalCountdown
+                {
+                    Title = c.Title,
+                    LunarDateText = c.LunarDateText,
+                    SolarDateText = c.SolarDateText,
+                    DaysRemaining = c.DaysRemaining,
+                    DaysRemainingText = c.DaysRemainingText,
+                    IconGlyph = c.IconGlyph,
+                    AccentColor = c.AccentColor
+                });
+            }
+        }
+        catch { }
+
         for (int i = 0; i < 42; i++)
         {
             DateTime curDate = gridStartDate.AddDays(i);
-            var lunar = VietnameseLunarHelper.ConvertSolarToLunar(curDate);
+            var lunar = VietnameseLunarHelper.ConvertSolarToLunar(curDate, isVi);
             var holiday = VietnameseHolidayHelper.GetHoliday(curDate, lunar.Day, lunar.Month, lunar.IsLeap);
             var dayEvents = _allUserEvents.Where(e => e.Date.Date == curDate.Date).ToList();
 
@@ -2497,7 +2687,9 @@ public partial class MainViewModel : ObservableObject
                 ? $"{lunar.Day}/{lunar.Month}"
                 : (lunar.Day == 15 ? "15" : $"{lunar.Day}");
 
-            string dayOfWeekName = curDate.ToString("dddd", new System.Globalization.CultureInfo("vi-VN"));
+            string dayOfWeekName = isVi
+                ? curDate.ToString("dddd", new System.Globalization.CultureInfo("vi-VN"))
+                : curDate.ToString("dddd", System.Globalization.CultureInfo.InvariantCulture);
             if (dayOfWeekName.Length > 0)
                 dayOfWeekName = char.ToUpper(dayOfWeekName[0]) + dayOfWeekName.Substring(1);
 
@@ -2514,7 +2706,17 @@ public partial class MainViewModel : ObservableObject
                 IsWeekend = curDate.DayOfWeek == DayOfWeek.Saturday || curDate.DayOfWeek == DayOfWeek.Sunday,
                 DayOfWeekName = dayOfWeekName,
                 CanChiYear = lunar.CanChiYear,
+                CanChiMonth = lunar.CanChiMonth,
+                CanChiDay = lunar.CanChiDay,
                 SolarTerm = lunar.SolarTerm,
+                IsAuspiciousDay = lunar.IsAuspiciousDay,
+                AuspiciousDayName = lunar.AuspiciousDayName,
+                AuspiciousDayColor = lunar.AuspiciousDayColor,
+                AuspiciousHoursList = lunar.AuspiciousHoursList,
+                AuspiciousHoursFormatted = lunar.AuspiciousHoursFormatted,
+                MoonPhaseIcon = lunar.MoonPhaseIcon,
+                MoonPhaseName = lunar.MoonPhaseName,
+                MoonIllumination = lunar.MoonIllumination,
                 HasHoliday = holiday.IsHoliday,
                 HolidayName = holiday.Name,
                 HolidayBadge = holiday.Badge,

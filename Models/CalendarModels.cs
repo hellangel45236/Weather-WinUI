@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace WeatherApp.Models;
@@ -31,9 +32,23 @@ public partial class CalendarDayItem : ObservableObject
     public string HolidayDescription { get; set; } = string.Empty;
     public bool IsOfficialDayOff { get; set; }
 
-    // Can Chi & Tiết khí
+    // Can Chi Ba Trụ & Tiết khí
     public string CanChiYear { get; set; } = string.Empty;
+    public string CanChiMonth { get; set; } = string.Empty;
+    public string CanChiDay { get; set; } = string.Empty;
     public string SolarTerm { get; set; } = string.Empty;
+
+    // Hoàng Đạo / Hắc Đạo & Giờ Hoàng Đạo
+    public bool IsAuspiciousDay { get; set; } = true;
+    public string AuspiciousDayName { get; set; } = "Hoàng Đạo (Tốt)";
+    public string AuspiciousDayColor { get; set; } = "#10B981";
+    public string AuspiciousHoursFormatted { get; set; } = string.Empty;
+    public List<string> AuspiciousHoursList { get; set; } = new();
+
+    // Tuần Trăng (Moon Phase)
+    public string MoonPhaseIcon { get; set; } = "🌕";
+    public string MoonPhaseName { get; set; } = "Trăng Tròn";
+    public int MoonIllumination { get; set; } = 100;
 
     // Dự báo thời tiết (7 ngày tới)
     [ObservableProperty]
@@ -137,4 +152,15 @@ public partial class CalendarDayItem : ObservableObject
         OnPropertyChanged(nameof(WeatherConflictTitle));
         OnPropertyChanged(nameof(WeatherConflictMessage));
     }
+}
+
+public class CalendarFestivalCountdown
+{
+    public string Title { get; set; } = string.Empty;
+    public string LunarDateText { get; set; } = string.Empty;
+    public string SolarDateText { get; set; } = string.Empty;
+    public int DaysRemaining { get; set; }
+    public string DaysRemainingText { get; set; } = string.Empty;
+    public string IconGlyph { get; set; } = "\uf06b";
+    public string AccentColor { get; set; } = "#DC2626";
 }

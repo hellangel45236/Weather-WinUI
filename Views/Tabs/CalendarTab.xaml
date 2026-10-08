@@ -10,448 +10,734 @@
     mc:Ignorable="d">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Spacing="16" Padding="0,0,16,24">
-                    <!-- ==================== 1. LỊCH THÁNG VẠN NIÊN & THỜI TIẾT (MONTHLY CALENDAR & FORECAST - MỚI v1.8) ==================== -->
-                    <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+        <StackPanel Spacing="18" Padding="0,0,16,24">
+
+            <!-- ==================== THÔNG BÁO SAO CHÉP CLIPBOARD ==================== -->
+            <InfoBar IsOpen="{x:Bind ViewModel.IsCalendarCopiedOpen, Mode=TwoWay}"
+                     Severity="Success"
+                     Message="{x:Bind ViewModel.CalendarCopiedMessage, Mode=OneWay}"
+                     IsClosable="True"/>
+
+            <!-- ==================== 1. KHỐI LỊCH THÁNG VẠN NIÊN & DỰ BÁO THỜI TIẾT v3.0.4 ==================== -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="22">
+                <StackPanel Spacing="16">
+                    <!-- TIÊU ĐỀ & THANH ĐIỀU HƯỚNG THÁNG / NĂM / HÔM NAY -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <!-- Cột Trái: Tiêu đề, Huy hiệu & Vị trí hiện tại -->
+                        <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <Border Width="38" Height="38" CornerRadius="10" Background="#2638BDF8">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" FontSize="17" Foreground="#38BDF8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel Spacing="2">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.CalendarTitle, Mode=OneWay}" FontSize="17" FontWeight="Bold"/>
+                                        <Border Background="#1A10B981" CornerRadius="5" Padding="6,2">
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.CalendarBadge, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#10B981"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.CalendarSubtitle, Mode=OneWay}" FontSize="11.5" Opacity="0.7" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center" Margin="48,0,0,0" Opacity="0.85">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="10.5" Foreground="#38BDF8"/>
+                                <TextBlock Text="{x:Bind ViewModel.LocationTitle, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Cột Phải: Nút điều hướng tháng & Bộ chọn nhanh Tháng/Năm -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <ComboBox ItemsSource="{x:Bind ViewModel.AvailableMonths}"
+                                      SelectedIndex="{x:Bind ViewModel.SelectedMonthIndex, Mode=TwoWay}"
+                                      SelectionChanged="CalendarMonthComboBox_SelectionChanged"
+                                      Width="105" Height="32" FontSize="11.5" CornerRadius="6"
+                                      ToolTipService.ToolTip="{x:Bind ViewModel.Loc.CalendarSelectMonth, Mode=OneWay}"/>
+
+                            <ComboBox ItemsSource="{x:Bind ViewModel.AvailableYears}"
+                                      SelectedItem="{x:Bind ViewModel.SelectedYear, Mode=TwoWay}"
+                                      SelectionChanged="CalendarYearComboBox_SelectionChanged"
+                                      Width="82" Height="32" FontSize="11.5" CornerRadius="6"
+                                      ToolTipService.ToolTip="{x:Bind ViewModel.Loc.CalendarSelectYear, Mode=OneWay}"/>
+
+                            <Button Command="{x:Bind ViewModel.GoToTodayCommand}"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    BorderThickness="0" CornerRadius="6" Height="32" Padding="10,0"
+                                    ToolTipService.ToolTip="{x:Bind ViewModel.Loc.CalendarGoToToday, Mode=OneWay}">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="11" Foreground="#38BDF8"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.CalendarGoToToday, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Nút Tháng trước -->
+                            <Button Command="{x:Bind ViewModel.PrevMonthCommand}"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    BorderThickness="0" CornerRadius="6" Width="32" Height="32" Padding="0"
+                                    ToolTipService.ToolTip="{x:Bind ViewModel.Loc.CalendarPrevMonth, Mode=OneWay}">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf053;" FontSize="10"/>
+                            </Button>
+
+                            <!-- Nút Tháng sau -->
+                            <Button Command="{x:Bind ViewModel.NextMonthCommand}"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    BorderThickness="0" CornerRadius="6" Width="32" Height="32" Padding="0"
+                                    ToolTipService.ToolTip="{x:Bind ViewModel.Loc.CalendarNextMonth, Mode=OneWay}">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf054;" FontSize="10"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- ==================== DẢI ĐẾM NGƯỢC LỄ HỘI TRUYỀN THỐNG (FESTIVAL COUNTDOWN STRIP) ==================== -->
+                    <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
-                            CornerRadius="16"
-                            Padding="20">
-                        <StackPanel Spacing="14">
-                            <!-- Tiêu đề & Thanh điều hướng Tháng / Năm đa năng -->
-                            <Grid ColumnDefinitions="*,Auto">
-                                <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
-                                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" FontSize="15" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                                        <TextBlock Text="Lịch Tháng &amp; Dự Báo" FontSize="16" FontWeight="Bold"/>
+                            CornerRadius="12"
+                            Padding="14,10">
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf06b;" FontSize="13" Foreground="#EF4444"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CalendarCountdownHeader, Mode=OneWay}" FontSize="12.5" FontWeight="Bold"/>
+                            </StackPanel>
+
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                                          HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled">
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.FestivalCountdowns, Mode=OneWay}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="10"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:CalendarFestivalCountdown">
+                                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="10"
+                                                    Padding="12,8"
+                                                    MinWidth="175">
+                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
+                                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="8"
+                                                            Background="{x:Bind AccentColor, Converter={StaticResource HexToBrushConverter}}"
+                                                            VerticalAlignment="Center">
+                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}"
+                                                                  FontSize="13" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                                                        <TextBlock Text="{x:Bind Title}" FontSize="11.5" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock Text="{x:Bind LunarDateText}" FontSize="10" Opacity="0.8"/>
+                                                        <Grid ColumnDefinitions="*,Auto" Margin="0,1,0,0">
+                                                            <TextBlock Grid.Column="0" Text="{x:Bind SolarDateText}" FontSize="9.5" Opacity="0.6" VerticalAlignment="Center"/>
+                                                            <Border Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="4" Padding="5,1">
+                                                                <TextBlock Text="{x:Bind DaysRemainingText}" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                                            </Border>
+                                                        </Grid>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- HÀNG TIÊU ĐỀ CÁC THỨ TRONG TUẦN -->
+                    <ItemsControl ItemsSource="{x:Bind ViewModel.CalendarDayHeaders, Mode=OneWay}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <helpers:UniformGrid Columns="7"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Text="{x:Bind}" FontSize="12" FontWeight="Bold"
+                                           HorizontalAlignment="Center" TextAlignment="Center"
+                                           Opacity="0.75" Margin="0,0,0,2"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- LƯỚI 42 Ô NGÀY LỊCH (6 TUẦN x 7 NGÀY) -->
+                    <ItemsControl ItemsSource="{x:Bind ViewModel.CalendarDays, Mode=OneWay}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <helpers:UniformGrid Columns="7"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:CalendarDayItem">
+                                <Button Click="CalendarDayCell_Click"
+                                        Tag="{x:Bind}"
+                                        Padding="3,4"
+                                        Margin="1.5"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        MinHeight="60"
+                                        Background="{x:Bind IsToday, Mode=OneWay, Converter={StaticResource BoolToTodayBrushConverter}}"
+                                        BorderBrush="{x:Bind IsToday, Mode=OneWay, Converter={StaticResource BoolToTodayBorderBrushConverter}}"
+                                        BorderThickness="1"
+                                        CornerRadius="10">
+                                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                        <StackPanel Spacing="1.5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <!-- Hàng hiển thị số ngày Dương và Âm lịch -->
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
+                                                <!-- Ngày Dương -->
+                                                <TextBlock Text="{x:Bind SolarDay}"
+                                                           FontSize="13.5" FontWeight="Bold"
+                                                           Opacity="{x:Bind IsCurrentMonth, Mode=OneWay, Converter={StaticResource BoolToMonthOpacityConverter}}"/>
+                                                <!-- Ngày Âm -->
+                                                <TextBlock Text="{x:Bind LunarDisplay}"
+                                                           FontSize="9.5"
+                                                           FontWeight="{x:Bind IsSpecialLunarDay, Mode=OneWay, Converter={StaticResource BoolToFontWeightConverter}}"
+                                                           Foreground="{x:Bind IsSpecialLunarDay, Mode=OneWay, Converter={StaticResource BoolToSpecialLunarBrushConverter}}"
+                                                           Opacity="0.85" VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- Nhãn Ngày Lễ Việt Nam nếu có -->
+                                            <Border Visibility="{x:Bind HasHoliday, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                    Background="#DC2626" CornerRadius="4" Padding="3.5,1" Margin="0,1" HorizontalAlignment="Center">
+                                                <TextBlock Text="{x:Bind HolidayName}" FontSize="8" FontWeight="Bold" Foreground="White"
+                                                           TextTrimming="CharacterEllipsis" MaxWidth="52" TextAlignment="Center"/>
+                                            </Border>
+
+                                            <!-- Dự báo thời tiết (Icon + Dải nhiệt độ) -->
+                                            <StackPanel Visibility="{x:Bind HasWeatherForecast, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                        Orientation="Horizontal" HorizontalAlignment="Center" Spacing="3" Margin="0,1,0,0">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind WeatherIconGlyph, Mode=OneWay}"
+                                                          FontSize="9"
+                                                          Foreground="{x:Bind IsSunny, Mode=OneWay, Converter={StaticResource BoolToSunColorConverter}}"/>
+                                                <TextBlock Text="{x:Bind TempRangeText, Mode=OneWay}" FontSize="8.5" FontWeight="SemiBold" Opacity="0.9"/>
+                                            </StackPanel>
+
+                                            <!-- Chỉ báo Mục tiêu ngày, Sự kiện cá nhân & Cảnh báo xung đột thời tiết -->
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="3" Margin="0,1,0,0">
+                                                <TextBlock Visibility="{x:Bind HasGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                           Text="{x:Bind GoalIcon, Mode=OneWay}" FontSize="8" VerticalAlignment="Center"
+                                                           ToolTipService.ToolTip="{x:Bind GoalText, Mode=OneWay}"/>
+                                                <Ellipse Visibility="{x:Bind HasUserEvents, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                         Width="5.5" Height="5.5" Fill="#8B5CF6" ToolTipService.ToolTip="Có sự kiện / kế hoạch ghi chú"/>
+                                                <FontIcon Visibility="{x:Bind HasWeatherConflictWarning, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                          FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf071;" FontSize="8.5" Foreground="#F59E0B"
+                                                          ToolTipService.ToolTip="Cảnh báo: Thời tiết xung đột với kế hoạch ngoài trời!"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- CHÚ THÍCH CHÂN LỊCH (LEGEND) -->
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,3,0,0">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                <Border Width="6" Height="6" CornerRadius="3" Background="#F59E0B"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CalendarLegend1st15th, Mode=OneWay}" FontSize="10" Opacity="0.75"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                <Border Width="6" Height="6" CornerRadius="3" Background="#DC2626"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CalendarLegendHoliday, Mode=OneWay}" FontSize="10" Opacity="0.75"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                <TextBlock Text="🎯" FontSize="8.5"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CalendarLegendGoal, Mode=OneWay}" FontSize="10" Opacity="0.75"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                <Border Width="6" Height="6" CornerRadius="3" Background="#8B5CF6"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CalendarLegendNotes, Mode=OneWay}" FontSize="10" Opacity="0.75"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf071;" FontSize="9" Foreground="#F59E0B"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CalendarLegendWeatherConflict, Mode=OneWay}" FontSize="10" Opacity="0.75"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.CalendarClickHint, Mode=OneWay}" FontSize="10" Opacity="0.6"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ==================== 2. KHUNG CHI TIẾT NGÀY ĐANG CHỌN (BENTO DAY DETAILS HUB v3.0.4) ==================== -->
+            <Border x:Name="SelectedDayDetailPanel"
+                    Visibility="{x:Bind ViewModel.SelectedCalendarDay, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="22">
+                <StackPanel Spacing="16">
+                    <!-- HÀNG TIÊU ĐỀ HERO NGÀY + NÚT SAO CHÉP & VỀ HÔM NAY -->
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <Border Grid.Column="0" Width="48" Height="48" CornerRadius="12" Background="#203B82F6" Margin="0,0,14,0">
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" FontSize="20" Foreground="#3B82F6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.DayOfWeekName, Mode=OneWay}" FontSize="16" FontWeight="Bold"/>
+                                <TextBlock FontSize="16" FontWeight="Bold">
+                                    <Run Text="{x:Bind ViewModel.SelectedCalendarDay.SolarDay, Mode=OneWay}"/>
+                                    <Run Text="/"/>
+                                    <Run Text="{x:Bind ViewModel.SelectedCalendarDay.SolarMonth, Mode=OneWay}"/>
+                                    <Run Text="/"/>
+                                    <Run Text="{x:Bind ViewModel.SelectedCalendarDay.SolarYear, Mode=OneWay}"/>
+                                </TextBlock>
+                                <Border Visibility="{x:Bind ViewModel.SelectedCalendarDay.IsToday, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                        Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="6" Padding="6,2">
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.CalendarTodayTag, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- Âm lịch, Can Chi Năm, Tiết khí, Trực ngày & Tuần trăng -->
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <TextBlock FontSize="12.5" Foreground="{ThemeResource AccentFillColorDefaultBrush}" FontWeight="SemiBold">
+                                    <Run Text="🌙 Ngày"/>
+                                    <Run Text="{x:Bind ViewModel.SelectedCalendarDay.LunarDay, Mode=OneWay}"/>
+                                    <Run Text="Tháng"/>
+                                    <Run Text="{x:Bind ViewModel.SelectedCalendarDay.LunarMonth, Mode=OneWay}"/>
+                                    <Run Text="ÂL ("/>
+                                    <Run Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiYear, Mode=OneWay}"/>
+                                    <Run Text=")"/>
+                                </TextBlock>
+
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="4" Padding="6,1.5">
+                                    <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.SolarTerm, Mode=OneWay}" FontSize="11" Opacity="0.85"/>
+                                </Border>
+
+                                <Border Background="{x:Bind ViewModel.SelectedCalendarDay.AuspiciousDayColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                        CornerRadius="4" Padding="6,1.5">
+                                    <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.AuspiciousDayName, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                                </Border>
+
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="4" Padding="6,1.5">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.MoonPhaseIcon, Mode=OneWay}" FontSize="11"/>
+                                        <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.MoonPhaseName, Mode=OneWay}" FontSize="10.5" Opacity="0.9"/>
+                                        <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.MoonIllumination, Mode=OneWay}" FontSize="10" Opacity="0.6"/>
+                                        <TextBlock Text="%" FontSize="9" Opacity="0.6"/>
                                     </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center" Opacity="0.85">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="10.5" Foreground="#38BDF8"/>
-                                        <TextBlock Text="{x:Bind ViewModel.LocationTitle, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
-                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Các nút Thao tác bên phải: Sao chép & Về hôm nay -->
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Button Click="CopyDayInfoButton_Click"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="8" Padding="10,6"
+                                    ToolTipService.ToolTip="{x:Bind ViewModel.Loc.CalendarCopyDayInfoBtn, Mode=OneWay}">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c5;" FontSize="11" Foreground="#10B981"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.CalendarCopyDayInfoBtn, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
                                 </StackPanel>
+                            </Button>
 
-                                <!-- Nút điều hướng tháng & Bộ chọn nhanh Tháng/Năm -->
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                    <ComboBox ItemsSource="{x:Bind ViewModel.AvailableMonths}"
-                                              SelectedIndex="{x:Bind ViewModel.SelectedMonthIndex, Mode=TwoWay}"
-                                              SelectionChanged="CalendarMonthComboBox_SelectionChanged"
-                                              Width="96" Height="30" FontSize="11.5" CornerRadius="6"
-                                              ToolTipService.ToolTip="Chọn tháng"/>
-
-                                    <ComboBox ItemsSource="{x:Bind ViewModel.AvailableYears}"
-                                              SelectedItem="{x:Bind ViewModel.SelectedYear, Mode=TwoWay}"
-                                              SelectionChanged="CalendarYearComboBox_SelectionChanged"
-                                              Width="76" Height="30" FontSize="11.5" CornerRadius="6"
-                                              ToolTipService.ToolTip="Chọn năm"/>
-
-                                    <Button Command="{x:Bind ViewModel.GoToTodayCommand}"
-                                            Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                            BorderThickness="0" CornerRadius="6" Height="30" Padding="8,0"
-                                            ToolTipService.ToolTip="Về tháng hiện tại">
-                                        <TextBlock Text="Hôm nay" FontSize="11" FontWeight="SemiBold"/>
-                                    </Button>
-
-                                    <!-- Nút Tháng trước -->
-                                    <Button Command="{x:Bind ViewModel.PrevMonthCommand}"
-                                            Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                            BorderThickness="0" CornerRadius="6" Width="30" Height="30" Padding="0"
-                                            ToolTipService.ToolTip="Tháng trước">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf053;" FontSize="10"/>
-                                    </Button>
-
-                                    <!-- Nút Tháng sau -->
-                                    <Button Command="{x:Bind ViewModel.NextMonthCommand}"
-                                            Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                            BorderThickness="0" CornerRadius="6" Width="30" Height="30" Padding="0"
-                                            ToolTipService.ToolTip="Tháng sau">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf054;" FontSize="10"/>
-                                    </Button>
+                            <Button Click="GoToTodayCalendar_Click"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="8" Padding="10,6"
+                                    ToolTipService.ToolTip="{x:Bind ViewModel.Loc.CalendarGoToToday, Mode=OneWay}">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="11" Foreground="#38BDF8"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.CalendarGoToToday, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
                                 </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- ==================== BENTO POD 1: CAN CHI BA TRỤ (YEAR, MONTH, DAY) ==================== -->
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                        <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                CornerRadius="10" Padding="12,8">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="NĂM (YEAR)" FontSize="9.5" FontWeight="Bold" Opacity="0.6"/>
+                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiYear, Mode=OneWay}" FontSize="13" FontWeight="Bold" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                CornerRadius="10" Padding="12,8">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="THÁNG (MONTH)" FontSize="9.5" FontWeight="Bold" Opacity="0.6"/>
+                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiMonth, Mode=OneWay}" FontSize="13" FontWeight="Bold" Foreground="#38BDF8"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                CornerRadius="10" Padding="12,8">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="NGÀY (DAY)" FontSize="9.5" FontWeight="Bold" Opacity="0.6"/>
+                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiDay, Mode=OneWay}" FontSize="13" FontWeight="Bold" Foreground="#10B981"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- ==================== BENTO POD 2: GIỜ HOÀNG ĐẠO KHỞI SỰ TRONG NGÀY ==================== -->
+                    <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="14,12">
+                        <StackPanel Spacing="8">
+                            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf017;" FontSize="13" Foreground="#10B981"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.CalendarAuspiciousHoursHeader, Mode=OneWay}" FontSize="12.5" FontWeight="Bold"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.CalendarAuspiciousHoursSub, Mode=OneWay}" FontSize="10.5" Opacity="0.65"/>
                             </Grid>
 
-                            <!-- Hàng tiêu đề các Thứ trong tuần (T2 -> CN hoặc CN -> T7 theo Cài đặt) -->
-                            <ItemsControl ItemsSource="{x:Bind ViewModel.CalendarDayHeaders, Mode=OneWay}">
+                            <!-- Danh sách 6 Giờ Hoàng Đạo dạng Chip Badge Grid -->
+                            <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedCalendarDay.AuspiciousHoursList, Mode=OneWay}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <helpers:UniformGrid Columns="7"/>
+                                        <helpers:UniformGrid Columns="3"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="x:String">
-                                        <TextBlock Text="{x:Bind}" FontSize="12" FontWeight="Bold"
-                                                   HorizontalAlignment="Center" TextAlignment="Center"
-                                                   Opacity="0.75" Margin="0,0,0,2"/>
+                                        <Border Background="#1510B981" BorderBrush="#4010B981" BorderThickness="1"
+                                                CornerRadius="8" Padding="10,6" Margin="3">
+                                            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf005;" FontSize="9.5" Foreground="#10B981"/>
+                                                <TextBlock Text="{x:Bind}" FontSize="11.5" FontWeight="SemiBold" Foreground="#10B981"/>
+                                            </StackPanel>
+                                        </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-
-                            <!-- Lưới 42 ô ngày (6 tuần x 7 ngày) -->
-                            <ItemsControl ItemsSource="{x:Bind ViewModel.CalendarDays, Mode=OneWay}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <helpers:UniformGrid Columns="7"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="models:CalendarDayItem">
-                                        <Button Click="CalendarDayCell_Click"
-                                                Tag="{x:Bind}"
-                                                Padding="2,3"
-                                                Margin="1.5"
-                                                HorizontalAlignment="Stretch"
-                                                VerticalAlignment="Stretch"
-                                                MinHeight="54"
-                                                Background="{x:Bind IsToday, Mode=OneWay, Converter={StaticResource BoolToTodayBrushConverter}}"
-                                                BorderBrush="{x:Bind IsToday, Mode=OneWay, Converter={StaticResource BoolToTodayBorderBrushConverter}}"
-                                                BorderThickness="1"
-                                                CornerRadius="8">
-                                            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                                                <StackPanel Spacing="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                    <!-- Hàng hiển thị số ngày Dương và Âm lịch -->
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
-                                                        <!-- Ngày Dương -->
-                                                        <TextBlock Text="{x:Bind SolarDay}"
-                                                                   FontSize="13" FontWeight="Bold"
-                                                                   Opacity="{x:Bind IsCurrentMonth, Mode=OneWay, Converter={StaticResource BoolToMonthOpacityConverter}}"/>
-                                                        <!-- Ngày Âm -->
-                                                        <TextBlock Text="{x:Bind LunarDisplay}"
-                                                                   FontSize="9"
-                                                                   FontWeight="{x:Bind IsSpecialLunarDay, Mode=OneWay, Converter={StaticResource BoolToFontWeightConverter}}"
-                                                                   Foreground="{x:Bind IsSpecialLunarDay, Mode=OneWay, Converter={StaticResource BoolToSpecialLunarBrushConverter}}"
-                                                                   Opacity="0.85" VerticalAlignment="Center"/>
-                                                    </StackPanel>
-
-                                                    <!-- Nhãn Ngày Lễ Việt Nam nếu có -->
-                                                    <Border Visibility="{x:Bind HasHoliday, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                            Background="#DC2626" CornerRadius="4" Padding="3,1" Margin="0,1" HorizontalAlignment="Center">
-                                                        <TextBlock Text="{x:Bind HolidayName}" FontSize="8" FontWeight="Bold" Foreground="White"
-                                                                   TextTrimming="CharacterEllipsis" MaxWidth="50" TextAlignment="Center"/>
-                                                    </Border>
-
-                                                    <!-- Dự báo thời tiết (Icon + Dải nhiệt độ) -->
-                                                    <StackPanel Visibility="{x:Bind HasWeatherForecast, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                                Orientation="Horizontal" HorizontalAlignment="Center" Spacing="3" Margin="0,1,0,0">
-                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind WeatherIconGlyph, Mode=OneWay}"
-                                                                  FontSize="9"
-                                                                  Foreground="{x:Bind IsSunny, Mode=OneWay, Converter={StaticResource BoolToSunColorConverter}}"/>
-                                                        <TextBlock Text="{x:Bind TempRangeText, Mode=OneWay}" FontSize="8.5" FontWeight="SemiBold" Opacity="0.9"/>
-                                                    </StackPanel>
-
-                                                    <!-- Chỉ báo Mục tiêu ngày, Sự kiện cá nhân & Cảnh báo xung đột thời tiết v2.0 -->
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="2.5" Margin="0,1,0,0">
-                                                        <TextBlock Visibility="{x:Bind HasGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                                   Text="{x:Bind GoalIcon, Mode=OneWay}" FontSize="8" VerticalAlignment="Center"
-                                                                   ToolTipService.ToolTip="{x:Bind GoalText, Mode=OneWay}"/>
-                                                        <Ellipse Visibility="{x:Bind HasUserEvents, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                                 Width="5" Height="5" Fill="#8B5CF6" ToolTipService.ToolTip="Có sự kiện / kế hoạch ghi chú"/>
-                                                        <FontIcon Visibility="{x:Bind HasWeatherConflictWarning, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                                  FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf071;" FontSize="8" Foreground="#F59E0B"
-                                                                  ToolTipService.ToolTip="Cảnh báo: Thời tiết xung đột với kế hoạch ngoài trời!"/>
-                                                    </StackPanel>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Button>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-
-                            <!-- Chú thích chân lịch (Legend) -->
-                            <Grid ColumnDefinitions="*,Auto" Margin="0,2,0,0">
-                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
-                                    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                                        <Border Width="6" Height="6" CornerRadius="3" Background="#F59E0B"/>
-                                        <TextBlock Text="Mùng 1 &amp; Rằm" FontSize="10" Opacity="0.7"/>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                                        <Border Width="6" Height="6" CornerRadius="3" Background="#DC2626"/>
-                                        <TextBlock Text="Ngày Lễ" FontSize="10" Opacity="0.7"/>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                                        <TextBlock Text="🎯" FontSize="8.5"/>
-                                        <TextBlock Text="Mục tiêu" FontSize="10" Opacity="0.7"/>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                                        <Border Width="6" Height="6" CornerRadius="3" Background="#8B5CF6"/>
-                                        <TextBlock Text="Ghi chú" FontSize="10" Opacity="0.7"/>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf071;" FontSize="9" Foreground="#F59E0B"/>
-                                        <TextBlock Text="Cảnh báo thời tiết" FontSize="10" Opacity="0.7"/>
-                                    </StackPanel>
-                                </StackPanel>
-                                <TextBlock Grid.Column="1" Text="💡 Bấm vào ô ngày để xem chi tiết &amp; thêm kế hoạch" FontSize="10" Opacity="0.6"/>
-                            </Grid>
                         </StackPanel>
                     </Border>
-                        <!-- ==================== KHUNG CHI TIẾT NGÀY ĐANG CHỌN (INLINE DAY DETAILS - V3.0 BETA) ==================== -->
-                        <Border x:Name="SelectedDayDetailPanel"
-                                Visibility="{x:Bind ViewModel.SelectedCalendarDay, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}"
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="16"
-                                Padding="20">
-                            <StackPanel Spacing="16">
-                                <!-- HÀNG TIÊU ĐỀ NGÀY + NÚT VỀ HÔM NAY -->
-                                <Grid ColumnDefinitions="Auto,*,Auto">
-                                    <Border Grid.Column="0" Width="44" Height="44" CornerRadius="12" Background="#203B82F6" Margin="0,0,14,0">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" FontSize="18" Foreground="#3B82F6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                    <!-- ==================== NỘI DUNG 2 CỘT: THỜI TIẾT & MỤC TIÊU | KẾ HOẠCH & GHI CHÚ ==================== -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                        <!-- CỘT 1: THỜI TIẾT, CẢNH BÁO XUNG ĐỘT & MỤC TIÊU CÁ NHÂN -->
+                        <StackPanel Grid.Column="0" Spacing="12">
+                            <!-- Banner Cảnh Báo Xung Đột Thời Tiết -->
+                            <Border Visibility="{x:Bind ViewModel.SelectedCalendarDay.HasWeatherConflictWarning, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Background="#22F59E0B" BorderBrush="#80F59E0B" BorderThickness="1.5" CornerRadius="12" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="16" Background="#F59E0B">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf071;" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                            <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.DayOfWeekName, Mode=OneWay}" FontSize="15" FontWeight="Bold"/>
-                                            <TextBlock FontSize="15" FontWeight="Bold">
-                                                <Run Text="{x:Bind ViewModel.SelectedCalendarDay.SolarDay, Mode=OneWay}"/>
-                                                <Run Text="/"/>
-                                                <Run Text="{x:Bind ViewModel.SelectedCalendarDay.SolarMonth, Mode=OneWay}"/>
-                                                <Run Text="/"/>
-                                                <Run Text="{x:Bind ViewModel.SelectedCalendarDay.SolarYear, Mode=OneWay}"/>
-                                            </TextBlock>
-                                            <Border Visibility="{x:Bind ViewModel.SelectedCalendarDay.IsToday, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                    Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="6" Padding="6,2">
-                                                <TextBlock Text="Hôm nay" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
-                                            </Border>
-                                        </StackPanel>
-                                        <!-- Âm lịch & Tiết khí -->
-                                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                            <TextBlock FontSize="12.5" Foreground="{ThemeResource AccentFillColorDefaultBrush}" FontWeight="SemiBold">
-                                                <Run Text="🌙 Ngày"/>
-                                                <Run Text="{x:Bind ViewModel.SelectedCalendarDay.LunarDay, Mode=OneWay}"/>
-                                                <Run Text="Tháng"/>
-                                                <Run Text="{x:Bind ViewModel.SelectedCalendarDay.LunarMonth, Mode=OneWay}"/>
-                                                <Run Text="ÂL ("/>
-                                                <Run Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiYear, Mode=OneWay}"/>
-                                                <Run Text=")"/>
-                                            </TextBlock>
-                                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="4" Padding="6,1">
-                                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.SolarTerm, Mode=OneWay}" FontSize="11" Opacity="0.8"/>
-                                            </Border>
-                                        </StackPanel>
+                                        <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.WeatherConflictTitle, Mode=OneWay}" FontSize="12.5" FontWeight="Bold" Foreground="#F59E0B"/>
+                                        <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.WeatherConflictMessage, Mode=OneWay}" FontSize="11.5" Opacity="0.9" TextWrapping="Wrap"/>
                                     </StackPanel>
-                                    <Button Grid.Column="2" Click="GoToTodayCalendar_Click"
-                                            Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                            BorderThickness="1" CornerRadius="8" Padding="12,6"
-                                            ToolTipService.ToolTip="Xem chi tiết ngày hôm nay">
-                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="11" Foreground="#38BDF8"/>
-                                            <TextBlock Text="Về hôm nay" FontSize="11.5" FontWeight="SemiBold"/>
-                                        </StackPanel>
-                                    </Button>
                                 </Grid>
+                            </Border>
 
-                                <!-- NỘI DUNG 2 CỘT: CỘT TRÁI (THỜI TIẾT + CẢNH BÁO) | CỘT PHẢI (MỤC TIÊU + SỰ KIỆN GHI CHÚ) -->
-                                <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
-                                    <!-- CỘT 1: THỜI TIẾT & CẢNH BÁO -->
-                                    <StackPanel Grid.Column="0" Spacing="12">
-                                        <!-- Banner Cảnh Báo Xung Đột Thời Tiết -->
-                                        <Border Visibility="{x:Bind ViewModel.SelectedCalendarDay.HasWeatherConflictWarning, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                Background="#22F59E0B" BorderBrush="#80F59E0B" BorderThickness="1.5" CornerRadius="12" Padding="14,10">
-                                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                                                <Border Grid.Column="0" Width="32" Height="32" CornerRadius="16" Background="#F59E0B">
-                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf071;" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                                    <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.WeatherConflictTitle, Mode=OneWay}" FontSize="12.5" FontWeight="Bold" Foreground="#F59E0B"/>
-                                                    <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.WeatherConflictMessage, Mode=OneWay}" FontSize="11.5" Opacity="0.9" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-
-                                        <!-- Banner Ngày Lễ -->
-                                        <Border Visibility="{x:Bind ViewModel.SelectedCalendarDay.HasHoliday, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                Background="#18DC2626" BorderBrush="#80DC2626" BorderThickness="1" CornerRadius="12" Padding="14,10">
-                                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                                                <Border Grid.Column="0" Width="32" Height="32" CornerRadius="16" Background="#DC2626">
-                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf06b;" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                                        <Border Background="#DC2626" CornerRadius="4" Padding="5,1">
-                                                            <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.HolidayBadge, Mode=OneWay}" FontSize="9" FontWeight="Bold" Foreground="White"/>
-                                                        </Border>
-                                                        <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.HolidayName, Mode=OneWay}" FontSize="13" FontWeight="Bold" Foreground="#EF4444"/>
-                                                    </StackPanel>
-                                                    <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.HolidayDescription, Mode=OneWay}" FontSize="11.5" Opacity="0.85" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-
-                                        <!-- Dự Báo Thời Tiết Chi Tiết -->
-                                        <Border Visibility="{x:Bind ViewModel.SelectedCalendarDay.HasWeatherForecast, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                                BorderThickness="1" CornerRadius="12" Padding="14">
-                                            <StackPanel Spacing="10">
-                                                <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-                                                    <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}"
-                                                              Glyph="{x:Bind ViewModel.SelectedCalendarDay.WeatherIconGlyph, Mode=OneWay}"
-                                                              FontSize="24" Foreground="{ThemeResource AccentFillColorDefaultBrush}" Margin="0,0,10,0"/>
-                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                                        <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.WeatherCondition, Mode=OneWay}" FontSize="13.5" FontWeight="Bold"/>
-                                                        <TextBlock Text="Dự báo thời tiết chi tiết" FontSize="11" Opacity="0.65"/>
-                                                    </StackPanel>
-                                                    <TextBlock Grid.Column="2" Text="{x:Bind ViewModel.SelectedCalendarDay.TempRangeText, Mode=OneWay}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
-                                                </Grid>
-
-                                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                                                    <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="10,6">
-                                                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf043;" FontSize="12" Foreground="#38BDF8"/>
-                                                            <StackPanel Spacing="1">
-                                                                <TextBlock Text="Khả năng mưa" FontSize="10" Opacity="0.7"/>
-                                                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.RainProbabilityText, Mode=OneWay}" FontSize="12.5" FontWeight="Bold"/>
-                                                            </StackPanel>
-                                                        </StackPanel>
-                                                    </Border>
-                                                    <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="10,6">
-                                                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="12" Foreground="#F59E0B"/>
-                                                            <StackPanel Spacing="1">
-                                                                <TextBlock Text="Chỉ số UV" FontSize="10" Opacity="0.7"/>
-                                                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.UvText, Mode=OneWay}" FontSize="12.5" FontWeight="Bold"/>
-                                                            </StackPanel>
-                                                        </StackPanel>
-                                                    </Border>
-                                                </Grid>
-                                            </StackPanel>
-                                        </Border>
-
-                                        <!-- Ngoài phạm vi 7 ngày -->
-                                        <Border Visibility="{x:Bind ViewModel.SelectedCalendarDay.HasWeatherForecast, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}"
-                                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                                BorderThickness="1" CornerRadius="12" Padding="12">
-                                            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf05a;" FontSize="14" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                                                <TextBlock Text="Dữ liệu thời tiết chi tiết áp dụng cho 7 ngày tới. Khi ngày này đến gần sẽ tự động cập nhật."
-                                                           FontSize="11.5" Opacity="0.75" TextWrapping="Wrap"/>
-                                            </StackPanel>
-                                        </Border>
-
-                                        <!-- Mục Tiêu Trong Ngày -->
-                                        <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                                BorderThickness="1" CornerRadius="12" Padding="14">
-                                            <StackPanel Spacing="10">
-                                                <Grid ColumnDefinitions="*,Auto">
-                                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                                        <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.GoalIcon, Mode=OneWay}" FontSize="14" VerticalAlignment="Center"/>
-                                                        <TextBlock Text="Mục Tiêu Cá Nhân Trong Ngày" FontSize="13" FontWeight="Bold"/>
-                                                    </StackPanel>
-                                                    <Border Grid.Column="1" Background="#1810B981" CornerRadius="6" Padding="6,2"
-                                                            Visibility="{x:Bind ViewModel.SelectedCalendarDay.HasGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                        <TextBlock Text="Đã đặt mục tiêu" FontSize="10.5" FontWeight="SemiBold" Foreground="#10B981"/>
-                                                    </Border>
-                                                </Grid>
-
-                                                <Border Visibility="{x:Bind ViewModel.SelectedCalendarDay.HasGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                        Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="10,8">
-                                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalAlignment="Center">
-                                                        <CheckBox Grid.Column="0" IsChecked="{x:Bind ViewModel.SelectedCalendarDay.IsGoalCompleted, Mode=OneWay}"
-                                                                  Click="GoalCompletedCheckBox_Click" Margin="0" MinWidth="0" VerticalAlignment="Center"/>
-                                                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.SelectedCalendarDay.GoalText, Mode=OneWay}"
-                                                                   TextDecorations="{x:Bind ViewModel.SelectedCalendarDay.IsGoalCompleted, Mode=OneWay, Converter={StaticResource BoolToStrikeConverter}}"
-                                                                   FontSize="12.5" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                                                        <Button Grid.Column="2" Click="DeleteGoalButton_Click" Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="6,4">
-                                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2ed;" FontSize="11" Foreground="#EF4444"/>
-                                                        </Button>
-                                                    </Grid>
-                                                </Border>
-
-                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                                                    <TextBox x:Name="DayGoalInputTextBox" PlaceholderText="Đặt mục tiêu..." FontSize="12" CornerRadius="6"
-                                                             Text="{x:Bind ViewModel.SelectedCalendarDay.GoalText, Mode=OneWay}"/>
-                                                    <Button Grid.Column="1" Click="SaveGoalButton_Click" Style="{ThemeResource AccentButtonStyle}" Height="34" CornerRadius="6" Padding="10,0">
-                                                        <TextBlock Text="Lưu" FontSize="12" FontWeight="SemiBold"/>
-                                                    </Button>
-                                                </Grid>
-                                            </StackPanel>
-                                        </Border>
-                                    </StackPanel>
-
-                                    <!-- CỘT 2: KẾ HOẠCH & GHI CHÚ CÁ NHÂN -->
-                                    <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                            BorderThickness="1" CornerRadius="12" Padding="14">
-                                        <StackPanel Spacing="10">
-                                            <Grid ColumnDefinitions="*,Auto">
-                                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf02b;" FontSize="13" Foreground="#8B5CF6"/>
-                                                    <TextBlock Text="Kế Hoạch &amp; Ghi Chú Cá Nhân" FontSize="13" FontWeight="Bold"/>
-                                                </StackPanel>
-                                                <Border Grid.Column="1" Background="#228B5CF6" CornerRadius="6" Padding="6,2">
-                                                    <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.UserEventCount, Mode=OneWay}" FontSize="11" FontWeight="Bold" Foreground="#8B5CF6"/>
-                                                </Border>
-                                            </Grid>
-
-                                            <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedCalendarDay.UserEvents, Mode=OneWay}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate x:DataType="models:CalendarUserEvent">
-                                                        <Border Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="10,6" Margin="0,2">
-                                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
-                                                                <Border Grid.Column="0" Background="{x:Bind ColorHex, Converter={StaticResource HexToBrushConverter}}" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
-                                                                    <TextBlock Text="{x:Bind Category}" FontSize="9.5" FontWeight="Bold" Foreground="White"/>
-                                                                </Border>
-                                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                                                        <TextBlock Text="{x:Bind Title}" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-                                                                        <Border Visibility="{x:Bind HasSpecificTime, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                                                Background="#223B82F6" CornerRadius="4" Padding="4,1">
-                                                                            <TextBlock Text="{x:Bind TimeDisplay}" FontSize="9.5" FontWeight="SemiBold" Foreground="#3B82F6"/>
-                                                                        </Border>
-                                                                    </StackPanel>
-                                                                    <TextBlock Text="🌲 Hoạt động ngoài trời" FontSize="9.5" Foreground="#10B981" Visibility="{x:Bind IsOutdoor, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                                                </StackPanel>
-                                                                <Button Grid.Column="2" Click="DeleteEventButton_Click" Tag="{x:Bind Id}"
-                                                                        Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2">
-                                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2ed;" FontSize="10" Foreground="#EF4444"/>
-                                                                </Button>
-                                                            </Grid>
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-
-                                            <!-- Form Thêm Ghi Chú Nhanh -->
-                                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
-                                                <StackPanel Spacing="8">
-                                                    <TextBox x:Name="NewEventTitleBox" PlaceholderText="Nhập tên sự kiện / việc cần làm..." FontSize="12" CornerRadius="6"/>
-                                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                                                        <ComboBox x:Name="NewEventCategoryComboBox" SelectedIndex="0" HorizontalAlignment="Stretch" FontSize="11" CornerRadius="6">
-                                                            <ComboBoxItem Content="🌲 Ngoài trời / Dã ngoại" Tag="Ngoài trời"/>
-                                                            <ComboBoxItem Content="💼 Công việc / Học tập" Tag="Công việc"/>
-                                                            <ComboBoxItem Content="👥 Gia đình / Bạn bè" Tag="Gia đình"/>
-                                                            <ComboBoxItem Content="🏃 Thể thao / Rèn luyện" Tag="Thể thao"/>
-                                                            <ComboBoxItem Content="🎉 Kỷ niệm / Tiệc tùng" Tag="Kỷ niệm"/>
-                                                        </ComboBox>
-                                                        <CheckBox x:Name="NewEventIsOutdoorCheckBox" Grid.Column="1" Content="Ngoài trời" IsChecked="True" FontSize="11"/>
-                                                    </Grid>
-                                                    <Grid ColumnDefinitions="Auto,*,*" ColumnSpacing="6">
-                                                        <CheckBox x:Name="NewEventHasTimeCheckBox" Content="Có giờ" IsChecked="True" FontSize="11" VerticalAlignment="Center"/>
-                                                        <TimePicker x:Name="NewEventTimePicker" Grid.Column="1" ClockIdentifier="24HourClock" FontSize="11" HorizontalAlignment="Stretch"/>
-                                                        <ComboBox x:Name="NewEventReminderComboBox" Grid.Column="2" SelectedIndex="2" HorizontalAlignment="Stretch" FontSize="11">
-                                                            <ComboBoxItem Content="Không nhắc" Tag="0"/>
-                                                            <ComboBoxItem Content="Trước 15p" Tag="15"/>
-                                                            <ComboBoxItem Content="Trước 30p" Tag="30"/>
-                                                            <ComboBoxItem Content="Trước 1h" Tag="60"/>
-                                                        </ComboBox>
-                                                    </Grid>
-                                                    <Button Click="SaveEventButton_Click" Style="{ThemeResource AccentButtonStyle}"
-                                                            HorizontalAlignment="Stretch" Height="32" CornerRadius="6">
-                                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c7;" FontSize="11"/>
-                                                            <TextBlock Text="Lưu Kế Hoạch 📌" FontSize="11.5" FontWeight="SemiBold"/>
-                                                        </StackPanel>
-                                                    </Button>
-                                                </StackPanel>
+                            <!-- Banner Ngày Lễ -->
+                            <Border Visibility="{x:Bind ViewModel.SelectedCalendarDay.HasHoliday, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Background="#18DC2626" BorderBrush="#80DC2626" BorderThickness="1" CornerRadius="12" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="16" Background="#DC2626">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf06b;" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <Border Background="#DC2626" CornerRadius="4" Padding="5,1">
+                                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.HolidayBadge, Mode=OneWay}" FontSize="9" FontWeight="Bold" Foreground="White"/>
                                             </Border>
+                                            <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.HolidayName, Mode=OneWay}" FontSize="13" FontWeight="Bold" Foreground="#EF4444"/>
                                         </StackPanel>
+                                        <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.HolidayDescription, Mode=OneWay}" FontSize="11.5" Opacity="0.85" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Dự Báo Thời Tiết Chi Tiết -->
+                            <Border Visibility="{x:Bind ViewModel.SelectedCalendarDay.HasWeatherForecast, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="12" Padding="14">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}"
+                                                  Glyph="{x:Bind ViewModel.SelectedCalendarDay.WeatherIconGlyph, Mode=OneWay}"
+                                                  FontSize="24" Foreground="{ThemeResource AccentFillColorDefaultBrush}" Margin="0,0,10,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                            <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.WeatherCondition, Mode=OneWay}" FontSize="13.5" FontWeight="Bold"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.CalendarWeatherForecastHeader, Mode=OneWay}" FontSize="11" Opacity="0.65"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" Text="{x:Bind ViewModel.SelectedCalendarDay.TempRangeText, Mode=OneWay}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                        <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="10,6">
+                                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf043;" FontSize="12" Foreground="#38BDF8"/>
+                                                <StackPanel Spacing="1">
+                                                    <TextBlock Text="{x:Bind ViewModel.Loc.CalendarWeatherRainProb, Mode=OneWay}" FontSize="10" Opacity="0.7"/>
+                                                    <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.RainProbabilityText, Mode=OneWay}" FontSize="12.5" FontWeight="Bold"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="10,6">
+                                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="12" Foreground="#F59E0B"/>
+                                                <StackPanel Spacing="1">
+                                                    <TextBlock Text="{x:Bind ViewModel.Loc.CalendarWeatherUv, Mode=OneWay}" FontSize="10" Opacity="0.7"/>
+                                                    <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.UvText, Mode=OneWay}" FontSize="12.5" FontWeight="Bold"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Ngoài phạm vi 7 ngày dự báo thời tiết -->
+                            <Border Visibility="{x:Bind ViewModel.SelectedCalendarDay.HasWeatherForecast, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="12" Padding="12">
+                                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf05a;" FontSize="14" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.CalendarWeatherOutOfRange, Mode=OneWay}"
+                                               FontSize="11.5" Opacity="0.75" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Mục Tiêu Trong Ngày (Daily Goals & Focus) -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="12" Padding="14">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.GoalIcon, Mode=OneWay}" FontSize="14" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.CalendarDailyGoalHeader, Mode=OneWay}" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <Border Grid.Column="1" Background="#1810B981" CornerRadius="6" Padding="6,2"
+                                                Visibility="{x:Bind ViewModel.SelectedCalendarDay.HasGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.CalendarDailyGoalHasGoal, Mode=OneWay}" FontSize="10.5" FontWeight="SemiBold" Foreground="#10B981"/>
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Mục tiêu hiện tại nếu có -->
+                                    <Border Visibility="{x:Bind ViewModel.SelectedCalendarDay.HasGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                            Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="10,8">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalAlignment="Center">
+                                            <CheckBox Grid.Column="0" IsChecked="{x:Bind ViewModel.SelectedCalendarDay.IsGoalCompleted, Mode=OneWay}"
+                                                      Click="GoalCompletedCheckBox_Click" Margin="0" MinWidth="0" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.SelectedCalendarDay.GoalText, Mode=OneWay}"
+                                                       TextDecorations="{x:Bind ViewModel.SelectedCalendarDay.IsGoalCompleted, Mode=OneWay, Converter={StaticResource BoolToStrikeConverter}}"
+                                                       FontSize="12.5" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                            <Button Grid.Column="2" Click="DeleteGoalButton_Click" Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="6,4">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2ed;" FontSize="11" Foreground="#EF4444"/>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Ô nhập mục tiêu mới -->
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                        <TextBox x:Name="DayGoalInputTextBox" PlaceholderText="{x:Bind ViewModel.Loc.CalendarDailyGoalPlaceholder, Mode=OneWay}" FontSize="12" CornerRadius="6"
+                                                 Text="{x:Bind ViewModel.SelectedCalendarDay.GoalText, Mode=OneWay}"/>
+                                        <Button Grid.Column="1" Click="SaveGoalButton_Click" Style="{ThemeResource AccentButtonStyle}" Height="34" CornerRadius="6" Padding="10,0">
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.CalendarSaveGoal, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
+                                        </Button>
+                                    </Grid>
+
+                                    <!-- Gợi ý mục tiêu nhanh -->
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <Button Click="QuickGoalChip_Click" Tag="Tập thể dục 🏃"
+                                                Background="{ThemeResource SubtleFillColorTertiaryBrush}" BorderThickness="0" CornerRadius="4" Padding="6,2">
+                                            <TextBlock Text="Tập thể dục 🏃" FontSize="10.5"/>
+                                        </Button>
+                                        <Button Click="QuickGoalChip_Click" Tag="Ăn chay mùng 1/rằm 🥗"
+                                                Background="{ThemeResource SubtleFillColorTertiaryBrush}" BorderThickness="0" CornerRadius="4" Padding="6,2">
+                                            <TextBlock Text="Ăn chay 🥗" FontSize="10.5"/>
+                                        </Button>
+                                        <Button Click="QuickGoalChip_Click" Tag="Đọc sách 30p 📖"
+                                                Background="{ThemeResource SubtleFillColorTertiaryBrush}" BorderThickness="0" CornerRadius="4" Padding="6,2">
+                                            <TextBlock Text="Đọc sách 📖" FontSize="10.5"/>
+                                        </Button>
+                                        <Button Click="QuickGoalChip_Click" Tag="Uống đủ 2L nước 💧"
+                                                Background="{ThemeResource SubtleFillColorTertiaryBrush}" BorderThickness="0" CornerRadius="4" Padding="6,2">
+                                            <TextBlock Text="Uống nước 💧" FontSize="10.5"/>
+                                        </Button>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- CỘT 2: KẾ HOẠCH & GHI CHÚ CÁ NHÂN (PERSONAL SCHEDULE & EVENT PLANNER) -->
+                        <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="12" Padding="14">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf02b;" FontSize="13" Foreground="#8B5CF6"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.CalendarUserEventsHeader, Mode=OneWay}" FontSize="13" FontWeight="Bold"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="#228B5CF6" CornerRadius="6" Padding="6,2">
+                                        <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.UserEventCount, Mode=OneWay}" FontSize="11" FontWeight="Bold" Foreground="#8B5CF6"/>
                                     </Border>
                                 </Grid>
+
+                                <!-- Danh sách sự kiện người dùng trong ngày -->
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedCalendarDay.UserEvents, Mode=OneWay}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:CalendarUserEvent">
+                                            <Border Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="10,6" Margin="0,2">
+                                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
+                                                    <Border Grid.Column="0" Background="{x:Bind ColorHex, Converter={StaticResource HexToBrushConverter}}" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                                                        <TextBlock Text="{x:Bind Category}" FontSize="9.5" FontWeight="Bold" Foreground="White"/>
+                                                    </Border>
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                            <TextBlock Text="{x:Bind Title}" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                                            <Border Visibility="{x:Bind HasSpecificTime, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                                    Background="#223B82F6" CornerRadius="4" Padding="4,1">
+                                                                <TextBlock Text="{x:Bind TimeDisplay}" FontSize="9.5" FontWeight="SemiBold" Foreground="#3B82F6"/>
+                                                            </Border>
+                                                        </StackPanel>
+                                                        <TextBlock Text="🌲 Hoạt động ngoài trời" FontSize="9.5" Foreground="#10B981" Visibility="{x:Bind IsOutdoor, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                    </StackPanel>
+                                                    <Button Grid.Column="2" Click="DeleteEventButton_Click" Tag="{x:Bind Id}"
+                                                            Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2">
+                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2ed;" FontSize="10" Foreground="#EF4444"/>
+                                                    </Button>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <!-- Form Thêm Kế Hoạch / Ghi Chú Nhanh -->
+                                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
+                                    <StackPanel Spacing="8">
+                                        <TextBox x:Name="NewEventTitleBox" PlaceholderText="{x:Bind ViewModel.Loc.CalendarNewEventPlaceholder, Mode=OneWay}" FontSize="12" CornerRadius="6"/>
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <ComboBox x:Name="NewEventCategoryComboBox" SelectedIndex="0" HorizontalAlignment="Stretch" FontSize="11" CornerRadius="6">
+                                                <ComboBoxItem Content="{x:Bind ViewModel.Loc.CalendarCategoryOutdoor, Mode=OneWay}" Tag="Ngoài trời"/>
+                                                <ComboBoxItem Content="{x:Bind ViewModel.Loc.CalendarCategoryWork, Mode=OneWay}" Tag="Công việc"/>
+                                                <ComboBoxItem Content="{x:Bind ViewModel.Loc.CalendarCategoryFamily, Mode=OneWay}" Tag="Gia đình"/>
+                                                <ComboBoxItem Content="{x:Bind ViewModel.Loc.CalendarCategorySport, Mode=OneWay}" Tag="Thể thao"/>
+                                                <ComboBoxItem Content="{x:Bind ViewModel.Loc.CalendarCategoryCeremony, Mode=OneWay}" Tag="Kỷ niệm"/>
+                                                <ComboBoxItem Content="{x:Bind ViewModel.Loc.CalendarCategorySpiritual, Mode=OneWay}" Tag="Cúng lễ"/>
+                                            </ComboBox>
+                                            <CheckBox x:Name="NewEventIsOutdoorCheckBox" Grid.Column="1" Content="{x:Bind ViewModel.Loc.CalendarIsOutdoorLabel, Mode=OneWay}" IsChecked="True" FontSize="11"/>
+                                        </Grid>
+                                        <Grid ColumnDefinitions="Auto,*,*" ColumnSpacing="6">
+                                            <CheckBox x:Name="NewEventHasTimeCheckBox" Content="{x:Bind ViewModel.Loc.CalendarHasTimeLabel, Mode=OneWay}" IsChecked="True" FontSize="11" VerticalAlignment="Center"/>
+                                            <TimePicker x:Name="NewEventTimePicker" Grid.Column="1" ClockIdentifier="24HourClock" FontSize="11" HorizontalAlignment="Stretch"/>
+                                            <ComboBox x:Name="NewEventReminderComboBox" Grid.Column="2" SelectedIndex="2" HorizontalAlignment="Stretch" FontSize="11">
+                                                <ComboBoxItem Content="Không nhắc" Tag="0"/>
+                                                <ComboBoxItem Content="Trước 15p" Tag="15"/>
+                                                <ComboBoxItem Content="Trước 30p" Tag="30"/>
+                                                <ComboBoxItem Content="Trước 1h" Tag="60"/>
+                                            </ComboBox>
+                                        </Grid>
+                                        <Button Click="SaveEventButton_Click" Style="{ThemeResource AccentButtonStyle}"
+                                                HorizontalAlignment="Stretch" Height="32" CornerRadius="6">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c7;" FontSize="11"/>
+                                                <TextBlock Text="{x:Bind ViewModel.Loc.CalendarSavePlanBtn, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
                         </Border>
-                    </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ==================== 3. BỘ TRA CỨU & ĐỔI NGÀY ÂM ↔ DƯƠNG NHANH (LUNISOLAR CONVERTER) ==================== -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="22">
+                <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <Border Width="36" Height="36" CornerRadius="10" Background="#268B5CF6">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf362;" FontSize="16" Foreground="#8B5CF6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CalendarConverterHeader, Mode=OneWay}" FontSize="15" FontWeight="Bold"/>
+                                <TextBlock Text="Tra cứu đối soát hai chiều chính xác giữa Dương lịch và Âm lịch Việt Nam" FontSize="11" Opacity="0.7"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                        <!-- Cột 1: Dương Lịch -> Âm Lịch -->
+                        <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                CornerRadius="12" Padding="14">
+                            <StackPanel Spacing="10">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="12" Foreground="#F59E0B"/>
+                                    <TextBlock Text="Dương Lịch ➡️ Âm Lịch" FontSize="12.5" FontWeight="Bold"/>
+                                </StackPanel>
+
+                                <DatePicker x:Name="SolarDatePicker"
+                                            Date="{x:Bind ViewModel.ConverterSolarDate, Mode=TwoWay}"
+                                            HorizontalAlignment="Stretch"/>
+
+                                <Button Click="ConvertSolarToLunar_Click" Style="{ThemeResource AccentButtonStyle}"
+                                        HorizontalAlignment="Stretch" Height="32" CornerRadius="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf061;" FontSize="10"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.CalendarConvertSolarToLunarBtn, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Border Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="12,10" MinHeight="60">
+                                    <TextBlock Text="{x:Bind ViewModel.ConverterSolarToLunarResult, Mode=OneWay}"
+                                               FontSize="11.5" FontWeight="SemiBold" TextWrapping="Wrap"
+                                               Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Cột 2: Âm Lịch -> Dương Lịch -->
+                        <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                CornerRadius="12" Padding="14">
+                            <StackPanel Spacing="10">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf186;" FontSize="12" Foreground="#8B5CF6"/>
+                                    <TextBlock Text="Âm Lịch ➡️ Dương Lịch" FontSize="12.5" FontWeight="Bold"/>
+                                </StackPanel>
+
+                                <Grid ColumnDefinitions="*,*,*,Auto" ColumnSpacing="6">
+                                    <TextBox x:Name="LunarDayBox" Text="1" PlaceholderText="Ngày (1-30)" FontSize="11" CornerRadius="6"/>
+                                    <TextBox x:Name="LunarMonthBox" Grid.Column="1" Text="1" PlaceholderText="Tháng (1-12)" FontSize="11" CornerRadius="6"/>
+                                    <TextBox x:Name="LunarYearBox" Grid.Column="2" Text="2026" PlaceholderText="Năm" FontSize="11" CornerRadius="6"/>
+                                    <CheckBox x:Name="LunarLeapCheckBox" Grid.Column="3" Content="Nhuận" FontSize="10.5" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <Button Click="ConvertLunarToSolar_Click" Style="{ThemeResource AccentButtonStyle}"
+                                        HorizontalAlignment="Stretch" Height="32" CornerRadius="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf061;" FontSize="10"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.CalendarConvertLunarToSolarBtn, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Border Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="12,10" MinHeight="60">
+                                    <TextBlock Text="{x:Bind ViewModel.ConverterLunarToSolarResult, Mode=OneWay}"
+                                               FontSize="11.5" FontWeight="SemiBold" TextWrapping="Wrap"
+                                               Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
     </ScrollViewer>
 </UserControl>

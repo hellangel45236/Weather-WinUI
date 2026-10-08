@@ -118,4 +118,29 @@ public sealed partial class CalendarTab : UserControl
             ViewModel?.SetSelectedDayGoal(quickGoal);
         }
     }
+
+    private void CopyDayInfoButton_Click(object sender, RoutedEventArgs e)
+    {
+        ViewModel?.CopySelectedDayInfoCommand.Execute(null);
+    }
+
+    private void ConvertSolarToLunar_Click(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel == null) return;
+        if (SolarDatePicker != null)
+        {
+            ViewModel.ConverterSolarDate = SolarDatePicker.Date;
+        }
+        ViewModel.ConvertSolarToLunarCommand.Execute(null);
+    }
+
+    private void ConvertLunarToSolar_Click(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel == null) return;
+        if (int.TryParse(LunarDayBox?.Text, out int d)) ViewModel.ConverterLunarDay = d;
+        if (int.TryParse(LunarMonthBox?.Text, out int m)) ViewModel.ConverterLunarMonth = m;
+        if (int.TryParse(LunarYearBox?.Text, out int y)) ViewModel.ConverterLunarYear = y;
+        if (LunarLeapCheckBox != null) ViewModel.ConverterIsLunarLeap = LunarLeapCheckBox.IsChecked == true;
+        ViewModel.ConvertLunarToSolarCommand.Execute(null);
+    }
 }
