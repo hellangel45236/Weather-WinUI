@@ -17,12 +17,12 @@
                             <!-- ẢNH NỀN THÀNH PHỐ THỜI GIAN THỰC QUA IMAGEBRUSH (TỰ ĐỘNG THEO NỘI DUNG, KHÔNG LÀM PHÌNH CARD) -->
                             <Border x:Name="CityHeroBackgroundBorder" CornerRadius="16">
                                 <Border.Background>
-                                    <ImageBrush x:Name="CityHeroImageBrush" Stretch="UniformToFill" Opacity="0.38"/>
+                                    <ImageBrush x:Name="CityHeroImageBrush" Stretch="UniformToFill" Opacity="0.45"/>
                                 </Border.Background>
                             </Border>
 
                             <!-- LỚP PHỦ MÀU GRADIENT THEO THỜI TIẾT ĐỂ BẢO ĐẢM TƯƠNG PHẢN CHỮ HOÀN HẢO -->
-                            <Border CornerRadius="16" Opacity="0.80">
+                            <Border x:Name="HeroGradientOverlay" CornerRadius="16" Opacity="0.65">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                         <GradientStop Color="{x:Bind ViewModel.CurrentWeather.HeroGradientStart, Mode=OneWay, Converter={StaticResource HexToColorConverter}}" Offset="0"/>

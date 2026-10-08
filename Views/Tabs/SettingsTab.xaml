@@ -260,32 +260,103 @@
 
                         <!-- PANEL 2: HÌNH NỀN THÀNH PHỐ -->
                         <ScrollViewer x:Name="PanelCityBg" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
-                            <StackPanel Spacing="14">
+                            <StackPanel Spacing="16">
                                 <StackPanel Spacing="2">
                                     <TextBlock Text="Hình Nền Thành Phố (City Picture)" FontSize="16" FontWeight="Bold"/>
                                     <TextBlock Text="Hiện ảnh nền mờ nghệ thuật phía sau thẻ thời tiết hiện tại" FontSize="12" Opacity="0.7"/>
                                 </StackPanel>
 
-                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,12">
-                                    <StackPanel Spacing="12">
+                                <!-- Thẻ điều khiển chính -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,14">
+                                    <StackPanel Spacing="14">
                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                             <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf03e;" FontSize="16" Foreground="#EC4899" VerticalAlignment="Center"/>
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                 <TextBlock Text="Hình nền mờ theo địa điểm" FontWeight="SemiBold" FontSize="13"/>
-                                                <TextBlock Text="Tự động áp dụng ảnh thành phố tương ứng với vị trí đang xem" FontSize="11" Opacity="0.7"/>
+                                                <TextBlock Text="Tự động áp dụng ảnh thành phố tương ứng với vị trí đang xem hoặc ảnh mẫu tùy thích" FontSize="11" Opacity="0.7"/>
                                             </StackPanel>
                                             <ToggleSwitch Grid.Column="2" x:Name="CityBgToggle" Toggled="CityBgToggle_Toggled" VerticalAlignment="Center"/>
                                         </Grid>
 
-                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" x:Name="CityBgControlsPanel">
-                                            <ComboBox x:Name="CityImageModeComboBox" SelectionChanged="CityImageModeComboBox_SelectionChanged" HorizontalAlignment="Stretch">
-                                                <ComboBoxItem Content="🌐 Tự động theo địa điểm thời tiết" Tag="Auto"/>
-                                                <ComboBoxItem Content="🌆 Chọn trong danh sách ảnh mẫu" Tag="Preset"/>
-                                                <ComboBoxItem Content="📁 Tự chọn hình ảnh từ máy tính..." Tag="Custom"/>
-                                            </ComboBox>
-                                            <ComboBox Grid.Column="1" x:Name="PresetCityImageComboBox" Width="180" SelectionChanged="PresetCityImageComboBox_SelectionChanged" Visibility="Collapsed"/>
-                                            <Button Grid.Column="1" x:Name="BrowseCustomImageButton" Content="Chọn ảnh..." Click="BrowseCustomImageButton_Click" Visibility="Collapsed"/>
+                                        <StackPanel x:Name="CityBgControlsPanel" Spacing="12">
+                                            <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" Opacity="0.5"/>
+
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                                <ComboBox x:Name="CityImageModeComboBox" SelectionChanged="CityImageModeComboBox_SelectionChanged" HorizontalAlignment="Stretch">
+                                                    <ComboBoxItem Content="🌐 Tự động theo địa điểm thời tiết" Tag="Auto"/>
+                                                    <ComboBoxItem Content="🌆 Chọn trong danh sách ảnh mẫu" Tag="Preset"/>
+                                                    <ComboBoxItem Content="📁 Tự chọn hình ảnh từ máy tính..." Tag="Custom"/>
+                                                </ComboBox>
+                                                <ComboBox Grid.Column="1" x:Name="PresetCityImageComboBox" Width="200" SelectionChanged="PresetCityImageComboBox_SelectionChanged" Visibility="Collapsed"/>
+                                                <Button Grid.Column="1" x:Name="BrowseCustomImageButton" Content="Chọn ảnh..." Click="BrowseCustomImageButton_Click" Visibility="Collapsed"/>
+                                            </Grid>
+
+                                            <!-- Thanh thông tin ảnh tùy chỉnh từ máy tính -->
+                                            <Border x:Name="CustomImageInfoPanel" Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="12,10" Visibility="Collapsed">
+                                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                                    <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf15b;" FontSize="14" Foreground="#38BDF8" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="1" x:Name="CustomImagePathText" Text="Chưa chọn tệp ảnh nào" FontSize="12" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                                    <Button Grid.Column="2" x:Name="ChangeCustomImageButton" Content="Đổi ảnh khác..." FontSize="11.5" Padding="10,4" Click="BrowseCustomImageButton_Click"/>
+                                                </Grid>
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Thẻ Xem Trước Trực Quan Live Preview -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,14">
+                                    <StackPanel Spacing="12">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf06e;" FontSize="13" Foreground="#38BDF8" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Xem Trước Thẻ Thời Tiết Có Hình Nền" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="2" x:Name="PreviewModeBadge" Background="#2638BDF8" CornerRadius="6" Padding="8,3">
+                                                <TextBlock x:Name="PreviewModeBadgeText" Text="Tự động" FontSize="11" Foreground="#38BDF8" FontWeight="SemiBold"/>
+                                            </Border>
                                         </Grid>
+
+                                        <!-- Khung mô phỏng thẻ Hero Card có ảnh nền -->
+                                        <Border x:Name="PreviewHeroCardBorder" CornerRadius="14" Height="140" Background="#1E293B">
+                                            <Grid CornerRadius="14">
+                                                <!-- Ảnh nền mờ mô phỏng -->
+                                                <Border x:Name="PreviewCityImageBorder" CornerRadius="14">
+                                                    <Border.Background>
+                                                        <ImageBrush x:Name="PreviewCityImageBrush" Stretch="UniformToFill" Opacity="0.45"/>
+                                                    </Border.Background>
+                                                </Border>
+
+                                                <!-- Lớp gradient mô phỏng -->
+                                                <Border CornerRadius="14" Opacity="0.65">
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <GradientStop Color="#0284C7" Offset="0"/>
+                                                            <GradientStop Color="#0369A1" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+
+                                                <!-- Nội dung thông tin mô phỏng -->
+                                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6">
+                                                    <TextBlock x:Name="PreviewCityTitleText" Text="Sài Gòn" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                    <TextBlock x:Name="PreviewCitySubText" Text="Đang áp dụng: Sài Gòn.jpg" FontSize="12" Foreground="White" Opacity="0.9" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Bộ sưu tập ảnh mẫu có sẵn (Bấm để chọn nhanh) -->
+                                        <StackPanel Spacing="8" Margin="0,4,0,0">
+                                            <TextBlock Text="Danh sách 10 thành phố mẫu (Bấm để chọn nhanh làm hình nền):" FontSize="11.5" FontWeight="SemiBold" Opacity="0.8"/>
+                                            <ScrollViewer HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollBarVisibility="Disabled" VerticalScrollMode="Disabled">
+                                                <ItemsControl x:Name="CityPresetItemsControl">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <StackPanel Orientation="Horizontal" Spacing="8"/>
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                </ItemsControl>
+                                            </ScrollViewer>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>

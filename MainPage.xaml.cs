@@ -141,6 +141,7 @@ public sealed partial class MainPage : Page
                 switch (tag)
                 {
                     case "overview":
+                        TabOverview?.UpdateWeatherVisuals();
                         TabOverview?.StartEffects();
                         TabOverview?.RedrawCanvases();
                         (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();

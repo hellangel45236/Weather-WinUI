@@ -29,8 +29,31 @@ public sealed partial class OverviewTab : UserControl
     {
         if (d is OverviewTab tab)
         {
+            if (e.OldValue is MainViewModel oldVm)
+            {
+                oldVm.PropertyChanged -= tab.ViewModel_PropertyChanged;
+            }
+            if (e.NewValue is MainViewModel newVm)
+            {
+                newVm.PropertyChanged -= tab.ViewModel_PropertyChanged;
+                newVm.PropertyChanged += tab.ViewModel_PropertyChanged;
+            }
             tab.UpdateWeatherVisuals();
             tab.RedrawCanvases();
+        }
+    }
+
+    private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainViewModel.CurrentWeather) ||
+            e.PropertyName == nameof(MainViewModel.Settings) ||
+            e.PropertyName == nameof(MainViewModel.LocationTitle))
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                UpdateWeatherVisuals();
+                RedrawCanvases();
+            });
         }
     }
 
@@ -42,8 +65,21 @@ public sealed partial class OverviewTab : UserControl
 
         this.Loaded += (s, e) =>
         {
+            if (ViewModel != null)
+            {
+                ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+                ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+            }
             UpdateWeatherVisuals();
             RedrawCanvases();
+        };
+
+        this.Unloaded += (s, e) =>
+        {
+            if (ViewModel != null)
+            {
+                ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            }
         };
 
         if (SunArcCanvas != null)
@@ -101,6 +137,10 @@ public sealed partial class OverviewTab : UserControl
             {
                 CityHeroBackgroundBorder.Visibility = Visibility.Visible;
             }
+            if (HeroGradientOverlay != null)
+            {
+                HeroGradientOverlay.Opacity = 0.65;
+            }
         }
         else
         {
@@ -111,6 +151,10 @@ public sealed partial class OverviewTab : UserControl
             if (CityHeroBackgroundBorder != null)
             {
                 CityHeroBackgroundBorder.Visibility = Visibility.Collapsed;
+            }
+            if (HeroGradientOverlay != null)
+            {
+                HeroGradientOverlay.Opacity = 0.88;
             }
         }
 

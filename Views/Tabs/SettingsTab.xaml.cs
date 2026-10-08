@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using WeatherApp.Helpers;
 using WeatherApp.Models;
 using WeatherApp.Services;
 using WeatherApp.ViewModels;
@@ -82,7 +85,9 @@ public sealed partial class SettingsTab : UserControl
                     }
                 }
             }
+            PopulatePresetCityImageComboBox();
             UpdateCityControlsVisibility();
+            UpdateCityPreview();
 
             // Widget
             if (WidgetStyleComboBox != null)
@@ -291,6 +296,8 @@ public sealed partial class SettingsTab : UserControl
         {
             CityBgControlsPanel.Visibility = (CityBgToggle?.IsOn == true) ? Visibility.Visible : Visibility.Collapsed;
         }
+        ViewModel.UpdateCityBackground();
+        UpdateCityPreview();
         AutoSave();
     }
 
@@ -301,6 +308,9 @@ public sealed partial class SettingsTab : UserControl
         {
             ViewModel.Settings.CityBackgroundMode = tag;
             UpdateCityControlsVisibility();
+            ViewModel.UpdateCityBackground();
+            UpdateCityPreview();
+            PopulatePresetGallery();
             AutoSave();
         }
     }
@@ -311,7 +321,154 @@ public sealed partial class SettingsTab : UserControl
         if (PresetCityImageComboBox?.SelectedItem is ComboBoxItem item && item.Tag is string tag)
         {
             ViewModel.Settings.SelectedCityImage = tag;
+            ViewModel.UpdateCityBackground();
+            UpdateCityPreview();
+            PopulatePresetGallery();
             AutoSave();
+        }
+    }
+
+    private void PopulatePresetCityImageComboBox()
+    {
+        if (PresetCityImageComboBox == null) return;
+
+        PresetCityImageComboBox.Items.Clear();
+        var presets = CityBackgroundHelper.GetAvailablePresets();
+        foreach (var p in presets)
+        {
+            string name = Path.GetFileNameWithoutExtension(p);
+            PresetCityImageComboBox.Items.Add(new ComboBoxItem
+            {
+                Content = $"🌆 {name}",
+                Tag = p
+            });
+        }
+
+        if (presets.Count > 0)
+        {
+            string current = ViewModel?.Settings.SelectedCityImage ?? "";
+            int idx = presets.IndexOf(current);
+            PresetCityImageComboBox.SelectedIndex = idx >= 0 ? idx : 0;
+        }
+
+        PopulatePresetGallery();
+    }
+
+    private void PopulatePresetGallery()
+    {
+        if (CityPresetItemsControl == null) return;
+
+        CityPresetItemsControl.Items.Clear();
+        var presets = CityBackgroundHelper.GetAvailablePresets();
+        string current = ViewModel?.Settings.SelectedCityImage ?? "";
+
+        foreach (var p in presets)
+        {
+            string name = Path.GetFileNameWithoutExtension(p);
+            bool isSelected = (ViewModel?.Settings.CityBackgroundMode == "Preset" && string.Equals(current, p, StringComparison.OrdinalIgnoreCase));
+
+            var btn = new Button
+            {
+                Padding = new Thickness(10, 6, 10, 6),
+                CornerRadius = new CornerRadius(8),
+                Tag = p,
+                Background = isSelected ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(40, 56, 189, 248)) : null,
+                BorderBrush = isSelected ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(180, 56, 189, 248)) : null,
+                BorderThickness = new Thickness(isSelected ? 1.5 : 1)
+            };
+
+            var stack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+            stack.Children.Add(new FontIcon
+            {
+                FontFamily = (Microsoft.UI.Xaml.Media.FontFamily)Application.Current.Resources["FontAwesomeSolid"],
+                Glyph = isSelected ? "\uf058" : "\uf03e",
+                FontSize = 12,
+                Foreground = isSelected ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248)) : new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(180, 255, 255, 255))
+            });
+            stack.Children.Add(new TextBlock
+            {
+                Text = name,
+                FontSize = 12,
+                FontWeight = isSelected ? Microsoft.UI.Text.FontWeights.SemiBold : Microsoft.UI.Text.FontWeights.Normal
+            });
+
+            btn.Content = stack;
+            btn.Click += (s, e) =>
+            {
+                if (ViewModel == null) return;
+                ViewModel.Settings.CityBackgroundMode = "Preset";
+                ViewModel.Settings.SelectedCityImage = p;
+                SelectComboByTag(CityImageModeComboBox, "Preset");
+                SelectComboByTag(PresetCityImageComboBox, p);
+                UpdateCityControlsVisibility();
+                ViewModel.UpdateCityBackground();
+                UpdateCityPreview();
+                PopulatePresetGallery();
+                AutoSave();
+            };
+
+            CityPresetItemsControl.Items.Add(btn);
+        }
+    }
+
+    private void UpdateCityPreview()
+    {
+        if (ViewModel == null) return;
+        var s = ViewModel.Settings;
+
+        if (!s.EnableCityBackground)
+        {
+            if (PreviewCityImageBrush != null) PreviewCityImageBrush.ImageSource = null;
+            if (PreviewCityImageBorder != null) PreviewCityImageBorder.Visibility = Visibility.Collapsed;
+            if (PreviewModeBadgeText != null) PreviewModeBadgeText.Text = "Đang Tắt";
+            if (PreviewCitySubText != null) PreviewCitySubText.Text = "Hình nền mờ theo địa điểm đang TẮT";
+            return;
+        }
+
+        if (PreviewCityImageBorder != null) PreviewCityImageBorder.Visibility = Visibility.Visible;
+
+        string? imgPath = CityBackgroundHelper.ResolveImagePath(ViewModel.LocationTitle, s);
+        if (!string.IsNullOrEmpty(imgPath) && File.Exists(imgPath))
+        {
+            if (PreviewCityImageBrush != null)
+            {
+                PreviewCityImageBrush.ImageSource = CityBackgroundHelper.LoadOptimizedBitmap(imgPath, 450);
+            }
+
+            string fileName = Path.GetFileName(imgPath);
+            string cityName = Path.GetFileNameWithoutExtension(fileName);
+
+            string modeLabel = s.CityBackgroundMode switch
+            {
+                "Preset" => $"Ảnh mẫu: {fileName}",
+                "Custom" => $"Tùy chỉnh: {fileName}",
+                _ => $"Tự động theo: {ViewModel.LocationTitle}"
+            };
+
+            if (PreviewModeBadgeText != null) PreviewModeBadgeText.Text = s.CityBackgroundMode switch
+            {
+                "Preset" => "Ảnh mẫu",
+                "Custom" => "Tùy chỉnh",
+                _ => "Tự động"
+            };
+
+            if (PreviewCityTitleText != null) PreviewCityTitleText.Text = s.CityBackgroundMode == "Auto" ? ViewModel.LocationTitle : cityName;
+            if (PreviewCitySubText != null) PreviewCitySubText.Text = modeLabel;
+        }
+        else
+        {
+            if (PreviewCityImageBrush != null) PreviewCityImageBrush.ImageSource = null;
+            if (PreviewCityImageBorder != null) PreviewCityImageBorder.Visibility = Visibility.Collapsed;
+            if (PreviewCitySubText != null) PreviewCitySubText.Text = "Chưa có ảnh phù hợp";
+        }
+
+        if (CustomImageInfoPanel != null)
+        {
+            CustomImageInfoPanel.Visibility = (s.CityBackgroundMode == "Custom") ? Visibility.Visible : Visibility.Collapsed;
+            if (CustomImagePathText != null)
+            {
+                CustomImagePathText.Text = string.IsNullOrEmpty(s.CustomCityImagePath) ? "Chưa chọn tệp ảnh nào từ máy tính" : s.CustomCityImagePath;
+            }
         }
     }
 
@@ -325,6 +482,10 @@ public sealed partial class SettingsTab : UserControl
         if (BrowseCustomImageButton != null)
         {
             BrowseCustomImageButton.Visibility = mode == "Custom" ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (CustomImageInfoPanel != null)
+        {
+            CustomImageInfoPanel.Visibility = mode == "Custom" ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 
@@ -348,6 +509,11 @@ public sealed partial class SettingsTab : UserControl
             {
                 ViewModel.Settings.CustomCityImagePath = file.Path;
                 ViewModel.Settings.CityBackgroundMode = "Custom";
+                SelectComboByTag(CityImageModeComboBox, "Custom");
+                UpdateCityControlsVisibility();
+                ViewModel.UpdateCityBackground();
+                UpdateCityPreview();
+                PopulatePresetGallery();
                 AutoSave();
             }
         }
