@@ -25,8 +25,8 @@
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" Foreground="#10B981" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <StackPanel Spacing="2">
-                                <TextBlock Text="Đài Radar Doppler Khí Tượng 360°" FontSize="16" FontWeight="Bold"/>
-                                <TextBlock Text="Hệ thống quét mây đối lưu thời gian thực &amp; phân tích vi khí hậu đa tầng" FontSize="11.5" Opacity="0.65"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.RadarDopplerTitle, Mode=OneWay}" FontSize="16" FontWeight="Bold" TextWrapping="Wrap"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.RadarDopplerSub, Mode=OneWay}" FontSize="11.5" Opacity="0.65" TextWrapping="Wrap"/>
                             </StackPanel>
                         </StackPanel>
 
@@ -43,7 +43,7 @@
                                     ToolTipService.ToolTip="Bấm để tạm dừng hoặc tiếp tục vòng quét radar 360°">
                                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                     <FontIcon x:Name="TogglePauseIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf04c;" FontSize="11" Foreground="#38BDF8"/>
-                                    <TextBlock x:Name="TogglePauseText" Text="Tạm dừng" FontSize="11.5" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="TogglePauseText" Text="{x:Bind ViewModel.Loc.RadarPause, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </Button>
 
@@ -58,7 +58,7 @@
                                     ToolTipService.ToolTip="Đổi tốc độ chùm tia quét (1x, 2x, 0.5x)">
                                 <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e7;" FontSize="11" Foreground="#F59E0B"/>
-                                    <TextBlock x:Name="SpeedText" Text="Tốc độ: 1x" FontSize="11.5" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="SpeedText" Text="1x" FontSize="11.5" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </Button>
 
@@ -66,7 +66,7 @@
                             <Border x:Name="StatusBadgeBorder" Background="#2010B981" BorderBrush="#4010B981" BorderThickness="1" CornerRadius="8" Padding="10,5">
                                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                     <Ellipse x:Name="StatusDot" Width="8" Height="8" Fill="#10B981"/>
-                                    <TextBlock x:Name="StatusBadgeText" Text="Đang Quét 360°" FontSize="11.5" FontWeight="Bold" Foreground="#10B981"/>
+                                    <TextBlock x:Name="StatusBadgeText" Text="{x:Bind ViewModel.Loc.RadarScanningStatus, Mode=OneWay}" FontSize="11.5" FontWeight="Bold" Foreground="#10B981"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -80,7 +80,7 @@
                             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                 <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center" Margin="0,0,6,0">
                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf002;" FontSize="11" Foreground="#38BDF8"/>
-                                    <TextBlock Text="Bán kính:" FontSize="11.5" FontWeight="SemiBold" Opacity="0.8"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.RadarRadius, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold" Opacity="0.8"/>
                                 </StackPanel>
                                 <Button x:Name="BtnRange100" Tag="100" Click="RangeButton_Click" CornerRadius="8" Padding="10,4" FontSize="11" FontWeight="SemiBold" Background="{ThemeResource SubtleFillColorSecondaryBrush}" Content="100 km"/>
                                 <Button x:Name="BtnRange200" Tag="200" Click="RangeButton_Click" CornerRadius="8" Padding="10,4" FontSize="11" FontWeight="Bold" Background="#3538BDF8" BorderBrush="#38BDF8" BorderThickness="1" Content="200 km"/>
@@ -95,30 +95,30 @@
                             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                 <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center" Margin="0,0,6,0">
                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf5fd;" FontSize="11" Foreground="#10B981"/>
-                                    <TextBlock Text="Tầng quan trắc:" FontSize="11.5" FontWeight="SemiBold" Opacity="0.8"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.RadarObsLayer, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold" Opacity="0.8"/>
                                 </StackPanel>
                                 <Button x:Name="BtnLayerPrecip" Tag="Precipitation" Click="LayerButton_Click" CornerRadius="8" Padding="10,4" FontSize="11" FontWeight="Bold" Background="#3510B981" BorderBrush="#10B981" BorderThickness="1">
                                     <StackPanel Orientation="Horizontal" Spacing="5">
                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" FontSize="10.5" Foreground="#10B981"/>
-                                        <TextBlock Text="Mây Mưa (dBZ)"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.RadarLayerPrecip, Mode=OneWay}"/>
                                     </StackPanel>
                                 </Button>
                                 <Button x:Name="BtnLayerWind" Tag="Wind" Click="LayerButton_Click" CornerRadius="8" Padding="10,4" FontSize="11" FontWeight="SemiBold" Background="{ThemeResource SubtleFillColorSecondaryBrush}">
                                     <StackPanel Orientation="Horizontal" Spacing="5">
                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" FontSize="10.5" Foreground="#38BDF8"/>
-                                        <TextBlock Text="Véc-tơ Gió"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.RadarLayerWind, Mode=OneWay}"/>
                                     </StackPanel>
                                 </Button>
                                 <Button x:Name="BtnLayerLightning" Tag="Lightning" Click="LayerButton_Click" CornerRadius="8" Padding="10,4" FontSize="11" FontWeight="SemiBold" Background="{ThemeResource SubtleFillColorSecondaryBrush}">
                                     <StackPanel Orientation="Horizontal" Spacing="5">
                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e7;" FontSize="10.5" Foreground="#F59E0B"/>
-                                        <TextBlock Text="Tâm Dông &amp; Sét"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.RadarLayerLightning, Mode=OneWay}"/>
                                     </StackPanel>
                                 </Button>
                                 <Button x:Name="BtnLayerThermal" Tag="Thermal" Click="LayerButton_Click" CornerRadius="8" Padding="10,4" FontSize="11" FontWeight="SemiBold" Background="{ThemeResource SubtleFillColorSecondaryBrush}">
                                     <StackPanel Orientation="Horizontal" Spacing="5">
                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2c9;" FontSize="10.5" Foreground="#EF4444"/>
-                                        <TextBlock Text="Trường Nhiệt"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.RadarLayerThermal, Mode=OneWay}"/>
                                     </StackPanel>
                                 </Button>
                             </StackPanel>
@@ -135,7 +135,7 @@
                     <Grid ColumnDefinitions="Auto,*,Auto">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                             <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf080;" FontSize="11" Foreground="#38BDF8"/>
-                            <TextBlock Text="Thang phản hồi đối lưu dBZ:" FontSize="11" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBlock Text="{x:Bind ViewModel.Loc.RadarScaleDbz, Mode=OneWay}" FontSize="11" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         </StackPanel>
 
                         <!-- Dải gradient thang đo chuẩn WMO -->
@@ -154,11 +154,11 @@
                         </Grid>
 
                         <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                            <TextBlock Text="10-25 dBZ (Mây mỏng)" FontSize="10" Opacity="0.7"/>
+                            <TextBlock Text="{x:Bind ViewModel.Loc.RadarScaleLight, Mode=OneWay}" FontSize="10" Opacity="0.7"/>
                             <TextBlock Text="•" FontSize="10" Opacity="0.4"/>
-                            <TextBlock Text="30-45 dBZ (Mưa rào)" FontSize="10" Foreground="#F59E0B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{x:Bind ViewModel.Loc.RadarScaleModerate, Mode=OneWay}" FontSize="10" Foreground="#F59E0B" FontWeight="SemiBold"/>
                             <TextBlock Text="•" FontSize="10" Opacity="0.4"/>
-                            <TextBlock Text="50-65+ dBZ (Dông sét / Mưa đá)" FontSize="10" FontWeight="Bold" Foreground="#EF4444"/>
+                            <TextBlock Text="{x:Bind ViewModel.Loc.RadarScaleSevere, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#EF4444"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -173,7 +173,7 @@
                             <Border Grid.Column="0" Width="30" Height="30" CornerRadius="8" Background="#20059669" BorderBrush="#40059669" BorderThickness="1">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" Foreground="#10B981" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            <TextBlock Grid.Column="1" Text="Gió Beaufort" FontSize="12" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.RadarWindBeaufort, Mode=OneWay}" FontSize="12" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap"/>
                         </Grid>
                         <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WindText, Mode=OneWay}" FontSize="18" FontWeight="Bold"/>
                         <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WindDirectionText, Mode=OneWay}" FontSize="11" Foreground="#10B981" FontWeight="SemiBold"/>
@@ -187,10 +187,10 @@
                             <Border Grid.Column="0" Width="30" Height="30" CornerRadius="8" Background="#207C3AED" BorderBrush="#407C3AED" BorderThickness="1">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf14e;" Foreground="#A78BFA" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            <TextBlock Grid.Column="1" Text="Áp Suất Khí Quyển" FontSize="12" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.RadarAtmPressure, Mode=OneWay}" FontSize="12" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap"/>
                         </Grid>
                         <TextBlock Text="{x:Bind ViewModel.CurrentWeather.PressureText, Mode=OneWay}" FontSize="18" FontWeight="Bold"/>
-                        <TextBlock Text="Trạng thái cân bằng khí quyển" FontSize="11" Foreground="#A78BFA" FontWeight="SemiBold"/>
+                        <TextBlock Text="{x:Bind ViewModel.Loc.RadarPressureStatus, Mode=OneWay}" FontSize="11" Foreground="#A78BFA" FontWeight="SemiBold" TextWrapping="Wrap"/>
                     </StackPanel>
                 </Border>
 
@@ -201,10 +201,10 @@
                             <Border Grid.Column="0" Width="30" Height="30" CornerRadius="8" Background="#200284C7" BorderBrush="#400284C7" BorderThickness="1">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" Foreground="#38BDF8" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            <TextBlock Grid.Column="1" Text="Phản Hồi Cực Đại" FontSize="12" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.RadarMaxReflectivity, Mode=OneWay}" FontSize="12" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap"/>
                         </Grid>
                         <TextBlock x:Name="MaxDbzValueText" Text="28 dBZ" FontSize="18" FontWeight="Bold" Foreground="#38BDF8"/>
-                        <TextBlock x:Name="MaxDbzStatusText" Text="Mây mưa đối lưu nhẹ" FontSize="11" Opacity="0.75"/>
+                        <TextBlock x:Name="MaxDbzStatusText" Text="Mây mưa đối lưu nhẹ" FontSize="11" Opacity="0.75" TextWrapping="Wrap"/>
                     </StackPanel>
                 </Border>
 
@@ -215,10 +215,10 @@
                             <Border Grid.Column="0" Width="30" Height="30" CornerRadius="8" Background="#2010B981" BorderBrush="#4010B981" BorderThickness="1">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e7;" Foreground="#10B981" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            <TextBlock Grid.Column="1" Text="Rủi Ro Thiên Tai" FontSize="12" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.RadarDisasterRisk, Mode=OneWay}" FontSize="12" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap"/>
                         </Grid>
                         <TextBlock x:Name="RiskLevelText" Text="Bình Thường" FontSize="18" FontWeight="Bold" Foreground="#10B981"/>
-                        <TextBlock x:Name="RiskDetailText" Text="Không có áp thấp hay lốc xoáy" FontSize="11" Opacity="0.75"/>
+                        <TextBlock x:Name="RiskDetailText" Text="Không có áp thấp hay lốc xoáy" FontSize="11" Opacity="0.75" TextWrapping="Wrap"/>
                     </StackPanel>
                 </Border>
             </Grid>

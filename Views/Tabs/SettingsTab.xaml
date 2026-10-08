@@ -22,19 +22,19 @@
                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf013;" Foreground="#94A3B8" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                     <StackPanel Spacing="2">
-                                        <TextBlock Text="Trung Tâm Cài Đặt &amp; Cá Nhân Hóa (Version 3.0.0)" FontSize="16" FontWeight="Bold"/>
-                                        <TextBlock Text="Quản lý giao diện, biểu tượng, đơn vị, ảnh nền, thông báo và hiệu năng hệ thống" FontSize="11.5" Opacity="0.65"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.SettingsHeaderTitle, Mode=OneWay}" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.SettingsHeaderSubtitle, Mode=OneWay}" FontSize="11.5" Opacity="0.65" TextWrapping="Wrap"/>
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                                     <Button Click="SaveSettingsTab_Click" Style="{ThemeResource AccentButtonStyle}" CornerRadius="10" Padding="14,6">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                             <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c7;" FontSize="11"/>
-                                            <TextBlock Text="Lưu &amp; Áp Dụng" FontWeight="Bold"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.SaveApplyButton, Mode=OneWay}" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Button>
                                     <Border Background="#258B5CF6" BorderBrush="#8B5CF6" BorderThickness="1" CornerRadius="8" Padding="10,6">
-                                        <TextBlock Text="Version 3.0.0 (Chính Thức)" FontSize="12" FontWeight="Bold" Foreground="#A78BFA"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.VersionBadge, Mode=OneWay}" FontSize="12" FontWeight="Bold" Foreground="#A78BFA"/>
                                     </Border>
                                 </StackPanel>
                             </Grid>
@@ -46,56 +46,56 @@
                                 BorderThickness="1"
                                 CornerRadius="16"
                                 Padding="16">
-            <Grid ColumnDefinitions="230,*" MinHeight="620" ColumnSpacing="16" Margin="0,8,0,0">
+            <Grid ColumnDefinitions="245,*" MinHeight="620" ColumnSpacing="16" Margin="0,8,0,0">
                 <!-- CỘT 1: THANH ĐIỀU HƯỚNG DANH MỤC CÀI ĐẶT (SIDEBAR) -->
                 <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="6">
                     <ListView x:Name="SettingsNavListView" SelectionChanged="SettingsNavListView_SelectionChanged" SelectionMode="Single" SelectedIndex="0">
                         <ListViewItem Tag="0">
                             <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf007;" FontSize="14" Foreground="#38BDF8"/>
-                                <TextBlock Text="Cá nhân hóa" FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CatPersonalization, Mode=OneWay}" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </ListViewItem>
                         <ListViewItem Tag="7">
                             <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf53f;" FontSize="14" Foreground="#F43F5E"/>
-                                <TextBlock Text="Giao diện &amp; Biểu tượng" FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CatAppearance, Mode=OneWay}" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </ListViewItem>
                         <ListViewItem Tag="1">
                             <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf017;" FontSize="14" Foreground="#F59E0B"/>
-                                <TextBlock Text="Thời gian &amp; Đơn vị" FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CatTimeUnits, Mode=OneWay}" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </ListViewItem>
                         <ListViewItem Tag="2">
                             <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf03e;" FontSize="14" Foreground="#EC4899"/>
-                                <TextBlock Text="Hình nền thành phố" FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CatCityBg, Mode=OneWay}" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </ListViewItem>
                         <ListViewItem Tag="3">
                             <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" FontSize="14" Foreground="#A855F7"/>
-                                <TextBlock Text="Widget Desktop" FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CatWidget, Mode=OneWay}" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </ListViewItem>
                         <ListViewItem Tag="4">
                             <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0f3;" FontSize="14" Foreground="#EF4444"/>
-                                <TextBlock Text="Thông báo &amp; Khay" FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CatNotifications, Mode=OneWay}" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </ListViewItem>
                         <ListViewItem Tag="5">
                             <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf011;" FontSize="14" Foreground="#10B981"/>
-                                <TextBlock Text="Hiệu năng &amp; Khởi động" FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CatPerformance, Mode=OneWay}" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </ListViewItem>
                         <ListViewItem Tag="6">
                             <StackPanel Orientation="Horizontal" Spacing="10" Padding="4,6">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf05a;" FontSize="14" Foreground="#6366F1"/>
-                                <TextBlock Text="Giới thiệu &amp; Changelog" FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CatAbout, Mode=OneWay}" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </ListViewItem>
                     </ListView>
@@ -104,22 +104,42 @@
                 <!-- CỘT 2: CHI TIẾT TỪNG DANH MỤC -->
                 <Border Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="16,14">
                     <Grid>
-                        <!-- PANEL 0: CÁ NHÂN HÓA -->
+                        <!-- PANEL 0: CÁ NHÂN HÓA (PERSONALIZATION) -->
                         <ScrollViewer x:Name="PanelPersonalization" VerticalScrollBarVisibility="Auto">
                             <StackPanel Spacing="14">
                                 <StackPanel Spacing="2">
-                                    <TextBlock Text="Cá Nhân Hóa" FontSize="16" FontWeight="Bold"/>
-                                    <TextBlock Text="Thiết lập tên hiển thị và trải nghiệm cá nhân của bạn" FontSize="12" Opacity="0.7"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.PersonalizationHeader, Mode=OneWay}" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.PersonalizationSub, Mode=OneWay}" FontSize="12" Opacity="0.7" TextWrapping="Wrap"/>
                                 </StackPanel>
 
+                                <!-- Tên người dùng -->
                                 <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,12">
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf007;" FontSize="16" Foreground="#38BDF8" VerticalAlignment="Center"/>
+                                        <Border Grid.Column="0" Width="32" Height="32" CornerRadius="8" Background="#2038BDF8" BorderBrush="#4038BDF8" BorderThickness="1">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf007;" FontSize="14" Foreground="#38BDF8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="Tên của bạn" FontWeight="SemiBold" FontSize="13"/>
-                                            <TextBlock Text="Tên hiển thị trong lời chào và các thông báo hàng ngày" FontSize="11" Opacity="0.7"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.UserNameTitle, Mode=OneWay}" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.UserNameSub, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
                                         </StackPanel>
-                                        <TextBox Grid.Column="2" x:Name="SettingsUserNameBox" Width="180" PlaceholderText="Nhập tên..." VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" x:Name="SettingsUserNameBox" Width="180" PlaceholderText="{x:Bind ViewModel.Loc.UserNamePlaceholder, Mode=OneWay}" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Cài đặt Ngôn ngữ giao diện (Bilingual: Tiếng Việt & English - Responsive UI) -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,12">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <Border Grid.Column="0" Width="32" Height="32" CornerRadius="8" Background="#2010B981" BorderBrush="#4010B981" BorderThickness="1">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf1ab;" FontSize="14" Foreground="#10B981" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.SettingsLanguage, Mode=OneWay}" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.SettingsLanguageDesc, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <ComboBox Grid.Column="2" x:Name="LanguageComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="LanguageComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="🇻🇳 Tiếng Việt" Tag="vi-VN"/>
+                                            <ComboBoxItem Content="🇬🇧 English" Tag="en-US"/>
+                                        </ComboBox>
                                     </Grid>
                                 </Border>
                             </StackPanel>
@@ -129,8 +149,8 @@
                         <ScrollViewer x:Name="PanelTimeUnits" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
                             <StackPanel Spacing="12">
                                 <StackPanel Spacing="2">
-                                    <TextBlock Text="Thời Gian &amp; Đơn Vị Đo Lường" FontSize="16" FontWeight="Bold"/>
-                                    <TextBlock Text="Tùy chỉnh định dạng giờ, múi giờ và các đơn vị thời tiết" FontSize="12" Opacity="0.7"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.TimeUnitsHeader, Mode=OneWay}" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.TimeUnitsSub, Mode=OneWay}" FontSize="12" Opacity="0.7" TextWrapping="Wrap"/>
                                 </StackPanel>
 
                                 <!-- Múi giờ -->
@@ -138,8 +158,8 @@
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                         <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0ac;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="Múi giờ đồng hồ" FontWeight="SemiBold" FontSize="13"/>
-                                            <TextBlock Text="Chọn múi giờ hiển thị trên đồng hồ thời tiết" FontSize="11" Opacity="0.7"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.TimezoneTitle, Mode=OneWay}" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.TimezoneSub, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
                                         </StackPanel>
                                         <ComboBox Grid.Column="2" x:Name="TimezoneComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="TimezoneComboBox_SelectionChanged">
                                             <ComboBoxItem Content="🌐 Tự động (Hệ thống)" Tag="Auto"/>
@@ -157,8 +177,8 @@
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                         <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf017;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="Định dạng giờ" FontWeight="SemiBold" FontSize="13"/>
-                                            <TextBlock Text="Hiển thị theo chuẩn 24 giờ hoặc 12 giờ AM/PM" FontSize="11" Opacity="0.7"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.HourFormatTitle, Mode=OneWay}" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.HourFormatSub, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
                                         </StackPanel>
                                         <ToggleSwitch Grid.Column="2" x:Name="HourFormatToggle" OnContent="24 Giờ" OffContent="12 Giờ" IsOn="{x:Bind ViewModel.Settings.Is24HourFormat, Mode=TwoWay}" Toggled="HourFormatToggle_Toggled" VerticalAlignment="Center"/>
                                     </Grid>
@@ -169,8 +189,8 @@
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                         <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="Định dạng ngày tháng" FontWeight="SemiBold" FontSize="13"/>
-                                            <TextBlock Text="Kiểu hiển thị ngày tháng trên màn hình" FontSize="11" Opacity="0.7"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.DateFormatTitle, Mode=OneWay}" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.DateFormatSub, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
                                         </StackPanel>
                                         <ComboBox Grid.Column="2" x:Name="DateFormatComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="DateFormatComboBox_SelectionChanged">
                                             <ComboBoxItem Content="dd/MM/yyyy (30/09/2026)" Tag="dd/MM/yyyy"/>
@@ -185,8 +205,8 @@
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                         <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" FontSize="15" Foreground="{ThemeResource AccentFillColorDefaultBrush}" VerticalAlignment="Center"/>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="Ngày bắt đầu tuần" FontWeight="SemiBold" FontSize="13"/>
-                                            <TextBlock Text="Chọn ngày đầu tiên hiển thị trên Lịch tháng" FontSize="11" Opacity="0.7"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.FirstDayOfWeekTitle, Mode=OneWay}" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.FirstDayOfWeekSub, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
                                         </StackPanel>
                                         <ComboBox Grid.Column="2" x:Name="FirstDayOfWeekComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="FirstDayOfWeekComboBox_SelectionChanged">
                                             <ComboBoxItem Content="📅 Thứ Hai (Mặc định)" Tag="Monday"/>
@@ -200,8 +220,8 @@
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                         <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2c9;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="Đơn vị nhiệt độ" FontWeight="SemiBold" FontSize="13"/>
-                                            <TextBlock Text="Hiển thị độ Celsius (°C) hoặc Fahrenheit (°F)" FontSize="11" Opacity="0.7"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.TempUnitTitle, Mode=OneWay}" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.TempUnitSub, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
                                         </StackPanel>
                                         <ComboBox Grid.Column="2" x:Name="TempUnitComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="TempUnitComboBox_SelectionChanged">
                                             <ComboBoxItem Content="Độ C (°C)" Tag="C"/>
@@ -215,8 +235,8 @@
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                         <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="Đơn vị tốc độ gió" FontWeight="SemiBold" FontSize="13"/>
-                                            <TextBlock Text="km/h, m/s hoặc mph" FontSize="11" Opacity="0.7"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.WindUnitTitle, Mode=OneWay}" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.WindUnitSub, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
                                         </StackPanel>
                                         <ComboBox Grid.Column="2" x:Name="WindUnitComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="WindUnitComboBox_SelectionChanged">
                                             <ComboBoxItem Content="km/h" Tag="kmh"/>
@@ -231,8 +251,8 @@
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                         <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e4;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="Đơn vị áp suất khí quyển" FontWeight="SemiBold" FontSize="13"/>
-                                            <TextBlock Text="hPa hoặc mmHg" FontSize="11" Opacity="0.7"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.PressureUnitTitle, Mode=OneWay}" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.PressureUnitSub, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
                                         </StackPanel>
                                         <ComboBox Grid.Column="2" x:Name="PressureUnitComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="PressureUnitComboBox_SelectionChanged">
                                             <ComboBoxItem Content="hPa (chuẩn)" Tag="hPa"/>
@@ -246,8 +266,8 @@
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                         <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="Đơn vị lượng mưa" FontWeight="SemiBold" FontSize="13"/>
-                                            <TextBlock Text="Milimét (mm) hoặc Inch (in)" FontSize="11" Opacity="0.7"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.PrecipUnitTitle, Mode=OneWay}" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.PrecipUnitSub, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
                                         </StackPanel>
                                         <ComboBox Grid.Column="2" x:Name="PrecipUnitComboBox" SelectedIndex="0" Width="180" VerticalAlignment="Center" SelectionChanged="PrecipUnitComboBox_SelectionChanged">
                                             <ComboBoxItem Content="mm (milimét)" Tag="mm"/>
@@ -660,7 +680,7 @@
                                             <StackPanel Orientation="Horizontal" Spacing="8">
                                                 <TextBlock Text="Weather WinUI" FontSize="16" FontWeight="Bold"/>
                                                 <Border Background="#10B981" CornerRadius="6" Padding="6,1">
-                                                    <TextBlock Text="v3.0.2 Official" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                                    <TextBlock Text="v3.0.3 Official" FontSize="10" FontWeight="Bold" Foreground="White"/>
                                                 </Border>
                                             </StackPanel>
                                             <TextBlock Text="Ứng dụng thời tiết hiện đại, siêu nhẹ, tương thích hoàn hảo Windows 10 &amp; 11" FontSize="11" Opacity="0.7"/>

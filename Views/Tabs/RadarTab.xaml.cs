@@ -45,10 +45,37 @@ public sealed partial class RadarTab : UserControl
         this.InitializeComponent();
         this.Loaded += (s, e) =>
         {
+            UpdateControlTexts();
             UpdateTelemetryIndicators();
             StartRadarSweep();
         };
         this.Unloaded += (s, e) => StopRadarSweep();
+
+        Services.LocalizationService.Instance.LanguageChanged += (s, e) =>
+        {
+            UpdateControlTexts();
+            UpdateTelemetryIndicators();
+            RenderRadarSimulation();
+        };
+    }
+
+    private void UpdateControlTexts()
+    {
+        var loc = Services.LocalizationService.Instance;
+        if (_isSweepingPaused)
+        {
+            TogglePauseText.Text = loc.RadarResume;
+            StatusBadgeText.Text = loc.RadarPausedStatus;
+        }
+        else
+        {
+            TogglePauseText.Text = loc.RadarPause;
+            StatusBadgeText.Text = loc.RadarScanningStatus;
+        }
+        SpeedText.Text = $"{_sweepSpeedMultiplier}x";
+
+        ToolTipService.SetToolTip(BtnTogglePause, loc.RadarPauseTooltip);
+        ToolTipService.SetToolTip(BtnToggleSpeed, loc.RadarSpeedTooltip);
     }
 
     public void StartRadarSweep()
@@ -88,25 +115,26 @@ public sealed partial class RadarTab : UserControl
     private void TogglePause_Click(object sender, RoutedEventArgs e)
     {
         _isSweepingPaused = !_isSweepingPaused;
+        var loc = Services.LocalizationService.Instance;
 
         if (_isSweepingPaused)
         {
             TogglePauseIcon.Glyph = "\uf04b"; // Play icon
-            TogglePauseText.Text = "Tiếp tục";
+            TogglePauseText.Text = loc.RadarResume;
             StatusBadgeBorder.Background = new SolidColorBrush(Color.FromArgb(40, 245, 158, 11));
             StatusBadgeBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(90, 245, 158, 11));
             StatusDot.Fill = new SolidColorBrush(Color.FromArgb(255, 245, 158, 11));
-            StatusBadgeText.Text = "Đã Tạm Dừng";
+            StatusBadgeText.Text = loc.RadarPausedStatus;
             StatusBadgeText.Foreground = new SolidColorBrush(Color.FromArgb(255, 245, 158, 11));
         }
         else
         {
             TogglePauseIcon.Glyph = "\uf04c"; // Pause icon
-            TogglePauseText.Text = "Tạm dừng";
+            TogglePauseText.Text = loc.RadarPause;
             StatusBadgeBorder.Background = new SolidColorBrush(Color.FromArgb(32, 16, 185, 129));
             StatusBadgeBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(70, 16, 185, 129));
             StatusDot.Fill = new SolidColorBrush(Color.FromArgb(255, 16, 185, 129));
-            StatusBadgeText.Text = "Đang Quét 360°";
+            StatusBadgeText.Text = loc.RadarScanningStatus;
             StatusBadgeText.Foreground = new SolidColorBrush(Color.FromArgb(255, 16, 185, 129));
         }
     }
@@ -120,7 +148,7 @@ public sealed partial class RadarTab : UserControl
         else
             _sweepSpeedMultiplier = 1.0;
 
-        SpeedText.Text = $"Tốc độ: {_sweepSpeedMultiplier}x";
+        SpeedText.Text = $"{_sweepSpeedMultiplier}x";
     }
 
     private void RangeButton_Click(object sender, RoutedEventArgs e)
@@ -207,15 +235,16 @@ public sealed partial class RadarTab : UserControl
                     : new SolidColorBrush(Color.FromArgb(255, 56, 189, 248)));
         }
 
+        bool isVi = Services.LocalizationService.Instance.IsVietnamese;
         if (MaxDbzStatusText != null)
         {
             MaxDbzStatusText.Text = maxDbz switch
             {
-                >= 55 => "Mây dông đối lưu cực mạnh",
-                >= 45 => "Mưa to diện rộng",
-                >= 35 => "Mưa rào đối lưu cục bộ",
-                >= 25 => "Mưa phùn rải rác",
-                _ => "Phản hồi mây mỏng bình thường"
+                >= 55 => isVi ? "Mây dông đối lưu cực mạnh" : "Severe convective storm cloud",
+                >= 45 => isVi ? "Mưa to diện rộng" : "Widespread heavy rain",
+                >= 35 => isVi ? "Mưa rào đối lưu cục bộ" : "Local convective showers",
+                >= 25 => isVi ? "Mưa phùn rải rác" : "Scattered light drizzle",
+                _ => isVi ? "Phản hồi mây mỏng bình thường" : "Normal light cloud reflectivity"
             };
         }
 
@@ -223,10 +252,10 @@ public sealed partial class RadarTab : UserControl
         {
             RiskLevelText.Text = effect switch
             {
-                WeatherEffectType.Thunderstorm => "Cảnh Báo Dông Sét",
-                WeatherEffectType.HeavyRain => "Nguy Cơ Ngập Úng",
-                WeatherEffectType.HighUvSunny => "Nắng Gắt - UV Cao",
-                _ => "Bình Thường"
+                WeatherEffectType.Thunderstorm => isVi ? "Cảnh Báo Dông Sét" : "Thunderstorm Warning",
+                WeatherEffectType.HeavyRain => isVi ? "Nguy Cơ Ngập Úng" : "Urban Flood Risk",
+                WeatherEffectType.HighUvSunny => isVi ? "Nắng Gắt - UV Cao" : "Intense Sun - High UV",
+                _ => isVi ? "Bình Thường" : "Normal"
             };
 
             RiskLevelText.Foreground = effect switch
@@ -241,9 +270,9 @@ public sealed partial class RadarTab : UserControl
         {
             RiskDetailText.Text = effect switch
             {
-                WeatherEffectType.Thunderstorm => "Có thể xuất hiện sét đánh & gió giật mạnh",
-                WeatherEffectType.HeavyRain => "Lượng mưa lớn cục bộ trong 1-2h tới",
-                _ => "Không có áp thấp nhiệt đới hay lốc xoáy"
+                WeatherEffectType.Thunderstorm => isVi ? "Có thể xuất hiện sét đánh & gió giật mạnh" : "Possible lightning strikes & strong gusts",
+                WeatherEffectType.HeavyRain => isVi ? "Lượng mưa lớn cục bộ trong 1-2h tới" : "Heavy local rainfall in next 1-2h",
+                _ => isVi ? "Không có áp thấp nhiệt đới hay lốc xoáy" : "No tropical depression or tornadoes"
             };
         }
     }
@@ -320,7 +349,9 @@ public sealed partial class RadarTab : UserControl
             }
 
             // 3. Các nan hoa góc tọa độ la bàn (Cardinal Spoke Lines 8 hướng)
-            string[] cardinalLabels = { "BẮC (0°)", "ĐB (45°)", "ĐÔNG (90°)", "ĐN (135°)", "NAM (180°)", "TN (225°)", "TÂY (270°)", "TB (315°)" };
+            string[] cardinalLabels = Services.LocalizationService.Instance.IsVietnamese
+                ? new[] { "BẮC (0°)", "ĐB (45°)", "ĐÔNG (90°)", "ĐN (135°)", "NAM (180°)", "TN (225°)", "TÂY (270°)", "TB (315°)" }
+                : new[] { "NORTH (0°)", "NE (45°)", "EAST (90°)", "SE (135°)", "SOUTH (180°)", "SW (225°)", "WEST (270°)", "NW (315°)" };
             for (int i = 0; i < 8; i++)
             {
                 double deg = i * 45;

@@ -34,6 +34,7 @@ public class AppSettings
 
     // 7. Thông tin cá nhân hóa người dùng
     public string UserName { get; set; } = string.Empty;
+    public string AppLanguage { get; set; } = "vi-VN"; // "vi-VN", "en-US"
 
     // 8. Cấu hình Widget Desktop
     public string WidgetStyle { get; set; } = "BryanCDynamic"; // "BryanCDynamic", "GlassCard", "Compact", "MiniIsland"

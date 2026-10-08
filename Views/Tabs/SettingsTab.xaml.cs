@@ -49,8 +49,9 @@ public sealed partial class SettingsTab : UserControl
         {
             var s = ViewModel.Settings;
 
-            // User name
+            // User name & Language
             if (SettingsUserNameBox != null) SettingsUserNameBox.Text = s.UserName ?? "";
+            SelectComboByTag(LanguageComboBox, s.AppLanguage ?? "vi-VN");
 
             // Navigation panel selection default
             if (SettingsNavListView != null && SettingsNavListView.SelectedIndex < 0)
@@ -787,6 +788,18 @@ public sealed partial class SettingsTab : UserControl
         ReopenOnboardingRequested?.Invoke(this, EventArgs.Empty);
     }
 
+    private void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null) return;
+        if (LanguageComboBox?.SelectedItem is ComboBoxItem item && item.Tag is string lang)
+        {
+            ViewModel.Settings.AppLanguage = lang;
+            LocalizationService.Instance.SetLanguage(lang);
+            ViewModel.SyncSettingsToProperties();
+            AutoSave();
+        }
+    }
+
     private void SaveSettingsTab_Click(object sender, RoutedEventArgs e)
     {
         try
@@ -794,6 +807,11 @@ public sealed partial class SettingsTab : UserControl
             if (ViewModel != null && SettingsUserNameBox != null)
             {
                 ViewModel.Settings.UserName = SettingsUserNameBox.Text?.Trim() ?? "";
+            }
+            if (ViewModel != null && LanguageComboBox?.SelectedItem is ComboBoxItem langItem && langItem.Tag is string lTag)
+            {
+                ViewModel.Settings.AppLanguage = lTag;
+                LocalizationService.Instance.SetLanguage(lTag);
             }
             if (ViewModel != null && FirstDayOfWeekComboBox?.SelectedItem is ComboBoxItem fItem && fItem.Tag is string fTag)
             {

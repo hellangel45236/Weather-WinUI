@@ -187,7 +187,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isFloodRoadsExpanded = false;
 
-    public string FloodRoadsExpandButtonText => IsFloodRoadsExpanded ? "Thu gọn danh sách" : "Xem tất cả tuyến đường";
+    public LocalizationService Loc => LocalizationService.Instance;
+
+    public string FloodRoadsExpandButtonText => IsFloodRoadsExpanded ? Loc.CollapseRoads : Loc.ExpandRoads;
     public string FloodRoadsExpandIconGlyph => IsFloodRoadsExpanded ? "\uf077" : "\uf078";
 
     [ObservableProperty]
@@ -244,6 +246,27 @@ public partial class MainViewModel : ObservableObject
 
         // Nạp cài đặt người dùng
         _settings = _settingsService.LoadSettings();
+        if (!string.IsNullOrEmpty(_settings.AppLanguage))
+        {
+            LocalizationService.Instance.CurrentLanguage = _settings.AppLanguage;
+        }
+        LocalizationService.Instance.LanguageChanged += (s, e) =>
+        {
+            OnPropertyChanged(nameof(Loc));
+            OnPropertyChanged(nameof(WelcomeGreetingText));
+            OnPropertyChanged(nameof(TopAdviceSummary));
+            OnPropertyChanged(nameof(UnitButtonText));
+            OnPropertyChanged(nameof(FloodRoadsExpandButtonText));
+            OnPropertyChanged(nameof(UrbanFloodWarning));
+            OnPropertyChanged(nameof(FavoriteButtonToolTip));
+            UpdateClock();
+            UpdateDisplayedFloodRoads();
+            if (_rawWeatherData != null)
+            {
+                UpdateDisplaysFromRawData(_rawWeatherData, LocationTitle);
+            }
+        };
+
         SyncSettingsToProperties();
 
         // Nạp danh sách địa điểm yêu thích
@@ -290,7 +313,7 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    private void SyncSettingsToProperties()
+    public void SyncSettingsToProperties()
     {
         UnitButtonText = Settings.TemperatureUnit == "F" ? "°F" : "°C";
         SelectedThemeIndex = Settings.ThemeMode switch
@@ -596,7 +619,7 @@ public partial class MainViewModel : ObservableObject
             TimeFormatLabel = "12h";
         }
 
-        string dayOfWeekVi = now.DayOfWeek switch
+        string dayOfWeekStr = Loc.IsVietnamese ? (now.DayOfWeek switch
         {
             DayOfWeek.Monday => "Thứ Hai",
             DayOfWeek.Tuesday => "Thứ Ba",
@@ -606,7 +629,7 @@ public partial class MainViewModel : ObservableObject
             DayOfWeek.Saturday => "Thứ Bảy",
             DayOfWeek.Sunday => "Chủ Nhật",
             _ => now.ToString("dddd")
-        };
+        }) : now.ToString("dddd", System.Globalization.CultureInfo.InvariantCulture);
 
         string formattedDate = Settings.DateFormat switch
         {
@@ -615,7 +638,7 @@ public partial class MainViewModel : ObservableObject
             _ => now.ToString("dd/MM/yyyy")
         };
 
-        CurrentDateDisplay = $"{dayOfWeekVi}, {formattedDate}";
+        CurrentDateDisplay = $"{dayOfWeekStr}, {formattedDate}";
 
         if (now.Second == 0)
         {
@@ -1229,6 +1252,10 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
+            if (!string.IsNullOrEmpty(Settings.AppLanguage))
+            {
+                LocalizationService.Instance.CurrentLanguage = Settings.AppLanguage;
+            }
             _settingsService.SaveSettings(Settings);
             SetupAutoRefreshTimer();
             UpdateClock();

@@ -23,14 +23,14 @@
                 </Border>
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock Text="{x:Bind ViewModel.WelcomeGreetingText, Mode=OneWay}" FontSize="18" FontWeight="Bold"/>
-                    <TextBlock x:Name="AppSubtitleText" Text="Dự báo thời tiết &amp; Lời khuyên thông minh" FontSize="12" Opacity="0.65"/>
+                    <TextBlock x:Name="AppSubtitleText" Text="{x:Bind ViewModel.Loc.AppSubtitle, Mode=OneWay}" FontSize="12" Opacity="0.65"/>
                 </StackPanel>
             </StackPanel>
 
             <!-- Tìm kiếm địa điểm -->
             <Grid Grid.Column="1" MaxWidth="520" Margin="12,0" HorizontalAlignment="Stretch">
                 <AutoSuggestBox x:Name="LocationSearchBox"
-                                PlaceholderText="Tìm kiếm thành phố (Hà Nội, TP.HCM, Kiên Giang, Đà Lạt...)"
+                                PlaceholderText="{x:Bind ViewModel.Loc.SearchPlaceholder, Mode=OneWay}"
                                 QueryIcon="Find"
                                 TextMemberPath="DisplayText"
                                 TextChanged="LocationSearchBox_TextChanged"
@@ -55,13 +55,13 @@
             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                 <!-- Nút Làm mới -->
                 <Button Command="{x:Bind ViewModel.RefreshCommand}"
-                        ToolTipService.ToolTip="Cập nhật thời tiết mới nhất">
+                        ToolTipService.ToolTip="{x:Bind ViewModel.Loc.RefreshTooltip, Mode=OneWay}">
                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="13"/>
                 </Button>
 
                 <!-- Chuyển đổi đơn vị °C / °F -->
                 <Button Command="{x:Bind ViewModel.ToggleUnitCommand}"
-                        ToolTipService.ToolTip="Chuyển đổi giữa °C và °F">
+                        ToolTipService.ToolTip="{x:Bind ViewModel.Loc.UnitTooltip, Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2c9;" FontSize="13"/>
                         <TextBlock Text="{x:Bind ViewModel.UnitButtonText, Mode=OneWay}" FontWeight="SemiBold"/>
@@ -73,7 +73,7 @@
                           SelectedIndex="2"
                           SelectionChanged="ThemeComboBox_SelectionChanged"
                           Width="105"
-                          ToolTipService.ToolTip="Chọn chế độ giao diện">
+                          ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ThemeTooltip, Mode=OneWay}">
                     <ComboBoxItem Content="☀️ Sáng" Tag="light"/>
                     <ComboBoxItem Content="🌙 Tối" Tag="dark"/>
                     <ComboBoxItem Content="💻 Hệ thống" Tag="system"/>
@@ -82,27 +82,27 @@
                 <!-- Nút Bật & Quản lý Desktop Widget Đa Năng (v2.0) -->
                 <DropDownButton x:Name="DesktopWidgetButton"
                                 Style="{ThemeResource DefaultButtonStyle}"
-                                ToolTipService.ToolTip="Bật hoặc quản lý các Widget tiện ích đa thành phố trên Desktop">
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.WidgetTooltip, Mode=OneWay}">
                     <DropDownButton.Content>
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" FontSize="13" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                            <TextBlock x:Name="BtnTextWidget" Text="Widget" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="BtnTextWidget" Text="{x:Bind ViewModel.Loc.WidgetBtnText, Mode=OneWay}" FontWeight="SemiBold"/>
                         </StackPanel>
                     </DropDownButton.Content>
                     <DropDownButton.Flyout>
                         <MenuFlyout Placement="Bottom">
-                            <MenuFlyoutItem Text="📍 Mở Widget cho vị trí hiện tại" Click="OpenCurrentCityWidget_Click">
+                            <MenuFlyoutItem Text="{x:Bind ViewModel.Loc.WidgetOpenCurrent, Mode=OneWay}" Click="OpenCurrentCityWidget_Click">
                                 <MenuFlyoutItem.Icon>
                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;"/>
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
-                            <MenuFlyoutItem Text="➕ Tạo Widget mới cho thành phố khác..." Click="OpenCustomCityWidget_Click">
+                            <MenuFlyoutItem Text="{x:Bind ViewModel.Loc.WidgetOpenCustom, Mode=OneWay}" Click="OpenCustomCityWidget_Click">
                                 <MenuFlyoutItem.Icon>
                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf067;"/>
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
                             <MenuFlyoutSeparator/>
-                            <MenuFlyoutItem Text="❌ Đóng tất cả Widget đang mở" Click="CloseAllWidgets_Click">
+                            <MenuFlyoutItem Text="{x:Bind ViewModel.Loc.WidgetCloseAll, Mode=OneWay}" Click="CloseAllWidgets_Click">
                                 <MenuFlyoutItem.Icon>
                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00d;"/>
                                 </MenuFlyoutItem.Icon>
@@ -124,10 +124,10 @@
                         BorderThickness="1"
                         CornerRadius="14"
                         Padding="12,5"
-                        ToolTipService.ToolTip="Bấm để lấy lại thời tiết tại vị trí GPS thực tế của bạn">
+                        ToolTipService.ToolTip="{x:Bind ViewModel.Loc.GpsTooltip, Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="11" Foreground="#38BDF8"/>
-                        <TextBlock Text="Vị trí GPS" FontSize="12" FontWeight="{x:Bind ViewModel.GpsButtonFontWeight, Mode=OneWay}"/>
+                        <TextBlock Text="{x:Bind ViewModel.Loc.GpsLocation, Mode=OneWay}" FontSize="12" FontWeight="{x:Bind ViewModel.GpsButtonFontWeight, Mode=OneWay}"/>
                     </StackPanel>
                 </Button>
 
@@ -188,45 +188,45 @@
         <NavigationView x:Name="MainNavView"
                         Grid.Row="4"
                         PaneDisplayMode="Left"
-                        OpenPaneLength="220"
+                        OpenPaneLength="240"
                         CompactPaneLength="52"
                         IsBackButtonVisible="Collapsed"
                         IsSettingsVisible="False"
                         SelectionChanged="MainNavView_SelectionChanged">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Tổng Quan" Tag="overview" IsSelected="True">
+                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavOverview, Mode=OneWay}" Tag="overview" IsSelected="True">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#F59E0B"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Triều Cường &amp; Ngập Lụt" Tag="flood">
+                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavFlood, Mode=OneWay}" Tag="flood">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf773;" Foreground="#0284C7"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Bản Đồ &amp; Radar" Tag="radar">
+                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavRadar, Mode=OneWay}" Tag="radar">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" Foreground="#10B981"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Đời Sống &amp; OOTD" Tag="lifestyle">
+                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavLifestyle, Mode=OneWay}" Tag="lifestyle">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf553;" Foreground="#EC4899"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Lịch Âm Dương" Tag="calendar">
+                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavCalendar, Mode=OneWay}" Tag="calendar">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" Foreground="#8B5CF6"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem Content="Widget Studio" Tag="widget">
+                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavWidget, Mode=OneWay}" Tag="widget">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" Foreground="#38BDF8"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Cài Đặt &amp; Giao Diện" Tag="settings">
+                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavSettings, Mode=OneWay}" Tag="settings">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf013;" Foreground="#94A3B8"/>
                     </NavigationViewItem.Icon>
@@ -638,6 +638,7 @@
                               SelectionChanged="ChangelogVersionComboBox_SelectionChanged"
                               MinWidth="240"
                               CornerRadius="8">
+                        <ComboBoxItem Content="v3.0.3 (Song Ngữ Tiếng Việt &amp; English, Giao Diện Co Giãn Thích Ứng, Cá Nhân Hóa)" Tag="3.0.3"/>
                         <ComboBoxItem Content="v3.0.2 (Smart Multi-City Bar, AI Weather Natural Summary &amp; Overview Tab Overhaul)" Tag="3.0.2"/>
                         <ComboBoxItem Content="v3.0.1 (Dynamic Day &amp; Night Wallpapers, Ambient Soundscapes Flyout, GitHub Update Checker, Battery Saver)" Tag="3.0.1"/>
                         <ComboBoxItem Content="v3.0.0 (Đại Tu Kiến Trúc Modular 7 Tab, Sóng Triều 24h, Radar 360°, Tối Ưu Win10/11)" Tag="3.0.0"/>
@@ -667,13 +668,13 @@
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Có gì mới trong Weather WinUI 3.0.2?" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Có gì mới trong Weather WinUI 3.0.3?" FontSize="16" FontWeight="Bold" Foreground="White"/>
                                 <Border Background="#10B981" CornerRadius="6" Padding="6,2">
-                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.0.2 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.0.3 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
                                 </Border>
                             </StackPanel>
                             <TextBlock x:Name="ChangelogHeaderSubtitle"
-                                       Text="Tính năng thông minh &amp; tiện ích người dùng: Thanh chuyển nhanh đa thành phố với đèn báo trực quan (Active City Switcher), câu tóm tắt thời tiết tự nhiên AI đa chiều (Natural Language Weather Summary), và đại tu chau chuốt toàn diện trang Tổng Quan (Hero Card tách đồng hồ độc lập, 8 thẻ chỉ số Icon Pod rực rỡ sắc màu)."
+                                       Text="Hỗ trợ song ngữ Tiếng Việt &amp; English toàn diện, thiết kế giao diện thích ứng co giãn thông minh (Responsive Multilingual Layout), bố trí cài đặt ngôn ngữ trong mục Cá Nhân Hóa và hoàn thiện trực quan bản đồ Radar &amp; Triều Cường."
                                        FontSize="11.5" Foreground="White" Opacity="0.88" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Grid>
@@ -682,8 +683,65 @@
                 <!-- NỘI DUNG CHANGELOG THEO TỪNG PHIÊN BẢN -->
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                     <Grid Padding="2">
+                        <!-- ==================== CHANGELOG v3.0.3 ==================== -->
+                        <StackPanel x:Name="ChangelogContent_v303" Spacing="10" Visibility="Visible">
+                            <!-- 1. Song ngữ toàn diện -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#253B82F6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0ac;" Foreground="#3B82F6" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#3B82F6" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="I18N SONG NGỮ" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Hỗ Trợ Song Ngữ Toàn Diện: Tiếng Việt 🇻🇳 &amp; English 🇬🇧" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Chuyển đổi ngôn ngữ tức thời không cần khởi động lại ứng dụng. Toàn bộ các thanh điều hướng, dự báo 24 giờ, 7 ngày, chỉ số khí tượng, cảnh báo ngập lụt, cẩm nang an toàn, bản đồ radar và cài đặt hệ thống đều được địa phương hóa chuẩn xác." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 2. Responsive co giãn giao diện -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#2510B981">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf065;" Foreground="#10B981" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#10B981" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="RESPONSIVE UI" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Giao Diện Co Giãn Tự Động Thích Ứng Theo Độ Dài Từ Vựng" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Khắc phục triệt để hiện tượng tràn chữ, cắt chữ khi chuyển đổi giữa Tiếng Anh và Tiếng Việt: Sidebar mở rộng thích ứng 240-245px, áp dụng Star-sizing linh hoạt và cơ chế TextWrapping tự nhiên trên toàn bộ các thẻ hiển thị." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 3. Tùy chọn ngôn ngữ trong mục Cá Nhân Hóa -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#258B5CF6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf007;" Foreground="#8B5CF6" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#8B5CF6" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="CÁ NHÂN HÓA" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Tùy Chọn Ngôn Ngữ Được Tích Hợp Vào Mục Cá Nhân Hóa" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Trình chọn ngôn ngữ giao diện được đưa vào ngay dưới mục Tên của bạn trong thẻ Cá Nhân Hóa của phần Cài Đặt, giúp trải nghiệm tinh chỉnh vừa tiện lợi, khoa học vừa lưu tự động vào AppSettings." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
                         <!-- ==================== CHANGELOG v3.0.2 ==================== -->
-                        <StackPanel x:Name="ChangelogContent_v302" Spacing="10" Visibility="Visible">
+                        <StackPanel x:Name="ChangelogContent_v302" Spacing="10" Visibility="Collapsed">
                             <!-- 1. Smart Multi-City Bar -->
                             <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">

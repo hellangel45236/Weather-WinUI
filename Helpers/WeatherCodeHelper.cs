@@ -1,4 +1,5 @@
 using WeatherApp.Models;
+using WeatherApp.Services;
 
 namespace WeatherApp.Helpers;
 
@@ -6,53 +7,54 @@ public static class WeatherCodeHelper
 {
     public static (string description, string iconGlyph) GetConditionInfo(int weatherCode, bool isDay = true)
     {
+        bool isVi = LocalizationService.Instance.IsVietnamese;
         return weatherCode switch
         {
             0 => isDay 
-                ? ("Trời quang đãng, nắng đẹp", "\uf185")  // fa-sun
-                : ("Đêm quang mây, trăng sáng", "\uf186"), // fa-moon
+                ? (isVi ? "Trời quang đãng, nắng đẹp" : "Clear sky, sunny", "\uf185")  // fa-sun
+                : (isVi ? "Đêm quang mây, trăng sáng" : "Clear night, starry", "\uf186"), // fa-moon
 
             1 => isDay 
-                ? ("Trời ít mây, nắng nhẹ", "\uf6c4")      // fa-cloud-sun
-                : ("Đêm ít mây", "\uf6c3"),                // fa-cloud-moon
+                ? (isVi ? "Trời ít mây, nắng nhẹ" : "Mainly clear, mild sun", "\uf6c4")      // fa-cloud-sun
+                : (isVi ? "Đêm ít mây" : "Mainly clear night", "\uf6c3"),                // fa-cloud-moon
 
             2 => isDay
-                ? ("Mây rải rác", "\uf6c4")                // fa-cloud-sun
-                : ("Mây rải rác", "\uf6c3"),               // fa-cloud-moon
+                ? (isVi ? "Mây rải rác" : "Partly cloudy", "\uf6c4")                // fa-cloud-sun
+                : (isVi ? "Mây rải rác" : "Partly cloudy", "\uf6c3"),               // fa-cloud-moon
 
-            3 => ("Nhiều mây u ám", "\uf0c2"),             // fa-cloud
+            3 => (isVi ? "Nhiều mây u ám" : "Overcast", "\uf0c2"),             // fa-cloud
 
-            45 => ("Có sương mù dày", "\uf75f"),           // fa-smog
-            48 => ("Sương muối bám đọng", "\uf75f"),       // fa-smog
+            45 => (isVi ? "Có sương mù dày" : "Dense fog", "\uf75f"),           // fa-smog
+            48 => (isVi ? "Sương muối bám đọng" : "Depositing rime fog", "\uf75f"),       // fa-smog
 
-            51 => ("Mưa phùn hạt nhỏ", "\uf73d"),          // fa-cloud-rain
-            53 => ("Mưa phùn rải rác", "\uf73d"),          // fa-cloud-rain
-            55 => ("Mưa phùn dày hạt", "\uf73d"),          // fa-cloud-rain
+            51 => (isVi ? "Mưa phùn hạt nhỏ" : "Light drizzle", "\uf73d"),          // fa-cloud-rain
+            53 => (isVi ? "Mưa phùn rải rác" : "Moderate drizzle", "\uf73d"),          // fa-cloud-rain
+            55 => (isVi ? "Mưa phùn dày hạt" : "Dense drizzle", "\uf73d"),          // fa-cloud-rain
 
-            56 or 57 => ("Mưa phùn giá buốt", "\uf2dc"),  // fa-snowflake
+            56 or 57 => (isVi ? "Mưa phùn giá buốt" : "Freezing drizzle", "\uf2dc"),  // fa-snowflake
 
-            61 => ("Mưa nhỏ nhẹ hạt", "\uf73d"),           // fa-cloud-rain
-            63 => ("Mưa vừa", "\uf73d"),                   // fa-cloud-rain
-            65 => ("Mưa to diện rộng", "\uf740"),          // fa-cloud-showers-heavy
+            61 => (isVi ? "Mưa nhỏ nhẹ hạt" : "Slight rain", "\uf73d"),           // fa-cloud-rain
+            63 => (isVi ? "Mưa vừa" : "Moderate rain", "\uf73d"),                   // fa-cloud-rain
+            65 => (isVi ? "Mưa to diện rộng" : "Heavy rain", "\uf740"),          // fa-cloud-showers-heavy
 
-            66 or 67 => ("Mưa lạnh đóng băng", "\uf2dc"), // fa-snowflake
+            66 or 67 => (isVi ? "Mưa lạnh đóng băng" : "Freezing rain", "\uf2dc"), // fa-snowflake
 
-            71 => ("Tuyết rơi nhẹ", "\uf2dc"),             // fa-snowflake
-            73 => ("Tuyết rơi vừa", "\uf2dc"),             // fa-snowflake
-            75 => ("Tuyết rơi dày đặc", "\uf2dc"),         // fa-snowflake
-            77 => ("Hạt tuyết li ti", "\uf2dc"),           // fa-snowflake
+            71 => (isVi ? "Tuyết rơi nhẹ" : "Slight snowfall", "\uf2dc"),             // fa-snowflake
+            73 => (isVi ? "Tuyết rơi vừa" : "Moderate snowfall", "\uf2dc"),             // fa-snowflake
+            75 => (isVi ? "Tuyết rơi dày đặc" : "Heavy snowfall", "\uf2dc"),         // fa-snowflake
+            77 => (isVi ? "Hạt tuyết li ti" : "Snow grains", "\uf2dc"),           // fa-snowflake
 
-            80 => ("Mưa rào nhẹ", "\uf73d"),               // fa-cloud-rain
-            81 => ("Mưa rào vừa", "\uf73d"),               // fa-cloud-rain
-            82 => ("Mưa rào xối xả", "\uf740"),            // fa-cloud-showers-heavy
+            80 => (isVi ? "Mưa rào nhẹ" : "Slight rain showers", "\uf73d"),               // fa-cloud-rain
+            81 => (isVi ? "Mưa rào vừa" : "Moderate rain showers", "\uf73d"),               // fa-cloud-rain
+            82 => (isVi ? "Mưa rào xối xả" : "Violent rain showers", "\uf740"),            // fa-cloud-showers-heavy
 
-            85 or 86 => ("Mưa rào kèm tuyết", "\uf2dc"),   // fa-snowflake
+            85 or 86 => (isVi ? "Mưa rào kèm tuyết" : "Snow showers", "\uf2dc"),   // fa-snowflake
 
-            95 => ("Dông sét, mưa dông", "\uf76c"),        // fa-cloud-bolt
-            96 => ("Mưa dông kèm mưa đá nhỏ", "\uf76c"),   // fa-cloud-bolt
-            99 => ("Mưa dông bão mạnh kèm mưa đá", "\uf76c"), // fa-cloud-bolt
+            95 => (isVi ? "Dông sét, mưa dông" : "Thunderstorm", "\uf76c"),        // fa-cloud-bolt
+            96 => (isVi ? "Mưa dông kèm mưa đá nhỏ" : "Thunderstorm with slight hail", "\uf76c"),   // fa-cloud-bolt
+            99 => (isVi ? "Mưa dông bão mạnh kèm mưa đá" : "Thunderstorm with heavy hail", "\uf76c"), // fa-cloud-bolt
 
-            _ => ("Thời tiết bình thường", "\uf0c2")       // fa-cloud
+            _ => (isVi ? "Thời tiết bình thường" : "Normal weather", "\uf0c2")       // fa-cloud
         };
     }
 
@@ -222,16 +224,17 @@ public static class WeatherCodeHelper
 
     public static (string badgeText, string badgeColor) GetWeatherAlert(WeatherEffectType effect, double temp, double uvIndex)
     {
+        bool isVi = LocalizationService.Instance.IsVietnamese;
         return effect switch
         {
-            WeatherEffectType.Thunderstorm => ("⚡ CẢNH BÁO DÔNG SÉT & MƯA LỚN", "#DC2626"),
-            WeatherEffectType.HeavyRain => ("🌧️ MƯA TO DIỆN RỘNG", "#0284C7"),
-            WeatherEffectType.ModerateRain => ("🌧️ TRỜI ĐANG CÓ MƯA", "#0284C7"),
-            WeatherEffectType.LightRain => ("🌦️ MƯA PHÙN RẢI RÁC", "#0EA5E9"),
-            WeatherEffectType.HighUvSunny => ($"🔥 NẮNG GẮT • CHỈ SỐ UV {uvIndex:F1} (RẤT CAO)", "#EA580C"),
-            WeatherEffectType.ClearSunny => (temp >= 35 ? "☀️ TRỜI NẮNG NÓNG" : "", "#F59E0B"),
-            WeatherEffectType.Fog => ("🌫️ SƯƠNG MÙ GIẢM TẦM NHÌN", "#64748B"),
-            WeatherEffectType.Snow => ("❄️ TUYẾT RƠI", "#38BDF8"),
+            WeatherEffectType.Thunderstorm => (isVi ? "⚡ CẢNH BÁO DÔNG SÉT & MƯA LỚN" : "⚡ THUNDERSTORM & HEAVY RAIN ALERT", "#DC2626"),
+            WeatherEffectType.HeavyRain => (isVi ? "🌧️ MƯA TO DIỆN RỘNG" : "🌧️ EXTENSIVE HEAVY RAIN", "#0284C7"),
+            WeatherEffectType.ModerateRain => (isVi ? "🌧️ TRỜI ĐANG CÓ MƯA" : "🌧️ CURRENTLY RAINING", "#0284C7"),
+            WeatherEffectType.LightRain => (isVi ? "🌦️ MƯA PHÙN RẢI RÁC" : "🌦️ SCATTERED DRIZZLE", "#0EA5E9"),
+            WeatherEffectType.HighUvSunny => (isVi ? $"🔥 NẮNG GẮT • CHỈ SỐ UV {uvIndex:F1} (RẤT CAO)" : $"🔥 INTENSE SUN • UV {uvIndex:F1} (VERY HIGH)", "#EA580C"),
+            WeatherEffectType.ClearSunny => (temp >= 35 ? (isVi ? "☀️ TRỜI NẮNG NÓNG" : "☀️ HOT & SUNNY") : "", "#F59E0B"),
+            WeatherEffectType.Fog => (isVi ? "🌫️ SƯƠNG MÙ GIẢM TẦM NHÌN" : "🌫️ FOG REDUCING VISIBILITY", "#64748B"),
+            WeatherEffectType.Snow => (isVi ? "❄️ TUYẾT RƠI" : "❄️ SNOWFALL", "#38BDF8"),
             _ => ("", "#00000000") // Với mây u ám (Cloudy), mây rải rác hoặc trời bình thường, không hiện badge cảnh báo thừa
         };
     }
@@ -257,62 +260,99 @@ public static class WeatherCodeHelper
 
     public static string GetWindDirection(double degrees)
     {
-        string[] directions = { "Bắc", "Đông Bắc", "Đông", "Đông Nam", "Nam", "Tây Nam", "Tây", "Tây Bắc" };
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        string[] viDirs = { "Bắc", "Đông Bắc", "Đông", "Đông Nam", "Nam", "Tây Nam", "Tây", "Tây Bắc" };
+        string[] enDirs = { "North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West" };
         int index = (int)Math.Round(((degrees % 360) / 45)) % 8;
-        return directions[index];
+        return isVi ? viDirs[index] : enDirs[index];
     }
 
     public static (string level, string advice) GetUvInterpretation(double uvIndex)
     {
-        return uvIndex switch
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        if (isVi)
         {
-            < 3 => ("Thấp (0-2)", "An toàn khi ra ngoài."),
-            < 6 => ("Trung bình (3-5)", "Nên bôi kem chống nắng và đội mũ."),
-            < 8 => ("Cao (6-7)", "Cần bảo vệ mắt và da cẩn thận."),
-            < 11 => ("Rất cao (8-10)", "Hạn chế ra ngoài giờ cao điểm."),
-            _ => ("Nguy hiểm (11+)", "Tránh ra ngoài trời nắng gắt!")
-        };
+            return uvIndex switch
+            {
+                < 3 => ("Thấp (0-2)", "An toàn khi ra ngoài."),
+                < 6 => ("Trung bình (3-5)", "Nên bôi kem chống nắng và đội mũ."),
+                < 8 => ("Cao (6-7)", "Cần bảo vệ mắt và da cẩn thận."),
+                < 11 => ("Rất cao (8-10)", "Hạn chế ra ngoài giờ cao điểm."),
+                _ => ("Nguy hiểm (11+)", "Tránh ra ngoài trời nắng gắt!")
+            };
+        }
+        else
+        {
+            return uvIndex switch
+            {
+                < 3 => ("Low (0-2)", "Safe to stay outdoors."),
+                < 6 => ("Moderate (3-5)", "Wear sunscreen and a hat."),
+                < 8 => ("High (6-7)", "Protect eyes and skin carefully."),
+                < 11 => ("Very High (8-10)", "Avoid midday sun exposure."),
+                _ => ("Extreme (11+)", "Take full sun protection precautions!")
+            };
+        }
     }
 
     public static (string level, string color, string advice) GetAqiInterpretation(int aqi)
     {
-        return aqi switch
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        if (isVi)
         {
-            <= 50 => ("Tốt", "#10B981", "Chất lượng không khí trong lành, rất lý tưởng cho các hoạt động thể thao ngoài trời và mở cửa thông gió."),
-            <= 100 => ("Trung bình", "#F59E0B", "Chất lượng không khí ở mức chấp nhận được. Người cực kỳ nhạy cảm với ô nhiễm nên chú ý."),
-            <= 150 => ("Kém (Nhạy cảm)", "#EA580C", "Nhóm người nhạy cảm (trẻ nhỏ, người lớn tuổi, bệnh hô hấp) nên hạn chế vận động mạnh ngoài trời."),
-            <= 200 => ("Xấu", "#DC2626", "Không khí có hại cho sức khỏe. Khuyến cáo đeo khẩu trang chống bụi PM2.5 khi di chuyển ngoài đường."),
-            <= 300 => ("Rất xấu", "#9333EA", "Cảnh báo ô nhiễm nặng: Hạn chế ra ngoài, nên đóng kín cửa sổ và bật máy lọc không khí trong phòng."),
-            _ => ("Nguy hại", "#7F1D1D", "Mức độ khẩn cấp nguy hại nghiêm trọng! Toàn bộ người dân nên ở trong nhà và đóng kín các cửa.")
-        };
+            return aqi switch
+            {
+                <= 50 => ("Tốt", "#10B981", "Chất lượng không khí trong lành, rất lý tưởng cho các hoạt động thể thao ngoài trời và mở cửa thông gió."),
+                <= 100 => ("Trung bình", "#F59E0B", "Chất lượng không khí ở mức chấp nhận được. Người cực kỳ nhạy cảm với ô nhiễm nên chú ý."),
+                <= 150 => ("Kém (Nhạy cảm)", "#EA580C", "Nhóm người nhạy cảm (trẻ nhỏ, người lớn tuổi, bệnh hô hấp) nên hạn chế vận động mạnh ngoài trời."),
+                <= 200 => ("Xấu", "#DC2626", "Không khí có hại cho sức khỏe. Khuyến cáo đeo khẩu trang chống bụi PM2.5 khi di chuyển ngoài đường."),
+                <= 300 => ("Rất xấu", "#9333EA", "Cảnh báo ô nhiễm nặng: Hạn chế ra ngoài, nên đóng kín cửa sổ và bật máy lọc không khí trong phòng."),
+                _ => ("Nguy hại", "#7F1D1D", "Mức độ khẩn cấp nguy hại nghiêm trọng! Toàn bộ người dân nên ở trong nhà và đóng kín các cửa.")
+            };
+        }
+        else
+        {
+            return aqi switch
+            {
+                <= 50 => ("Good", "#10B981", "Air quality is satisfactory and poses little or no risk for outdoor activities."),
+                <= 100 => ("Moderate", "#F59E0B", "Air quality is acceptable. Very sensitive individuals should take caution."),
+                <= 150 => ("Unhealthy (Sensitive)", "#EA580C", "Members of sensitive groups may experience health effects. General public less affected."),
+                <= 200 => ("Unhealthy", "#DC2626", "Some members of the general public may experience health effects. Wear a PM2.5 mask."),
+                <= 300 => ("Very Unhealthy", "#9333EA", "Health alert: The risk of health effects is increased for everyone. Keep windows closed."),
+                _ => ("Hazardous", "#7F1D1D", "Health warning of emergency conditions: Everyone is more likely to be affected. Stay indoors.")
+            };
+        }
     }
 
     public static string GetPm25Status(double pm25)
     {
-        if (pm25 <= 15) return "Đạt chuẩn";
-        if (pm25 <= 35) return "Chấp nhận được";
-        if (pm25 <= 55) return "Kém";
-        return "Vượt chuẩn";
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        if (pm25 <= 15) return isVi ? "Đạt chuẩn" : "Good";
+        if (pm25 <= 35) return isVi ? "Chấp nhận được" : "Moderate";
+        if (pm25 <= 55) return isVi ? "Kém" : "Poor";
+        return isVi ? "Vượt chuẩn" : "Unhealthy";
     }
 
     public static string GetPm10Status(double pm10)
     {
-        if (pm10 <= 45) return "Đạt chuẩn";
-        if (pm10 <= 80) return "Chấp nhận được";
-        return "Vượt chuẩn";
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        if (pm10 <= 45) return isVi ? "Đạt chuẩn" : "Good";
+        if (pm10 <= 80) return isVi ? "Chấp nhận được" : "Moderate";
+        return isVi ? "Vượt chuẩn" : "Unhealthy";
     }
 
     public static string GetOzoneStatus(double o3)
     {
-        if (o3 <= 100) return "Tốt";
-        if (o3 <= 160) return "Trung bình";
-        return "Cao";
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        if (o3 <= 100) return isVi ? "Tốt" : "Good";
+        if (o3 <= 160) return isVi ? "Trung bình" : "Moderate";
+        return isVi ? "Cao" : "High";
     }
 
     public static string GetNo2Status(double no2)
     {
-        if (no2 <= 40) return "Tốt";
-        if (no2 <= 80) return "Trung bình";
-        return "Cao";
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        if (no2 <= 40) return isVi ? "Tốt" : "Good";
+        if (no2 <= 80) return isVi ? "Trung bình" : "Moderate";
+        return isVi ? "Cao" : "High";
     }
 }

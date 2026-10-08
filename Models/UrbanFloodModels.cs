@@ -10,12 +10,19 @@ public class FloodHotspotRoad
     public string EstimatedDepth { get; set; } = string.Empty;
     public string Cause { get; set; } = "Do Mưa Lớn"; // "Do Triều Cường", "Do Mưa Lớn", "Mưa + Triều Cường"
     public int SeverityLevel { get; set; } = 1; // 1 = Nhẹ, 2 = Trung bình, 3 = Nặng
-    public string SeverityText => SeverityLevel switch
+    public string SeverityText
     {
-        3 => "Ngập sâu (Nguy hiểm)",
-        2 => "Ngập vừa (Xe máy khó đi)",
-        _ => "Đọng nước cục bộ"
-    };
+        get
+        {
+            bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+            return SeverityLevel switch
+            {
+                3 => isVi ? "Ngập sâu (Nguy hiểm)" : "Deep flood (Dangerous)",
+                2 => isVi ? "Ngập vừa (Xe máy khó đi)" : "Moderate flood (Difficult for bikes)",
+                _ => isVi ? "Đọng nước cục bộ" : "Localized water logging"
+            };
+        }
+    }
     public string SeverityColor => SeverityLevel switch
     {
         3 => "#EF4444",
@@ -44,13 +51,20 @@ public class UrbanFloodWarning
     // Mức độ rủi ro: 0 = An toàn (Xanh), 1 = Nhẹ (Vàng), 2 = Cảnh báo cao (Cam), 3 = Báo động đỏ (Đỏ)
     public int RiskLevel { get; set; } = 0;
     
-    public string RiskTitle => RiskLevel switch
+    public string RiskTitle
     {
-        3 => "BÁO ĐỘNG ĐỎ NGẬP SÂU",
-        2 => "CẢNH BÁO NGẬP ÚNG CAO",
-        1 => "NGUY CƠ NGẬP NHẸ",
-        _ => "AN TOÀN - THÔNG THOÁNG"
-    };
+        get
+        {
+            bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+            return RiskLevel switch
+            {
+                3 => isVi ? "BÁO ĐỘNG ĐỎ NGẬP SÂU" : "RED ALERT: DEEP FLOODING",
+                2 => isVi ? "CẢNH BÁO NGẬP ÚNG CAO" : "HIGH FLOOD WARNING",
+                1 => isVi ? "NGUY CƠ NGẬP NHẸ" : "LOW FLOOD RISK",
+                _ => isVi ? "AN TOÀN - THÔNG THOÁNG" : "SAFE - CLEAR ROADS"
+            };
+        }
+    }
 
     public string RiskBadgeColor => RiskLevel switch
     {
@@ -88,13 +102,20 @@ public class UrbanFloodWarning
     public double CurrentTideLevel { get; set; } = 1.25;
     public string CurrentTideLevelDisplay { get; set; } = "1.25 m (An toàn)";
     public bool IsCurrentlyPeakTide { get; set; } = false;
-    public string TideAlertBadge => CurrentTideLevel switch
+    public string TideAlertBadge
     {
-        >= 1.65 => "Báo động 3+ (Ngập nặng)",
-        >= 1.55 => "Báo động 2 (Ngập mép đường)",
-        >= 1.40 => "Báo động 1 (Triều cao)",
-        _ => "Dưới Báo Động (An toàn)"
-    };
+        get
+        {
+            bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+            return CurrentTideLevel switch
+            {
+                >= 1.65 => isVi ? "Báo động 3+ (Ngập nặng)" : "Alert 3+ (Severe Flood)",
+                >= 1.55 => isVi ? "Báo động 2 (Ngập mép đường)" : "Alert 2 (Road Edge Flood)",
+                >= 1.40 => isVi ? "Báo động 1 (Triều cao)" : "Alert 1 (High Tide)",
+                _ => isVi ? "Dưới Báo Động (An toàn)" : "Below Alert (Safe)"
+            };
+        }
+    }
     public string TideAlertColor => CurrentTideLevel switch
     {
         >= 1.65 => "#EF4444",
@@ -134,7 +155,21 @@ public class UrbanFloodWarning
     };
 
     public string TideTrendIconGlyph => IsCurrentlyPeakTide ? "\uf13d" : (TideStatusText.Contains("dâng") ? "\uf062" : "\uf063");
-    public string TideTrendText => IsCurrentlyPeakTide ? "Đang đỉnh triều" : (TideStatusText.Contains("dâng") ? "Triều đang dâng" : "Triều đang rút");
+    public string TideTrendText
+    {
+        get
+        {
+            bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+            if (isVi)
+            {
+                return IsCurrentlyPeakTide ? "Đang đỉnh triều" : (TideStatusText.Contains("dâng") ? "Triều đang dâng" : "Triều đang rút");
+            }
+            else
+            {
+                return IsCurrentlyPeakTide ? "At peak tide" : (TideStatusText.Contains("dâng") ? "Tide rising" : "Tide receding");
+            }
+        }
+    }
     public string TideTrendColor => IsCurrentlyPeakTide ? "#EF4444" : (TideStatusText.Contains("dâng") ? "#EA580C" : "#10B981");
 
     public int HotspotsCriticalCount => HotspotRoads?.Count(r => r.SeverityLevel == 3) ?? 0;
@@ -146,13 +181,20 @@ public class UrbanFloodWarning
     public string HotspotsCriticalCountText => HotspotsCriticalCount.ToString();
     public string HotspotsMediumCountText => HotspotsMediumCount.ToString();
 
-    public string MotorbikeRiskStatus => RiskLevel switch
+    public string MotorbikeRiskStatus
     {
-        3 => "Nguy cơ chết máy cao",
-        2 => "Cần hết sức cẩn trọng",
-        1 => "Chú ý vũng trũng",
-        _ => "Lưu thông an toàn"
-    };
+        get
+        {
+            bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+            return RiskLevel switch
+            {
+                3 => isVi ? "Nguy cơ chết máy cao" : "High engine stall risk",
+                2 => isVi ? "Cần hết sức cẩn trọng" : "Exercise extreme caution",
+                1 => isVi ? "Chú ý vũng trũng" : "Watch out for puddles",
+                _ => isVi ? "Lưu thông an toàn" : "Safe to commute"
+            };
+        }
+    }
     public string MotorbikeRiskColor => RiskLevel switch
     {
         3 => "#EF4444",
@@ -161,13 +203,20 @@ public class UrbanFloodWarning
         _ => "#10B981"
     };
 
-    public string CarRiskStatus => RiskLevel switch
+    public string CarRiskStatus
     {
-        3 => "Nguy cơ thủy kích cao",
-        2 => "Tránh các trục ngập sâu",
-        1 => "Giảm tốc tránh tạt nước",
-        _ => "Lưu thông an toàn"
-    };
+        get
+        {
+            bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+            return RiskLevel switch
+            {
+                3 => isVi ? "Nguy cơ thủy kích cao" : "High hydrolock risk",
+                2 => isVi ? "Tránh các trục ngập sâu" : "Avoid deep flooded routes",
+                1 => isVi ? "Giảm tốc tránh tạt nước" : "Slow down near water",
+                _ => isVi ? "Lưu thông an toàn" : "Safe to commute"
+            };
+        }
+    }
     public string CarRiskColor => RiskLevel switch
     {
         3 => "#EF4444",

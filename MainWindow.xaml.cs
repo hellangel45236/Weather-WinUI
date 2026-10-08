@@ -13,6 +13,17 @@ public sealed partial class MainWindow : Window
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
 
+        // Thiết lập icon tiêu đề và icon taskbar sắc nét chuẩn Windows 10 & 11
+        try
+        {
+            string icoPath = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Assets", "AppIcon.ico");
+            if (System.IO.File.Exists(icoPath))
+            {
+                AppWindow.SetIcon(icoPath);
+            }
+        }
+        catch { }
+
         // Kích thước cửa sổ mặc định
         AppWindow.Resize(new SizeInt32(1260, 880));
 

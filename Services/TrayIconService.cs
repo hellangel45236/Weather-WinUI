@@ -107,6 +107,11 @@ public class TrayIconService : IDisposable
     [DllImport("user32.dll")]
     private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
+    [DllImport("user32.dll")]
+    private static extern int GetSystemMetrics(int nIndex);
+
+    private const int SM_CXSMICON = 49;
+    private const int SM_CYSMICON = 50;
     private const int SW_RESTORE = 9;
     private const int SW_SHOW = 5;
 
@@ -157,7 +162,13 @@ public class TrayIconService : IDisposable
             string icoPath = Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.ico");
             if (File.Exists(icoPath))
             {
-                IntPtr hIcon = LoadImage(IntPtr.Zero, icoPath, 1, 16, 16, 0x0010);
+                // Tự động căn chỉnh kích thước chuẩn DPI trên Windows 10 & 11 (16x16, 20x20, 24x24, 32x32)
+                int cx = GetSystemMetrics(SM_CXSMICON);
+                int cy = GetSystemMetrics(SM_CYSMICON);
+                if (cx <= 0) cx = 16;
+                if (cy <= 0) cy = 16;
+
+                IntPtr hIcon = LoadImage(IntPtr.Zero, icoPath, 1, cx, cy, 0x0010 /* LR_LOADFROMFILE */);
                 if (hIcon != IntPtr.Zero)
                 {
                     _currentIconHandle = hIcon;

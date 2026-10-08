@@ -255,17 +255,26 @@ public class WeatherService : IWeatherService
 
     private static string GenerateSmartSummaryText(CurrentWeatherDisplay display, OpenMeteoResponse data, AppSettings settings)
     {
-        string userName = string.IsNullOrWhiteSpace(settings.UserName) ? "bạn" : settings.UserName;
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        string defaultUser = isVi ? "bạn" : "there";
+        string userName = string.IsNullOrWhiteSpace(settings.UserName) ? defaultUser : settings.UserName;
         int hour = DateTime.Now.Hour;
-        string greeting = hour switch
+        string greeting = isVi ? hour switch
         {
             < 11 => $"Chào buổi sáng, {userName}!",
             < 14 => $"Chào buổi trưa, {userName}!",
             < 18 => $"Chào buổi chiều, {userName}!",
             _ => $"Buổi tối an lành, {userName}!"
+        } : hour switch
+        {
+            < 12 => $"Good morning, {userName}!",
+            < 18 => $"Good afternoon, {userName}!",
+            _ => $"Good evening, {userName}!"
         };
 
-        string tempInfo = $"Hiện tại {display.TemperatureText.ToLowerInvariant()}, {display.ConditionText.ToLowerInvariant()}. {display.MinMaxText}.";
+        string tempInfo = isVi 
+            ? $"Hiện tại {display.TemperatureText.ToLowerInvariant()}, {display.ConditionText.ToLowerInvariant()}. {display.MinMaxText}."
+            : $"Currently {display.TemperatureText}, {display.ConditionText.ToLowerInvariant()}. {display.MinMaxText}.";
 
         int rainProb = 0;
         if (data.Daily?.PrecipitationProbabilityMax?.Count > 0)
@@ -276,31 +285,31 @@ public class WeatherService : IWeatherService
         string advice;
         if (display.WeatherEffect == WeatherEffectType.Thunderstorm)
         {
-            advice = "Khu vực đang có dông sét mạnh, bạn nên hạn chế di chuyển ngoài trời và tìm chỗ trú an toàn.";
+            advice = isVi ? "Khu vực đang có dông sét mạnh, bạn nên hạn chế di chuyển ngoài trời và tìm chỗ trú an toàn." : "Active thunderstorm in the area. Stay indoors and seek safe shelter.";
         }
         else if (rainProb >= 60 || display.WeatherEffect == WeatherEffectType.HeavyRain || display.WeatherEffect == WeatherEffectType.ModerateRain)
         {
-            advice = $"Khả năng có mưa cao ({rainProb}%), đừng quên mang theo ô (dù) hoặc áo mưa khi ra ngoài.";
+            advice = isVi ? $"Khả năng có mưa cao ({rainProb}%), đừng quên mang theo ô (dù) hoặc áo mưa khi ra ngoài." : $"High chance of rain ({rainProb}%). Remember to bring an umbrella or raincoat.";
         }
         else if (rainProb >= 30 || display.WeatherEffect == WeatherEffectType.LightRain)
         {
-            advice = $"Có thể có mưa rào rải rác ({rainProb}%), bạn nên chuẩn bị sẵn áo mưa tiện lợi.";
+            advice = isVi ? $"Có thể có mưa rào rải rác ({rainProb}%), bạn nên chuẩn bị sẵn áo mưa tiện lợi." : $"Scattered rain showers possible ({rainProb}%). Keeping a compact umbrella handy is recommended.";
         }
         else if (double.TryParse(display.UvIndexText, NumberStyles.Any, CultureInfo.InvariantCulture, out double uv) && uv >= 6.0)
         {
-            advice = $"Chỉ số tia cực tím UV ở mức cao ({uv:F1}), hãy bôi kem chống nắng và che chắn cẩn thận khi ra đường.";
+            advice = isVi ? $"Chỉ số tia cực tím UV ở mức cao ({uv:F1}), hãy bôi kem chống nắng và che chắn cẩn thận khi ra đường." : $"UV index is high ({uv:F1}). Wear sunscreen and protective clothing when going outside.";
         }
         else if (display.TemperatureValue >= 34.0)
         {
-            advice = "Thời tiết khá oi bức, hãy nhớ bổ sung đủ nước và tránh hoạt động gắng sức dưới nắng.";
+            advice = isVi ? "Thời tiết khá oi bức, hãy nhớ bổ sung đủ nước và tránh hoạt động gắng sức dưới nắng." : "Hot conditions today. Stay hydrated and avoid strenuous activities in direct sun.";
         }
         else if (display.TemperatureValue <= 17.0)
         {
-            advice = "Thời tiết se lạnh, hãy nhớ mặc thêm áo khoác ấm để bảo vệ sức khỏe nhé.";
+            advice = isVi ? "Thời tiết se lạnh, hãy nhớ mặc thêm áo khoác ấm để bảo vệ sức khỏe nhé." : "Chilly weather. Remember to wear a warm coat to protect your health.";
         }
         else
         {
-            advice = "Thời tiết hôm nay rất dễ chịu và thuận lợi cho mọi hoạt động học tập, làm việc ngoài trời!";
+            advice = isVi ? "Thời tiết hôm nay rất dễ chịu và thuận lợi cho mọi hoạt động học tập, làm việc ngoài trời!" : "Pleasant weather today, great for work, study, and outdoor activities!";
         }
 
         return $"{greeting} {tempInfo} {advice}";
@@ -424,17 +433,18 @@ public class WeatherService : IWeatherService
                 DateTime.TryParse(times[i], out dt))
             {
                 dateDisplay = dt.ToString("dd/MM");
+                bool isVi = LocalizationService.Instance.IsVietnamese;
                 if (i == 0)
                 {
-                    dayName = "Hôm nay";
+                    dayName = isVi ? "Hôm nay" : "Today";
                 }
                 else if (i == 1)
                 {
-                    dayName = "Ngày mai";
+                    dayName = isVi ? "Ngày mai" : "Tomorrow";
                 }
                 else
                 {
-                    dayName = dt.DayOfWeek switch
+                    dayName = isVi ? dt.DayOfWeek switch
                     {
                         DayOfWeek.Monday => "Thứ Hai",
                         DayOfWeek.Tuesday => "Thứ Ba",
@@ -444,7 +454,7 @@ public class WeatherService : IWeatherService
                         DayOfWeek.Saturday => "Thứ Bảy",
                         DayOfWeek.Sunday => "Chủ Nhật",
                         _ => dt.ToString("dddd", new CultureInfo("vi-VN"))
-                    };
+                    } : dt.ToString("dddd", CultureInfo.InvariantCulture);
                 }
             }
             else
