@@ -1,15 +1,15 @@
-# 🌤️ Weather WinUI (Version 3.0.2 Beta)
+# 🌤️ Weather WinUI (Version 3.0.0)
 ### Hệ Điều Hành Vi Khí Hậu Cá Nhân Hóa & Trực Quan Hóa Đô Thị Dành Cho Windows
 > **Nền tảng:** Windows App SDK (WinUI 3) • .NET 8 • C# 12 • Fluent Design System 2.0  
-> **Nhánh phát triển:** `v3.0-beta` | **Phiên bản hiện tại:** `v3.0.2-beta`  
-> **Bản phát hành ổn định song song:** `v2.2.3` (nhánh `main`)
+> **Nhánh phát triển chính thức:** `main` | **Phiên bản:** `v3.0.0 (Bản Phát Hành Chính Thức)`  
+> **Bản phát hành tiền nhiệm:** `v2.2.3`
 
 ---
 
 ## 📑 Mục Lục
 1. [Giới Thiệu Tổng Quan & Tầm Nhìn Dự Án](#-1-giới-thiệu-tổng-quan--tầm-nhìn-dự-án)
 2. [Ngăn Xếp Công Nghệ (Tech Stack) & Kiến Trúc Phần Mềm](#-2-ngăn-xếp-công-nghệ-tech-stack--kiến-trúc-phần-mềm)
-3. [Đại Tu Kiến Trúc & Tính Năng Nổi Bật Trên Bản Beta 3.0.2](#-3-đại-tu-kiến-trúc--tính-năng-nổi-bật-trên-bản-beta-302)
+3. [Đại Tu Kiến Trúc & Tính Năng Nổi Bật Trên Bản 3.0.0 Chính Thức](#-3-đại-tu-kiến-trúc--tính-năng-nổi-bật-trên-bản-300-chính-thức)
 4. [Khám Phá Chi Tiết 7 Phân Hệ Chính (7 Core Modules)](#-4-khám-phá-chi-tiết-7-phân-hệ-chính-7-core-modules)
    - [Tab 1: Tổng Quan Vi Khí Hậu & 24h Interactive Scrubber](#tab-1-tổng-quan-vi-khí-hậu--24h-interactive-scrubber)
    - [Tab 2: Cảnh Báo Ngập Úng & Triều Cường Đô Thị (Urban Flood Hub)](#tab-2-cảnh-báo-ngập-úng--triều-cường-đô-thị-urban-flood-hub)
@@ -19,7 +19,7 @@
    - [Tab 6: Widget Studio Showcase & Ghim Desktop Đa Dạng](#tab-6-widget-studio-showcase--ghim-desktop-đa-dạng)
    - [Tab 7: Trung Tâm Cài Đặt & Cá Nhân Hóa Toàn Trang (Settings Hub)](#tab-7-trung-tâm-cài-đặt--cá-nhân-hóa-toàn-trang-settings-hub)
 5. [Hệ Thống Tiện Ích Độc Quyền (Exclusive Ecosystem)](#-5-hệ-thống-tiện-ích-độc-quyền-exclusive-ecosystem)
-6. [Biên Niên Sử Phát Triển Toàn Diện (Full Version History: v1.0.0 ➔ v3.0.2-beta)](#-6-biên-niên-sử-phát-triển-toàn-diện-full-version-history-v100--v302-beta)
+6. [Biên Niên Sử Phát Triển Toàn Diện (Full Version History: v1.0.0 ➔ v3.0.0)](#-6-biên-niên-sử-phát-triển-toàn-diện-full-version-history-v100--v300)
 7. [Hướng Dẫn Cài Đặt, Build & Khởi Chạy](#-7-hướng-dẫn-cài-đặt-build--khởi-chạy)
 
 ---
@@ -66,11 +66,11 @@ graph TD
 
 ---
 
-## 🚀 3. Đại Tu Kiến Trúc & Tính Năng Nổi Bật Trên Bản Beta 3.0.2
+## 🚀 3. Đại Tu Kiến Trúc & Tính Năng Nổi Bật Trên Bản 3.0.0 Chính Thức
 
-Phiên bản **Version 3.0.2 Beta** đánh dấu bước tiến mang tính bước ngoặt về kiến trúc phần mềm, hiệu năng khởi động và khả năng tương thích toàn diện:
+Phiên bản **Version 3.0.0 Chính Thức** đánh dấu bước tiến mang tính bước ngoặt về kiến trúc phần mềm, hiệu năng khởi động và khả năng tương thích toàn diện:
 
-### 🌟 Ba Nâng Cấp Cốt Lõi Trên Beta 3.0.2:
+### 🌟 Ba Nâng Cấp Cốt Lõi Trên Bản 3.0.0:
 1. **Kiến Trúc Module Hóa Toàn Diện (Phương Án B: Modular UserControls + Lazy Loading)**:
    - **Xóa bỏ mã nguồn nguyên khối (Monolithic XAML)**: Tách toàn bộ 7 phân hệ giao diện từ `MainPage.xaml` thành 7 `UserControl` độc lập đặt gọn gàng trong thư mục `Views/Tabs/` (`OverviewTab`, `UrbanFloodTab`, `RadarTab`, `LifestyleTab`, `CalendarTab`, `WidgetStudioTab`, `SettingsTab`).
    - **Tối ưu thời gian khởi động (Cold Start) với `x:DeferLoadStrategy="Lazy"`**: Chỉ Tab 1 (Tổng quan) được biên dịch và khởi tạo ngay khi mở ứng dụng. Các Tab từ 2 đến 7 được hoãn tải và chỉ nạp vào bộ nhớ theo nhu cầu (`FindName`) khi người dùng bấm chuyển tab.
@@ -230,7 +230,7 @@ Phiên bản **Version 3.0.2 Beta** đánh dấu bước tiến mang tính bư�
 
 ---
 
-## 📜 6. Biên Niên Sử Phát Triển Toàn Diện (Full Version History: v1.0.0 ➔ v3.0.2-beta)
+## 📜 6. Biên Niên Sử Phát Triển Toàn Diện (Full Version History: v1.0.0 ➔ v3.0.0)
 
 ```mermaid
 timeline
@@ -254,6 +254,7 @@ timeline
             : v3.0.0-beta (Đại tu giao diện Fluent Navigation Shell)
             : v3.0.1-beta (Radar 360, Inline Calendar, Widget Studio, OOTD High Contrast)
             : v3.0.2-beta (Modular UserControl, Lazy Loading, Win10/11 Adaptive, Font Fallback)
+            : v3.0.0 (Bản Phát Hành Chính Thức: Hệ Điều Hành Vi Khí Hậu Toàn Diện)
 ```
 
 ### Bảng Chi Tiết Toàn Bộ Lịch Sử Phiên Bản:
@@ -278,18 +279,21 @@ timeline
 | **v2.2.3** | Bản dân sinh & Ổn định | Fix lưu cài đặt & Triều cường | **Fix lỗi chí mạng**: Xử lý triệt để lỗi không lưu cài đặt và lỗi Widget Opacity bị ép về 20% khi mở lại app; **Tính năng mới**: Cảnh báo ngập úng triều cường đô thị tại TP.HCM & Hà Nội (đồ thị sóng bán nhật triều 24h, đếm ngược đỉnh triều, danh sách tuyến đường ngập). |
 | **v3.0.0-beta** | Bản đại tu UI Beta | Khung NavigationView Shell | Đại tu toàn bộ giao diện thành bố cục Fluent NavigationView 7 tab chuyên biệt, xây dựng thanh tua thời gian 24h Time-Scrubber, thiết kế Widget Studio. |
 | **v3.0.1-beta** | Bản Beta Hoàn Thiện | Chau chuốt toàn diện | Khắc phục lỗi font chữ UTF-8, sửa lỗi hiển thị icon 24h và bảng 7 ngày, thiết kế Radar Doppler khí quyển 360° có vệt sáng phosphor trail, khung chi tiết Lịch trực tiếp (Inline Day Details) thay thế popup, tăng độ tương phản OOTD trên Light Mode, Widget Studio ghim chính xác cả 4 kiểu dáng và lưu độ mờ, Trung tâm cài đặt 2 cột Win11 toàn trang. |
-| **v3.0.2-beta** | **Bản Tối Ưu Kiến Trúc** | **Module Hóa & Tương Thích Win10/11** | **Phương Án B Modular UserControl**: Tách biệt 7 tab độc lập vào `Views/Tabs/`, áp dụng `x:DeferLoadStrategy="Lazy"` tải theo nhu cầu (on-demand via `FindName`), giảm 63% kích thước XAML MainPage (từ 4.648 dòng xuống 1.744 dòng), tiết kiệm RAM khởi động; **Tối ưu Windows 10 & 11**: Tự động nhận diện OS Build (MicaAlt trên Win11, Desktop Acrylic + Slate tint chống lóa trên Win10); **Sửa triệt để lỗi mất biểu tượng**: Cơ chế nạp FontAwesome đa tầng (`AddFontResourceEx` runtime fallback + Segoe Fluent Icons fallback). |
+| **v3.0.2-beta** | Bản Tối Ưu Kiến Trúc | Module Hóa & Tương Thích Win10/11 | Phương Án B Modular UserControl: Tách biệt 7 tab độc lập vào `Views/Tabs/`, áp dụng `x:DeferLoadStrategy="Lazy"` tải theo nhu cầu (on-demand via `FindName`), giảm 63% kích thước XAML MainPage, tiết kiệm RAM khởi động; Tối ưu Windows 10 & 11 (MicaAlt / Acrylic Slate); Sửa triệt để lỗi mất biểu tượng. |
+| **v3.0.0** | **Bản Phát Hành Chính Thức** | **Cột Mốc v3.0 Hoàn Thiện** | **Hệ Điều Hành Vi Khí Hậu Toàn Diện**: Hội tụ đầy đủ kiến trúc Modular UserControl 7 Tab, nạp lười Lazy Loading tối ưu Cold Start & 0% CPU nhàn rỗi, tương thích thích ứng sâu Windows 10 (Acrylic Slate Dark) & Windows 11 (MicaAlt), nạp font động Win32 AddFontResourceEx chống mất icon, Sóng bán nhật triều 24h & đếm ngược đỉnh triều, Radar Doppler 360°, Lịch Vạn Niên Inline Details, Widget Studio 4 kiểu dáng, Trung tâm Cài đặt 2 cột Win11 và bộ xuất thẻ ảnh Full HD độ phân giải cao. |
 
 ---
 
 ## 💻 7. Hướng Dẫn Cài Đặt, Build & Khởi Chạy
 
 ### A. Tải & Sử Dụng Bản Đóng Gói Sẵn (Portable / Setup)
-- **Bản Beta 3.0.2 Portable**:
-  - Tải file nén `Output/Beta/WeatherApp_Portable_v3.0.2-beta.zip` (~97.4 MB).
-  - Giải nén ra bất kỳ thư mục nào trên máy tính.
-  - Chạy trực tiếp `WeatherApp.exe` (không cần cài đặt, không ghi rác vào Registry).
-- **Bản Ổn Định v2.2.3 (Nhánh `main`)**:
+- **Bản Cài Đặt Windows Chính Thức v3.0.0**:
+  - Tải bộ cài đặt: `Output/WeatherApp_Setup_v3.0.0.exe` (~83 MB).
+  - Tự động cài đặt chuẩn Windows 10/11, tạo shortcut Desktop, Start Menu và tự khởi động cùng máy.
+- **Bản Di Động (Portable) Chính Thức v3.0.0**:
+  - Tải file nén `Output/WeatherApp_Portable_v3.0.0.zip` (~97 MB).
+  - Giải nén ra bất kỳ thư mục nào trên máy tính và chạy trực tiếp `WeatherApp.exe` (Self-contained, không phụ thuộc môi trường ngoài).
+- **Bản Tiền Nhiệm v2.2.3**:
   - Bộ cài đặt: `Output/WeatherApp_Setup_v2.2.3.exe` (~81 MB).
   - Bản Portable: `Output/WeatherApp_Portable_v2.2.3.zip` (~97 MB).
 
@@ -300,8 +304,8 @@ timeline
    - Visual Studio 2022 (v17.8+) với workload *.NET Desktop Development* và *Windows App SDK C# Templates*.
 2. **Các bước thực hiện**:
 ```bash
-# 1. Chuyển sang nhánh v3.0-beta
-git checkout v3.0-beta
+# 1. Chuyển sang nhánh main
+git checkout main
 
 # 2. Khôi phục các gói NuGet phụ thuộc
 dotnet restore
@@ -309,8 +313,11 @@ dotnet restore
 # 3. Biên dịch bản Debug x64 để chạy thử nghiệm
 dotnet build -p:Platform=x64
 
-# 4. Xuất bản gói Release x64 Self-Contained (Bản Portable)
-dotnet publish -c Release -p:Platform=x64 -r win-x64 --self-contained true -o Output/Beta/WeatherApp_Portable_v3.0.2-beta
+# 4. Xuất bản gói Release x64 Self-Contained (Bản Portable & Chuẩn bị Setup)
+dotnet publish -c Release -p:Platform=x64 -r win-x64 --self-contained true -o publish
+
+# 5. Biên dịch bộ cài đặt Inno Setup
+ISCC installer.iss
 ```
 
 ---

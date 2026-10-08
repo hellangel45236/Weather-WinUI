@@ -183,7 +183,7 @@
                      Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                      Margin="0,0,0,12"/>
 
-        <!-- ==================== HÀNG 4: THANH ĐIỀU HƯỚNG FLUENT NAVIGATION VIEW (VERSION 3.0.1 BETA) ==================== -->
+        <!-- ==================== HÀNG 4: THANH ĐIỀU HƯỚNG FLUENT NAVIGATION VIEW (VERSION 3.0.0) ==================== -->
         <NavigationView x:Name="MainNavView"
                         Grid.Row="4"
                         PaneDisplayMode="Left"
@@ -474,7 +474,7 @@
 
                                         <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="✨ Được tạo tự động bởi Weather WinUI • Thiết kế cho Windows 10 &amp; 11" FontSize="15" Foreground="#94A3B8" FontWeight="SemiBold"/>
-                                            <TextBlock Grid.Column="1" Text="Độ phân giải Full HD (1920 × 1080) • Bản quyền Antigravity" FontSize="15" Foreground="#64748B" HorizontalAlignment="Right"/>
+                                            <TextBlock Grid.Column="1" Text="Độ phân giải Full HD (1920 × 1080) • Weather WinUI" FontSize="15" Foreground="#64748B" HorizontalAlignment="Right"/>
                                         </Grid>
                                     </Grid>
                                 </Grid>
@@ -607,7 +607,7 @@
                                             </Border>
                                         </StackPanel>
 
-                                        <TextBlock Grid.Row="2" Text="✨ Weather WinUI Story FHD (1080 × 1920) • Antigravity" FontSize="14" Foreground="#94A3B8" HorizontalAlignment="Center" FontWeight="SemiBold"/>
+                                        <TextBlock Grid.Row="2" Text="✨ Weather WinUI Story FHD (1080 × 1920) • Weather WinUI" FontSize="14" Foreground="#94A3B8" HorizontalAlignment="Center" FontWeight="SemiBold"/>
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -637,6 +637,7 @@
                               SelectionChanged="ChangelogVersionComboBox_SelectionChanged"
                               MinWidth="240"
                               CornerRadius="8">
+                        <ComboBoxItem Content="v3.0.0 (Đại Tu Kiến Trúc Modular 7 Tab, Sóng Triều 24h, Radar 360°, Tối Ưu Win10/11)" Tag="3.0.0"/>
                         <ComboBoxItem Content="v2.2.3 (Fix Lưu Cài Đặt &amp; Widget 20%, Cảnh Báo Ngập Úng &amp; Triều Cường Đô Thị)" Tag="2.2.3"/>
                         <ComboBoxItem Content="v2.2.1 (Fix Icon Win10, Tìm Kiếm Toàn Diện, Responsive &lt; FullHD &amp; Fix AV)" Tag="2.2.1"/>
                         <ComboBoxItem Content="v2.2.0 (Giao Diện Dynamic BryanC, Meteocons Animated, Fix Viền Khay &amp; Icon Pack)" Tag="2.2"/>
@@ -663,13 +664,13 @@
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Có gì mới trong Weather WinUI 2.2.3?" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Có gì mới trong Weather WinUI 3.0.0?" FontSize="16" FontWeight="Bold" Foreground="White"/>
                                 <Border Background="#10B981" CornerRadius="6" Padding="6,2">
-                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v2.2.3 TÍNH NĂNG MỚI &amp; SỬA LỖI" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.0.0 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
                                 </Border>
                             </StackPanel>
                             <TextBlock x:Name="ChangelogHeaderSubtitle"
-                                       Text="Khắc phục triệt để lỗi không lưu cài đặt và lỗi Widget Opacity bị reset về 20%, ra mắt tính năng Cảnh báo ngập úng triều cường đô thị tại TP.HCM &amp; Hà Nội với dự báo đỉnh triều, lưu vực sông, các tuyến đường ngập trọng điểm và lời khuyên lưu thông an toàn."
+                                       Text="Bước chuyển mình toàn diện sang Hệ Điều Hành Vi Khí Hậu: Khung điều hướng Fluent 7 Tab chuyên sâu, kiến trúc Modular UserControl tải lười (Lazy Loading), mô phỏng sóng bán nhật triều 24h &amp; đếm ngược đỉnh triều, Radar Doppler 360°, Lịch Vạn Niên Inline Details, Widget Studio ghim 4 kiểu dáng và tối ưu hóa thích ứng toàn diện Windows 10 &amp; 11."
                                        FontSize="11.5" Foreground="White" Opacity="0.88" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Grid>
@@ -678,8 +679,65 @@
                 <!-- NỘI DUNG CHANGELOG THEO TỪNG PHIÊN BẢN -->
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                     <Grid Padding="2">
+                        <!-- ==================== CHANGELOG v3.0.0 ==================== -->
+                        <StackPanel x:Name="ChangelogContent_v300" Spacing="10" Visibility="Visible">
+                            <!-- 1. Kiến trúc Modular UserControl & Tải lười -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#2538BDF8">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf5fd;" Foreground="#38BDF8" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#38BDF8" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="ĐỘT PHÁ KIẾN TRÚC" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Kiến Trúc Module Hóa 7 Tab &amp; Lazy Loading (x:DeferLoadStrategy)" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Phân tách hoàn toàn mã nguồn thành 7 UserControl chuyên sâu trong Views/Tabs/, giảm 63% độ dài file MainPage, chỉ khởi tạo Tab 1 khi khởi động và nạp các tab còn lại theo nhu cầu giúp tăng tốc mở app, tiết kiệm bộ nhớ RAM và giữ mức CPU ở 0% khi nhàn rỗi." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 2. Tương thích Windows 10 & 11 -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#2510B981">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf17a;" Foreground="#10B981" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#10B981" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="TỐI ƯU THỊ GIÁC" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Thích Ứng Toàn Diện Windows 10 &amp; 11 + Triệt Tiêu Lỗi Mất Icon" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Tự động nhận diện OS Build: MicaAlt cao cấp trên Win11, Desktop Acrylic lót nền Slate Dark (#0F172A) chống lóa trên Win10; Cơ chế nạp FontAwesome động tại runtime qua Win32 AddFontResourceEx và chuỗi fallback Segoe Fluent Icons giúp hiển thị biểu tượng chuẩn xác 100% trên mọi máy tính." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 3. Các Phân Hệ Vi Khí Hậu & Đô Thị Mới -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#25A855F7">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf76b;" Foreground="#A855F7" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#A855F7" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="TÍNH NĂNG MỚI" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Thanh Tua 24h, Sóng Triều Bán Nhật Triều, Radar 360° &amp; Widget Studio" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Thanh tua nhanh 24h Time-Scrubber đổi màu bầu trời thời gian thực; Đồ thị sóng triều bán nhật triều 24h và đồng hồ đếm ngược đỉnh triều sáng/chiều; Bản đồ Radar Doppler khí quyển 360° có vệt quét phosphor trail; Khung chi tiết Lịch trực tiếp (Inline Day Details) thay thế popup; Widget Studio cung cấp 4 kiểu dáng ghim ra Desktop bền vững." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
                         <!-- ==================== CHANGELOG v2.2.3 ==================== -->
-                        <StackPanel x:Name="ChangelogContent_v223" Spacing="10" Visibility="Visible">
+                        <StackPanel x:Name="ChangelogContent_v223" Spacing="10" Visibility="Collapsed">
                             <!-- 1. Sửa lỗi chí mạng không lưu cài đặt & Widget reset 20% -->
                             <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">

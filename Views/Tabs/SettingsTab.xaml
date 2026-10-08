@@ -22,7 +22,7 @@
                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf013;" Foreground="#94A3B8" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                     <StackPanel Spacing="2">
-                                        <TextBlock Text="Trung Tâm Cài Đặt &amp; Cá Nhân Hóa (Version 3.0.1 Beta)" FontSize="16" FontWeight="Bold"/>
+                                        <TextBlock Text="Trung Tâm Cài Đặt &amp; Cá Nhân Hóa (Version 3.0.0)" FontSize="16" FontWeight="Bold"/>
                                         <TextBlock Text="Quản lý giao diện, biểu tượng, đơn vị, ảnh nền, thông báo và hiệu năng hệ thống" FontSize="11.5" Opacity="0.65"/>
                                     </StackPanel>
                                 </StackPanel>
@@ -34,7 +34,7 @@
                                         </StackPanel>
                                     </Button>
                                     <Border Background="#258B5CF6" BorderBrush="#8B5CF6" BorderThickness="1" CornerRadius="8" Padding="10,6">
-                                        <TextBlock Text="Version 3.0.1-Beta" FontSize="12" FontWeight="Bold" Foreground="#A78BFA"/>
+                                        <TextBlock Text="Version 3.0.0 (Chính Thức)" FontSize="12" FontWeight="Bold" Foreground="#A78BFA"/>
                                     </Border>
                                 </StackPanel>
                             </Grid>

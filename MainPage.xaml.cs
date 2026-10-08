@@ -679,7 +679,7 @@ public sealed partial class MainPage : Page
 
     private void CheckAndShowChangelog()
     {
-        string currentVersion = "3.0.2-beta";
+        string currentVersion = "3.0.0";
         string lastSeen = ViewModel.Settings.LastSeenVersion ?? string.Empty;
 
         if (string.IsNullOrEmpty(lastSeen) || lastSeen != currentVersion)
@@ -735,21 +735,22 @@ public sealed partial class MainPage : Page
     {
         var panels = new[]
         {
-            (ChangelogContent_v223, "v2.2.3"),
-            (ChangelogContent_v221, "v2.2.1"),
-            (ChangelogContent_v22, "v2.2"),
-            (ChangelogContent_v21, "v2.1"),
-            (ChangelogContent_v20, "v2.0"),
-            (ChangelogContent_v19, "v1.9"),
-            (ChangelogContent_v18, "v1.8"),
-            (ChangelogContent_v17, "v1.7"),
-            (ChangelogContent_v16, "v1.6"),
-            (ChangelogContent_v15, "v1.5"),
-            (ChangelogContent_v14, "v1.4"),
-            (ChangelogContent_v13, "v1.3"),
-            (ChangelogContent_v12, "v1.2"),
-            (ChangelogContent_v11, "v1.1"),
-            (ChangelogContent_v10, "v1.0")
+            (ChangelogContent_v300, "3.0.0"),
+            (ChangelogContent_v223, "2.2.3"),
+            (ChangelogContent_v221, "2.2.1"),
+            (ChangelogContent_v22, "2.2"),
+            (ChangelogContent_v21, "2.1"),
+            (ChangelogContent_v20, "2.0"),
+            (ChangelogContent_v19, "1.9"),
+            (ChangelogContent_v18, "1.8"),
+            (ChangelogContent_v17, "1.7"),
+            (ChangelogContent_v16, "1.6"),
+            (ChangelogContent_v15, "1.5"),
+            (ChangelogContent_v14, "1.4"),
+            (ChangelogContent_v13, "1.3"),
+            (ChangelogContent_v12, "1.2"),
+            (ChangelogContent_v11, "1.1"),
+            (ChangelogContent_v10, "1.0")
         };
 
         foreach (var (panel, tag) in panels)
@@ -764,9 +765,10 @@ public sealed partial class MainPage : Page
         {
             ChangelogHeaderTitle.Text = versionTag switch
             {
-                "v2.2.3" => "Chi Tiết Bản Cập Nhật v2.2.3",
-                "v2.2.1" => "Chi Tiết Bản Cập Nhật v2.2.1",
-                "v2.2" => "Chi Tiết Bản Cập Nhật v2.2",
+                "3.0.0" => "Chi Tiết Bản Phát Hành Chính Thức v3.0.0",
+                "2.2.3" => "Chi Tiết Bản Cập Nhật v2.2.3",
+                "2.2.1" => "Chi Tiết Bản Cập Nhật v2.2.1",
+                "2.2" => "Chi Tiết Bản Cập Nhật v2.2",
                 "v2.1" => "Chi Tiết Bản Cập Nhật v2.1",
                 "v2.0" => "Chi Tiết Bản Cập Nhật v2.0",
                 "v1.9" => "Chi Tiết Bản Cập Nhật v1.9",
