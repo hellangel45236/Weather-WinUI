@@ -30,6 +30,9 @@ public class FloodHotspotRoad
     };
     public string Note { get; set; } = string.Empty;
     public string IconGlyph => Cause.Contains("Triều") ? "\uf773" : "\uf73d";
+    public string CauseIconGlyph => IconGlyph;
+    public string CauseBadgeBg => Cause.Contains("Triều") && Cause.Contains("Mưa") ? "#25EA580C" : Cause.Contains("Triều") ? "#200284C7" : "#2038BDF8";
+    public string CauseBadgeFg => Cause.Contains("Triều") && Cause.Contains("Mưa") ? "#EA580C" : Cause.Contains("Triều") ? "#0284C7" : "#38BDF8";
 }
 
 public class UrbanFloodWarning
@@ -120,6 +123,80 @@ public class UrbanFloodWarning
     public List<TideHourlyPoint> TideCurve24h { get; set; } = new();
     public string NextPeakCountdown { get; set; } = string.Empty;
     public double PeakTideMeters { get; set; } = 1.60;
+
+    // Helper UI Properties cho giao diện cao cấp
+    public string DrainageIconGlyph => RainIntensity switch
+    {
+        >= 45.0 => "\uf071",
+        >= 25.0 => "\uf73d",
+        >= 10.0 => "\uf73d",
+        _ => "\uf058"
+    };
+
+    public string TideTrendIconGlyph => IsCurrentlyPeakTide ? "\uf13d" : (TideStatusText.Contains("dâng") ? "\uf062" : "\uf063");
+    public string TideTrendText => IsCurrentlyPeakTide ? "Đang đỉnh triều" : (TideStatusText.Contains("dâng") ? "Triều đang dâng" : "Triều đang rút");
+    public string TideTrendColor => IsCurrentlyPeakTide ? "#EF4444" : (TideStatusText.Contains("dâng") ? "#EA580C" : "#10B981");
+
+    public int HotspotsCriticalCount => HotspotRoads?.Count(r => r.SeverityLevel == 3) ?? 0;
+    public int HotspotsMediumCount => HotspotRoads?.Count(r => r.SeverityLevel == 2) ?? 0;
+    public int HotspotsMildCount => HotspotRoads?.Count(r => r.SeverityLevel <= 1) ?? 0;
+
+    public string CurrentTideMetersText => $"{CurrentTideLevel:F2}";
+    public string HotspotRoadsCountText => HotspotRoadsCount.ToString();
+    public string HotspotsCriticalCountText => HotspotsCriticalCount.ToString();
+    public string HotspotsMediumCountText => HotspotsMediumCount.ToString();
+
+    public string MotorbikeRiskStatus => RiskLevel switch
+    {
+        3 => "Nguy cơ chết máy cao",
+        2 => "Cần hết sức cẩn trọng",
+        1 => "Chú ý vũng trũng",
+        _ => "Lưu thông an toàn"
+    };
+    public string MotorbikeRiskColor => RiskLevel switch
+    {
+        3 => "#EF4444",
+        2 => "#EA580C",
+        1 => "#F59E0B",
+        _ => "#10B981"
+    };
+
+    public string CarRiskStatus => RiskLevel switch
+    {
+        3 => "Nguy cơ thủy kích cao",
+        2 => "Tránh các trục ngập sâu",
+        1 => "Giảm tốc tránh tạt nước",
+        _ => "Lưu thông an toàn"
+    };
+    public string CarRiskColor => RiskLevel switch
+    {
+        3 => "#EF4444",
+        2 => "#EA580C",
+        1 => "#F59E0B",
+        _ => "#10B981"
+    };
+
+    public string HeroGradientStart => RiskLevel switch
+    {
+        3 => "#330F13",
+        2 => "#301B08",
+        1 => "#2B1E07",
+        _ => "#092419"
+    };
+    public string HeroGradientEnd => RiskLevel switch
+    {
+        3 => "#1A0608",
+        2 => "#180D04",
+        1 => "#161005",
+        _ => "#05130D"
+    };
+    public string HeroBorderColor => RiskLevel switch
+    {
+        3 => "#66EF4444",
+        2 => "#66EA580C",
+        1 => "#66F59E0B",
+        _ => "#4410B981"
+    };
 }
 
 public class TideHourlyPoint
