@@ -45,13 +45,14 @@ public class NotificationService
 
         try
         {
+            string appAttribution = LocalizationService.Instance.IsVietnamese ? "Thời Tiết WinUI" : "WinUI Weather";
             string xml = $@"
 <toast duration='short'>
     <visual>
         <binding template='ToastGeneric'>
             <text>{System.Security.SecurityElement.Escape(title)}</text>
             <text>{System.Security.SecurityElement.Escape(message)}</text>
-            <text placement='attribution'>Thời Tiết WinUI</text>
+            <text placement='attribution'>{appAttribution}</text>
         </binding>
     </visual>
     <audio src='ms-winsoundevent:Notification.Default' />
@@ -113,11 +114,12 @@ public class NotificationService
 
     public void ShowEventReminderToast(string eventTitle, string timeText, string category, string weatherInfo, string advice)
     {
-        string title = $"⏰ Nhắc Nhở Lịch Trình: {eventTitle}";
-        string msg = $"{timeText} hôm nay • Phân loại: {category}";
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        string title = isVi ? $"⏰ Nhắc Nhở Lịch Trình: {eventTitle}" : $"⏰ Schedule Reminder: {eventTitle}";
+        string msg = isVi ? $"{timeText} hôm nay • Phân loại: {category}" : $"{timeText} today • Category: {category}";
         if (!string.IsNullOrWhiteSpace(weatherInfo))
         {
-            msg += $"\nThời tiết: {weatherInfo}";
+            msg += isVi ? $"\nThời tiết: {weatherInfo}" : $"\nWeather: {weatherInfo}";
         }
         if (!string.IsNullOrWhiteSpace(advice))
         {
@@ -128,9 +130,10 @@ public class NotificationService
 
     public void ShowCommuteToast(string commuteType, string timeText, string condition, string temp, string advice)
     {
-        string icon = commuteType.Contains("sáng", StringComparison.OrdinalIgnoreCase) || commuteType.Contains("đi", StringComparison.OrdinalIgnoreCase) ? "🚗" : "🏠";
-        string title = $"{icon} Chuẩn Bị {commuteType} ({timeText})";
-        string msg = $"Dự báo {condition}, nhiệt độ {temp}. {advice}";
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        string icon = commuteType.Contains("sáng", StringComparison.OrdinalIgnoreCase) || commuteType.Contains("đi", StringComparison.OrdinalIgnoreCase) || commuteType.Contains("morning", StringComparison.OrdinalIgnoreCase) || commuteType.Contains("work", StringComparison.OrdinalIgnoreCase) ? "🚗" : "🏠";
+        string title = isVi ? $"{icon} Chuẩn Bị {commuteType} ({timeText})" : $"{icon} Commute Prep: {commuteType} ({timeText})";
+        string msg = isVi ? $"Dự báo {condition}, nhiệt độ {temp}. {advice}" : $"Forecast: {condition}, temp {temp}. {advice}";
         ShowToast(title, msg);
     }
 
@@ -152,7 +155,9 @@ public class NotificationService
         if (!settings.EnableToastNotifications || current == null) return;
 
         DateTime now = DateTime.Now;
-        string userName = string.IsNullOrWhiteSpace(settings.UserName) ? "bạn" : settings.UserName;
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        string defaultName = isVi ? "bạn" : "there";
+        string userName = string.IsNullOrWhiteSpace(settings.UserName) ? defaultName : settings.UserName;
 
         // 1. CẢNH BÁO MƯA SẮP ĐẾN (RAIN ALARM)
         if (settings.EnableRainAlarm && (now - _lastRainAlertTime).TotalHours >= 2)
@@ -177,8 +182,11 @@ public class NotificationService
             if (isRainUpcoming)
             {
                 _lastRainAlertTime = now;
-                ShowToast("🌧️ Cảnh Báo Mưa Sắp Tới!",
-                    $"Dự báo sẽ có mưa to tại khu vực {current.LocationName} trong 20-30 phút tới. Nhớ đóng cửa sổ và chuẩn bị áo mưa nhé {userName}!");
+                string rainTitle = isVi ? "🌧️ Cảnh Báo Mưa Sắp Tới!" : "🌧️ Rain Alarm: Imminent Rain!";
+                string rainMsg = isVi 
+                    ? $"Dự báo sẽ có mưa to tại khu vực {current.LocationName} trong 20-30 phút tới. Nhớ đóng cửa sổ và chuẩn bị áo mưa nhé {userName}!"
+                    : $"Heavy rain is forecast in {current.LocationName} within the next 20-30 minutes. Close windows and take rain gear, {userName}!";
+                ShowToast(rainTitle, rainMsg);
             }
         }
 
@@ -188,14 +196,20 @@ public class NotificationService
             if (double.TryParse(current.UvIndexText, out double uv) && uv >= 8.0)
             {
                 _lastUvAlertDate = now.Date;
-                ShowToast("🔥 Cảnh Báo Nắng Gắt & Tia UV Rất Cao!",
-                    $"Chỉ số UV tại {current.LocationName} đang ở mức rất cao ({uv:F1}). {userName} nên bôi kem chống nắng và hạn chế tiếp xúc trực tiếp ngoài trời!");
+                string uvTitle = isVi ? "🔥 Cảnh Báo Nắng Gắt & Tia UV Rất Cao!" : "🔥 Intense Sun & High UV Alert!";
+                string uvMsg = isVi 
+                    ? $"Chỉ số UV tại {current.LocationName} đang ở mức rất cao ({uv:F1}). {userName} nên bôi kem chống nắng và hạn chế tiếp xúc trực tiếp ngoài trời!"
+                    : $"UV index at {current.LocationName} is extremely high ({uv:F1}). {userName}, apply sunscreen and minimize direct outdoor exposure!";
+                ShowToast(uvTitle, uvMsg);
             }
             else if (current.WeatherEffect == WeatherEffectType.HighUvSunny)
             {
                 _lastUvAlertDate = now.Date;
-                ShowToast("🔥 Cảnh Báo Tia UV Rất Cao!",
-                    $"Thời điểm buổi trưa tại {current.LocationName} có nắng gắt. {userName} hãy uống nhiều nước và che chắn cẩn thận khi ra đường!");
+                string uvTitle = isVi ? "🔥 Cảnh Báo Tia UV Rất Cao!" : "🔥 High UV Alert!";
+                string uvMsg = isVi 
+                    ? $"Thời điểm buổi trưa tại {current.LocationName} có nắng gắt. {userName} hãy uống nhiều nước và che chắn cẩn thận khi ra đường!"
+                    : $"Midday sun is intense in {current.LocationName}. Stay hydrated and cover up well outdoors, {userName}!";
+                ShowToast(uvTitle, uvMsg);
             }
         }
 
@@ -204,8 +218,11 @@ public class NotificationService
         {
             _lastMorningBriefingDate = now.Date;
             string tempRange = current.MinMaxText;
-            ShowToast($"☀️ Chào buổi sáng, {userName}!",
-                $"Hôm nay tại {current.LocationName} {current.ConditionText.ToLowerInvariant()}, {tempRange.ToLowerInvariant()}. Chúc bạn một ngày mới tràn đầy năng lượng!");
+            string morningTitle = isVi ? $"☀️ Chào buổi sáng, {userName}!" : $"☀️ Good morning, {userName}!";
+            string morningMsg = isVi 
+                ? $"Hôm nay tại {current.LocationName} {current.ConditionText.ToLowerInvariant()}, {tempRange.ToLowerInvariant()}. Chúc bạn một ngày mới tràn đầy năng lượng!"
+                : $"Today in {current.LocationName}: {current.ConditionText.ToLowerInvariant()}, {tempRange.ToLowerInvariant()}. Have a wonderful, energizing day!";
+            ShowToast(morningTitle, morningMsg);
         }
     }
 }

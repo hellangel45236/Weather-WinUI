@@ -22,8 +22,8 @@
                     <Image Source="ms-appx:///Assets/Square44x44Logo.scale-200.png" Width="40" Height="40" Stretch="Uniform"/>
                 </Border>
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="{x:Bind ViewModel.WelcomeGreetingText, Mode=OneWay}" FontSize="18" FontWeight="Bold"/>
-                    <TextBlock x:Name="AppSubtitleText" Text="{x:Bind ViewModel.Loc.AppSubtitle, Mode=OneWay}" FontSize="12" Opacity="0.65"/>
+                    <TextBlock Text="{x:Bind ViewModel.WelcomeGreetingText, Mode=OneWay}" FontSize="18" FontWeight="Bold" TextTrimming="CharacterEllipsis" MaxWidth="260"/>
+                    <TextBlock x:Name="AppSubtitleText" Text="{x:Bind ViewModel.Loc.AppSubtitle, Mode=OneWay}" FontSize="12" Opacity="0.65" TextTrimming="CharacterEllipsis" MaxWidth="260"/>
                 </StackPanel>
             </StackPanel>
 
@@ -152,7 +152,7 @@
                                     Padding="11,5">
                                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}" FontSize="10.5" Foreground="{x:Bind IconColor, Mode=OneWay}"/>
-                                    <TextBlock Text="{x:Bind Name}" FontSize="12" FontWeight="{x:Bind ChipFontWeight, Mode=OneWay}" Foreground="{x:Bind ChipForegroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
+                                    <TextBlock Text="{x:Bind DisplayName}" FontSize="12" FontWeight="{x:Bind ChipFontWeight, Mode=OneWay}" Foreground="{x:Bind ChipForegroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
                                     <Ellipse Width="5" Height="5" Fill="#38BDF8" Visibility="{x:Bind ActiveIndicatorVisibility, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
@@ -166,14 +166,14 @@
         <StackPanel Grid.Row="2" Spacing="8" Margin="0,0,0,12">
             <InfoBar x:Name="ShareSuccessInfoBar"
                      Severity="Success"
-                     Title="📸 Đã chụp &amp; sao chép ảnh thời tiết vào Clipboard!"
-                     Message="Bạn có thể nhấn Ctrl + V để dán ảnh thời tiết cực đẹp này gửi cho bạn bè qua Zalo, Messenger, Telegram..."
+                     Title="{x:Bind ViewModel.Loc.ShareSuccessTitle, Mode=OneWay}"
+                     Message="{x:Bind ViewModel.Loc.ShareSuccessMessage, Mode=OneWay}"
                      IsOpen="False"
                      IsClosable="True"/>
 
             <InfoBar IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}"
                      Severity="Error"
-                     Title="Không thể cập nhật"
+                     Title="{x:Bind ViewModel.Loc.ErrorTitle, Mode=OneWay}"
                      Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
                      IsClosable="True"/>
         </StackPanel>
@@ -638,6 +638,8 @@
                               SelectionChanged="ChangelogVersionComboBox_SelectionChanged"
                               MinWidth="240"
                               CornerRadius="8">
+                        <ComboBoxItem Content="v3.0.5 (Hoàn Thiện Song Ngữ Tiếng Anh, Tối Ưu Co Giãn Responsive, 100% Win10 Compatibility)" Tag="3.0.5"/>
+                        <ComboBoxItem Content="v3.0.4 (Chau Chuốt Lịch Âm Dương Vạn Niên, Đếm Ngược Lễ Hội, Can Chi Ba Trụ)" Tag="3.0.4"/>
                         <ComboBoxItem Content="v3.0.3 (Song Ngữ Tiếng Việt &amp; English, Giao Diện Co Giãn Thích Ứng, Cá Nhân Hóa)" Tag="3.0.3"/>
                         <ComboBoxItem Content="v3.0.2 (Smart Multi-City Bar, AI Weather Natural Summary &amp; Overview Tab Overhaul)" Tag="3.0.2"/>
                         <ComboBoxItem Content="v3.0.1 (Dynamic Day &amp; Night Wallpapers, Ambient Soundscapes Flyout, GitHub Update Checker, Battery Saver)" Tag="3.0.1"/>
@@ -668,13 +670,13 @@
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Có gì mới trong Weather WinUI 3.0.3?" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Có gì mới trong Weather WinUI 3.0.5?" FontSize="16" FontWeight="Bold" Foreground="White"/>
                                 <Border Background="#10B981" CornerRadius="6" Padding="6,2">
-                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.0.3 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.0.5 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
                                 </Border>
                             </StackPanel>
                             <TextBlock x:Name="ChangelogHeaderSubtitle"
-                                       Text="Hỗ trợ song ngữ Tiếng Việt &amp; English toàn diện, thiết kế giao diện thích ứng co giãn thông minh (Responsive Multilingual Layout), bố trí cài đặt ngôn ngữ trong mục Cá Nhân Hóa và hoàn thiện trực quan bản đồ Radar &amp; Triều Cường."
+                                       Text="Bản cập nhật v3.0.5 hoàn thiện 100% song ngữ Tiếng Anh toàn bộ ứng dụng, đại tu bố cục giao diện co giãn Responsive chống tràn cắt chữ và đảm bảo độ tương thích hiển thị tuyệt đối trên Windows 10 &amp; 11."
                                        FontSize="11.5" Foreground="White" Opacity="0.88" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Grid>
@@ -683,8 +685,86 @@
                 <!-- NỘI DUNG CHANGELOG THEO TỪNG PHIÊN BẢN -->
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                     <Grid Padding="2">
+                        <!-- ==================== CHANGELOG v3.0.5 ==================== -->
+                        <StackPanel x:Name="ChangelogContent_v305" Spacing="10" Visibility="Visible">
+                            <!-- 1. Song ngữ toàn diện không sót chữ -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#253B82F6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0ac;" Foreground="#3B82F6" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#3B82F6" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="100% SONG NGỮ" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Hoàn Thiện Song Ngữ Tiếng Anh Không Còn Sót Tiếng Việt" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Rà soát và địa phương hóa 100% các thành phần: Lời khuyên sinh hoạt (CLOTHING, ESSENTIAL GEAR, OUTDOOR, COMMUTE, HEALTH), Lịch âm và 24 Tiết khí, Cảnh báo ngập úng nội đô &amp; triều cường, Hộp thoại thông báo và chip địa điểm nhanh." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 2. Responsive UI Overhaul -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#2510B981">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf065;" Foreground="#10B981" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#10B981" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="RESPONSIVE" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Tối Ưu Co Giãn Giao Diện Toàn Diện Khi Thu Nhỏ Cửa Sổ" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Khắc phục triệt để hiện tượng cắt chữ nút chọn Theme khi thu nhỏ cửa sổ (&lt; 1140px), sửa lỗi ComboBox Tháng Lịch bị trắng khi đổi ngôn ngữ, bổ sung TextTrimming trên thanh tiêu đề và đảm bảo hiển thị hoàn hảo ở kích thước 850px đến 4K." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 3. Tương thích Windows 10 -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#25F59E0B">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf17a;" Foreground="#F59E0B" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#F59E0B" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="WINDOWS 10" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Đảm Bảo Tương Thích Tuyệt Đối Với Windows 10 &amp; 11" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Nhúng độc lập bộ font Font Awesome 6 Solid nội bộ và cơ chế tự động fallback sang Segoe MDL2 Assets, không phụ thuộc font Segoe Fluent Icons của Win11, bảo đảm hiển thị icon sắc nét 100% không bị tofu (ô vuông rỗng)." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ==================== CHANGELOG v3.0.4 ==================== -->
+                        <StackPanel x:Name="ChangelogContent_v304" Spacing="10" Visibility="Collapsed">
+                            <!-- 1. Lịch âm dương vạn niên -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#258B5CF6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf783;" Foreground="#8B5CF6" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#8B5CF6" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="LỊCH VẠN NIÊN" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Đại Tu Toàn Diện Tab Lịch Âm Dương &amp; Đếm Ngược Lễ Hội" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Bổ sung bộ máy tính toán Âm lịch thiên văn chuẩn xác theo múi giờ UTC+7, 24 Tiết khí truyền thống, Can Chi Ba Trụ, Đếm ngược ngày lễ lớn và công cụ chuyển đổi Âm Dương hai chiều." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
                         <!-- ==================== CHANGELOG v3.0.3 ==================== -->
-                        <StackPanel x:Name="ChangelogContent_v303" Spacing="10" Visibility="Visible">
+                        <StackPanel x:Name="ChangelogContent_v303" Spacing="10" Visibility="Collapsed">
                             <!-- 1. Song ngữ toàn diện -->
                             <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">

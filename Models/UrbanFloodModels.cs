@@ -8,7 +8,31 @@ public class FloodHotspotRoad
     public string District { get; set; } = string.Empty;
     public string StreetName { get; set; } = string.Empty;
     public string EstimatedDepth { get; set; } = string.Empty;
+    public string EstimatedDepthDisplay
+    {
+        get
+        {
+            bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+            if (EstimatedDepth.Contains("Khô ráo") || EstimatedDepth.Contains("An toàn") || EstimatedDepth.Contains("Dry") || EstimatedDepth.Contains("Safe"))
+            {
+                return isVi ? "Khô ráo / An toàn" : "Dry / Safe";
+            }
+            return EstimatedDepth;
+        }
+    }
     public string Cause { get; set; } = "Do Mưa Lớn"; // "Do Triều Cường", "Do Mưa Lớn", "Mưa + Triều Cường"
+    public string CauseDisplay
+    {
+        get
+        {
+            bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+            if (isVi) return Cause;
+            if (Cause.Contains("Mưa") && Cause.Contains("Triều")) return "Rain + Tide";
+            if (Cause.Contains("Triều")) return "Tidal Surge";
+            if (Cause.Contains("Mưa")) return "Heavy Rain";
+            return Cause;
+        }
+    }
     public int SeverityLevel { get; set; } = 1; // 1 = Nhẹ, 2 = Trung bình, 3 = Nặng
     public string SeverityText
     {
@@ -36,10 +60,10 @@ public class FloodHotspotRoad
         _ => "#20F59E0B"
     };
     public string Note { get; set; } = string.Empty;
-    public string IconGlyph => Cause.Contains("Triều") ? "\uf773" : "\uf73d";
+    public string IconGlyph => (Cause.Contains("Triều") || Cause.Contains("Tidal")) ? "\uf773" : "\uf73d";
     public string CauseIconGlyph => IconGlyph;
-    public string CauseBadgeBg => Cause.Contains("Triều") && Cause.Contains("Mưa") ? "#25EA580C" : Cause.Contains("Triều") ? "#200284C7" : "#2038BDF8";
-    public string CauseBadgeFg => Cause.Contains("Triều") && Cause.Contains("Mưa") ? "#EA580C" : Cause.Contains("Triều") ? "#0284C7" : "#38BDF8";
+    public string CauseBadgeBg => (Cause.Contains("Triều") || Cause.Contains("Tidal")) && (Cause.Contains("Mưa") || Cause.Contains("Rain")) ? "#25EA580C" : (Cause.Contains("Triều") || Cause.Contains("Tidal")) ? "#200284C7" : "#2038BDF8";
+    public string CauseBadgeFg => (Cause.Contains("Triều") || Cause.Contains("Tidal")) && (Cause.Contains("Mưa") || Cause.Contains("Rain")) ? "#EA580C" : (Cause.Contains("Triều") || Cause.Contains("Tidal")) ? "#0284C7" : "#38BDF8";
 }
 
 public class UrbanFloodWarning

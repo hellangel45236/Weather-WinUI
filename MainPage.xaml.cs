@@ -62,6 +62,8 @@ public sealed partial class MainPage : Page
                     _ => 2
                 };
             }
+            UpdateThemeComboBoxLabels();
+            LocalizationService.Instance.LanguageChanged += (s, ev) => UpdateThemeComboBoxLabels();
 
             // Nạp dữ liệu thời tiết
             if (ViewModel != null)
@@ -100,12 +102,18 @@ public sealed partial class MainPage : Page
         if (width < 1140)
         {
             if (AppSubtitleText != null) AppSubtitleText.Visibility = Visibility.Collapsed;
-            if (ThemeComboBox != null) ThemeComboBox.Width = 92;
+            if (ThemeComboBox != null) ThemeComboBox.Width = width < 980 ? 95 : 105;
         }
         else
         {
             if (AppSubtitleText != null) AppSubtitleText.Visibility = Visibility.Visible;
             if (ThemeComboBox != null) ThemeComboBox.Width = 110;
+        }
+
+        // Tự co giãn MaxWidth ô tìm kiếm khi cửa sổ hẹp
+        if (LocationSearchBox != null)
+        {
+            LocationSearchBox.MaxWidth = width < 950 ? 280 : (width < 1140 ? 380 : 520);
         }
 
         // 2. Tinh chỉnh lề ngoài (Root Margin) gọn gàng trên màn hình nhỏ
@@ -283,6 +291,17 @@ public sealed partial class MainPage : Page
         }
     }
 
+    private void UpdateThemeComboBoxLabels()
+    {
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        if (ThemeComboBox != null && ThemeComboBox.Items.Count >= 3)
+        {
+            ((ComboBoxItem)ThemeComboBox.Items[0]).Content = isVi ? "☀️ Sáng" : "☀️ Light";
+            ((ComboBoxItem)ThemeComboBox.Items[1]).Content = isVi ? "🌙 Tối" : "🌙 Dark";
+            ((ComboBoxItem)ThemeComboBox.Items[2]).Content = isVi ? "💻 Hệ thống" : "💻 System";
+        }
+    }
+
     private async void QuickLocationChip_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button btn && btn.Tag is QuickLocationChipItem chip && ViewModel != null)
@@ -403,9 +422,10 @@ public sealed partial class MainPage : Page
         var w = ViewModel.CurrentWeather;
         var o = ViewModel.CurrentOutfitAdvice;
 
+        bool isVi = LocalizationService.Instance.IsVietnamese;
         string location = ViewModel.LocationTitle.ToUpper();
-        string nowTime = $"{DateTime.Now:dddd, dd/MM/yyyy • HH:mm}";
-        string lunar = $"Âm lịch: {w.LunarDateText} • {w.SolarTermText}";
+        string nowTime = isVi ? $"{DateTime.Now:dddd, dd/MM/yyyy • HH:mm}" : $"{DateTime.Now:dddd, MM/dd/yyyy • HH:mm}";
+        string lunar = isVi ? $"Âm lịch: {w.LunarDateText} • {w.SolarTermText}" : $"Lunar: {w.LunarDateText} • {w.SolarTermText}";
         string temp = w.TemperatureText.Replace("C", "").Trim();
         string feelsLike = $"{w.FeelsLikeText} • {w.MinMaxText}";
         string uv = $"{w.UvIndexText} - {w.UvIndexDescription}";
@@ -431,7 +451,7 @@ public sealed partial class MainPage : Page
 
         if (o != null)
         {
-            if (FhdLandscapeOotdTitle != null) FhdLandscapeOotdTitle.Text = $"HÔM NAY MẶC GÌ? (OOTD ADVISOR) — {o.OccasionTitle.ToUpper()}";
+            if (FhdLandscapeOotdTitle != null) FhdLandscapeOotdTitle.Text = isVi ? $"HÔM NAY MẶC GÌ? (OOTD ADVISOR) — {o.OccasionTitle.ToUpper()}" : $"WHAT TO WEAR TODAY? (OOTD ADVISOR) — {o.OccasionTitle.ToUpper()}";
             if (FhdLandscapeThermalTag != null) FhdLandscapeThermalTag.Text = o.ThermalComfortNotice;
             if (FhdLandscapeOotdHeadline != null) FhdLandscapeOotdHeadline.Text = o.Headline;
             if (FhdLandscapeOotdClothing != null) FhdLandscapeOotdClothing.Text = $"{o.TopClothing}, {o.BottomClothing}, {o.Footwear}";
@@ -456,7 +476,7 @@ public sealed partial class MainPage : Page
 
         // 2. Cập nhật Khổ Dọc Story FHD (1080x1920)
         if (FhdStoryLocationText != null) FhdStoryLocationText.Text = location;
-        if (FhdStoryDateText != null) FhdStoryDateText.Text = $"{DateTime.Now:dd/MM/yyyy • HH:mm}";
+        if (FhdStoryDateText != null) FhdStoryDateText.Text = isVi ? $"{DateTime.Now:dd/MM/yyyy • HH:mm}" : $"{DateTime.Now:MM/dd/yyyy • HH:mm}";
         if (FhdStoryLunarText != null) FhdStoryLunarText.Text = lunar;
         if (FhdStoryTempText != null) FhdStoryTempText.Text = temp;
         if (FhdStoryConditionText != null) FhdStoryConditionText.Text = w.ConditionText;
@@ -470,9 +490,9 @@ public sealed partial class MainPage : Page
 
         if (o != null)
         {
-            if (FhdStoryOotdTitle != null) FhdStoryOotdTitle.Text = $"👗 HÔM NAY MẶC GÌ? — {o.OccasionTitle.ToUpper()}";
+            if (FhdStoryOotdTitle != null) FhdStoryOotdTitle.Text = isVi ? $"👗 HÔM NAY MẶC GÌ? — {o.OccasionTitle.ToUpper()}" : $"👗 WHAT TO WEAR TODAY? — {o.OccasionTitle.ToUpper()}";
             if (FhdStoryOotdHeadline != null) FhdStoryOotdHeadline.Text = o.Headline;
-            if (FhdStoryOotdAccessories != null) FhdStoryOotdAccessories.Text = $"🎒 Phụ kiện: {string.Join(" • ", o.Accessories.Select(a => a.Name))}";
+            if (FhdStoryOotdAccessories != null) FhdStoryOotdAccessories.Text = isVi ? $"🎒 Phụ kiện: {string.Join(" • ", o.Accessories.Select(a => a.Name))}" : $"🎒 Accessories: {string.Join(" • ", o.Accessories.Select(a => a.Name))}";
             if (FhdStoryMotorbikeText != null) FhdStoryMotorbikeText.Text = o.MotorbikeWarning;
         }
 
@@ -622,15 +642,20 @@ public sealed partial class MainPage : Page
                 var storageFile = await Windows.Storage.StorageFile.GetFileFromPathAsync(tempFile);
                 var dataPackage = new DataPackage();
                 dataPackage.SetBitmap(RandomAccessStreamReference.CreateFromFile(storageFile));
-                dataPackage.SetText($"🌤️ Dự báo thời tiết {ViewModel.LocationTitle}: {ViewModel.CurrentWeather?.TemperatureText}, {ViewModel.CurrentWeather?.ConditionText} (Thẻ Full HD {outWidth}x{outHeight} từ Weather WinUI v3.0.2)");
+                var isVi = LocalizationService.Instance.IsVietnamese;
+                dataPackage.SetText(isVi
+                    ? $"🌤️ Dự báo thời tiết {ViewModel.LocationTitle}: {ViewModel.CurrentWeather?.TemperatureText}, {ViewModel.CurrentWeather?.ConditionText} (Thẻ Full HD {outWidth}x{outHeight} từ Weather WinUI v3.0.5)"
+                    : $"🌤️ Weather Forecast {ViewModel.LocationTitle}: {ViewModel.CurrentWeather?.TemperatureText}, {ViewModel.CurrentWeather?.ConditionText} (Full HD Card {outWidth}x{outHeight} from Weather WinUI v3.0.5)");
                 dataPackage.RequestedOperation = DataPackageOperation.Copy;
                 Clipboard.SetContent(dataPackage);
 
                 ShareCardDialog?.Hide();
                 if (ShareSuccessInfoBar != null)
                 {
-                    ShareSuccessInfoBar.Title = "Đã sao chép ảnh Full HD thành công!";
-                    ShareSuccessInfoBar.Message = $"Ảnh thời tiết {outWidth}x{outHeight} siêu nét đã lưu vào Clipboard. Bạn có thể nhấn Ctrl+V để dán trực tiếp vào Zalo, Facebook, Messenger.";
+                    ShareSuccessInfoBar.Title = isVi ? "Đã sao chép ảnh Full HD thành công!" : "Full HD image copied successfully!";
+                    ShareSuccessInfoBar.Message = isVi
+                        ? $"Ảnh thời tiết {outWidth}x{outHeight} siêu nét đã lưu vào Clipboard. Bạn có thể nhấn Ctrl+V để dán trực tiếp vào Zalo, Facebook, Messenger."
+                        : $"Ultra-sharp {outWidth}x{outHeight} weather card copied to Clipboard. You can press Ctrl+V to paste directly into social apps or chats.";
                     ShareSuccessInfoBar.IsOpen = true;
                 }
             }
@@ -662,8 +687,11 @@ public sealed partial class MainPage : Page
                     ShareCardDialog?.Hide();
                     if (ShareSuccessInfoBar != null)
                     {
-                        ShareSuccessInfoBar.Title = "Đã lưu ảnh Full HD thành công!";
-                        ShareSuccessInfoBar.Message = $"File ảnh chất lượng cao {outWidth}x{outHeight}px đã lưu tại: {file.Path}.";
+                        var isVi = LocalizationService.Instance.IsVietnamese;
+                        ShareSuccessInfoBar.Title = isVi ? "Đã lưu ảnh Full HD thành công!" : "Full HD image saved successfully!";
+                        ShareSuccessInfoBar.Message = isVi
+                            ? $"File ảnh chất lượng cao {outWidth}x{outHeight}px đã lưu tại: {file.Path}."
+                            : $"High quality {outWidth}x{outHeight}px image saved to: {file.Path}.";
                         ShareSuccessInfoBar.IsOpen = true;
                     }
                 }
@@ -681,7 +709,7 @@ public sealed partial class MainPage : Page
 
     private void CheckAndShowChangelog()
     {
-        string currentVersion = "3.0.0";
+        string currentVersion = "3.0.5";
         string lastSeen = ViewModel.Settings.LastSeenVersion ?? string.Empty;
 
         if (string.IsNullOrEmpty(lastSeen) || lastSeen != currentVersion)
@@ -714,8 +742,14 @@ public sealed partial class MainPage : Page
             {
                 ChangelogVersionComboBox.SelectedIndex = 0;
             }
-            ChangelogDialog.XamlRoot = this.XamlRoot;
-            await ChangelogDialog.ShowAsync();
+            if (ChangelogDialog != null)
+            {
+                ChangelogDialog.PrimaryButtonText = LocalizationService.Instance.IsVietnamese
+                    ? "Bắt đầu trải nghiệm ngay 🚀"
+                    : "Get Started Now 🚀";
+                ChangelogDialog.XamlRoot = this.XamlRoot;
+                await ChangelogDialog.ShowAsync();
+            }
         }
         catch { }
         finally
@@ -737,6 +771,8 @@ public sealed partial class MainPage : Page
     {
         var panels = new[]
         {
+            (ChangelogContent_v305, "3.0.5"),
+            (ChangelogContent_v304, "3.0.4"),
             (ChangelogContent_v303, "3.0.3"),
             (ChangelogContent_v302, "3.0.2"),
             (ChangelogContent_v301, "3.0.1"),
@@ -766,24 +802,39 @@ public sealed partial class MainPage : Page
             }
         }
 
+        var isVi = LocalizationService.Instance.IsVietnamese;
         if (ChangelogHeaderTitle != null)
         {
             ChangelogHeaderTitle.Text = versionTag switch
             {
-                "3.0.3" => "Chi Tiết Bản Phát Hành Chính Thức v3.0.3",
-                "3.0.2" => "Chi Tiết Bản Phát Hành Chính Thức v3.0.2",
-                "3.0.1" => "Chi Tiết Bản Phát Hành Chính Thức v3.0.1",
-                "3.0.0" => "Chi Tiết Bản Phát Hành Chính Thức v3.0.0",
-                "2.2.3" => "Chi Tiết Bản Cập Nhật v2.2.3",
-                "2.2.1" => "Chi Tiết Bản Cập Nhật v2.2.1",
-                "2.2" => "Chi Tiết Bản Cập Nhật v2.2",
-                "v2.1" => "Chi Tiết Bản Cập Nhật v2.1",
-                "v2.0" => "Chi Tiết Bản Cập Nhật v2.0",
-                "v1.9" => "Chi Tiết Bản Cập Nhật v1.9",
-                "v1.8" => "Chi Tiết Bản Cập Nhật v1.8",
-                "v1.7" => "Chi Tiết Bản Cập Nhật v1.7",
-                _ => $"Chi Tiết Bản Cập Nhật {versionTag}"
+                "3.0.5" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.5" : "Official Release Notes v3.0.5",
+                "3.0.4" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.4" : "Official Release Notes v3.0.4",
+                "3.0.3" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.3" : "Official Release Notes v3.0.3",
+                "3.0.2" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.2" : "Official Release Notes v3.0.2",
+                "3.0.1" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.1" : "Official Release Notes v3.0.1",
+                "3.0.0" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.0" : "Official Release Notes v3.0.0",
+                "2.2.3" => isVi ? "Chi Tiết Bản Cập Nhật v2.2.3" : "Release Notes v2.2.3",
+                "2.2.1" => isVi ? "Chi Tiết Bản Cập Nhật v2.2.1" : "Release Notes v2.2.1",
+                "2.2" => isVi ? "Chi Tiết Bản Cập Nhật v2.2" : "Release Notes v2.2",
+                "v2.1" => isVi ? "Chi Tiết Bản Cập Nhật v2.1" : "Release Notes v2.1",
+                "v2.0" => isVi ? "Chi Tiết Bản Cập Nhật v2.0" : "Release Notes v2.0",
+                "v1.9" => isVi ? "Chi Tiết Bản Cập Nhật v1.9" : "Release Notes v1.9",
+                "v1.8" => isVi ? "Chi Tiết Bản Cập Nhật v1.8" : "Release Notes v1.8",
+                "v1.7" => isVi ? "Chi Tiết Bản Cập Nhật v1.7" : "Release Notes v1.7",
+                _ => isVi ? $"Chi Tiết Bản Cập Nhật {versionTag}" : $"Release Notes {versionTag}"
             };
+        }
+
+        if (ChangelogHeaderBadge != null && versionTag == "3.0.5")
+        {
+            ChangelogHeaderBadge.Text = isVi ? "v3.0.5 BẢN CHÍNH THỨC" : "v3.0.5 OFFICIAL";
+        }
+
+        if (ChangelogHeaderSubtitle != null && versionTag == "3.0.5")
+        {
+            ChangelogHeaderSubtitle.Text = isVi
+                ? "Bản cập nhật v3.0.5 hoàn thiện 100% song ngữ Tiếng Anh toàn bộ ứng dụng, đại tu bố cục giao diện co giãn Responsive chống tràn cắt chữ và đảm bảo độ tương thích hiển thị tuyệt đối trên Windows 10 & 11."
+                : "Version 3.0.5 delivers 100% comprehensive English localization across the entire app, responsive layout scaling overhaul preventing text clipping, and guaranteed visual compatibility on Windows 10 & 11.";
         }
     }
 

@@ -21,6 +21,14 @@ public static class VietnameseLunarHelper
         "Đông Chí", "Tiểu Hàn", "Đại Hàn", "Lập Xuân", "Vũ Thủy", "Kinh Trập"
     };
 
+    private static readonly string[] SolarTermsEn =
+    {
+        "Spring Equinox", "Pure Brightness", "Grain Rain", "Start of Summer", "Grain Buds", "Grain in Ear",
+        "Summer Solstice", "Minor Heat", "Major Heat", "Start of Autumn", "End of Heat", "White Dew",
+        "Autumn Equinox", "Cold Dew", "Frost's Descent", "Start of Winter", "Minor Snow", "Major Snow",
+        "Winter Solstice", "Minor Cold", "Major Cold", "Start of Spring", "Rain Water", "Awakening of Insects"
+    };
+
     private static readonly string[] ZodiacDeities =
     {
         "Thanh Long", "Minh Đường", "Thiên Hình", "Chu Tước",
@@ -151,10 +159,10 @@ public static class VietnameseLunarHelper
         string canChiDay = $"{Can[dayCanIndex]} {Chi[dayChiIndex]}";
 
         // 4. Tiết khí
-        string solarTerm = GetSolarTerm(jd);
+        string solarTerm = GetSolarTerm(jd, isVietnamese);
 
         // 5. Ngày lễ truyền thống
-        string holiday = GetTraditionalHoliday(lunarDay, lunarMonth, isLeap);
+        string holiday = GetTraditionalHoliday(lunarDay, lunarMonth, isLeap, isVietnamese);
 
         // 6. Hoàng Đạo / Hắc Đạo của ngày
         var (isAuspicious, auspiciousName, auspiciousColor) = GetAuspiciousZodiac(lunarMonth, dayChiIndex, isVietnamese);
@@ -192,11 +200,15 @@ public static class VietnameseLunarHelper
 
         if (!string.IsNullOrEmpty(holiday))
         {
-            result.FullDisplay = $"🌙 {dayFormatted}/{monthFormatted} ÂL ({holiday}) • Tiết {solarTerm} • {canChiDay}";
+            result.FullDisplay = isVietnamese
+                ? $"🌙 {dayFormatted}/{monthFormatted} ÂL ({holiday}) • Tiết {solarTerm} • {canChiDay}"
+                : $"🌙 {dayFormatted}/{monthFormatted} Lunar ({holiday}) • Term: {solarTerm} • {canChiDay}";
         }
         else
         {
-            result.FullDisplay = $"🌙 {dayFormatted}/{monthFormatted} ÂL (Năm {canChiYear}) • Tiết {solarTerm} • {canChiDay}";
+            result.FullDisplay = isVietnamese
+                ? $"🌙 {dayFormatted}/{monthFormatted} ÂL (Năm {canChiYear}) • Tiết {solarTerm} • {canChiDay}"
+                : $"🌙 {dayFormatted}/{monthFormatted} Lunar (Year {canChiYear}) • Term: {solarTerm} • {canChiDay}";
         }
 
         return result;
@@ -465,41 +477,41 @@ public static class VietnameseLunarHelper
         return list;
     }
 
-    private static string GetTraditionalHoliday(int day, int month, bool isLeap)
+    private static string GetTraditionalHoliday(int day, int month, bool isLeap, bool isVietnamese = true)
     {
         if (isLeap) return string.Empty;
 
         return (day, month) switch
         {
-            (1, 1) => "Mùng 1 Tết Nguyên Đán",
-            (2, 1) => "Mùng 2 Tết",
-            (3, 1) => "Mùng 3 Tết",
-            (15, 1) => "Rằm Tháng Giêng",
-            (3, 3) => "Tết Hàn Thực",
-            (10, 3) => "Giỗ Tổ Hùng Vương",
-            (15, 4) => "Lễ Phật Đản",
-            (5, 5) => "Tết Đoan Ngọ",
-            (15, 7) => "Lễ Vu Lan",
-            (15, 8) => "Tết Trung Thu",
-            (9, 9) => "Tết Trùng Cửu",
-            (15, 10) => "Tết Hạ Nguyên",
-            (23, 12) => "Tiễn Ông Táo",
-            (30, 12) => "Tất Niên",
-            (29, 12) => "Tất Niên",
-            (1, _) => "Mùng 1",
-            (15, _) => "Ngày Rằm",
+            (1, 1) => isVietnamese ? "Mùng 1 Tết Nguyên Đán" : "Lunar New Year's Day",
+            (2, 1) => isVietnamese ? "Mùng 2 Tết" : "2nd Day of Tet",
+            (3, 1) => isVietnamese ? "Mùng 3 Tết" : "3rd Day of Tet",
+            (15, 1) => isVietnamese ? "Rằm Tháng Giêng" : "Lantern Festival",
+            (3, 3) => isVietnamese ? "Tết Hàn Thực" : "Cold Food Festival",
+            (10, 3) => isVietnamese ? "Giỗ Tổ Hùng Vương" : "Hung Kings Commemoration",
+            (15, 4) => isVietnamese ? "Lễ Phật Đản" : "Buddha's Birthday",
+            (5, 5) => isVietnamese ? "Tết Đoan Ngọ" : "Dragon Boat Festival",
+            (15, 7) => isVietnamese ? "Lễ Vu Lan" : "Vu Lan Festival",
+            (15, 8) => isVietnamese ? "Tết Trung Thu" : "Mid-Autumn Festival",
+            (9, 9) => isVietnamese ? "Tết Trùng Cửu" : "Double Ninth Festival",
+            (15, 10) => isVietnamese ? "Tết Hạ Nguyên" : "Ha Nguyen Festival",
+            (23, 12) => isVietnamese ? "Tiễn Ông Táo" : "Kitchen Gods Day",
+            (30, 12) => isVietnamese ? "Tất Niên" : "Lunar New Year's Eve",
+            (29, 12) => isVietnamese ? "Tất Niên" : "Lunar New Year's Eve",
+            (1, _) => isVietnamese ? "Mùng 1" : "1st Day",
+            (15, _) => isVietnamese ? "Ngày Rằm" : "Full Moon",
             _ => string.Empty
         };
     }
 
-    private static string GetSolarTerm(int jd)
+    private static string GetSolarTerm(int jd, bool isVietnamese = true)
     {
         int termIndex = GetSunLongitude(jd, 7);
         if (termIndex >= 0 && termIndex < SolarTerms.Length)
         {
-            return SolarTerms[termIndex];
+            return isVietnamese ? SolarTerms[termIndex] : SolarTermsEn[termIndex];
         }
-        return "Bình thường";
+        return isVietnamese ? "Bình thường" : "Normal";
     }
 
     private static int JulianDayFromDate(int d, int m, int y)

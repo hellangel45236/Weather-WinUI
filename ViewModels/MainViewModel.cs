@@ -32,12 +32,12 @@ public partial class MainViewModel : ObservableObject
     private ObservableCollection<WeatherAdvice> _adviceList = new();
 
     [ObservableProperty]
-    private string _topAdviceSummary = "Thời tiết hôm nay thuận lợi cho các hoạt động ngoài trời.";
+    private string _topAdviceSummary = string.Empty;
 
     [ObservableProperty]
     private bool _isAdviceExpanded = false;
 
-    public string AdviceExpandButtonText => IsAdviceExpanded ? "Thu gọn" : "Xem chi tiết";
+    public string AdviceExpandButtonText => IsAdviceExpanded ? Loc.AdviceCollapse : Loc.AdviceDetails;
     public string AdviceExpandIconGlyph => IsAdviceExpanded ? "\uf077" : "\uf078";
 
     [RelayCommand]
@@ -67,7 +67,7 @@ public partial class MainViewModel : ObservableObject
     private string _errorMessage = string.Empty;
 
     [ObservableProperty]
-    private string _locationTitle = "Đang tìm vị trí...";
+    private string _locationTitle = string.Empty;
 
     [ObservableProperty]
     private string _searchText = string.Empty;
@@ -100,7 +100,7 @@ public partial class MainViewModel : ObservableObject
     private string _timeFormatLabel = "24h";
 
     [ObservableProperty]
-    private string _ramUsageDisplay = "42 MB (Siêu nhẹ)";
+    private string _ramUsageDisplay = "42 MB";
 
     // Tính năng mới v1.7, v1.9 & v2.0
     private readonly LifestyleAdviceService _lifestyleService = new();
@@ -151,7 +151,7 @@ public partial class MainViewModel : ObservableObject
     private readonly PowerManagementService _powerService = new();
 
     [ObservableProperty]
-    private string _appVersionDisplay = "v3.0.4 Official";
+    private string _appVersionDisplay = "v3.0.5 Official";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(GpsButtonBackground))]
@@ -248,7 +248,9 @@ public partial class MainViewModel : ObservableObject
     private bool _isAmbientSoundPlaying;
 
     public string FavoriteIconGlyph => IsCurrentFavorite ? "\uf004" : "\uf08a"; // Heart solid vs regular
-    public string FavoriteButtonToolTip => IsCurrentFavorite ? "Bỏ yêu thích địa điểm này" : "Lưu địa điểm này vào danh sách yêu thích";
+    public string FavoriteButtonToolTip => IsCurrentFavorite 
+        ? (Loc.IsVietnamese ? "Bỏ yêu thích địa điểm này" : "Remove from favorites") 
+        : (Loc.IsVietnamese ? "Lưu địa điểm này vào danh sách yêu thích" : "Add to favorite locations");
 
     private readonly DispatcherTimer _clockTimer = new();
     private readonly DispatcherTimer _autoRefreshTimer = new();
@@ -271,16 +273,31 @@ public partial class MainViewModel : ObservableObject
         {
             LocalizationService.Instance.CurrentLanguage = _settings.AppLanguage;
         }
+        _topAdviceSummary = Loc.AdviceEmpty;
+        _locationTitle = Loc.FindingLocation;
         LocalizationService.Instance.LanguageChanged += (s, e) =>
         {
             OnPropertyChanged(nameof(Loc));
             OnPropertyChanged(nameof(WelcomeGreetingText));
+            UpdateTopAdviceSummary();
             OnPropertyChanged(nameof(TopAdviceSummary));
+            if (LocationTitle == "Đang tìm vị trí..." || LocationTitle == "Locating position...")
+            {
+                LocationTitle = Loc.FindingLocation;
+            }
+            OnPropertyChanged(nameof(AdviceExpandButtonText));
             OnPropertyChanged(nameof(UnitButtonText));
             OnPropertyChanged(nameof(FloodRoadsExpandButtonText));
             OnPropertyChanged(nameof(UrbanFloodWarning));
             OnPropertyChanged(nameof(FavoriteButtonToolTip));
+            OnPropertyChanged(nameof(AmbientSoundButtonText));
+            OnPropertyChanged(nameof(AmbientSoundButtonToolTip));
             UpdateClock();
+            UpdateQuickChips();
+            if (_rawWeatherData != null)
+            {
+                UpdateFloodWarningData(_rawWeatherData, LocationTitle);
+            }
             UpdateDisplayedFloodRoads();
             UpdateAvailableMonths();
             GenerateCalendar();
@@ -548,7 +565,8 @@ public partial class MainViewModel : ObservableObject
 
             // Cập nhật danh sách các quận
             AvailableFloodDistricts.Clear();
-            AvailableFloodDistricts.Add("Tất cả");
+            string allDistrictLabel = LocalizationService.Instance.IsVietnamese ? "Tất cả" : "All";
+            AvailableFloodDistricts.Add(allDistrictLabel);
             if (UrbanFloodWarning?.HotspotRoads != null)
             {
                 var districts = UrbanFloodWarning.HotspotRoads
@@ -560,7 +578,7 @@ public partial class MainViewModel : ObservableObject
                     AvailableFloodDistricts.Add(d);
                 }
             }
-            SelectedFloodDistrict = "Tất cả";
+            SelectedFloodDistrict = allDistrictLabel;
             UpdateDisplayedFloodRoads();
 
             // Kích hoạt thông báo đẩy nếu nguy cơ ngập hoặc triều cường cao
@@ -589,7 +607,7 @@ public partial class MainViewModel : ObservableObject
         if (UrbanFloodWarning?.HotspotRoads == null) return;
 
         var query = UrbanFloodWarning.HotspotRoads.AsEnumerable();
-        if (!string.IsNullOrEmpty(SelectedFloodDistrict) && SelectedFloodDistrict != "Tất cả")
+        if (!string.IsNullOrEmpty(SelectedFloodDistrict) && SelectedFloodDistrict != "Tất cả" && SelectedFloodDistrict != "All")
         {
             query = query.Where(r => r.District == SelectedFloodDistrict);
         }
@@ -637,7 +655,7 @@ public partial class MainViewModel : ObservableObject
         {
             long bytes = System.Diagnostics.Process.GetCurrentProcess().WorkingSet64;
             double mb = bytes / (1024.0 * 1024.0);
-            RamUsageDisplay = $"{mb:F1} MB (Tối ưu)";
+            RamUsageDisplay = LocalizationService.Instance.IsVietnamese ? $"{mb:F1} MB (Tối ưu)" : $"{mb:F1} MB (Optimized)";
         }
         catch { }
     }
@@ -889,7 +907,9 @@ public partial class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             HasError = true;
-            ErrorMessage = $"Không thể xác định vị trí tự động: {ex.Message}";
+            ErrorMessage = Loc.IsVietnamese 
+                ? $"Không thể xác định vị trí tự động: {ex.Message}" 
+                : $"Cannot determine location automatically: {ex.Message}";
             IsLoading = false;
         }
     }
@@ -1169,20 +1189,31 @@ public partial class MainViewModel : ObservableObject
     }
 
     public string AmbientSoundIconGlyph => IsAmbientSoundPlaying ? "\uf028" : "\uf025";
-    public string AmbientSoundButtonText => IsAmbientSoundPlaying ? "Đang phát" : "Thư giãn";
-    public string AmbientSoundButtonToolTip => IsAmbientSoundPlaying
-        ? $"Đang phát: {GetAmbientSoundDisplayName(Settings.SelectedAmbientSound)} - Bấm để dừng hoặc tùy chỉnh"
-        : "Bật âm thanh thiên nhiên thư giãn (mưa rào, sóng biển, gió thông, sấm chớp, cà phê)";
+    public string AmbientSoundButtonText => IsAmbientSoundPlaying 
+        ? (Loc.IsVietnamese ? "Đang phát" : "Playing") 
+        : (Loc.IsVietnamese ? "Thư giãn" : "Ambient");
 
-    public static string GetAmbientSoundDisplayName(string key) => key switch
+    public string AmbientSoundButtonToolTip => IsAmbientSoundPlaying
+        ? (Loc.IsVietnamese 
+            ? $"Đang phát: {GetAmbientSoundDisplayName(Settings.SelectedAmbientSound)} - Bấm để dừng hoặc tùy chỉnh"
+            : $"Playing: {GetAmbientSoundDisplayName(Settings.SelectedAmbientSound)} - Click to pause or adjust")
+        : (Loc.IsVietnamese 
+            ? "Bật âm thanh thiên nhiên thư giãn (mưa rào, sóng biển, gió thông, sấm chớp, cà phê)"
+            : "Play ambient nature sounds (summer rain, ocean waves, pine wind, thunder, rainy cafe)");
+
+    public static string GetAmbientSoundDisplayName(string key)
     {
-        "Rain" => "Mưa rào mùa hạ",
-        "Thunderstorm" => "Sấm chớp đêm mưa",
-        "PineWind" => "Gió rừng thông",
-        "OceanWaves" => "Sóng biển Nha Trang",
-        "CafeRain" => "Mưa quán cà phê",
-        _ => "Tự động theo thời tiết"
-    };
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        return key switch
+        {
+            "Rain" => isVi ? "Mưa rào mùa hạ" : "Summer Rain",
+            "Thunderstorm" => isVi ? "Sấm chớp đêm mưa" : "Night Thunderstorm",
+            "PineWind" => isVi ? "Gió rừng thông" : "Pine Forest Wind",
+            "OceanWaves" => isVi ? "Sóng biển Nha Trang" : "Ocean Waves",
+            "CafeRain" => isVi ? "Mưa quán cà phê" : "Rainy Cafe",
+            _ => isVi ? "Tự động theo thời tiết" : "Auto Weather-based"
+        };
+    }
 
     [RelayCommand]
     public void ToggleUnit()
@@ -1258,16 +1289,20 @@ public partial class MainViewModel : ObservableObject
 
             if (info.HasUpdate)
             {
-                UpdateCheckStatusText = $"🚀 Đã có phiên bản mới {info.LatestVersion}! Bấm để tải về ngay.";
+                UpdateCheckStatusText = Loc.IsVietnamese 
+                    ? $"🚀 Đã có phiên bản mới {info.LatestVersion}! Bấm để tải về ngay." 
+                    : $"🚀 New version {info.LatestVersion} available! Click to download.";
             }
             else if (info.IsCheckingSuccess)
             {
-                UpdateCheckStatusText = $"✨ Bạn đang sử dụng phiên bản mới nhất ({UpdateCheckService.CurrentAppVersion}).";
+                UpdateCheckStatusText = Loc.IsVietnamese 
+                    ? $"✨ Bạn đang sử dụng phiên bản mới nhất ({UpdateCheckService.CurrentAppVersion})." 
+                    : $"✨ You are using the latest version ({UpdateCheckService.CurrentAppVersion}).";
             }
             else
             {
                 UpdateCheckStatusText = isManual
-                    ? $"⚠️ Không thể kiểm tra: {info.ErrorMessage ?? "Vui lòng kiểm tra lại kết nối mạng"}"
+                    ? (Loc.IsVietnamese ? $"⚠️ Không thể kiểm tra: {info.ErrorMessage ?? "Vui lòng kiểm tra lại kết nối mạng"}" : $"⚠️ Check failed: {info.ErrorMessage ?? "Please verify network connection"}")
                     : string.Empty;
             }
         }
@@ -1275,7 +1310,7 @@ public partial class MainViewModel : ObservableObject
         {
             if (isManual)
             {
-                UpdateCheckStatusText = $"⚠️ Lỗi kiểm tra: {ex.Message}";
+                UpdateCheckStatusText = Loc.IsVietnamese ? $"⚠️ Lỗi kiểm tra: {ex.Message}" : $"⚠️ Check error: {ex.Message}";
             }
         }
         finally
@@ -1364,9 +1399,12 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
+            bool isVi = LocalizationService.Instance.IsVietnamese;
             FeedbackSubmitted = true;
             ShowInaccurateOptions = false;
-            FeedbackResponseText = $"🙏 Cảm ơn bạn! Đã ghi nhận thời tiết thực tế là: \"{conditionName}\" tại {LocationTitle}.";
+            FeedbackResponseText = isVi
+                ? $"🙏 Cảm ơn bạn! Đã ghi nhận thời tiết thực tế là: \"{conditionName}\" tại {LocationTitle}."
+                : $"🙏 Thank you! Recorded actual weather condition as: \"{conditionName}\" at {LocationTitle}.";
 
             // Cập nhật ngay lập tức khung thời tiết hiện tại và hiệu ứng hình ảnh tương ứng!
             if (CurrentWeather != null)
@@ -1379,19 +1417,19 @@ public partial class MainViewModel : ObservableObject
 
                 string normalized = (conditionName ?? "").ToLowerInvariant();
 
-                if (normalized.Contains("gắt") || normalized.Contains("uv") || normalized.Contains("chói"))
+                if (normalized.Contains("gắt") || normalized.Contains("uv") || normalized.Contains("chói") || normalized.Contains("intense"))
                 {
                     effect = WeatherEffectType.HighUvSunny;
                     svgFile = CurrentWeather.IsDay ? "clear-day.svg" : "clear-night.svg";
-                    badgeText = "🔥 NẮNG GẮT & UV CAO (THỰC TẾ)";
+                    badgeText = isVi ? "🔥 NẮNG GẮT & UV CAO (THỰC TẾ)" : "🔥 INTENSE UV & SUN (ACTUAL)";
                     badgeColor = "#EA580C";
                     glyph = "\uf185";
                 }
-                else if (normalized.Contains("nhẹ") || normalized.Contains("hửng") || normalized.Contains("ít mây"))
+                else if (normalized.Contains("nhẹ") || normalized.Contains("hửng") || normalized.Contains("ít mây") || normalized.Contains("mild"))
                 {
                     effect = WeatherEffectType.PartlyCloudy;
                     svgFile = CurrentWeather.IsDay ? "cloudy-1-day.svg" : "cloudy-1-night.svg";
-                    badgeText = "🌤️ NẮNG NHẸ & ÍT MÂY (THỰC TẾ)";
+                    badgeText = isVi ? "🌤️ NẮNG NHẸ & ÍT MÂY (THỰC TẾ)" : "🌤️ MILD SUN & PARTLY CLOUDY (ACTUAL)";
                     badgeColor = "#0284C7";
                     glyph = "\uf6c4";
                 }
@@ -1399,7 +1437,7 @@ public partial class MainViewModel : ObservableObject
                 {
                     effect = WeatherEffectType.ClearSunny;
                     svgFile = CurrentWeather.IsDay ? "clear-day.svg" : "clear-night.svg";
-                    badgeText = "☀️ TRỜI NẮNG ĐẸP (THỰC TẾ)";
+                    badgeText = isVi ? "☀️ TRỜI NẮNG ĐẸP (THỰC TẾ)" : "☀️ SUNNY & CLEAR (ACTUAL)";
                     badgeColor = "#F59E0B";
                     glyph = "\uf185";
                 }
@@ -1407,23 +1445,23 @@ public partial class MainViewModel : ObservableObject
                 {
                     effect = WeatherEffectType.Thunderstorm;
                     svgFile = CurrentWeather.IsDay ? "isolated-thunderstorms-day.svg" : "isolated-thunderstorms-night.svg";
-                    badgeText = "⚡ DÔNG SÉT & MƯA LỚN (THỰC TẾ)";
+                    badgeText = isVi ? "⚡ DÔNG SÉT & MƯA LỚN (THỰC TẾ)" : "⚡ THUNDERSTORM & RAIN (ACTUAL)";
                     badgeColor = "#DC2626";
                     glyph = "\uf76c";
                 }
-                else if (normalized.Contains("rất to") || normalized.Contains("mưa to") || normalized.Contains("mưa lớn") || normalized.Contains("xối xả"))
+                else if (normalized.Contains("rất to") || normalized.Contains("mưa to") || normalized.Contains("mưa lớn") || normalized.Contains("xối xả") || normalized.Contains("heavy"))
                 {
                     effect = WeatherEffectType.HeavyRain;
                     svgFile = CurrentWeather.IsDay ? "rainy-3-day.svg" : "rainy-3-night.svg";
-                    badgeText = "🌊 MƯA RẤT TO (THỰC TẾ)";
+                    badgeText = isVi ? "🌊 MƯA RẤT TO (THỰC TẾ)" : "🌊 HEAVY RAINFALL (ACTUAL)";
                     badgeColor = "#1D4ED8";
                     glyph = "\uf73d";
                 }
-                else if (normalized.Contains("phùn") || normalized.Contains("mưa nhỏ") || normalized.Contains("mưa bay"))
+                else if (normalized.Contains("phùn") || normalized.Contains("mưa nhỏ") || normalized.Contains("mưa bay") || normalized.Contains("drizzle"))
                 {
                     effect = WeatherEffectType.LightRain;
                     svgFile = CurrentWeather.IsDay ? "rainy-1-day.svg" : "rainy-1-night.svg";
-                    badgeText = "🌦️ MƯA PHÙN / MƯA NHỎ (THỰC TẾ)";
+                    badgeText = isVi ? "🌦️ MƯA PHÙN / MƯA NHỎ (THỰC TẾ)" : "🌦️ LIGHT DRIZZLE / RAIN (ACTUAL)";
                     badgeColor = "#0284C7";
                     glyph = "\uf73d";
                 }
@@ -1431,7 +1469,7 @@ public partial class MainViewModel : ObservableObject
                 {
                     effect = WeatherEffectType.ModerateRain;
                     svgFile = CurrentWeather.IsDay ? "rainy-2-day.svg" : "rainy-2-night.svg";
-                    badgeText = "🌧️ ĐANG CÓ MƯA (THỰC TẾ)";
+                    badgeText = isVi ? "🌧️ ĐANG CÓ MƯA (THỰC TẾ)" : "🌧️ RAINING (ACTUAL)";
                     badgeColor = "#0369A1";
                     glyph = "\uf73d";
                 }
@@ -1439,7 +1477,7 @@ public partial class MainViewModel : ObservableObject
                 {
                     effect = WeatherEffectType.Fog;
                     svgFile = CurrentWeather.IsDay ? "fog-day.svg" : "fog-night.svg";
-                    badgeText = "🌫️ SƯƠNG MÙ DÀY (THỰC TẾ)";
+                    badgeText = isVi ? "🌫️ SƯƠNG MÙ DÀY (THỰC TẾ)" : "🌫️ DENSE FOG (ACTUAL)";
                     badgeColor = "#78716C";
                     glyph = "\uf75f";
                 }
@@ -1447,7 +1485,7 @@ public partial class MainViewModel : ObservableObject
                 {
                     effect = WeatherEffectType.Cloudy;
                     svgFile = CurrentWeather.IsDay ? "snowy-1-day.svg" : "snowy-1-night.svg";
-                    badgeText = "❄️ RÉT BUỐT & LẠNH GIÁ (THỰC TẾ)";
+                    badgeText = isVi ? "❄️ RÉT BUỐT & LẠNH GIÁ (THỰC TẾ)" : "❄️ FREEZING COLD (ACTUAL)";
                     badgeColor = "#0284C7";
                     glyph = "\uf2dc";
                 }
@@ -1455,7 +1493,7 @@ public partial class MainViewModel : ObservableObject
                 {
                     effect = WeatherEffectType.Cloudy;
                     svgFile = CurrentWeather.IsDay ? "cloudy-1-day.svg" : "cloudy-1-night.svg";
-                    badgeText = "☁️ NHIỀU MÂY (THỰC TẾ)";
+                    badgeText = isVi ? "☁️ NHIỀU MÂY (THỰC TẾ)" : "☁️ CLOUDY (ACTUAL)";
                     badgeColor = "#64748B";
                     glyph = "\uf0c2";
                 }
@@ -1463,7 +1501,7 @@ public partial class MainViewModel : ObservableObject
                 {
                     effect = WeatherEffectType.HeavyRain;
                     svgFile = "wind.svg";
-                    badgeText = "💨 GIÓ TO CẤP CAO (THỰC TẾ)";
+                    badgeText = isVi ? "💨 GIÓ TO CẤP CAO (THỰC TẾ)" : "💨 HIGH WIND (ACTUAL)";
                     badgeColor = "#E11D48";
                     glyph = "\uf72e";
                 }
@@ -1471,12 +1509,12 @@ public partial class MainViewModel : ObservableObject
                 {
                     effect = WeatherEffectType.ClearSunny;
                     svgFile = CurrentWeather.IsDay ? "clear-day.svg" : "clear-night.svg";
-                    badgeText = $"🌦️ {conditionName} (THỰC TẾ)";
+                    badgeText = isVi ? $"🌦️ {conditionName} (THỰC TẾ)" : $"🌦️ {conditionName} (ACTUAL)";
                     badgeColor = "#0284C7";
                     glyph = "\uf6c4";
                 }
 
-                CurrentWeather.ConditionText = $"{conditionName} (Theo thực tế)";
+                CurrentWeather.ConditionText = isVi ? $"{conditionName} (Theo thực tế)" : $"{conditionName} (Reported actual)";
                 CurrentWeather.WeatherEffect = effect;
                 CurrentWeather.WeatherAlertBadgeText = badgeText;
                 CurrentWeather.WeatherAlertBadgeColor = badgeColor;
@@ -1568,484 +1606,16 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
-            AdviceList.Clear();
-            string normalized = (conditionName ?? "").ToLowerInvariant();
-
-            if (normalized.Contains("gắt") || normalized.Contains("uv"))
+            if (_rawWeatherData?.Current != null)
             {
-                AdviceList.Add(new WeatherAdvice
+                var generated = _adviceService.GenerateAdvice(_rawWeatherData.Current, _rawWeatherData.Daily);
+                AdviceList.Clear();
+                foreach (var item in generated)
                 {
-                    Category = "TRANG PHỤC",
-                    Title = "Áo chống nắng dài tay, kính râm UV400",
-                    Description = "Chỉ số UV và nắng gắt ở mức rất cao. Hãy mặc áo khoác chống nắng có chỉ số UPF50+, đeo kính râm chặn tia cực tím để bảo vệ mắt.",
-                    IconGlyph = "\uf553",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "VẬT DỤNG NÊN MANG",
-                    Title = "Kem chống nắng SPF 50+, bình nước cá nhân",
-                    Description = "Thoa kem chống nắng trước khi ra ngoài 20 phút và thoa lại sau 2 giờ. Luôn mang theo bình nước để bù ẩm tránh sốc nhiệt.",
-                    IconGlyph = "\uf185",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "HOẠT ĐỘNG NGOÀI TRỜI",
-                    Title = "Hạn chế ra ngoài lúc 11h - 14h trưa",
-                    Description = "Thời điểm nắng đỉnh điểm có thể gây bỏng rát da và say nắng. Nên làm việc trong phòng râm mát hoặc nơi có điều hòa.",
-                    IconGlyph = "\uf06a",
-                    Severity = AdviceSeverity.Warning
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "LÁI XE & DI CHUYỂN",
-                    Title = "Tránh dừng xe dưới nắng gắt quá lâu",
-                    Description = "Mặt đường nhựa bốc hơi nóng ngột ngạt. Tìm bóng râm khi dừng đèn đỏ và đeo găng tay chống nắng để bảo vệ bàn tay.",
-                    IconGlyph = "\uf1b9",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "SỨC KHỎE & THỂ TRẠNG",
-                    Title = "Uống nhiều nước, bổ sung điện giải",
-                    Description = "Cơ thể dễ mất nước nhanh dưới nắng gắt. Uống nước dừa hoặc nước chanh muối để cân bằng điện giải và ngừa kiệt sức.",
-                    IconGlyph = "\uf21e",
-                    Severity = AdviceSeverity.Info
-                });
+                    AdviceList.Add(item);
+                }
+                UpdateTopAdviceSummary();
             }
-            else if (normalized.Contains("dông") || normalized.Contains("sét") || normalized.Contains("bão"))
-            {
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "TRANG PHỤC",
-                    Title = "Trang phục gọn gàng, áo mưa bộ kín gió",
-                    Description = "Dông sét thường đi kèm gió giật rất mạnh. Mặc áo mưa bộ, đi ủng hoặc giày chống trơn và bảo vệ đồ điện tử trong túi chống nước.",
-                    IconGlyph = "\uf553",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "VẬT DỤNG NÊN MANG",
-                    Title = "Mang áo mưa chuyên dụng, KHÔNG cầm ô kim loại",
-                    Description = "Tuyệt đối không sử dụng ô có cán kim loại ngoài trời trống khi có sét. Luôn có sẵn áo mưa bộ trong cốp xe.",
-                    IconGlyph = "\uf0e9",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "HOẠT ĐỘNG NGOÀI TRỜI",
-                    Title = "Ở trong nhà kiên cố, tuyệt đối không đứng dưới cây",
-                    Description = "Nguy cơ sét đánh và gió lốc quật gãy cành cây rất nguy hiểm. Hãy tìm nơi trú ẩn an toàn, đóng chặt tất cả cửa sổ.",
-                    IconGlyph = "\uf76c",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "LÁI XE & DI CHUYỂN",
-                    Title = "Tạm dừng lưu thông, tìm nơi trú ẩn an toàn",
-                    Description = "Gió bão và mưa xối xả làm mất tầm nhìn và dễ quật ngã xe máy. Tấp vào trạm xăng hoặc toà nhà kiên cố để trú tạm.",
-                    IconGlyph = "\uf1b9",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "SỨC KHỎE & THỂ TRẠNG",
-                    Title = "Ngắt các thiết bị điện không cần thiết",
-                    Description = "Sấm sét có thể gây sốc điện đường dây. Rút phích cắm các thiết bị điện tử nhạy cảm và giữ ấm cơ thể trong nhà.",
-                    IconGlyph = "\uf21e",
-                    Severity = AdviceSeverity.Warning
-                });
-            }
-            else if (normalized.Contains("rất to") || normalized.Contains("mưa to") || normalized.Contains("mưa lớn") || normalized.Contains("xối xả"))
-            {
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "TRANG PHỤC",
-                    Title = "Áo mưa bộ cao cấp, ủng đi mưa chống trượt",
-                    Description = "Mưa xối xả làm ướt sũng nhanh chóng. Hãy mặc áo mưa bộ 2 mảnh kín cổ và mang bọc giày đi mưa chống nước.",
-                    IconGlyph = "\uf553",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "VẬT DỤNG NÊN MANG",
-                    Title = "Túi chống nước bọc điện thoại, giấy tờ",
-                    Description = "Bảo quản điện thoại, ví tiền và laptop trong balo chống nước hoặc túi zip kín trước khi ra đường.",
-                    IconGlyph = "\uf0e9",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "HOẠT ĐỘNG NGOÀI TRỜI",
-                    Title = "Hạn chế ra đường, đề phòng ngập úng",
-                    Description = "Mưa lớn gây ngập sâu trên nhiều tuyến phố và nắp cống hở. Tránh di chuyển nếu không có việc thực sự cấp thiết.",
-                    IconGlyph = "\uf73d",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "LÁI XE & DI CHUYỂN",
-                    Title = "Đi số thấp, tránh vùng ngập sâu chết máy",
-                    Description = "Đi số thấp giữ đều ga (xe số/côn) hoặc tránh rồ ga lớn. Không cố chạy qua đoạn đường ngập quá nửa bánh xe.",
-                    IconGlyph = "\uf1b9",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "SỨC KHỎE & THỂ TRẠNG",
-                    Title = "Lau khô người ngay, uống trà gừng ấm",
-                    Description = "Ngâm nước mưa lâu dễ bị nhiễm lạnh và đau họng. Thay đồ khô ráo ngay và uống một cốc trà gừng ấm để thông khí huyết.",
-                    IconGlyph = "\uf21e",
-                    Severity = AdviceSeverity.Warning
-                });
-            }
-            else if (normalized.Contains("phùn") || normalized.Contains("nhỏ") || normalized.Contains("bay"))
-            {
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "TRANG PHỤC",
-                    Title = "Áo khoác gió chống thấm nhẹ",
-                    Description = "Mưa phùn lất phất dai dẳng làm ẩm áo. Nên mặc áo khoác gió có mũ cản nước nhẹ mà không bị bí bách.",
-                    IconGlyph = "\uf553",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "VẬT DỤNG NÊN MANG",
-                    Title = "Ô (dù) gấp nhỏ gọn trong túi xách",
-                    Description = "Mưa phùn không to nhưng kéo dài. Một chiếc ô gấp mini là đủ che chắn tiện lợi khi đi bộ.",
-                    IconGlyph = "\uf0e9",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "HOẠT ĐỘNG NGOÀI TRỜI",
-                    Title = "Thời tiết êm đềm, dạo bộ cà phê rất thơ",
-                    Description = "Mưa bay dịu nhẹ tạo cảm giác lãng mạn. Thích hợp ngồi quán cà phê ngắm mưa hoặc dạo bộ nhẹ nhàng.",
-                    IconGlyph = "\uf6c4",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "LÁI XE & DI CHUYỂN",
-                    Title = "Mặt đường đóng màng trơn, lau kính mũ",
-                    Description = "Mưa phùn tạo màng nhớt trên mặt đường nhựa và bám hạt sương trên kính chắn gió. Lau kính và giữ tốc độ ổn định.",
-                    IconGlyph = "\uf1b9",
-                    Severity = AdviceSeverity.Warning
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "SỨC KHỎE & THỂ TRẠNG",
-                    Title = "Tránh để đầu bị dính ẩm mưa phùn",
-                    Description = "Hạt mưa phùn bám vào tóc dễ gây đau đầu và viêm mũi dị ứng. Đội mũ hoặc che ô để giữ da đầu khô ráo.",
-                    IconGlyph = "\uf21e",
-                    Severity = AdviceSeverity.Info
-                });
-            }
-            else if (normalized.Contains("mưa") || normalized.Contains("rain"))
-            {
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "TRANG PHỤC",
-                    Title = "Mang áo mưa hoặc trang phục chống nước",
-                    Description = "Trời đang có mưa thực tế. Hãy mặc trang phục nhẹ nhanh khô, mang giày dép chống trượt và khoác áo mưa hoặc mang theo ô gập.",
-                    IconGlyph = "\uf553",
-                    Severity = AdviceSeverity.Warning
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "VẬT DỤNG NÊN MANG",
-                    Title = "Bắt buộc mang theo ô (dù) và áo mưa",
-                    Description = "Mưa ngoài trời có thể kéo dài hoặc nặng hạt bất chợt. Đừng quên mang theo áo mưa trong cốp xe hoặc ô cá nhân khi ra đường.",
-                    IconGlyph = "\uf0e9",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "HOẠT ĐỘNG NGOÀI TRỜI",
-                    Title = "Ưu tiên hoạt động trong không gian kín",
-                    Description = "Thời tiết mưa ẩm ướt không thuận lợi cho chạy bộ hay dã ngoại ngoài trời. Nên chuyển sang tập thể dục tại nhà hoặc đến các khu vui chơi trong nhà.",
-                    IconGlyph = "\uf73d",
-                    Severity = AdviceSeverity.Warning
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "LÁI XE & DI CHUYỂN",
-                    Title = "Mặt đường trơn trượt, giảm tốc độ và bật đèn",
-                    Description = "Nước mưa làm giảm độ ma sát của lốp và cản trở tầm nhìn. Đi chậm, giữ khoảng cách tối thiểu 5m với xe phía trước và tránh phanh gấp.",
-                    IconGlyph = "\uf1b9",
-                    Severity = AdviceSeverity.Warning
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "SỨC KHỎE & THỂ TRẠNG",
-                    Title = "Giữ ấm cơ thể, tránh để bị dính nước mưa lạnh",
-                    Description = "Nước mưa kèm gió lạnh dễ làm hạ thân nhiệt và gây cảm lạnh. Nếu bị dính mưa, hãy tắm nước ấm ngay khi về nhà và dùng một cốc nước ấm.",
-                    IconGlyph = "\uf21e",
-                    Severity = AdviceSeverity.Info
-                });
-            }
-            else if (normalized.Contains("sương") || normalized.Contains("bụi"))
-            {
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "TRANG PHỤC",
-                    Title = "Khẩu trang kháng khuẩn N95, áo khoác cổ cao",
-                    Description = "Sương mù kết hợp bụi mịn làm giảm chất lượng không khí. Đeo khẩu trang N95 để lọc bụi và giữ ấm cổ họng.",
-                    IconGlyph = "\uf553",
-                    Severity = AdviceSeverity.Warning
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "VẬT DỤNG NÊN MANG",
-                    Title = "Thuốc nhỏ mắt nước muối sinh lý",
-                    Description = "Bụi mù dễ gây cay mắt và mỏi mắt khi di chuyển ngoài đường. Mang theo lọ nước nhỏ mắt để làm dịu giác mạc.",
-                    IconGlyph = "\uf06e",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "HOẠT ĐỘNG NGOÀI TRỜI",
-                    Title = "Hạn chế tập thể dục ngoài trời buổi sáng sớm",
-                    Description = "Sương mù giữ lại các chất ô nhiễm tầng thấp. Chờ mặt trời lên sương tan hoặc tập thể dục trong phòng thông thoáng.",
-                    IconGlyph = "\uf06a",
-                    Severity = AdviceSeverity.Warning
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "LÁI XE & DI CHUYỂN",
-                    Title = "Bật đèn sương mù, đi chậm giữ khoảng cách",
-                    Description = "Tầm nhìn xa bị hạn chế dưới 1km. Bật đèn chiếu gần hoặc đèn vàng cảnh báo, bấm còi ở các khúc cua gấp.",
-                    IconGlyph = "\uf1b9",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "SỨC KHỎE & THỂ TRẠNG",
-                    Title = "Súc họng nước muối, bảo vệ đường thở",
-                    Description = "Sương ẩm và bụi kích ứng đường hô hấp trên. Súc họng sau khi đi ngoài đường và bật máy lọc không khí trong phòng ngủ.",
-                    IconGlyph = "\uf21e",
-                    Severity = AdviceSeverity.Info
-                });
-            }
-            else if (normalized.Contains("rét") || normalized.Contains("lạnh") || normalized.Contains("buốt"))
-            {
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "TRANG PHỤC",
-                    Title = "Mặc ấm nhiều lớp, quàng khăn len & găng tay",
-                    Description = "Nhiệt độ ngoài trời rất thấp. Áp dụng nguyên tắc mặc nhiều lớp (áo giữ nhiệt bên trong, áo len giữa, áo phao cản gió ngoài cùng).",
-                    IconGlyph = "\uf553",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "VẬT DỤNG NÊN MANG",
-                    Title = "Bình giữ nhiệt nước nóng, miếng dán giữ nhiệt",
-                    Description = "Mang theo bình giữ nhiệt đựng nước ấm hoặc trà thảo mộc để làm ấm cơ thể bất kỳ lúc nào.",
-                    IconGlyph = "\uf2dc",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "HOẠT ĐỘNG NGOÀI TRỜI",
-                    Title = "Khởi động kỹ trước khi vận động thể thao",
-                    Description = "Cơ bắp dễ bị co cứng và chấn thương khi trời rét. Khởi động làm ấm cơ thể tối thiểu 10 phút trước khi chạy bộ.",
-                    IconGlyph = "\uf6c4",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "LÁI XE & DI CHUYỂN",
-                    Title = "Gió lùa lạnh buốt, đeo kính chắn gió mũ bảo hiểm",
-                    Description = "Gió lạnh phả vào mặt làm tê cóng và giảm phản xạ. Kéo kính chắn gió mũ bảo hiểm và đi tốc độ vừa phải.",
-                    IconGlyph = "\uf1b9",
-                    Severity = AdviceSeverity.Warning
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "SỨC KHỎE & THỂ TRẠNG",
-                    Title = "Ăn thức ăn nóng, giữ ấm bàn chân ban đêm",
-                    Description = "Bổ sung súp, cháo nóng và các món gia vị cay nhẹ như tiêu, gừng. Đi tất ấm khi đi ngủ để phòng ngừa cảm lạnh.",
-                    IconGlyph = "\uf21e",
-                    Severity = AdviceSeverity.Info
-                });
-            }
-            else if (normalized.Contains("gió") || normalized.Contains("wind"))
-            {
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "TRANG PHỤC",
-                    Title = "Mặc trang phục cản gió ôm gọn cơ thể",
-                    Description = "Gió lớn có thể làm bay mũ nón và vướng víu tà áo. Hãy mặc áo khoác gió có khóa kéo kín và đội mũ bảo hiểm có quai chắc chắn.",
-                    IconGlyph = "\uf553",
-                    Severity = AdviceSeverity.Warning
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "VẬT DỤNG NÊN MANG",
-                    Title = "Kính chắn bụi và khẩu trang kín",
-                    Description = "Gió lớn cuốn theo nhiều bụi cát và dị vật bay lơ lửng. Hãy đeo kính bảo hộ hoặc kính râm kèm khẩu trang để bảo vệ mắt và đường hô hấp.",
-                    IconGlyph = "\uf72e",
-                    Severity = AdviceSeverity.Warning
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "HOẠT ĐỘNG NGOÀI TRỜI",
-                    Title = "Đề phòng vật rơi từ trên cao và cành cây gãy",
-                    Description = "Gió giật mạnh có thể làm tốc mái tôn, biển quảng cáo hoặc gãy cành cây. Hạn chế đứng gần các công trình đang thi công hay cây cổ thụ.",
-                    IconGlyph = "\uf72e",
-                    Severity = AdviceSeverity.Warning
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "LÁI XE & DI CHUYỂN",
-                    Title = "Vững tay lái trên cầu vượt và các đoạn đường trống",
-                    Description = "Gió tạt ngang rất nguy hiểm cho người điều khiển xe máy trên cầu cao tốc. Hãy ghì chặt tay lái, đi với tốc độ chậm vừa phải ở làn giữa.",
-                    IconGlyph = "\uf1b9",
-                    Severity = AdviceSeverity.Alert
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "SỨC KHỎE & THỂ TRẠNG",
-                    Title = "Vệ sinh mắt và mũi sau khi đi ngoài đường về",
-                    Description = "Bụi mịn và cát do gió cuốn dễ gây kích ứng giác mạc và niêm mạc mũi. Nhỏ nước muối sinh lý để rửa mắt và làm sạch khoang mũi sau khi về nhà.",
-                    IconGlyph = "\uf21e",
-                    Severity = AdviceSeverity.Info
-                });
-            }
-            else if (normalized.Contains("nhẹ") || normalized.Contains("hửng") || normalized.Contains("ít mây"))
-            {
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "TRANG PHỤC",
-                    Title = "Trang phục năng động, áo thun sơ mi nhẹ",
-                    Description = "Trời hửng nắng nhẹ thoáng mát, thời tiết rất chiều lòng người. Trang phục nhẹ nhàng thoải mái là lựa chọn hoàn hảo nhất.",
-                    IconGlyph = "\uf553",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "VẬT DỤNG NÊN MANG",
-                    Title = "Kính mát nhẹ nhàng, nón kết",
-                    Description = "Ánh nắng dịu không gắt nhưng một chiếc kính mát nhẹ sẽ giúp mắt thư giãn tối đa khi đi dạo ngoài trời.",
-                    IconGlyph = "\uf185",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "HOẠT ĐỘNG NGOÀI TRỜI",
-                    Title = "Tuyệt vời nhất cho mọi hoạt động ngoài trời",
-                    Description = "Khí hậu lý tưởng cho chạy bộ, dã ngoại, đạp xe hay tụ tập bạn bè tại các quán cà phê sân vườn thoáng đãng.",
-                    IconGlyph = "\uf6c4",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "LÁI XE & DI CHUYỂN",
-                    Title = "Giao thông thuận tiện, tầm nhìn hoàn hảo",
-                    Description = "Đường khô ráo, không chói nắng gay gắt, điều kiện giao thông vô cùng thuận lợi và an toàn.",
-                    IconGlyph = "\uf1b9",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "SỨC KHỎE & THỂ TRẠNG",
-                    Title = "Tận hưởng không khí tươi mới tràn năng lượng",
-                    Description = "Thời tiết tuyệt vời giúp tinh thần thoải mái, giảm stress và kích thích sự sáng tạo trong công việc.",
-                    IconGlyph = "\uf21e",
-                    Severity = AdviceSeverity.Info
-                });
-            }
-            else if (normalized.Contains("mây") || normalized.Contains("cloud"))
-            {
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "TRANG PHỤC",
-                    Title = "Trang phục thường ngày thoải mái, áo khoác mỏng",
-                    Description = "Trời nhiều mây râm mát, không bị oi bức. Một bộ trang phục nhẹ nhàng kết hợp một chiếc áo cardigan hoặc sơ mi khoác ngoài là hoàn hảo.",
-                    IconGlyph = "\uf553",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "VẬT DỤNG NÊN MANG",
-                    Title = "Mang theo ô gập phòng ngừa chuyển mưa",
-                    Description = "Những ngày nhiều mây có khả năng xuất hiện những cơn mưa bất chợt. Mang theo chiếc ô gấp gọn nhẹ sẽ giúp bạn luôn chủ động.",
-                    IconGlyph = "\uf0e9",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "HOẠT ĐỘNG NGOÀI TRỜI",
-                    Title = "Khí trời mát dịu, lý tưởng cho dạo phố & thể thao",
-                    Description = "Trời râm mát không có nắng gắt chói chang, rất thích hợp để chạy bộ quanh hồ, đạp xe công viên hoặc cà phê chuyện trò cùng bạn bè.",
-                    IconGlyph = "\uf6c4",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "LÁI XE & DI CHUYỂN",
-                    Title = "Giao thông thuận lợi, tầm nhìn thoáng đãng",
-                    Description = "Điều kiện mặt đường khô ráo, ánh sáng dịu mắt không bị chói loá bởi ánh nắng mặt trời, rất thoải mái khi điều khiển phương tiện.",
-                    IconGlyph = "\uf1b9",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "SỨC KHỎE & THỂ TRẠNG",
-                    Title = "Không khí mát mẻ, tinh thần thư thái",
-                    Description = "Thời tiết dễ chịu giúp cân bằng thể trạng và tăng cường sự tập trung trong công việc. Đừng quên duy trì uống đủ nước đều đặn.",
-                    IconGlyph = "\uf21e",
-                    Severity = AdviceSeverity.Info
-                });
-            }
-            else // Nắng đẹp
-            {
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "TRANG PHỤC",
-                    Title = "Trang phục màu sáng, chất vải cotton thoáng mát",
-                    Description = "Trời nắng sáng đẹp rực rỡ. Nên chọn áo màu sáng để ít hấp thụ nhiệt và chất liệu vải cotton thấm hút mồ hôi tốt.",
-                    IconGlyph = "\uf553",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "VẬT DỤNG NÊN MANG",
-                    Title = "Kính râm, nón rộng vành và kem chống nắng",
-                    Description = "Bảo vệ đôi mắt và làn da khỏi ánh nắng mặt trời. Thoa kem chống nắng trước khi ra ngoài 20 phút và luôn mang theo kính mát.",
-                    IconGlyph = "\uf185",
-                    Severity = AdviceSeverity.Warning
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "HOẠT ĐỘNG NGOÀI TRỜI",
-                    Title = "Thời tiết tuyệt vời cho dã ngoại & chụp ảnh ngoài trời",
-                    Description = "Ánh sáng tự nhiên rất đẹp, trời tạnh ráo hoàn toàn! Thời điểm hoàn hảo cho các hoạt động chụp ảnh ngoại cảnh, picnic dã ngoại hoặc thể thao.",
-                    IconGlyph = "\uf6c4",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "LÁI XE & DI CHUYỂN",
-                    Title = "Đường khô ráo, lưu ý đeo kính mát chống chói",
-                    Description = "Giao thông thông thoáng, đường khô an toàn. Nên đeo kính mát hoặc hạ tấm chắn nắng của mũ bảo hiểm để tránh chói mắt khi lái xe hướng về mặt trời.",
-                    IconGlyph = "\uf1b9",
-                    Severity = AdviceSeverity.Info
-                });
-                AdviceList.Add(new WeatherAdvice
-                {
-                    Category = "SỨC KHỎE & THỂ TRẠNG",
-                    Title = "Bổ sung đủ nước lọc hoặc nước trái cây tươi",
-                    Description = "Nắng ấm giúp cơ thể tổng hợp vitamin D tự nhiên. Hãy uống nước cách quãng 30 phút để duy trì độ ẩm cho cơ thể tràn đầy năng lượng.",
-                    IconGlyph = "\uf21e",
-                    Severity = AdviceSeverity.Info
-                });
-            }
-
-            UpdateTopAdviceSummary();
         }
         catch { }
     }
@@ -2054,7 +1624,7 @@ public partial class MainViewModel : ObservableObject
     {
         if (AdviceList.Count == 0)
         {
-            TopAdviceSummary = "Thời tiết hôm nay thuận lợi cho các hoạt động ngoài trời.";
+            TopAdviceSummary = Loc.AdviceEmpty;
             return;
         }
 
@@ -2075,8 +1645,8 @@ public partial class MainViewModel : ObservableObject
         }
 
         // Mặc định kết hợp trang phục và hoạt động
-        var cloth = AdviceList.FirstOrDefault(a => a.Category.Contains("TRANG PHỤC"));
-        var outdoor = AdviceList.FirstOrDefault(a => a.Category.Contains("HOẠT ĐỘNG"));
+        var cloth = AdviceList.FirstOrDefault(a => a.Category.Contains("TRANG PHỤC") || a.Category.Contains("CLOTHING"));
+        var outdoor = AdviceList.FirstOrDefault(a => a.Category.Contains("HOẠT ĐỘNG") || a.Category.Contains("OUTDOOR"));
         if (cloth != null && outdoor != null)
         {
             TopAdviceSummary = $"{cloth.Title} • {outdoor.Title}";
@@ -2117,7 +1687,9 @@ public partial class MainViewModel : ObservableObject
             if (data == null || data.Current == null)
             {
                 HasError = true;
-                ErrorMessage = "Không thể tải dữ liệu thời tiết. Vui lòng kiểm tra lại kết nối mạng.";
+                ErrorMessage = Loc.IsVietnamese 
+                    ? "Không thể tải dữ liệu thời tiết. Vui lòng kiểm tra lại kết nối mạng." 
+                    : "Unable to load weather data. Please check your network connection.";
                 IsLoading = false;
                 return;
             }
@@ -2128,7 +1700,7 @@ public partial class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             HasError = true;
-            ErrorMessage = $"Đã xảy ra lỗi: {ex.Message}";
+            ErrorMessage = Loc.IsVietnamese ? $"Đã xảy ra lỗi: {ex.Message}" : $"An error occurred: {ex.Message}";
         }
         finally
         {
@@ -2273,9 +1845,18 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    public string WelcomeGreetingText => string.IsNullOrWhiteSpace(Settings.UserName) 
-        ? "Thời Tiết WinUI" 
-        : $"Xin chào, {Settings.UserName}! 👋";
+    public string WelcomeGreetingText
+    {
+        get
+        {
+            bool isVi = Loc.IsVietnamese;
+            if (string.IsNullOrWhiteSpace(Settings.UserName))
+            {
+                return isVi ? "Thời Tiết WinUI" : "Weather WinUI";
+            }
+            return isVi ? $"Xin chào, {Settings.UserName}! 👋" : $"Hello, {Settings.UserName}! 👋";
+        }
+    }
 
     public readonly NotificationService NotificationService = new();
     public TrayIconService? TrayService { get; set; }
@@ -2365,6 +1946,7 @@ public partial class MainViewModel : ObservableObject
 
     public void UpdateAvailableMonths()
     {
+        int prevIndex = SelectedMonthIndex >= 0 ? SelectedMonthIndex : (_calendarMonth - 1);
         AvailableMonths.Clear();
         bool isVi = LocalizationService.Instance.IsVietnamese;
         for (int i = 1; i <= 12; i++)
@@ -2372,8 +1954,9 @@ public partial class MainViewModel : ObservableObject
             if (isVi)
                 AvailableMonths.Add($"Tháng {i}");
             else
-                AvailableMonths.Add(new DateTime(2026, i, 1).ToString("MMM (M)", System.Globalization.CultureInfo.InvariantCulture));
+                AvailableMonths.Add(new DateTime(2026, i, 1).ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture));
         }
+        SelectedMonthIndex = Math.Clamp(prevIndex, 0, 11);
     }
 
     // ==================== TÍNH NĂNG MỚI v3.0.4: LỊCH VẠN NIÊN & ĐẾM NGƯỢC LỄ HỘI & CHUYỂN ĐỔI ÂM DƯƠNG ====================
@@ -2530,15 +2113,16 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
+            bool isVi = LocalizationService.Instance.IsVietnamese;
             DateTime dt = ConverterSolarDate.DateTime;
-            var l = VietnameseLunarHelper.ConvertSolarToLunar(dt);
-            ConverterSolarToLunarResult = LocalizationService.Instance.IsVietnamese
+            var l = VietnameseLunarHelper.ConvertSolarToLunar(dt, isVi);
+            ConverterSolarToLunarResult = isVi
                 ? $"Âm lịch: Ngày {l.Day:D2}/{l.Month:D2}/{l.Year} ({l.CanChiYear})\nCan Chi Ngày: {l.CanChiDay} • Tiết {l.SolarTerm} • {l.AuspiciousDayName}"
                 : $"Lunar: Day {l.Day:D2}/{l.Month:D2}/{l.Year} ({l.CanChiYear})\nDay Branch: {l.CanChiDay} • Term {l.SolarTerm} • {l.AuspiciousDayName}";
         }
         catch (Exception ex)
         {
-            ConverterSolarToLunarResult = $"Lỗi: {ex.Message}";
+            ConverterSolarToLunarResult = LocalizationService.Instance.IsVietnamese ? $"Lỗi: {ex.Message}" : $"Error: {ex.Message}";
         }
     }
 
@@ -2547,24 +2131,25 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
+            bool isVi = LocalizationService.Instance.IsVietnamese;
             DateTime? solar = VietnameseLunarHelper.ConvertLunarToSolar(ConverterLunarDay, ConverterLunarMonth, ConverterLunarYear, ConverterIsLunarLeap);
             if (solar.HasValue)
             {
-                var l = VietnameseLunarHelper.ConvertSolarToLunar(solar.Value);
-                ConverterLunarToSolarResult = LocalizationService.Instance.IsVietnamese
+                var l = VietnameseLunarHelper.ConvertSolarToLunar(solar.Value, isVi);
+                ConverterLunarToSolarResult = isVi
                     ? $"Dương lịch: {solar.Value:dddd, dd/MM/yyyy}\nCan Chi: Ngày {l.CanChiDay}, Năm {l.CanChiYear} • {l.AuspiciousDayName}"
                     : $"Solar: {solar.Value:dddd, dd/MM/yyyy}\nBranches: Day {l.CanChiDay}, Year {l.CanChiYear} • {l.AuspiciousDayName}";
             }
             else
             {
-                ConverterLunarToSolarResult = LocalizationService.Instance.IsVietnamese
+                ConverterLunarToSolarResult = isVi
                     ? "Không tìm thấy ngày Dương lịch phù hợp cho ngày Âm này."
                     : "No matching Solar date found for this Lunar date.";
             }
         }
         catch (Exception ex)
         {
-            ConverterLunarToSolarResult = $"Lỗi: {ex.Message}";
+            ConverterLunarToSolarResult = LocalizationService.Instance.IsVietnamese ? $"Lỗi: {ex.Message}" : $"Error: {ex.Message}";
         }
     }
 
@@ -2677,7 +2262,7 @@ public partial class MainViewModel : ObservableObject
         {
             DateTime curDate = gridStartDate.AddDays(i);
             var lunar = VietnameseLunarHelper.ConvertSolarToLunar(curDate, isVi);
-            var holiday = VietnameseHolidayHelper.GetHoliday(curDate, lunar.Day, lunar.Month, lunar.IsLeap);
+            var holiday = VietnameseHolidayHelper.GetHoliday(curDate, lunar.Day, lunar.Month, lunar.IsLeap, isVi);
             var dayEvents = _allUserEvents.Where(e => e.Date.Date == curDate.Date).ToList();
 
             string dateKey = curDate.ToString("yyyy-MM-dd");
@@ -2849,29 +2434,46 @@ public partial class MainViewModel : ObservableObject
             double.TryParse(item.UvText.Trim(), out uv);
         }
 
-        if (rainProb >= 40 || item.IsRainy || item.WeatherCondition.Contains("mưa", StringComparison.OrdinalIgnoreCase) || item.WeatherCondition.Contains("dông", StringComparison.OrdinalIgnoreCase))
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        if (rainProb >= 40 || item.IsRainy || item.WeatherCondition.Contains("mưa", StringComparison.OrdinalIgnoreCase) || item.WeatherCondition.Contains("rain", StringComparison.OrdinalIgnoreCase) || item.WeatherCondition.Contains("dông", StringComparison.OrdinalIgnoreCase) || item.WeatherCondition.Contains("storm", StringComparison.OrdinalIgnoreCase))
         {
             item.HasWeatherConflictWarning = true;
-            item.WeatherConflictTitle = "Cảnh Báo Mưa Cho Kế Hoạch Ngoài Trời";
-            item.WeatherConflictMessage = $"Bạn có kế hoạch ngoài trời: \"{outdoorEvent.Title}\", nhưng ngày này dự báo có {item.WeatherCondition.ToLower()} (khả năng mưa {item.RainProbabilityText}). Hãy chuẩn bị ô che hoặc cân nhắc dời lịch!";
+            item.WeatherConflictTitle = isVi 
+                ? "Cảnh Báo Mưa Cho Kế Hoạch Ngoài Trời" 
+                : "Rain Alert for Outdoor Event";
+            item.WeatherConflictMessage = isVi
+                ? $"Bạn có kế hoạch ngoài trời: \"{outdoorEvent.Title}\", nhưng ngày này dự báo có {item.WeatherCondition.ToLower()} (khả năng mưa {item.RainProbabilityText}). Hãy chuẩn bị ô che hoặc cân nhắc dời lịch!"
+                : $"You have an outdoor plan: \"{outdoorEvent.Title}\", but the forecast indicates {item.WeatherCondition} ({item.RainProbabilityText} rain chance). Please prepare an umbrella or consider rescheduling!";
         }
         else if (uv >= 8.0)
         {
             item.HasWeatherConflictWarning = true;
-            item.WeatherConflictTitle = "Cảnh Báo Nắng Gắt & Tia UV Cao";
-            item.WeatherConflictMessage = $"Bạn có kế hoạch ngoài trời: \"{outdoorEvent.Title}\", ngày này nắng gắt với chỉ số UV cực cao ({item.UvText}). Cần bôi kem chống nắng và che chắn kỹ khi ra ngoài!";
+            item.WeatherConflictTitle = isVi 
+                ? "Cảnh Báo Nắng Gắt & Tia UV Cao" 
+                : "Intense Sun & High UV Warning";
+            item.WeatherConflictMessage = isVi
+                ? $"Bạn có kế hoạch ngoài trời: \"{outdoorEvent.Title}\", ngày này nắng gắt với chỉ số UV cực cao ({item.UvText}). Cần bôi kem chống nắng và che chắn kỹ khi ra ngoài!"
+                : $"You have an outdoor plan: \"{outdoorEvent.Title}\", but the forecast shows extreme UV index ({item.UvText}). Apply sunscreen and wear protective gear!";
         }
         else if (item.TempMax >= 36.0)
         {
             item.HasWeatherConflictWarning = true;
-            item.WeatherConflictTitle = "Cảnh Báo Nắng Nóng Gay Gắt";
-            item.WeatherConflictMessage = $"Nhiệt độ dự báo lên đến {Math.Round(item.TempMax)}°. Hoạt động ngoài trời \"{outdoorEvent.Title}\" có nguy cơ say nắng, nên tổ chức vào sáng sớm hoặc chiều mát!";
+            item.WeatherConflictTitle = isVi 
+                ? "Cảnh Báo Nắng Nóng Gay Gắt" 
+                : "Extreme Heat Warning";
+            item.WeatherConflictMessage = isVi
+                ? $"Nhiệt độ dự báo lên đến {Math.Round(item.TempMax)}°. Hoạt động ngoài trời \"{outdoorEvent.Title}\" có nguy cơ say nắng, nên tổ chức vào sáng sớm hoặc chiều mát!"
+                : $"Forecast high reaches {Math.Round(item.TempMax)}°. Outdoor activity \"{outdoorEvent.Title}\" has high heatstroke risk, schedule in early morning or late afternoon!";
         }
         else if (item.TempMin <= 12.0 && item.TempMin > -50)
         {
             item.HasWeatherConflictWarning = true;
-            item.WeatherConflictTitle = "Cảnh Báo Trời Rét Buốt";
-            item.WeatherConflictMessage = $"Nhiệt độ thấp nhất dự báo {Math.Round(item.TempMin)}°, trời rét buốt. Nhớ chuẩn bị áo ấm giữ nhiệt cho: \"{outdoorEvent.Title}\"!";
+            item.WeatherConflictTitle = isVi 
+                ? "Cảnh Báo Trời Rét Buốt" 
+                : "Severe Cold Warning";
+            item.WeatherConflictMessage = isVi
+                ? $"Nhiệt độ thấp nhất dự báo {Math.Round(item.TempMin)}°, trời rét buốt. Nhớ chuẩn bị áo ấm giữ nhiệt cho: \"{outdoorEvent.Title}\"!"
+                : $"Forecast low is {Math.Round(item.TempMin)}°, freezing cold weather. Remember warm thermal layers for: \"{outdoorEvent.Title}\"!";
         }
         else
         {
@@ -2887,11 +2489,12 @@ public partial class MainViewModel : ObservableObject
 
         string colorHex = category switch
         {
-            "Ngoài trời" => "#10B981", // Green
-            "Công việc" => "#3B82F6",  // Blue
-            "Gia đình" => "#EC4899",   // Pink
-            "Thể thao" => "#F59E0B",   // Amber
-            "Kỷ niệm" => "#8B5CF6",    // Purple
+            "Ngoài trời" or "Outdoor" => "#10B981", // Green
+            "Công việc" or "Work" => "#3B82F6",    // Blue
+            "Gia đình" or "Family" => "#EC4899",   // Pink
+            "Thể thao" or "Sports" => "#F59E0B",   // Amber
+            "Kỷ niệm" or "Celebration" or "Anniversary" => "#8B5CF6", // Purple
+            "Cúng lễ" or "Spiritual" or "Traditional" => "#DC2626", // Red
             _ => "#6366F1"
         };
 

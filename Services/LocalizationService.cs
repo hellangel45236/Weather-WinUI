@@ -84,6 +84,10 @@ public class LocalizationService : INotifyPropertyChanged
     public string WidgetCloseAll => IsVietnamese ? "❌ Đóng tất cả Widget đang mở" : "❌ Close all open widgets";
     public string GpsLocation => IsVietnamese ? "Vị trí GPS" : "GPS Location";
     public string GpsTooltip => IsVietnamese ? "Bấm để lấy lại thời tiết tại vị trí GPS thực tế của bạn" : "Click to get weather at your actual GPS location";
+    public string FindingLocation => IsVietnamese ? "Đang tìm vị trí..." : "Locating position...";
+    public string ShareSuccessTitle => IsVietnamese ? "📸 Đã chụp & sao chép ảnh thời tiết vào Clipboard!" : "📸 Weather image captured & copied to clipboard!";
+    public string ShareSuccessMessage => IsVietnamese ? "Bạn có thể nhấn Ctrl + V để dán ảnh thời tiết cực đẹp này gửi cho bạn bè." : "Press Ctrl + V to paste and share this weather card with friends.";
+    public string ErrorTitle => IsVietnamese ? "Không thể cập nhật" : "Unable to Update";
 
     #endregion
 
@@ -125,6 +129,7 @@ public class LocalizationService : INotifyPropertyChanged
 
     public string AdviceHeader => IsVietnamese ? "Lời khuyên & Gợi ý thông minh" : "Smart Advice & Recommendations";
     public string AiBriefingHeader => IsVietnamese ? "Dự Báo & Lời Khuyên Khí Tượng Hôm Nay" : "Today's Meteorological Briefing & Advice";
+    public string AdviceEmpty => IsVietnamese ? "Thời tiết ôn hòa, thuận lợi cho mọi hoạt động ngoài trời." : "Mild and pleasant weather, suitable for all outdoor activities.";
     public string FeedbackTitle => IsVietnamese ? "Thời tiết thực tế có chính xác không?" : "Is the current weather accurate?";
     public string FeedbackAccurate => IsVietnamese ? "Chính xác" : "Accurate";
     public string FeedbackInaccurate => IsVietnamese ? "Chưa đúng" : "Inaccurate";
@@ -180,14 +185,15 @@ public class LocalizationService : INotifyPropertyChanged
 
     #region Settings Tab Strings
 
-    public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.0.3)" : "Settings & Personalization Center (Version 3.0.3)";
+    public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.0.5)" : "Settings & Personalization Center (Version 3.0.5)";
     public string SettingsSubtitle => IsVietnamese ? "Quản lý giao diện, ngôn ngữ, biểu tượng, đơn vị, hình nền và hiệu năng hệ thống" : "Manage appearance, language, icons, units, wallpapers and system performance";
     public string SettingsHeaderTitle => SettingsTitle;
     public string SettingsHeaderSubtitle => SettingsSubtitle;
     public string SaveAndApply => IsVietnamese ? "Lưu & Áp Dụng" : "Save & Apply";
     public string SaveApplyButton => SaveAndApply;
-    public string VersionOfficial => IsVietnamese ? "Version 3.0.3 (Chính Thức)" : "Version 3.0.3 (Official)";
+    public string VersionOfficial => IsVietnamese ? "Version 3.0.5 (Chính Thức)" : "Version 3.0.5 (Official)";
     public string VersionBadge => VersionOfficial;
+    public string AppDescription => IsVietnamese ? "Ứng dụng thời tiết hiện đại, siêu nhẹ, tương thích hoàn hảo Windows 10 & 11" : "Modern, lightweight weather application, perfectly compatible with Windows 10 & 11";
 
     public string CatPersonalization => IsVietnamese ? "Cá nhân hóa" : "Personalization";
     public string CatAppearance => IsVietnamese ? "Giao diện & Biểu tượng" : "Theme & Icons";
@@ -254,6 +260,15 @@ public class LocalizationService : INotifyPropertyChanged
     public string InlandDrainageHeader => IsVietnamese ? "Hạ Tầng Thủy Lợi & Tiêu Thoát Nước Đô Thị" : "Urban Drainage & Hydraulic Infrastructure";
     public string InlandDrainageSub => IsVietnamese ? "Giám sát năng lực lưu vực sông Tô Lịch, Nhuệ, Kim Ngưu & hệ thống trạm bơm tiêu úng" : "Monitoring basin capacity of To Lich, Nhue, Kim Nguu rivers & pumping systems";
     public string InlandOperatingSmooth => IsVietnamese ? "VẬN HÀNH THÔNG SUỐT" : "OPERATING SMOOTHLY";
+    public string InlandPod1Title => IsVietnamese ? "LƯU VỰC SÔNG NỘI ĐÔ" : "INNER CITY RIVER BASIN";
+    public string InlandPod1Name => IsVietnamese ? "Sông Tô Lịch & Sông Nhuệ" : "To Lich & Nhue Rivers";
+    public string InlandPod1Desc => IsVietnamese ? "Lòng dẫn thông thoáng, mực nước đang dưới mức báo động 1, tiếp tục tự chảy tiêu úng tốt." : "Channels are clear, water level below Alert 1, gravity drainage operating effectively.";
+    public string InlandPod2Title => IsVietnamese ? "TRẠM BƠM YÊN SỞ" : "YEN SO PUMPING STATION";
+    public string InlandPod2Name => IsVietnamese ? "Công Suất 95 m³/s" : "Capacity 95 m³/s";
+    public string InlandPod2Desc => IsVietnamese ? "Các tổ máy bơm cưỡng bức ra sông Hồng sẵn sàng kích hoạt ngay khi xuất hiện mưa lớn." : "Forced drainage pumps to Red River are ready to engage immediately when heavy rain occurs.";
+    public string InlandPod3Title => IsVietnamese ? "HỒ ĐIỀU HÒA ĐÔ THỊ" : "URBAN RETENTION LAKES";
+    public string InlandPod3Name => IsVietnamese ? "Hồ Tây & Linh Đàm" : "West Lake & Linh Dam Lake";
+    public string InlandPod3Desc => IsVietnamese ? "Mực nước đệm được hạ thấp để dành dung tích trữ nước tối đa ứng phó mưa xối xả." : "Buffer water levels are lowered to maximize retention capacity against intense downpours.";
 
     public string MotorbikeAdviceHeader => IsVietnamese ? "Lưu Ý Di Chuyển Xe Máy" : "Motorbike Travel Safety";
     public string MotorbikeSafetyLimit => IsVietnamese ? "Giới hạn an toàn < 20 cm (dưới lọc gió)" : "Safe limit < 20 cm (below air filter)";
@@ -399,7 +414,160 @@ public class LocalizationService : INotifyPropertyChanged
 
     public string CalendarCountdownHeader => IsVietnamese ? "Đếm Ngược Sự Kiện & Lễ Hội Cổ Truyền" : "Upcoming Festivals & Cultural Events";
     public string CalendarConverterHeader => IsVietnamese ? "Bộ Tra Cứu & Đổi Ngày Âm ↔ Dương Nhanh" : "Lunisolar Date Converter";
+    public string CalendarConverterSub => IsVietnamese ? "Tra cứu đối soát hai chiều chính xác giữa Dương lịch và Âm lịch Việt Nam" : "Bidirectional accurate conversion between Solar and Vietnamese Lunar calendar";
     public string CalendarConvertSolarToLunarBtn => IsVietnamese ? "Dương sang Âm" : "Solar to Lunar";
     public string CalendarConvertLunarToSolarBtn => IsVietnamese ? "Âm sang Dương" : "Lunar to Solar";
+    public string CalendarSolarToLunarTitle => IsVietnamese ? "Dương Lịch ➔ Âm Lịch" : "Solar ➔ Lunar";
+    public string CalendarLunarToSolarTitle => IsVietnamese ? "Âm Lịch ➔ Dương Lịch" : "Lunar ➔ Solar";
+    public string CalendarPlaceholderDay => IsVietnamese ? "Ngày (1-30)" : "Day (1-30)";
+    public string CalendarPlaceholderMonth => IsVietnamese ? "Tháng (1-12)" : "Month (1-12)";
+    public string CalendarPlaceholderYear => IsVietnamese ? "Năm" : "Year";
+    public string CalendarLeapMonthLabel => IsVietnamese ? "Tháng nhuận" : "Leap Month";
+    public string CalendarQuickGoalExercise => IsVietnamese ? "Tập thể dục 🏃" : "Exercise 🏃";
+    public string CalendarQuickGoalVegetarian => IsVietnamese ? "Ăn chay 🥗" : "Vegetarian 🥗";
+    public string CalendarQuickGoalReading => IsVietnamese ? "Đọc sách 📖" : "Reading 📖";
+    public string CalendarOutdoorActivityTag => IsVietnamese ? "🌲 Hoạt động ngoài trời" : "🌲 Outdoor activity";
+    public string CalendarReminderNone => IsVietnamese ? "Không nhắc" : "No reminder";
+    public string CalendarReminder15m => IsVietnamese ? "Trước 15p" : "15m before";
+    public string CalendarReminder30m => IsVietnamese ? "Trước 30p" : "30m before";
+    public string CalendarReminder1h => IsVietnamese ? "Trước 1h" : "1h before";
+
+    #endregion
+
+    #region Ambient Flyout & Weather Feedback Strings
+
+    public string AmbientFlyoutTitle => IsVietnamese ? "Âm Thanh Thư Giãn" : "Relaxing Sounds";
+    public string AmbientChooseSpace => IsVietnamese ? "Chọn không gian âm thanh thiên nhiên:" : "Choose nature soundscape:";
+    public string SoundAutoTitle => IsVietnamese ? "🌐 Tự động theo thời tiết" : "🌐 Auto by weather";
+    public string SoundAutoDesc => IsVietnamese ? "Tự khớp tiếng mưa hoặc gió theo thời tiết" : "Matches rain or wind to live weather";
+    public string SoundRainTitle => IsVietnamese ? "🌧️ Mưa rào mùa hạ" : "🌧️ Summer rain";
+    public string SoundRainDesc => IsVietnamese ? "Tiếng mưa rơi lộp độp êm dịu, dễ ngủ" : "Gentle patter of raindrops for sleep";
+    public string SoundThunderTitle => IsVietnamese ? "⛈️ Sấm chớp đêm mưa" : "⛈️ Stormy night";
+    public string SoundThunderDesc => IsVietnamese ? "Mưa rào nặng hạt kèm sấm rền từ xa" : "Heavy rainfall with rolling thunder";
+    public string SoundPineWindTitle => IsVietnamese ? "🌲 Gió rừng thông" : "🌲 Pine forest wind";
+    public string SoundPineWindDesc => IsVietnamese ? "Gió thoảng vi vu qua rặng thông đại ngàn" : "Breeze whispering through pine trees";
+    public string SoundOceanTitle => IsVietnamese ? "🌊 Sóng biển dạt dào" : "🌊 Ocean waves";
+    public string SoundOceanDesc => IsVietnamese ? "Từng đợt sóng dạt dào xô bờ cát thư thái" : "Relaxing waves lapping against the shore";
+    public string SoundCafeRainTitle => IsVietnamese ? "☕ Mưa quán cà phê" : "☕ Rain at cafe";
+    public string SoundCafeRainDesc => IsVietnamese ? "Tiếng mưa trầm ấm như ngồi bên hiên cà phê" : "Cozy rain sound from a porch cafe";
+
+    public string FeedbackOptionSunny => IsVietnamese ? "Nắng đẹp" : "Sunny";
+    public string FeedbackOptionHighUv => IsVietnamese ? "Nắng gắt UV" : "Intense UV";
+    public string FeedbackOptionMildSun => IsVietnamese ? "Nắng nhẹ" : "Mild Sun";
+    public string FeedbackOptionCloudy => IsVietnamese ? "Nhiều mây" : "Cloudy";
+    public string FeedbackOptionDrizzle => IsVietnamese ? "Mưa phùn" : "Drizzle";
+    public string FeedbackOptionRaining => IsVietnamese ? "Đang mưa" : "Raining";
+    public string FeedbackOptionHeavyRain => IsVietnamese ? "Mưa rất to" : "Heavy Rain";
+    public string FeedbackOptionThunder => IsVietnamese ? "Dông sét" : "Thunderstorm";
+    public string FeedbackOptionFog => IsVietnamese ? "Sương mù" : "Foggy";
+    public string FeedbackOptionWindy => IsVietnamese ? "Gió to" : "Windy";
+    public string FeedbackOptionCold => IsVietnamese ? "Rét buốt" : "Freezing Cold";
+
+    // Overview Tooltips & Buttons
+    public string Toggle1224HoursTooltip => IsVietnamese ? "Nhấp để chuyển đổi giữa định dạng 24 Giờ và 12 Giờ (AM/PM)" : "Click to toggle between 24-Hour and 12-Hour (AM/PM) format";
+    public string AirQualityTooltip => IsVietnamese ? "Chất lượng không khí (US-AQI)" : "Air Quality Index (US-AQI)";
+    public string FeedbackAccurateTooltip => IsVietnamese ? "Xác nhận thời tiết đang đúng với thực tế" : "Confirm weather matches actual conditions";
+    public string FeedbackInaccurateTooltip => IsVietnamese ? "Báo cáo thời tiết thực tế khác với dự báo" : "Report actual weather differs from forecast";
+    public string FeedbackReselectTooltip => IsVietnamese ? "Bấm để chọn lại" : "Click to select again";
+    public string ExpandAdviceTooltip => IsVietnamese ? "Bấm để xem hoặc thu gọn chi tiết 5 mục lời khuyên" : "Click to view or collapse detailed 5 advice categories";
+    public string AdviceCollapse => IsVietnamese ? "Thu gọn" : "Collapse";
+    public string AdviceDetails => IsVietnamese ? "Xem chi tiết" : "View details";
+
+    // Calendar Pod Labels
+    public string CalendarYearPodLabel => IsVietnamese ? "NĂM (YEAR)" : "YEAR";
+    public string CalendarMonthPodLabel => IsVietnamese ? "THÁNG (MONTH)" : "MONTH";
+    public string CalendarDayPodLabel => IsVietnamese ? "NGÀY (DAY)" : "DAY";
+
+    // Settings Tab - Performance Panel
+    public string PerfHeader => IsVietnamese ? "Hiệu Năng & Khởi Động Cùng Windows" : "Performance & Windows Startup";
+    public string PerfSub => IsVietnamese ? "Tối ưu hóa tài nguyên phần cứng, tiết kiệm pin Laptop và khởi động tự động" : "Optimize hardware resources, laptop battery saving, and auto-startup";
+    public string AutoStartTitle => IsVietnamese ? "Khởi động cùng Windows" : "Launch on Windows Startup";
+    public string AutoStartSub => IsVietnamese ? "Tự động chạy ngầm Weather WinUI khi mở máy tính" : "Automatically run Weather WinUI in background on boot";
+    public string MinimizeToTrayTitle => IsVietnamese ? "Thu nhỏ xuống Khay hệ thống (System Tray)" : "Minimize to System Tray";
+    public string MinimizeToTraySub => IsVietnamese ? "Khi bấm nút đóng [X], ứng dụng sẽ thu nhỏ xuống khay thay vì thoát hẳn" : "When closing [X], minimize to system tray instead of exiting";
+    public string AutoRefreshTitle => IsVietnamese ? "Tự động cập nhật thời tiết" : "Auto-Refresh Weather";
+    public string AutoRefreshSub => IsVietnamese ? "Chu kỳ tự động làm mới dữ liệu khí tượng định kỳ" : "Periodic interval for refreshing weather data";
+    public string WeatherEffectsTitle => IsVietnamese ? "Hiệu ứng khí quyển động" : "Dynamic Weather Effects";
+    public string WeatherEffectsSub => IsVietnamese ? "Mưa rơi, sấm sét, vầng nắng (Tắt để tiết kiệm pin/RAM)" : "Raindrops, lightning, sun rays (Turn off to save battery/RAM)";
+    public string BatterySaverTitle => IsVietnamese ? "Tối ưu tiết kiệm pin cho Laptop (Smart Battery Saver)" : "Laptop Smart Battery Saver";
+    public string BatterySaverSub => IsVietnamese ? "Tự động tạm dừng hiệu ứng mưa/sấm sét động và giãn tài nguyên khi máy tính dùng pin hoặc bật Tiết kiệm pin của Windows" : "Auto-pause dynamic weather effects when running on battery or Windows battery saver";
+    public string RamUsageTitle => IsVietnamese ? "Mức chiếm dụng RAM hiện tại" : "Current RAM Usage";
+    public string RamUsageSub => IsVietnamese ? "Đã tối ưu Native Engine, không chạy WebView2 Chrome nền" : "Optimized Native Engine, no Chromium/WebView2 background overhead";
+
+    // Settings Tab - About Panel
+    public string AboutHeader => IsVietnamese ? "Giới Thiệu & Nhật Ký Phiên Bản" : "About & Version Changelog";
+    public string AboutSub => IsVietnamese ? "Thông tin phiên bản, bản quyền và nhật ký thay đổi" : "Version info, copyright, and release changelog";
+    public string CheckUpdatesTitle => IsVietnamese ? "Cập Nhật Ứng Dụng (GitHub Releases)" : "App Updates (GitHub Releases)";
+    public string CheckUpdatesBtn => IsVietnamese ? "Kiểm tra ngay" : "Check Now";
+    public string NewVersionFound => IsVietnamese ? "🎉 Phiên bản mới:" : "🎉 New Version:";
+    public string DownloadNowBtn => IsVietnamese ? "Tải về ngay" : "Download Now";
+    public string AutoCheckUpdatesCheck => IsVietnamese ? "Tự động kiểm tra bản cập nhật mới mỗi khi mở ứng dụng" : "Automatically check for updates on startup";
+    public string ViewChangelogBtn => IsVietnamese ? "📜 Xem Nhật Ký Thay Đổi Các Phiên Bản (Changelog)" : "📜 View Version Changelog";
+    public string ReopenOnboardingBtn => IsVietnamese ? "🚀 Mở lại trang hướng dẫn ban đầu (Onboarding)" : "🚀 Reopen Getting Started Guide (Onboarding)";
+
+    // Settings Tab - Appearance & Icon Packs
+    public string IconPacksHeader => IsVietnamese ? "Bộ Biểu Tượng Thời Tiết (Icon Pack)" : "Weather Icon Packs";
+    public string IconPacksSub => IsVietnamese ? "Chọn bộ biểu tượng yêu thích để hiển thị trên màn hình chính, thanh dự báo và widget desktop:" : "Select your preferred icon set for main view, forecasts, and desktop widgets:";
+    public string BadgeExclusiveAnimated => IsVietnamese ? "✨ ĐỘC QUYỀN & SỐNG ĐỘNG" : "✨ EXCLUSIVE & ANIMATED";
+    public string BadgeInUse => IsVietnamese ? "Đang dùng" : "In Use";
+    public string MeteoconsDesc => IsVietnamese ? "Bộ icon vector thời tiết hoạt họa mượt mà, sắc nét đỉnh cao từ Bas Milius (GitHub basmilius/meteocons). Hiển thị sống động mọi sắc thái nắng mưa." : "Smooth animated vector weather icons by Bas Milius. Vividly renders every weather nuance.";
+    public string Fluent3DDesc => IsVietnamese ? "Bộ icon 3D sắc màu phong phú với chiều sâu bóng đổ, mang lại cảm giác hiện đại và trực quan." : "Rich 3D icons with realistic depth and lighting, offering a sleek and modern look.";
+    public string FontAwesomeDesc => IsVietnamese ? "Biểu tượng glyph phẳng tối giản, tải cực nhanh, tương thích 100% mọi độ phân giải màn hình." : "Minimalist flat glyph icons, ultra-fast loading, 100% compatible with all resolutions.";
+    public string Badge3DModern => IsVietnamese ? "🎨 3D HIỆN ĐẠI" : "🎨 3D MODERN";
+    public string BadgeMinimalist => IsVietnamese ? "⚡ TỐI GIẢN" : "⚡ MINIMALIST";
+    public string AppThemeTitle => IsVietnamese ? "Chủ đề hiển thị ứng dụng" : "App Appearance Theme";
+    public string AppThemeSub => IsVietnamese ? "Chế độ màu Sáng, Tối hoặc Tự động thích ứng Windows" : "Light, Dark, or Match Windows System mode";
+
+    // Settings Tab - City Picture
+    public string CityBgHeader => IsVietnamese ? "Hình Nền Thành Phố (City Picture)" : "City Wallpapers";
+    public string CityBgSub => IsVietnamese ? "Hiện ảnh nền mờ nghệ thuật phía sau thẻ thời tiết hiện tại" : "Display scenic blurred wallpaper behind the current weather card";
+    public string CityBgBlurTitle => IsVietnamese ? "Hình nền mờ theo địa điểm" : "Location-based blurred wallpaper";
+    public string CityBgBlurSub => IsVietnamese ? "Tự động áp dụng ảnh thành phố tương ứng với vị trí đang xem hoặc ảnh mẫu tùy thích" : "Auto-applies scenic city wallpaper matching viewed location or selected presets";
+    public string DynamicDayNightTitle => IsVietnamese ? "Đổi ảnh nền theo Ngày & Đêm (Dynamic Day & Night)" : "Dynamic Day & Night Wallpaper";
+    public string DynamicDayNightSub => IsVietnamese ? "Tự động chuyển sang ảnh thành phố ban đêm lên đèn lung linh khi trời tối theo giờ mặt trời lặn" : "Automatically switches to illuminated night skyline after sunset";
+    public string CityModeAuto => IsVietnamese ? "🌐 Tự động theo địa điểm thời tiết" : "🌐 Auto by weather location";
+    public string CityModePreset => IsVietnamese ? "🌆 Chọn trong danh sách ảnh mẫu" : "🌆 Select from preset gallery";
+    public string CityModeCustom => IsVietnamese ? "📁 Tự chọn hình ảnh từ máy tính..." : "📁 Custom image from PC...";
+    public string CustomImageNone => IsVietnamese ? "Chưa chọn tệp ảnh nào" : "No image selected";
+    public string CustomImageChange => IsVietnamese ? "Đổi ảnh khác..." : "Change image...";
+    public string PreviewCardTitle => IsVietnamese ? "Xem Trước Thẻ Thời Tiết Có Hình Nền" : "Weather Card Wallpaper Preview";
+    public string PreviewModeAuto => IsVietnamese ? "Tự động" : "Auto";
+
+    // Settings Tab - Mini Desktop Widget
+    public string WidgetHeader => IsVietnamese ? "Widget Mini Desktop" : "Desktop Mini Widgets";
+    public string WidgetSub => IsVietnamese ? "Tùy chỉnh tiện ích thời tiết mini nổi trên màn hình Desktop" : "Customize floating desktop weather mini-widget";
+    public string WidgetStyleTitle => IsVietnamese ? "Kiểu dáng Widget" : "Widget Style";
+    public string WidgetStyleSub => IsVietnamese ? "Glass Card đầy đủ hoặc Compact Bar thanh gọn" : "Full Glass Card or sleek Compact Bar";
+    public string WidgetStyleDynamic => IsVietnamese ? "✨ Dribbble Dynamic (Đổi màu)" : "✨ Dynamic Color Changing";
+    public string WidgetStyleGlass => IsVietnamese ? "🪟 Glass Card (Đầy đủ)" : "🪟 Glass Card (Full)";
+    public string WidgetStyleCompact => IsVietnamese ? "➖ Compact Bar (Gọn)" : "➖ Compact Bar (Slim)";
+    public string WidgetStyleIsland => IsVietnamese ? "💊 Mini Island (Viên thuốc)" : "💊 Mini Island";
+    public string WidgetOpacityTitle => IsVietnamese ? "Độ trong suốt Widget (Opacity)" : "Widget Transparency (Opacity)";
+    public string WidgetOpacitySub => IsVietnamese ? "Tự động sáng rõ 100% khi rê chuột vào" : "Automatically dims and highlights 100% on mouse hover";
+
+    // Settings Tab - Notifications & Tray
+    public string NotifHeader => IsVietnamese ? "Thông Báo & Khay Hệ Thống" : "Notifications & System Tray";
+    public string NotifSub => IsVietnamese ? "Quản lý thông báo Windows Toast và hành vi khay Taskbar" : "Manage Windows Toast notifications and Taskbar tray behavior";
+    public string ToastTitle => IsVietnamese ? "Cảnh báo Windows Toast" : "Windows Toast Alerts";
+    public string ToastSub => IsVietnamese ? "Gửi cảnh báo mưa, nắng gắt và tóm tắt đầu ngày" : "Send alerts for impending rain, high UV, and daily summaries";
+    public string ToastRainCheck => IsVietnamese ? "🌧️ Cảnh báo mưa sắp đến trong 20-30 phút tới" : "🌧️ Rain incoming alert within 20-30 minutes";
+    public string ToastUvCheck => IsVietnamese ? "🔥 Cảnh báo tia cực tím UV rất cao buổi trưa (11h-14h)" : "🔥 Extreme UV radiation warning at midday (11am-2pm)";
+    public string ToastMorningCheck => IsVietnamese ? "☀️ Tóm tắt dự báo đầu ngày (buổi sáng 07h00)" : "☀️ Morning weather briefing (07:00 AM)";
+    public string ToastTestBtn => IsVietnamese ? "Thử gửi thông báo kiểm tra ngay" : "Send test notification now";
+    public string CommuteAlertTitle => IsVietnamese ? "Nhắc nhở thời tiết Đi làm & Tan ca" : "Commute Weather Reminder";
+    public string CommuteAlertSub => IsVietnamese ? "Cảnh báo thời tiết trước giờ di chuyển hàng ngày" : "Proactive weather warnings before your daily commute";
+    public string MorningCommuteTitle => IsVietnamese ? "Giờ đi làm / đi học sáng:" : "Morning departure time:";
+    public string EveningCommuteTitle => IsVietnamese ? "Giờ tan ca buổi chiều:" : "Evening commute time:";
+    public string CommuteLeadTimeTitle => IsVietnamese ? "Thông báo trước:" : "Notify ahead by:";
+    public string CommuteDaysTitle => IsVietnamese ? "Áp dụng vào các ngày:" : "Active on days:";
+    public string TestCommuteAlertBtn => IsVietnamese ? "🔔 Thử gửi thông báo lịch trình ngay" : "🔔 Send test commute notification now";
+    public string StartMinimizedTitle => IsVietnamese ? "Khởi động thu nhỏ vào khay hệ thống" : "Start minimized to system tray";
+    public string StartMinimizedSub => IsVietnamese ? "Tự động ẩn ứng dụng vào khay Taskbar khi bật máy tính, không bung to cửa sổ làm phiền" : "Silently hide app to taskbar tray on computer startup";
+    public string CloseToTrayTitle => IsVietnamese ? "Đóng ứng dụng về khay hệ thống" : "Close to system tray";
+    public string CloseToTraySub => IsVietnamese ? "Bấm nút X sẽ ẩn app về khay thay vì thoát hẳn" : "Clicking [X] hides app to tray instead of exiting";
+    public string AppearanceHeader => IsVietnamese ? "Giao Diện & Biểu Tượng" : "Appearance & Icons";
+    public string AppearanceSub => IsVietnamese ? "Tùy biến bộ icon thời tiết trực quan và phong cách hiển thị của toàn bộ ứng dụng" : "Customize visual weather icons and application appearance theme";
+    public string CityPresetHeader => IsVietnamese ? "Danh sách 10 thành phố mẫu (Bấm để chọn nhanh làm hình nền):" : "10 preset cities (Click to set as wallpaper):";
+
     #endregion
 }

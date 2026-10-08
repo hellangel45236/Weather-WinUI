@@ -21,6 +21,29 @@ public sealed partial class CalendarTab : UserControl
     public CalendarTab()
     {
         this.InitializeComponent();
+        this.Loaded += (s, e) => UpdateCalendarComboBoxLabels();
+        Services.LocalizationService.Instance.LanguageChanged += (s, e) => UpdateCalendarComboBoxLabels();
+    }
+
+    private void UpdateCalendarComboBoxLabels()
+    {
+        bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+        if (NewEventCategoryComboBox != null && NewEventCategoryComboBox.Items.Count >= 6)
+        {
+            ((ComboBoxItem)NewEventCategoryComboBox.Items[0]).Content = isVi ? "🌲 Ngoài trời" : "🌲 Outdoor";
+            ((ComboBoxItem)NewEventCategoryComboBox.Items[1]).Content = isVi ? "💼 Công việc" : "💼 Work";
+            ((ComboBoxItem)NewEventCategoryComboBox.Items[2]).Content = isVi ? "👨‍👩‍👧 Gia đình" : "👨‍👩‍👧 Family";
+            ((ComboBoxItem)NewEventCategoryComboBox.Items[3]).Content = isVi ? "🏃 Thể thao" : "🏃 Sports";
+            ((ComboBoxItem)NewEventCategoryComboBox.Items[4]).Content = isVi ? "🎉 Kỷ niệm" : "🎉 Celebration";
+            ((ComboBoxItem)NewEventCategoryComboBox.Items[5]).Content = isVi ? "🕯️ Cúng lễ" : "🕯️ Spiritual";
+        }
+        if (NewEventReminderComboBox != null && NewEventReminderComboBox.Items.Count >= 4)
+        {
+            ((ComboBoxItem)NewEventReminderComboBox.Items[0]).Content = isVi ? "Không nhắc" : "No reminder";
+            ((ComboBoxItem)NewEventReminderComboBox.Items[1]).Content = isVi ? "Trước 15p" : "15m before";
+            ((ComboBoxItem)NewEventReminderComboBox.Items[2]).Content = isVi ? "Trước 30p" : "30m before";
+            ((ComboBoxItem)NewEventReminderComboBox.Items[3]).Content = isVi ? "Trước 1h" : "1h before";
+        }
     }
 
     private void CalendarDayCell_Click(object sender, RoutedEventArgs e)

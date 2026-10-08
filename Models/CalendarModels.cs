@@ -18,6 +18,9 @@ public partial class CalendarDayItem : ObservableObject
     public bool IsLeapLunar { get; set; }
 
     public string LunarDisplay { get; set; } = string.Empty;
+    public string LunarFullSummary => Services.LocalizationService.Instance.IsVietnamese
+        ? $"🌙 Ngày {LunarDay} Tháng {LunarMonth} ÂL ({CanChiYear})"
+        : $"🌙 Lunar Day {LunarDay}, Month {LunarMonth} ({CanChiYear})";
     public bool IsSpecialLunarDay => LunarDay == 1 || LunarDay == 15;
 
     public bool IsCurrentMonth { get; set; } = true;
@@ -121,11 +124,23 @@ public partial class CalendarDayItem : ObservableObject
     [ObservableProperty]
     private string _goalIcon = "🎯";
 
+    public string UserEventsTooltip => Services.LocalizationService.Instance.IsVietnamese
+        ? "Có sự kiện / kế hoạch ghi chú"
+        : "Has scheduled events / notes";
+
+    public string WeatherConflictTooltip => !string.IsNullOrEmpty(WeatherConflictTitle)
+        ? WeatherConflictTitle
+        : (Services.LocalizationService.Instance.IsVietnamese
+            ? "Cảnh báo: Thời tiết xung đột với kế hoạch ngoài trời!"
+            : "Warning: Weather conflict with outdoor plans!");
+
     public void NotifyEventsChanged()
     {
         OnPropertyChanged(nameof(UserEvents));
         OnPropertyChanged(nameof(HasUserEvents));
         OnPropertyChanged(nameof(UserEventCount));
+        OnPropertyChanged(nameof(UserEventsTooltip));
+        OnPropertyChanged(nameof(WeatherConflictTooltip));
         OnPropertyChanged(nameof(HasGoal));
         OnPropertyChanged(nameof(GoalText));
         OnPropertyChanged(nameof(IsGoalCompleted));

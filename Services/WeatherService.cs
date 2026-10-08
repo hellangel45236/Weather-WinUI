@@ -112,8 +112,9 @@ public class WeatherService : IWeatherService
         double feelsLike = isFahrenheit ? ToFahrenheit(cur.ApparentTemperature) : cur.ApparentTemperature;
         string unit = isFahrenheit ? "°F" : "°C";
 
+        bool isVi = LocalizationService.Instance.IsVietnamese;
         display.TemperatureText = $"{Math.Round(temp)}{unit}";
-        display.FeelsLikeText = $"Cảm giác như {Math.Round(feelsLike)}{unit}";
+        display.FeelsLikeText = isVi ? $"Cảm giác như {Math.Round(feelsLike)}{unit}" : $"Feels like {Math.Round(feelsLike)}{unit}";
 
         var (desc, glyph) = WeatherCodeHelper.GetConditionInfo(cur.WeatherCode, isDay);
         display.ConditionText = desc;
@@ -186,7 +187,9 @@ public class WeatherService : IWeatherService
             {
                 double max = isFahrenheit ? ToFahrenheit(data.Daily.TemperatureMax[0]) : data.Daily.TemperatureMax[0];
                 double min = isFahrenheit ? ToFahrenheit(data.Daily.TemperatureMin[0]) : data.Daily.TemperatureMin[0];
-                display.MinMaxText = $"Thấp nhất: {Math.Round(min)}{unit}  •  Cao nhất: {Math.Round(max)}{unit}";
+                display.MinMaxText = isVi
+                    ? $"Thấp nhất: {Math.Round(min)}{unit}  •  Cao nhất: {Math.Round(max)}{unit}"
+                    : $"Low: {Math.Round(min)}{unit}  •  High: {Math.Round(max)}{unit}";
             }
 
             if (data.Daily.PrecipitationProbabilityMax?.Count > 0)
@@ -219,15 +222,26 @@ public class WeatherService : IWeatherService
                         double elapsedMins = Math.Max(0.0, (now - rise).TotalMinutes);
                         display.SunProgressPercent = Math.Clamp(elapsedMins / totalMins, 0.0, 1.0);
                         var remaining = set - now;
-                        display.SunStatusText = remaining.TotalHours >= 1
-                            ? $"Còn {(int)remaining.TotalHours}h {remaining.Minutes}m nữa đến hoàng hôn"
-                            : $"Còn {remaining.Minutes} phút nữa đến hoàng hôn";
+                        if (isVi)
+                        {
+                            display.SunStatusText = remaining.TotalHours >= 1
+                                ? $"Còn {(int)remaining.TotalHours}h {remaining.Minutes}m nữa đến hoàng hôn"
+                                : $"Còn {remaining.Minutes} phút nữa đến hoàng hôn";
+                        }
+                        else
+                        {
+                            display.SunStatusText = remaining.TotalHours >= 1
+                                ? $"{(int)remaining.TotalHours}h {remaining.Minutes}m until sunset"
+                                : $"{remaining.Minutes}m until sunset";
+                        }
                     }
                     else
                     {
                         display.IsSunVisible = false;
                         display.SunProgressPercent = now < rise ? 0.0 : 1.0;
-                        display.SunStatusText = $"Đêm quang mây • Bình minh lúc {rise:HH:mm}";
+                        display.SunStatusText = isVi
+                            ? $"Đêm quang mây • Bình minh lúc {rise:HH:mm}"
+                            : $"Clear night • Sunrise at {rise:HH:mm}";
                     }
                 }
             }
@@ -237,9 +251,9 @@ public class WeatherService : IWeatherService
         // Tính toán Lịch Âm & 24 Tiết Khí truyền thống Việt Nam
         try
         {
-            var lunar = VietnameseLunarHelper.ConvertSolarToLunar(DateTime.Now);
+            var lunar = VietnameseLunarHelper.ConvertSolarToLunar(DateTime.Now, isVi);
             display.LunarDateText = lunar.FullDisplay;
-            display.SolarTermText = $"Tiết {lunar.SolarTerm}";
+            display.SolarTermText = isVi ? $"Tiết {lunar.SolarTerm}" : $"Term: {lunar.SolarTerm}";
         }
         catch { }
 
@@ -346,15 +360,16 @@ public class WeatherService : IWeatherService
         for (int i = 0; i < count; i++)
         {
             int idx = startIndex + i;
-            string timeStr = times[idx];
-            string timeDisplay = "Bây giờ";
+            bool isVi = LocalizationService.Instance.IsVietnamese;
+            string nowText = isVi ? "Bây giờ" : "Now";
+            string timeDisplay = nowText;
             bool isDayHour = true;
 
             int hourNum = DateTime.Now.Hour;
-            if (DateTime.TryParse(timeStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt) ||
-                DateTime.TryParse(timeStr, out dt))
+            if (DateTime.TryParse(times[idx], CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt) ||
+                DateTime.TryParse(times[idx], out dt))
             {
-                timeDisplay = i == 0 ? "Bây giờ" : dt.ToString((settings?.Is24HourFormat ?? true) ? "HH:mm" : "hh:mm tt");
+                timeDisplay = i == 0 ? nowText : dt.ToString((settings?.Is24HourFormat ?? true) ? "HH:mm" : "hh:mm tt");
                 isDayHour = dt.Hour >= 6 && dt.Hour < 18;
                 hourNum = dt.Hour;
             }

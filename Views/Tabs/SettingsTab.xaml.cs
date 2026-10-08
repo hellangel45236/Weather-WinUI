@@ -164,10 +164,77 @@ public sealed partial class SettingsTab : UserControl
             if (CloseToTrayToggle != null) CloseToTrayToggle.IsOn = s.CloseToTray;
             if (AppearanceEffectsToggle != null) AppearanceEffectsToggle.IsOn = s.EnableWeatherEffects;
             if (EffectsToggle != null) EffectsToggle.IsOn = s.EnableWeatherEffects;
+            // Update dynamic bilingual labels for static ComboBoxes
+            UpdateAllComboBoxLabels();
         }
         finally
         {
             _isSyncing = false;
+        }
+    }
+
+    private void UpdateAllComboBoxLabels()
+    {
+        bool isVi = LocalizationService.Instance.IsVietnamese;
+        
+        // City mode
+        if (CityImageModeComboBox != null && CityImageModeComboBox.Items.Count >= 3)
+        {
+            ((ComboBoxItem)CityImageModeComboBox.Items[0]).Content = isVi ? "🌐 Tự động theo địa điểm thời tiết" : "🌐 Automatic by weather location";
+            ((ComboBoxItem)CityImageModeComboBox.Items[1]).Content = isVi ? "🖼️ Danh sách cài sẵn (Preset)" : "🖼️ Preset city collection";
+            ((ComboBoxItem)CityImageModeComboBox.Items[2]).Content = isVi ? "📁 Ảnh tùy chỉnh từ máy tính" : "📁 Custom image from device";
+        }
+        if (BrowseCustomImageButton != null)
+        {
+            BrowseCustomImageButton.Content = isVi ? "Chọn ảnh..." : "Select image...";
+        }
+
+        // Widget style
+        if (WidgetStyleComboBox != null && WidgetStyleComboBox.Items.Count >= 4)
+        {
+            ((ComboBoxItem)WidgetStyleComboBox.Items[0]).Content = isVi ? "✨ Dribbble Dynamic (Đổi màu)" : "✨ Dribbble Dynamic (Color shift)";
+            ((ComboBoxItem)WidgetStyleComboBox.Items[1]).Content = isVi ? "🪟 Fluent Glass (Kính mờ)" : "🪟 Fluent Glass (Frosted)";
+            ((ComboBoxItem)WidgetStyleComboBox.Items[2]).Content = isVi ? "📱 Minimalist Compact" : "📱 Minimalist Compact";
+            ((ComboBoxItem)WidgetStyleComboBox.Items[3]).Content = isVi ? "🏝️ Dynamic Island Bar" : "🏝️ Dynamic Island Bar";
+        }
+
+        // Commute lead time
+        if (CommuteLeadTimeComboBox != null && CommuteLeadTimeComboBox.Items.Count >= 4)
+        {
+            ((ComboBoxItem)CommuteLeadTimeComboBox.Items[0]).Content = isVi ? "Trước 15 phút" : "15 minutes before";
+            ((ComboBoxItem)CommuteLeadTimeComboBox.Items[1]).Content = isVi ? "Trước 30 phút (Khuyên dùng)" : "30 minutes before (Recommended)";
+            ((ComboBoxItem)CommuteLeadTimeComboBox.Items[2]).Content = isVi ? "Trước 45 phút" : "45 minutes before";
+            ((ComboBoxItem)CommuteLeadTimeComboBox.Items[3]).Content = isVi ? "Trước 1 tiếng" : "1 hour before";
+        }
+
+        // Theme Combos
+        void UpdateThemeCombo(ComboBox? combo)
+        {
+            if (combo != null && combo.Items.Count >= 3)
+            {
+                ((ComboBoxItem)combo.Items[0]).Content = isVi ? "💻 Theo hệ thống" : "💻 Match system";
+                ((ComboBoxItem)combo.Items[1]).Content = isVi ? "☀️ Chế độ Sáng" : "☀️ Light mode";
+                ((ComboBoxItem)combo.Items[2]).Content = isVi ? "🌙 Chế độ Tối" : "🌙 Dark mode";
+            }
+        }
+        UpdateThemeCombo(SettingsThemeComboBox);
+        UpdateThemeCombo(AppearanceThemeComboBox);
+
+        // Refresh interval
+        if (RefreshIntervalComboBox != null && RefreshIntervalComboBox.Items.Count >= 5)
+        {
+            ((ComboBoxItem)RefreshIntervalComboBox.Items[0]).Content = isVi ? "15 phút" : "15 minutes";
+            ((ComboBoxItem)RefreshIntervalComboBox.Items[1]).Content = isVi ? "30 phút (Khuyên dùng)" : "30 minutes (Recommended)";
+            ((ComboBoxItem)RefreshIntervalComboBox.Items[2]).Content = isVi ? "1 giờ" : "1 hour";
+            ((ComboBoxItem)RefreshIntervalComboBox.Items[3]).Content = isVi ? "2 giờ" : "2 hours";
+            ((ComboBoxItem)RefreshIntervalComboBox.Items[4]).Content = isVi ? "Chỉ làm mới thủ công" : "Manual refresh only";
+        }
+
+        // First day of week
+        if (FirstDayOfWeekComboBox != null && FirstDayOfWeekComboBox.Items.Count >= 2)
+        {
+            ((ComboBoxItem)FirstDayOfWeekComboBox.Items[0]).Content = isVi ? "📅 Thứ Hai (Mặc định)" : "📅 Monday (Default)";
+            ((ComboBoxItem)FirstDayOfWeekComboBox.Items[1]).Content = isVi ? "📅 Chủ Nhật (Quốc tế)" : "📅 Sunday (International)";
         }
     }
 

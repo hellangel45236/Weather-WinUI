@@ -219,10 +219,10 @@
                                                            Text="{x:Bind GoalIcon, Mode=OneWay}" FontSize="8" VerticalAlignment="Center"
                                                            ToolTipService.ToolTip="{x:Bind GoalText, Mode=OneWay}"/>
                                                 <Ellipse Visibility="{x:Bind HasUserEvents, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                         Width="5.5" Height="5.5" Fill="#8B5CF6" ToolTipService.ToolTip="Có sự kiện / kế hoạch ghi chú"/>
+                                                         Width="5.5" Height="5.5" Fill="#8B5CF6" ToolTipService.ToolTip="{x:Bind UserEventsTooltip, Mode=OneWay}"/>
                                                 <FontIcon Visibility="{x:Bind HasWeatherConflictWarning, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                                           FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf071;" FontSize="8.5" Foreground="#F59E0B"
-                                                          ToolTipService.ToolTip="Cảnh báo: Thời tiết xung đột với kế hoạch ngoài trời!"/>
+                                                          ToolTipService.ToolTip="{x:Bind WeatherConflictTooltip, Mode=OneWay}"/>
                                             </StackPanel>
                                         </StackPanel>
                                     </Grid>
@@ -293,15 +293,7 @@
 
                             <!-- Âm lịch, Can Chi Năm, Tiết khí, Trực ngày & Tuần trăng -->
                             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                <TextBlock FontSize="12.5" Foreground="{ThemeResource AccentFillColorDefaultBrush}" FontWeight="SemiBold">
-                                    <Run Text="🌙 Ngày"/>
-                                    <Run Text="{x:Bind ViewModel.SelectedCalendarDay.LunarDay, Mode=OneWay}"/>
-                                    <Run Text="Tháng"/>
-                                    <Run Text="{x:Bind ViewModel.SelectedCalendarDay.LunarMonth, Mode=OneWay}"/>
-                                    <Run Text="ÂL ("/>
-                                    <Run Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiYear, Mode=OneWay}"/>
-                                    <Run Text=")"/>
-                                </TextBlock>
+                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.LunarFullSummary, Mode=OneWay}" FontSize="12.5" Foreground="{ThemeResource AccentFillColorDefaultBrush}" FontWeight="SemiBold"/>
 
                                 <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="4" Padding="6,1.5">
                                     <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.SolarTerm, Mode=OneWay}" FontSize="11" Opacity="0.85"/>
@@ -590,7 +582,7 @@
                                             <Border Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="10,6" Margin="0,2">
                                                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
                                                     <Border Grid.Column="0" Background="{x:Bind ColorHex, Converter={StaticResource HexToBrushConverter}}" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
-                                                        <TextBlock Text="{x:Bind Category}" FontSize="9.5" FontWeight="Bold" Foreground="White"/>
+                                                        <TextBlock Text="{x:Bind CategoryDisplay}" FontSize="9.5" FontWeight="Bold" Foreground="White"/>
                                                     </Border>
                                                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
                                                         <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
@@ -600,7 +592,7 @@
                                                                 <TextBlock Text="{x:Bind TimeDisplay}" FontSize="9.5" FontWeight="SemiBold" Foreground="#3B82F6"/>
                                                             </Border>
                                                         </StackPanel>
-                                                        <TextBlock Text="🌲 Hoạt động ngoài trời" FontSize="9.5" Foreground="#10B981" Visibility="{x:Bind IsOutdoor, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                        <TextBlock Text="{x:Bind OutdoorDisplay}" FontSize="9.5" Foreground="#10B981" Visibility="{x:Bind IsOutdoor, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                                     </StackPanel>
                                                     <Button Grid.Column="2" Click="DeleteEventButton_Click" Tag="{x:Bind Id}"
                                                             Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2">
@@ -618,12 +610,12 @@
                                         <TextBox x:Name="NewEventTitleBox" PlaceholderText="{x:Bind ViewModel.Loc.CalendarNewEventPlaceholder, Mode=OneWay}" FontSize="12" CornerRadius="6"/>
                                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                             <ComboBox x:Name="NewEventCategoryComboBox" SelectedIndex="0" HorizontalAlignment="Stretch" FontSize="11" CornerRadius="6">
-                                                <ComboBoxItem Content="{x:Bind ViewModel.Loc.CalendarCategoryOutdoor, Mode=OneWay}" Tag="Ngoài trời"/>
-                                                <ComboBoxItem Content="{x:Bind ViewModel.Loc.CalendarCategoryWork, Mode=OneWay}" Tag="Công việc"/>
-                                                <ComboBoxItem Content="{x:Bind ViewModel.Loc.CalendarCategoryFamily, Mode=OneWay}" Tag="Gia đình"/>
-                                                <ComboBoxItem Content="{x:Bind ViewModel.Loc.CalendarCategorySport, Mode=OneWay}" Tag="Thể thao"/>
-                                                <ComboBoxItem Content="{x:Bind ViewModel.Loc.CalendarCategoryCeremony, Mode=OneWay}" Tag="Kỷ niệm"/>
-                                                <ComboBoxItem Content="{x:Bind ViewModel.Loc.CalendarCategorySpiritual, Mode=OneWay}" Tag="Cúng lễ"/>
+                                                <ComboBoxItem Content="🌲 Ngoài trời" Tag="Ngoài trời"/>
+                                                <ComboBoxItem Content="💼 Công việc" Tag="Công việc"/>
+                                                <ComboBoxItem Content="👨‍👩‍👧 Gia đình" Tag="Gia đình"/>
+                                                <ComboBoxItem Content="🏃 Thể thao" Tag="Thể thao"/>
+                                                <ComboBoxItem Content="🎉 Kỷ niệm" Tag="Kỷ niệm"/>
+                                                <ComboBoxItem Content="🕯️ Cúng lễ" Tag="Cúng lễ"/>
                                             </ComboBox>
                                             <CheckBox x:Name="NewEventIsOutdoorCheckBox" Grid.Column="1" Content="{x:Bind ViewModel.Loc.CalendarIsOutdoorLabel, Mode=OneWay}" IsChecked="True" FontSize="11"/>
                                         </Grid>
@@ -666,7 +658,7 @@
                             </Border>
                             <StackPanel Spacing="2">
                                 <TextBlock Text="{x:Bind ViewModel.Loc.CalendarConverterHeader, Mode=OneWay}" FontSize="15" FontWeight="Bold"/>
-                                <TextBlock Text="Tra cứu đối soát hai chiều chính xác giữa Dương lịch và Âm lịch Việt Nam" FontSize="11" Opacity="0.7"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CalendarConverterSub, Mode=OneWay}" FontSize="11" Opacity="0.7"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -679,7 +671,7 @@
                             <StackPanel Spacing="10">
                                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="12" Foreground="#F59E0B"/>
-                                    <TextBlock Text="Dương Lịch ➡️ Âm Lịch" FontSize="12.5" FontWeight="Bold"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.CalendarSolarToLunarTitle, Mode=OneWay}" FontSize="12.5" FontWeight="Bold"/>
                                 </StackPanel>
 
                                 <DatePicker x:Name="SolarDatePicker"
@@ -709,14 +701,14 @@
                             <StackPanel Spacing="10">
                                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf186;" FontSize="12" Foreground="#8B5CF6"/>
-                                    <TextBlock Text="Âm Lịch ➡️ Dương Lịch" FontSize="12.5" FontWeight="Bold"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.CalendarLunarToSolarTitle, Mode=OneWay}" FontSize="12.5" FontWeight="Bold"/>
                                 </StackPanel>
 
                                 <Grid ColumnDefinitions="*,*,*,Auto" ColumnSpacing="6">
-                                    <TextBox x:Name="LunarDayBox" Text="1" PlaceholderText="Ngày (1-30)" FontSize="11" CornerRadius="6"/>
-                                    <TextBox x:Name="LunarMonthBox" Grid.Column="1" Text="1" PlaceholderText="Tháng (1-12)" FontSize="11" CornerRadius="6"/>
-                                    <TextBox x:Name="LunarYearBox" Grid.Column="2" Text="2026" PlaceholderText="Năm" FontSize="11" CornerRadius="6"/>
-                                    <CheckBox x:Name="LunarLeapCheckBox" Grid.Column="3" Content="Nhuận" FontSize="10.5" VerticalAlignment="Center"/>
+                                    <TextBox x:Name="LunarDayBox" Text="1" PlaceholderText="{x:Bind ViewModel.Loc.CalendarPlaceholderDay, Mode=OneWay}" FontSize="11" CornerRadius="6"/>
+                                    <TextBox x:Name="LunarMonthBox" Grid.Column="1" Text="1" PlaceholderText="{x:Bind ViewModel.Loc.CalendarPlaceholderMonth, Mode=OneWay}" FontSize="11" CornerRadius="6"/>
+                                    <TextBox x:Name="LunarYearBox" Grid.Column="2" Text="2026" PlaceholderText="{x:Bind ViewModel.Loc.CalendarPlaceholderYear, Mode=OneWay}" FontSize="11" CornerRadius="6"/>
+                                    <CheckBox x:Name="LunarLeapCheckBox" Grid.Column="3" Content="{x:Bind ViewModel.Loc.CalendarLeapMonthLabel, Mode=OneWay}" FontSize="10.5" VerticalAlignment="Center"/>
                                 </Grid>
 
                                 <Button Click="ConvertLunarToSolar_Click" Style="{ThemeResource AccentButtonStyle}"

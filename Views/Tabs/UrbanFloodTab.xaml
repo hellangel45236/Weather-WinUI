@@ -322,27 +322,27 @@
                         <!-- Pod 1 -->
                         <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,12">
                             <StackPanel Spacing="5">
-                                <TextBlock Text="LƯU VỰC SÔNG NỘI ĐÔ" FontSize="10" FontWeight="Bold" Opacity="0.6"/>
-                                <TextBlock Text="Sông Tô Lịch &amp; Sông Nhuệ" FontSize="13" FontWeight="Bold"/>
-                                <TextBlock Text="Lòng dẫn thông thoáng, mực nước đang dưới mức báo động 1, tiếp tục tự chảy tiêu úng tốt." FontSize="11" Opacity="0.75" LineHeight="16"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.InlandPod1Title, Mode=OneWay}" FontSize="10" FontWeight="Bold" Opacity="0.6"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.InlandPod1Name, Mode=OneWay}" FontSize="13" FontWeight="Bold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.InlandPod1Desc, Mode=OneWay}" FontSize="11" Opacity="0.75" LineHeight="16"/>
                             </StackPanel>
                         </Border>
 
                         <!-- Pod 2 -->
                         <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,12">
                             <StackPanel Spacing="5">
-                                <TextBlock Text="TRẠM BƠM YÊN SỞ" FontSize="10" FontWeight="Bold" Opacity="0.6"/>
-                                <TextBlock Text="Công Suất 95 m³/s" FontSize="13" FontWeight="Bold" Foreground="#38BDF8"/>
-                                <TextBlock Text="Các tổ máy bơm cưỡng bức ra sông Hồng sẵn sàng kích hoạt ngay khi xuất hiện mưa lớn." FontSize="11" Opacity="0.75" LineHeight="16"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.InlandPod2Title, Mode=OneWay}" FontSize="10" FontWeight="Bold" Opacity="0.6"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.InlandPod2Name, Mode=OneWay}" FontSize="13" FontWeight="Bold" Foreground="#38BDF8"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.InlandPod2Desc, Mode=OneWay}" FontSize="11" Opacity="0.75" LineHeight="16"/>
                             </StackPanel>
                         </Border>
 
                         <!-- Pod 3 -->
                         <Border Grid.Column="2" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,12">
                             <StackPanel Spacing="5">
-                                <TextBlock Text="HỒ ĐIỀU HÒA ĐÔ THỊ" FontSize="10" FontWeight="Bold" Opacity="0.6"/>
-                                <TextBlock Text="Hồ Tây &amp; Linh Đàm" FontSize="13" FontWeight="Bold"/>
-                                <TextBlock Text="Mực nước đệm được hạ thấp để dành dung tích trữ nước tối đa ứng phó mưa xối xả." FontSize="11" Opacity="0.75" LineHeight="16"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.InlandPod3Title, Mode=OneWay}" FontSize="10" FontWeight="Bold" Opacity="0.6"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.InlandPod3Name, Mode=OneWay}" FontSize="13" FontWeight="Bold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.InlandPod3Desc, Mode=OneWay}" FontSize="11" Opacity="0.75" LineHeight="16"/>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -566,7 +566,7 @@
                                                                   Glyph="{x:Bind CauseIconGlyph}"
                                                                   FontSize="9"
                                                                   Foreground="{x:Bind CauseBadgeFg, Converter={StaticResource HexToBrushConverter}}"/>
-                                                        <TextBlock Text="{x:Bind Cause}"
+                                                        <TextBlock Text="{x:Bind CauseDisplay}"
                                                                    FontSize="10" FontWeight="SemiBold"
                                                                    Foreground="{x:Bind CauseBadgeFg, Converter={StaticResource HexToBrushConverter}}"/>
                                                     </StackPanel>
@@ -586,7 +586,7 @@
                                                     BorderBrush="{x:Bind SeverityColor, Converter={StaticResource HexToBrushConverter}}"
                                                     BorderThickness="1"
                                                     CornerRadius="8" Padding="10,4" HorizontalAlignment="Right">
-                                                <TextBlock Text="{x:Bind EstimatedDepth}" FontSize="11.5" FontWeight="Bold"
+                                                <TextBlock Text="{x:Bind EstimatedDepthDisplay}" FontSize="11.5" FontWeight="Bold"
                                                            Foreground="{x:Bind SeverityColor, Converter={StaticResource HexToBrushConverter}}"/>
                                             </Border>
                                             <TextBlock Text="{x:Bind SeverityText}" FontSize="10" Opacity="0.65" HorizontalAlignment="Right"/>

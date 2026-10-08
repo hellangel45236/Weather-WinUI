@@ -119,6 +119,42 @@ public class FavoriteLocationItem
 public partial class QuickLocationChipItem : ObservableObject
 {
     public string Name { get; set; } = string.Empty;
+    public string DisplayName
+    {
+        get
+        {
+            if (Services.LocalizationService.Instance.IsVietnamese)
+            {
+                return Name;
+            }
+            string n = (Name ?? string.Empty).Trim();
+            if (n.Contains("Hồ Chí Minh", StringComparison.OrdinalIgnoreCase) || n.Equals("TP.HCM", StringComparison.OrdinalIgnoreCase))
+                return "Ho Chi Minh City";
+            if (n.Equals("Hà Nội", StringComparison.OrdinalIgnoreCase))
+                return "Hanoi";
+            if (n.Equals("Đà Nẵng", StringComparison.OrdinalIgnoreCase))
+                return "Da Nang";
+            if (n.Equals("Đà Lạt", StringComparison.OrdinalIgnoreCase))
+                return "Da Lat";
+            if (n.Equals("Hải Phòng", StringComparison.OrdinalIgnoreCase))
+                return "Hai Phong";
+            if (n.Equals("Cần Thơ", StringComparison.OrdinalIgnoreCase))
+                return "Can Tho";
+            if (n.Equals("Vũng Tàu", StringComparison.OrdinalIgnoreCase))
+                return "Vung Tau";
+            if (n.Equals("Quy Nhơn", StringComparison.OrdinalIgnoreCase))
+                return "Quy Nhon";
+            if (n.Equals("Phú Quốc", StringComparison.OrdinalIgnoreCase))
+                return "Phu Quoc";
+            if (n.Equals("Nha Trang", StringComparison.OrdinalIgnoreCase))
+                return "Nha Trang";
+            if (n.Equals("Huế", StringComparison.OrdinalIgnoreCase))
+                return "Hue";
+            if (n.Equals("Sa Pa", StringComparison.OrdinalIgnoreCase))
+                return "Sa Pa";
+            return n;
+        }
+    }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
     public bool IsFavorite { get; set; }

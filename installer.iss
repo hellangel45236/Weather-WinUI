@@ -2,7 +2,7 @@
 ; Weather App - WinUI 3 Modern Weather Application
 
 #define MyAppName "Weather App"
-#define MyAppVersion "3.0.4"
+#define MyAppVersion "3.0.5"
 #define MyAppPublisher "Weather WinUI Team"
 #define MyAppExeName "WeatherApp.exe"
 
@@ -16,7 +16,7 @@ DefaultDirName={autopf}\WeatherApp
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=D:\Project\Weather WinUI\Output
-OutputBaseFilename=WeatherApp_Setup_v3.0.4
+OutputBaseFilename=WeatherApp_Setup_v3.0.5
 SetupIconFile=D:\Project\Weather WinUI\Assets\AppIcon.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/normal
@@ -26,12 +26,12 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-VersionInfoVersion=3.0.4.0
+VersionInfoVersion=3.0.5.0
 VersionInfoCompany=Weather WinUI Team
 VersionInfoDescription=Weather App Modern WinUI 3 Application
 VersionInfoCopyright=Copyright (C) 2026 Weather WinUI Team
 VersionInfoProductName=Weather App
-VersionInfoProductVersion=3.0.4.0
+VersionInfoProductVersion=3.0.5.0
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

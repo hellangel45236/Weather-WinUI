@@ -84,22 +84,28 @@ public sealed partial class UrbanFloodTab : UserControl
     private void FilterBtnTide_Click(object sender, RoutedEventArgs e)
     {
         if (ViewModel == null) return;
-        if (FloodSearchTextBox != null) FloodSearchTextBox.Text = "Triều Cường";
-        ViewModel.FloodStreetSearchQuery = "Triều Cường";
+        bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+        string term = isVi ? "Triều Cường" : "Tidal";
+        if (FloodSearchTextBox != null) FloodSearchTextBox.Text = term;
+        ViewModel.FloodStreetSearchQuery = term;
     }
 
     private void FilterBtnRain_Click(object sender, RoutedEventArgs e)
     {
         if (ViewModel == null) return;
-        if (FloodSearchTextBox != null) FloodSearchTextBox.Text = "Mưa Lớn";
-        ViewModel.FloodStreetSearchQuery = "Mưa Lớn";
+        bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+        string term = isVi ? "Mưa Lớn" : "Rain";
+        if (FloodSearchTextBox != null) FloodSearchTextBox.Text = term;
+        ViewModel.FloodStreetSearchQuery = term;
     }
 
     private void FilterBtnCritical_Click(object sender, RoutedEventArgs e)
     {
         if (ViewModel == null) return;
-        if (FloodSearchTextBox != null) FloodSearchTextBox.Text = "Ngập sâu";
-        ViewModel.FloodStreetSearchQuery = "Ngập sâu";
+        bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+        string term = isVi ? "Ngập sâu" : "Deep";
+        if (FloodSearchTextBox != null) FloodSearchTextBox.Text = term;
+        ViewModel.FloodStreetSearchQuery = term;
     }
 
     #endregion
@@ -207,7 +213,10 @@ public sealed partial class UrbanFloodTab : UserControl
                 TidalSineWaveCanvas.Children.Add(_hoverTooltip);
             }
 
-            string alertText = level >= 1.60 ? "BĐ III (Ngập)" : level >= 1.55 ? "BĐ II" : level >= 1.40 ? "BĐ I" : "An toàn";
+            bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+            string alertText = isVi
+                ? (level >= 1.60 ? "BĐ III (Ngập)" : level >= 1.55 ? "BĐ II" : level >= 1.40 ? "BĐ I" : "An toàn")
+                : (level >= 1.60 ? "Alert 3 (Flooded)" : level >= 1.55 ? "Alert 2" : level >= 1.40 ? "Alert 1" : "Safe");
             if (_hoverTooltipText != null)
             {
                 _hoverTooltipText.Text = $"⏱️ {Math.Round(hourApprox):D2}:00 • {level:F2}m ({alertText})";
@@ -248,6 +257,7 @@ public sealed partial class UrbanFloodTab : UserControl
             double height = TidalSineWaveCanvas.ActualHeight;
             if (width <= 40 || height <= 40) return;
 
+            bool isVi = Services.LocalizationService.Instance.IsVietnamese;
             var points = ViewModel.UrbanFloodWarning.TideCurve24h;
             if (points == null || points.Count == 0) return;
 
@@ -306,9 +316,9 @@ public sealed partial class UrbanFloodTab : UserControl
                 TidalSineWaveCanvas.Children.Add(txt);
             }
 
-            DrawHorizontalAlarmLine(1.60, "1.6m BĐ3", Color.FromArgb(255, 239, 68, 68));
+            DrawHorizontalAlarmLine(1.60, isVi ? "1.6m BĐ3" : "1.6m Alert 3", Color.FromArgb(255, 239, 68, 68));
             DrawHorizontalAlarmLine(1.55, "1.55m", Color.FromArgb(255, 234, 88, 12));
-            DrawHorizontalAlarmLine(1.40, "1.4m BĐ1", Color.FromArgb(255, 245, 158, 11));
+            DrawHorizontalAlarmLine(1.40, isVi ? "1.4m BĐ1" : "1.4m Alert 1", Color.FromArgb(255, 245, 158, 11));
             DrawHorizontalAlarmLine(1.00, "1.0m", Color.FromArgb(255, 16, 185, 129), isDashed: true);
 
             // 3. Nội suy Catmull-Rom cho sóng biển mượt mà qua 138 mẫu
@@ -467,7 +477,7 @@ public sealed partial class UrbanFloodTab : UserControl
                 };
                 nowBadge.Child = new TextBlock
                 {
-                    Text = $"BÂY GIỜ: {curPoint.LevelMeters:F2}m",
+                    Text = (isVi ? "BÂY GIỜ: " : "NOW: ") + $"{curPoint.LevelMeters:F2}m",
                     FontSize = 10,
                     FontWeight = Microsoft.UI.Text.FontWeights.Bold,
                     Foreground = new SolidColorBrush(Color.FromArgb(255, 56, 189, 248))

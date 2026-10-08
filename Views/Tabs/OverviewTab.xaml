@@ -67,7 +67,7 @@
                                                 BorderThickness="0"
                                                 CornerRadius="12"
                                                 Padding="8,4"
-                                                ToolTipService.ToolTip="Bấm để làm mới dữ liệu thời tiết ngay">
+                                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.RefreshTooltip, Mode=OneWay}">
                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="11" Foreground="White"/>
                                                 <TextBlock Text="{x:Bind ViewModel.CurrentWeather.UpdatedTimeText, Mode=OneWay}" FontSize="11.5" Foreground="White" Opacity="0.9"/>
@@ -106,7 +106,7 @@
                                                             <Grid ColumnDefinitions="Auto,*,Auto">
                                                                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                                                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf025;" FontSize="14" Foreground="#38BDF8"/>
-                                                                    <TextBlock Text="Âm Thanh Thư Giãn" FontWeight="Bold" FontSize="13"/>
+                                                                    <TextBlock Text="{x:Bind ViewModel.Loc.AmbientFlyoutTitle, Mode=OneWay}" FontWeight="Bold" FontSize="13"/>
                                                                 </StackPanel>
                                                                 <ToggleSwitch Grid.Column="2" x:Name="FlyoutAmbientToggle" IsOn="{x:Bind ViewModel.IsAmbientSoundPlaying, Mode=OneWay}" Toggled="FlyoutAmbientToggle_Toggled" OnContent="" OffContent="" VerticalAlignment="Center"/>
                                                             </Grid>
@@ -122,14 +122,14 @@
 
                                                             <!-- Danh sách các cảnh âm thanh -->
                                                             <StackPanel Spacing="6">
-                                                                <TextBlock Text="Chọn không gian âm thanh thiên nhiên:" FontSize="11" Opacity="0.7" FontWeight="SemiBold"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.AmbientChooseSpace, Mode=OneWay}" FontSize="11" Opacity="0.7" FontWeight="SemiBold"/>
 
                                                                 <Button x:Name="BtnSoundAuto" Tag="Auto" Click="SoundPresetButton_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
                                                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0ac;" FontSize="12" Foreground="#38BDF8"/>
                                                                         <StackPanel Spacing="1">
-                                                                            <TextBlock Text="🌐 Tự động theo thời tiết" FontSize="12" FontWeight="SemiBold"/>
-                                                                            <TextBlock Text="Tự khớp tiếng mưa hoặc gió theo thời tiết" FontSize="10" Opacity="0.7"/>
+                                                                            <TextBlock Text="{x:Bind ViewModel.Loc.SoundAutoTitle, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
+                                                                            <TextBlock Text="{x:Bind ViewModel.Loc.SoundAutoDesc, Mode=OneWay}" FontSize="10" Opacity="0.7"/>
                                                                         </StackPanel>
                                                                     </StackPanel>
                                                                 </Button>
@@ -138,8 +138,8 @@
                                                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" FontSize="12" Foreground="#38BDF8"/>
                                                                         <StackPanel Spacing="1">
-                                                                            <TextBlock Text="🌧️ Mưa rào mùa hạ" FontSize="12" FontWeight="SemiBold"/>
-                                                                            <TextBlock Text="Tiếng mưa rơi lộp độp êm dịu, dễ ngủ" FontSize="10" Opacity="0.7"/>
+                                                                            <TextBlock Text="{x:Bind ViewModel.Loc.SoundRainTitle, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
+                                                                            <TextBlock Text="{x:Bind ViewModel.Loc.SoundRainDesc, Mode=OneWay}" FontSize="10" Opacity="0.7"/>
                                                                         </StackPanel>
                                                                     </StackPanel>
                                                                 </Button>
@@ -148,8 +148,8 @@
                                                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e7;" FontSize="12" Foreground="#F59E0B"/>
                                                                         <StackPanel Spacing="1">
-                                                                            <TextBlock Text="⛈️ Sấm chớp đêm mưa" FontSize="12" FontWeight="SemiBold"/>
-                                                                            <TextBlock Text="Mưa rào nặng hạt kèm sấm rền từ xa" FontSize="10" Opacity="0.7"/>
+                                                                            <TextBlock Text="{x:Bind ViewModel.Loc.SoundThunderTitle, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
+                                                                            <TextBlock Text="{x:Bind ViewModel.Loc.SoundThunderDesc, Mode=OneWay}" FontSize="10" Opacity="0.7"/>
                                                                         </StackPanel>
                                                                     </StackPanel>
                                                                 </Button>
@@ -158,8 +158,8 @@
                                                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf1bb;" FontSize="12" Foreground="#10B981"/>
                                                                         <StackPanel Spacing="1">
-                                                                            <TextBlock Text="🌲 Gió rừng thông Đà Lạt" FontSize="12" FontWeight="SemiBold"/>
-                                                                            <TextBlock Text="Gió thoảng vi vu qua rặng thông đại ngàn" FontSize="10" Opacity="0.7"/>
+                                                                            <TextBlock Text="{x:Bind ViewModel.Loc.SoundPineWindTitle, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
+                                                                            <TextBlock Text="{x:Bind ViewModel.Loc.SoundPineWindDesc, Mode=OneWay}" FontSize="10" Opacity="0.7"/>
                                                                         </StackPanel>
                                                                     </StackPanel>
                                                                 </Button>
@@ -168,8 +168,8 @@
                                                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75c;" FontSize="12" Foreground="#0EA5E9"/>
                                                                         <StackPanel Spacing="1">
-                                                                            <TextBlock Text="🌊 Sóng biển Nha Trang" FontSize="12" FontWeight="SemiBold"/>
-                                                                            <TextBlock Text="Từng đợt sóng dạt dào xô bờ cát thư thái" FontSize="10" Opacity="0.7"/>
+                                                                            <TextBlock Text="{x:Bind ViewModel.Loc.SoundOceanTitle, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
+                                                                            <TextBlock Text="{x:Bind ViewModel.Loc.SoundOceanDesc, Mode=OneWay}" FontSize="10" Opacity="0.7"/>
                                                                         </StackPanel>
                                                                     </StackPanel>
                                                                 </Button>
@@ -178,8 +178,8 @@
                                                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0f4;" FontSize="12" Foreground="#F97316"/>
                                                                         <StackPanel Spacing="1">
-                                                                            <TextBlock Text="☕ Mưa quán cà phê" FontSize="12" FontWeight="SemiBold"/>
-                                                                            <TextBlock Text="Tiếng mưa trầm ấm như ngồi bên hiên cà phê" FontSize="10" Opacity="0.7"/>
+                                                                            <TextBlock Text="{x:Bind ViewModel.Loc.SoundCafeRainTitle, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
+                                                                            <TextBlock Text="{x:Bind ViewModel.Loc.SoundCafeRainDesc, Mode=OneWay}" FontSize="10" Opacity="0.7"/>
                                                                         </StackPanel>
                                                                     </StackPanel>
                                                                 </Button>
@@ -232,7 +232,7 @@
                                                 Padding="9,4"
                                                 FontSize="11"
                                                 FontWeight="Bold"
-                                                ToolTipService.ToolTip="Nhấp để chuyển đổi giữa định dạng 24 Giờ và 12 Giờ (AM/PM)"
+                                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.Toggle1224HoursTooltip, Mode=OneWay}"
                                                 VerticalAlignment="Center">
                                             <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f2;" FontSize="10" Foreground="#38BDF8"/>
@@ -269,7 +269,7 @@
                                             BorderThickness="0"
                                             Padding="0"
                                             VerticalAlignment="Center"
-                                            ToolTipService.ToolTip="Nhấp vào nhiệt độ để chuyển đổi nhanh giữa °C và °F">
+                                            ToolTipService.ToolTip="{x:Bind ViewModel.Loc.UnitTooltip, Mode=OneWay}">
                                         <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="54" FontWeight="ExtraBold" Foreground="White"/>
                                     </Button>
 
@@ -297,7 +297,7 @@
                                                     Background="{x:Bind ViewModel.CurrentWeather.AqiColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
                                                     CornerRadius="8"
                                                     Padding="8,2"
-                                                    ToolTipService.ToolTip="Chất lượng không khí (US-AQI)">
+                                                    ToolTipService.ToolTip="{x:Bind ViewModel.Loc.AirQualityTooltip, Mode=OneWay}">
                                                 <StackPanel Orientation="Horizontal" Spacing="4">
                                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75f;" FontSize="9.5" Foreground="White"/>
                                                     <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiValue, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
@@ -347,7 +347,7 @@
                                                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
                                                     <Button Command="{x:Bind ViewModel.SubmitFeedbackCommand}" CommandParameter="accurate"
                                                             Background="#33FFFFFF" Foreground="White" CornerRadius="8" Padding="12,5"
-                                                            ToolTipService.ToolTip="Xác nhận thời tiết đang đúng với thực tế">
+                                                            ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackAccurateTooltip, Mode=OneWay}">
                                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                                              <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf164;" FontSize="12"/>
                                                             <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackAccurate, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
@@ -355,7 +355,7 @@
                                                     </Button>
                                                     <Button Command="{x:Bind ViewModel.SubmitFeedbackCommand}" CommandParameter="inaccurate"
                                                             Background="#33FFFFFF" Foreground="White" CornerRadius="8" Padding="12,5"
-                                                            ToolTipService.ToolTip="Báo cáo thời tiết thực tế khác với dự báo">
+                                                            ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackInaccurateTooltip, Mode=OneWay}">
                                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                                             <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf165;" FontSize="12"/>
                                                             <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackInaccurate, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
@@ -368,7 +368,7 @@
                                             <Grid Visibility="{x:Bind ViewModel.ShowInaccurateOptions, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" RowDefinitions="Auto,Auto">
                                                 <Grid Grid.Row="0" Margin="0,0,0,8" ColumnDefinitions="*,Auto">
                                                     <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.FeedbackWhatIsActual, Mode=OneWay}" FontSize="12.5" Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                                    <Button Grid.Column="1" Command="{x:Bind ViewModel.ResetFeedbackCommand}" Background="#25FFFFFF" Foreground="White" CornerRadius="6" Padding="8,3" FontSize="11" ToolTipService.ToolTip="Đóng danh sách báo cáo">
+                                                    <Button Grid.Column="1" Command="{x:Bind ViewModel.ResetFeedbackCommand}" Background="#25FFFFFF" Foreground="White" CornerRadius="6" Padding="8,3" FontSize="11" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackClose, Mode=OneWay}">
                                                         <StackPanel Orientation="Horizontal" Spacing="4">
                                                             <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00d;" FontSize="9"/>
                                                             <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackClose, Mode=OneWay}"/>
@@ -378,80 +378,80 @@
                                                 <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" HorizontalScrollMode="Enabled">
                                                     <StackPanel Orientation="Horizontal" Spacing="6" Padding="0,2,0,4">
                                                         <!-- 1. Nắng đẹp -->
-                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Trời nắng đẹp" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Trời quang, nắng đẹp rực rỡ">
+                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Trời nắng đẹp" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackOptionSunny, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="11" Foreground="#FDE047"/>
-                                                                <TextBlock Text="Nắng đẹp" FontSize="11.5"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackOptionSunny, Mode=OneWay}" FontSize="11.5"/>
                                                             </StackPanel>
                                                         </Button>
                                                         <!-- 2. Nắng gắt UV -->
-                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Nắng gắt chói chang UV" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Trời nắng gắt, chỉ số UV cao">
+                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Nắng gắt chói chang UV" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackOptionHighUv, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="11" Foreground="#FB923C"/>
-                                                                <TextBlock Text="Nắng gắt UV" FontSize="11.5"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackOptionHighUv, Mode=OneWay}" FontSize="11.5"/>
                                                             </StackPanel>
                                                         </Button>
                                                         <!-- 3. Nắng nhẹ -->
-                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Nắng nhẹ ít mây" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Trời nắng nhẹ dịu mát, ít mây">
+                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Nắng nhẹ ít mây" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackOptionMildSun, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6c4;" FontSize="11" Foreground="#38BDF8"/>
-                                                                <TextBlock Text="Nắng nhẹ" FontSize="11.5"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackOptionMildSun, Mode=OneWay}" FontSize="11.5"/>
                                                             </StackPanel>
                                                         </Button>
                                                         <!-- 4. Nhiều mây -->
-                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Nhiều mây u ám" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Bầu trời nhiều mây che khuất mặt trời">
+                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Nhiều mây u ám" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackOptionCloudy, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c2;" FontSize="11" Foreground="#CBD5E1"/>
-                                                                <TextBlock Text="Nhiều mây" FontSize="11.5"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackOptionCloudy, Mode=OneWay}" FontSize="11.5"/>
                                                             </StackPanel>
                                                         </Button>
                                                         <!-- 5. Mưa phùn -->
-                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Mưa phùn nhỏ" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Mưa phùn lất phất hoặc mưa nhỏ hạt">
+                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Mưa phùn nhỏ" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackOptionDrizzle, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" FontSize="11" Foreground="#7DD3FC"/>
-                                                                <TextBlock Text="Mưa phùn" FontSize="11.5"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackOptionDrizzle, Mode=OneWay}" FontSize="11.5"/>
                                                             </StackPanel>
                                                         </Button>
                                                         <!-- 6. Đang mưa -->
-                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Đang có mưa vừa" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Đang có mưa đều hạt">
+                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Đang có mưa vừa" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackOptionRaining, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" FontSize="11" Foreground="#60A5FA"/>
-                                                                <TextBlock Text="Đang mưa" FontSize="11.5"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackOptionRaining, Mode=OneWay}" FontSize="11.5"/>
                                                             </StackPanel>
                                                         </Button>
                                                         <!-- 7. Mưa rất to -->
-                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Mưa rất to xối xả" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Mưa to xối xả diện rộng">
+                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Mưa rất to xối xả" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackOptionHeavyRain, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" FontSize="11" Foreground="#3B82F6"/>
-                                                                <TextBlock Text="Mưa rất to" FontSize="11.5"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackOptionHeavyRain, Mode=OneWay}" FontSize="11.5"/>
                                                             </StackPanel>
                                                         </Button>
                                                         <!-- 8. Dông sét -->
-                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Dông sét sấm bão" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Có sấm sét dông giật mạnh">
+                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Dông sét sấm bão" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackOptionThunder, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf76c;" FontSize="11" Foreground="#F87171"/>
-                                                                <TextBlock Text="Dông sét" FontSize="11.5"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackOptionThunder, Mode=OneWay}" FontSize="11.5"/>
                                                             </StackPanel>
                                                         </Button>
                                                         <!-- 9. Sương mù -->
-                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Sương mù dày" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Sương mù hoặc bụi mù mịt hạn chế tầm nhìn">
+                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Sương mù dày" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackOptionFog, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75f;" FontSize="11" Foreground="#E2E8F0"/>
-                                                                <TextBlock Text="Sương mù" FontSize="11.5"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackOptionFog, Mode=OneWay}" FontSize="11.5"/>
                                                             </StackPanel>
                                                         </Button>
                                                         <!-- 10. Gió to -->
-                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Gió to lốc mạnh" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Gió thổi rất mạnh, lốc giật">
+                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Gió to lốc mạnh" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackOptionWindy, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" FontSize="11" Foreground="#FB7185"/>
-                                                                <TextBlock Text="Gió to" FontSize="11.5"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackOptionWindy, Mode=OneWay}" FontSize="11.5"/>
                                                             </StackPanel>
                                                         </Button>
                                                         <!-- 11. Rét buốt -->
-                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Rét buốt lạnh giá" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Thời tiết rét buốt, nhiệt độ hạ thấp đột ngột">
+                                                        <Button Command="{x:Bind ViewModel.SubmitActualConditionCommand}" CommandParameter="Rét buốt lạnh giá" Background="#40FFFFFF" Foreground="White" CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackOptionCold, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2dc;" FontSize="11" Foreground="#93C5FD"/>
-                                                                <TextBlock Text="Rét buốt" FontSize="11.5"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackOptionCold, Mode=OneWay}" FontSize="11.5"/>
                                                             </StackPanel>
                                                         </Button>
                                                     </StackPanel>
@@ -462,7 +462,7 @@
                                         <!-- Trạng thái 2: Đã gửi phản hồi thành công -->
                                         <Grid Visibility="{x:Bind ViewModel.FeedbackSubmitted, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.FeedbackResponseText, Mode=OneWay}" FontSize="13" Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                            <Button Grid.Column="1" Command="{x:Bind ViewModel.ResetFeedbackCommand}" Background="#33FFFFFF" Foreground="White" CornerRadius="8" Padding="10,3" FontSize="11" ToolTipService.ToolTip="Bấm để chọn lại">
+                                            <Button Grid.Column="1" Command="{x:Bind ViewModel.ResetFeedbackCommand}" Background="#33FFFFFF" Foreground="White" CornerRadius="8" Padding="10,3" FontSize="11" ToolTipService.ToolTip="{x:Bind ViewModel.Loc.FeedbackReselectTooltip, Mode=OneWay}">
                                                 <StackPanel Orientation="Horizontal" Spacing="4">
                                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="10"/>
                                                     <TextBlock Text="{x:Bind ViewModel.Loc.FeedbackChangeAgain, Mode=OneWay}"/>
@@ -490,7 +490,7 @@
                                             <!-- Nút bật/tắt xổ xuống ngay trong Hero Card -->
                                             <Button Grid.Column="2" Command="{x:Bind ViewModel.ToggleAdviceExpandedCommand}"
                                                     Background="#35FFFFFF" Foreground="White" CornerRadius="8" Padding="12,6" Margin="8,0,0,0"
-                                                    ToolTipService.ToolTip="Bấm để xem hoặc thu gọn chi tiết 5 mục lời khuyên">
+                                                    ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ExpandAdviceTooltip, Mode=OneWay}">
                                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                                     <TextBlock Text="{x:Bind ViewModel.AdviceExpandButtonText, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
                                                     <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind ViewModel.AdviceExpandIconGlyph, Mode=OneWay}" FontSize="10"/>
