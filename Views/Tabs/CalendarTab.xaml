@@ -539,21 +539,21 @@
 
                                     <!-- Gợi ý mục tiêu nhanh -->
                                     <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <Button Click="QuickGoalChip_Click" Tag="Tập thể dục 🏃"
+                                        <Button Click="QuickGoalChip_Click" Tag="Workout"
                                                 Background="{ThemeResource SubtleFillColorTertiaryBrush}" BorderThickness="0" CornerRadius="4" Padding="6,2">
-                                            <TextBlock Text="Tập thể dục 🏃" FontSize="10.5"/>
+                                            <TextBlock x:Name="QuickGoalWorkoutText" Text="Tập thể dục 🏃" FontSize="10.5"/>
                                         </Button>
-                                        <Button Click="QuickGoalChip_Click" Tag="Ăn chay mùng 1/rằm 🥗"
+                                        <Button Click="QuickGoalChip_Click" Tag="Vegetarian"
                                                 Background="{ThemeResource SubtleFillColorTertiaryBrush}" BorderThickness="0" CornerRadius="4" Padding="6,2">
-                                            <TextBlock Text="Ăn chay 🥗" FontSize="10.5"/>
+                                            <TextBlock x:Name="QuickGoalVegetarianText" Text="Ăn chay 🥗" FontSize="10.5"/>
                                         </Button>
-                                        <Button Click="QuickGoalChip_Click" Tag="Đọc sách 30p 📖"
+                                        <Button Click="QuickGoalChip_Click" Tag="Reading"
                                                 Background="{ThemeResource SubtleFillColorTertiaryBrush}" BorderThickness="0" CornerRadius="4" Padding="6,2">
-                                            <TextBlock Text="Đọc sách 📖" FontSize="10.5"/>
+                                            <TextBlock x:Name="QuickGoalReadingText" Text="Đọc sách 📖" FontSize="10.5"/>
                                         </Button>
-                                        <Button Click="QuickGoalChip_Click" Tag="Uống đủ 2L nước 💧"
+                                        <Button Click="QuickGoalChip_Click" Tag="Hydration"
                                                 Background="{ThemeResource SubtleFillColorTertiaryBrush}" BorderThickness="0" CornerRadius="4" Padding="6,2">
-                                            <TextBlock Text="Uống nước 💧" FontSize="10.5"/>
+                                            <TextBlock x:Name="QuickGoalHydrationText" Text="Uống nước 💧" FontSize="10.5"/>
                                         </Button>
                                     </StackPanel>
                                 </StackPanel>

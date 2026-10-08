@@ -44,6 +44,10 @@ public sealed partial class CalendarTab : UserControl
             ((ComboBoxItem)NewEventReminderComboBox.Items[2]).Content = isVi ? "Trước 30p" : "30m before";
             ((ComboBoxItem)NewEventReminderComboBox.Items[3]).Content = isVi ? "Trước 1h" : "1h before";
         }
+        if (QuickGoalWorkoutText != null) QuickGoalWorkoutText.Text = isVi ? "Tập thể dục 🏃" : "Exercise 🏃";
+        if (QuickGoalVegetarianText != null) QuickGoalVegetarianText.Text = isVi ? "Ăn chay 🥗" : "Vegetarian 🥗";
+        if (QuickGoalReadingText != null) QuickGoalReadingText.Text = isVi ? "Đọc sách 📖" : "Reading 📖";
+        if (QuickGoalHydrationText != null) QuickGoalHydrationText.Text = isVi ? "Uống nước 💧" : "Hydration 💧";
     }
 
     private void CalendarDayCell_Click(object sender, RoutedEventArgs e)
@@ -135,8 +139,17 @@ public sealed partial class CalendarTab : UserControl
 
     private void QuickGoalChip_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button btn && btn.Tag is string quickGoal)
+        if (sender is Button btn && btn.Tag is string tag)
         {
+            bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+            string quickGoal = tag switch
+            {
+                "Workout" => isVi ? "Tập thể dục 30p 🏃" : "Exercise 30 mins 🏃",
+                "Vegetarian" => isVi ? "Ăn chay mùng 1/rằm 🥗" : "Vegetarian day 🥗",
+                "Reading" => isVi ? "Đọc sách 30p 📖" : "Read books 30 mins 📖",
+                "Hydration" => isVi ? "Uống đủ 2L nước 💧" : "Drink 2L water 💧",
+                _ => tag
+            };
             if (DayGoalInputTextBox != null) DayGoalInputTextBox.Text = quickGoal;
             ViewModel?.SetSelectedDayGoal(quickGoal);
         }
