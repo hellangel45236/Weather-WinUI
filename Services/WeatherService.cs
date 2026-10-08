@@ -127,6 +127,7 @@ public class WeatherService : IWeatherService
             var (level, descUv) = WeatherCodeHelper.GetUvInterpretation(uvIndex);
             display.UvIndexText = $"{uvIndex:F1}";
             display.UvIndexDescription = level;
+            display.UvIndexValue = uvIndex;
         }
 
         // Xác định hiệu ứng thời tiết động chính xác 100%
@@ -157,6 +158,12 @@ public class WeatherService : IWeatherService
         }
 
         display.HumidityText = $"{Math.Round(cur.RelativeHumidity)}%";
+        display.HumidityValue = cur.RelativeHumidity;
+
+        // Tính điểm sương (Dew Point) ước tính
+        double dewPointC = cur.Temperature - ((100.0 - cur.RelativeHumidity) / 5.0);
+        double dewPointDisplay = isFahrenheit ? ToFahrenheit(dewPointC) : dewPointC;
+        display.DewPointText = $"{Math.Round(dewPointDisplay)}{unit}";
 
         // Tốc độ gió theo đơn vị đã cài đặt
         display.WindText = settings.WindSpeedUnit switch
@@ -166,6 +173,7 @@ public class WeatherService : IWeatherService
             _ => $"{Math.Round(cur.WindSpeed)} km/h"
         };
         display.WindDirectionText = WeatherCodeHelper.GetWindDirection(cur.WindDirection);
+        display.WindDirectionDegrees = cur.WindDirection;
 
         // Áp suất theo đơn vị đã cài đặt
         display.PressureText = settings.PressureUnit switch
@@ -173,6 +181,11 @@ public class WeatherService : IWeatherService
             "mmHg" => $"{Math.Round(cur.SurfacePressure * 0.750062)} mmHg",
             _ => $"{Math.Round(cur.SurfacePressure)} hPa"
         };
+        display.PressureTrendText = cur.SurfacePressure < 1005
+            ? (isVi ? "Áp suất thấp (dễ mưa)" : "Low Pressure (rain likely)")
+            : (cur.SurfacePressure > 1020
+                ? (isVi ? "Áp suất cao (khô ráo)" : "High Pressure (dry & clear)")
+                : (isVi ? "Ổn định chuẩn biển" : "Normal Pressure"));
 
         // Lượng mưa theo đơn vị đã cài đặt
         display.PrecipitationText = settings.PrecipitationUnit switch
@@ -195,6 +208,7 @@ public class WeatherService : IWeatherService
             if (data.Daily.PrecipitationProbabilityMax?.Count > 0)
             {
                 display.RainProbabilityText = $"{data.Daily.PrecipitationProbabilityMax[0]}%";
+                display.RainProbabilityValue = data.Daily.PrecipitationProbabilityMax[0];
             }
 
             if (data.Daily.Sunrise?.Count > 0)

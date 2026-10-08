@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using WeatherApp.Helpers;
+using WeatherApp.Models;
 using WeatherApp.ViewModels;
 
 namespace WeatherApp.Views.Tabs;
@@ -48,7 +49,9 @@ public sealed partial class OverviewTab : UserControl
         if (e.PropertyName == nameof(MainViewModel.CurrentWeather) ||
             e.PropertyName == nameof(MainViewModel.Settings) ||
             e.PropertyName == nameof(MainViewModel.LocationTitle) ||
-            e.PropertyName == nameof(MainViewModel.IsBatterySavingActive))
+            e.PropertyName == nameof(MainViewModel.IsBatterySavingActive) ||
+            e.PropertyName == nameof(MainViewModel.IsTimeScrubbingActive) ||
+            e.PropertyName == nameof(MainViewModel.ScrubbedSliderValue))
         {
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -71,6 +74,7 @@ public sealed partial class OverviewTab : UserControl
                 ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
                 ViewModel.PropertyChanged += ViewModel_PropertyChanged;
             }
+            UpdateResponsiveLayout(this.ActualWidth);
             UpdateWeatherVisuals();
             RedrawCanvases();
         };
@@ -83,9 +87,25 @@ public sealed partial class OverviewTab : UserControl
             }
         };
 
+        this.SizeChanged += (s, e) =>
+        {
+            UpdateResponsiveLayout(e.NewSize.Width);
+            RenderVisualGauges();
+        };
+
         if (SunArcCanvas != null)
         {
             SunArcCanvas.SizeChanged += (s, e) => RenderSunArc();
+        }
+
+        if (UvGaugeCanvas != null)
+        {
+            UvGaugeCanvas.SizeChanged += (s, e) => RenderVisualGauges();
+        }
+
+        if (AqiGaugeCanvas != null)
+        {
+            AqiGaugeCanvas.SizeChanged += (s, e) => RenderVisualGauges();
         }
     }
 
@@ -95,6 +115,7 @@ public sealed partial class OverviewTab : UserControl
         {
             RenderHourlyTemperatureTrendline();
             RenderSunArc();
+            RenderVisualGauges();
         });
     }
 
@@ -166,6 +187,9 @@ public sealed partial class OverviewTab : UserControl
 
         // Cập nhật icon SVG vector
         UpdateWeatherIcon();
+
+        // Cập nhật các chỉ số trực quan hoá (Visual Gauges & Compass)
+        RenderVisualGauges();
     }
 
     private void UpdateWeatherIcon()
@@ -417,6 +441,24 @@ public sealed partial class OverviewTab : UserControl
             for (int i = 0; i < count; i++)
             {
                 var pt = points[i];
+
+                // Cột xác suất mưa mờ ở chân biểu đồ (Dual-layer chart)
+                if (items[i].HasRainChance && int.TryParse(items[i].RainProbabilityText.Replace("%", ""), out int rainProb) && rainProb > 0)
+                {
+                    double barH = Math.Clamp((rainProb / 100.0) * 18.0, 3.0, 18.0);
+                    var rainBar = new Microsoft.UI.Xaml.Shapes.Rectangle
+                    {
+                        Width = 12,
+                        Height = barH,
+                        RadiusX = 2.5,
+                        RadiusY = 2.5,
+                        Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(65, 0, 153, 188))
+                    };
+                    Canvas.SetLeft(rainBar, pt.X - 6);
+                    Canvas.SetTop(rainBar, canvasHeight - barH);
+                    HourlyTrendlineCanvas.Children.Add(rainBar);
+                }
+
                 var dot = new Microsoft.UI.Xaml.Shapes.Ellipse
                 {
                     Width = 6,
@@ -441,6 +483,39 @@ public sealed partial class OverviewTab : UserControl
                 Canvas.SetLeft(label, pt.X - 20);
                 Canvas.SetTop(label, pt.Y - 18);
                 HourlyTrendlineCanvas.Children.Add(label);
+            }
+
+            // Vạch kim thẳng đứng phát sáng nếu người dùng đang tua thời gian
+            if (ViewModel?.IsTimeScrubbingActive == true)
+            {
+                int scrubbedHour = (int)Math.Round(ViewModel.ScrubbedSliderValue);
+                int scrubbedIdx = items.FindIndex(x => x.HourNumber == scrubbedHour);
+                if (scrubbedIdx >= 0 && scrubbedIdx < points.Count)
+                {
+                    var targetPt = points[scrubbedIdx];
+
+                    var needle = new Microsoft.UI.Xaml.Shapes.Line
+                    {
+                        X1 = targetPt.X,
+                        Y1 = 4,
+                        X2 = targetPt.X,
+                        Y2 = canvasHeight - 2,
+                        Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 56, 189, 248)),
+                        StrokeThickness = 2,
+                        StrokeDashArray = new DoubleCollection { 3, 2 }
+                    };
+                    HourlyTrendlineCanvas.Children.Add(needle);
+
+                    var halo = new Microsoft.UI.Xaml.Shapes.Ellipse
+                    {
+                        Width = 16,
+                        Height = 16,
+                        Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(80, 56, 189, 248))
+                    };
+                    Canvas.SetLeft(halo, targetPt.X - 8);
+                    Canvas.SetTop(halo, targetPt.Y - 8);
+                    HourlyTrendlineCanvas.Children.Add(halo);
+                }
             }
         }
         catch { }
@@ -537,5 +612,136 @@ public sealed partial class OverviewTab : UserControl
         Canvas.SetLeft(celestialDot, currentX - 5);
         Canvas.SetTop(celestialDot, currentY - 5);
         SunArcCanvas.Children.Add(celestialDot);
+    }
+
+    private void HourlyCard_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.DataContext is HourlyForecastItem item)
+        {
+            ViewModel?.ScrubToHour(item.HourNumber);
+        }
+    }
+
+    private void UpdateResponsiveLayout(double width)
+    {
+        if (width <= 0) return;
+
+        // 1. Tự động điều chỉnh cấu trúc 2 cột Bento Card của Hero
+        bool isNarrow = width < 920;
+        if (HeroBentoGrid != null && HeroBentoLeftCol != null && HeroBentoRightCol != null &&
+            HeroBentoLeftCard != null && HeroBentoRightCard != null)
+        {
+            if (isNarrow)
+            {
+                HeroBentoLeftCol.Width = new GridLength(1, GridUnitType.Star);
+                HeroBentoRightCol.Width = new GridLength(0);
+                Grid.SetColumn(HeroBentoLeftCard, 0);
+                Grid.SetRow(HeroBentoLeftCard, 0);
+                Grid.SetColumn(HeroBentoRightCard, 0);
+                Grid.SetRow(HeroBentoRightCard, 1);
+            }
+            else
+            {
+                HeroBentoLeftCol.Width = new GridLength(1.25, GridUnitType.Star);
+                HeroBentoRightCol.Width = new GridLength(1, GridUnitType.Star);
+                Grid.SetColumn(HeroBentoLeftCard, 0);
+                Grid.SetRow(HeroBentoLeftCard, 0);
+                Grid.SetColumn(HeroBentoRightCard, 1);
+                Grid.SetRow(HeroBentoRightCard, 0);
+            }
+        }
+
+        // 2. Tự động điều chỉnh lưới 8 chỉ số: 4 cột khi rộng, 2 cột khi hẹp để không bị ép chữ
+        bool isMetricsNarrow = width < 960;
+        if (MetricsGrid != null && MetricsCol2 != null && MetricsCol3 != null &&
+            CardUv != null && CardAqi != null && CardWind != null && CardHumidity != null &&
+            CardRain != null && CardPressure != null && CardSunMoon != null && CardPollutants != null)
+        {
+            if (isMetricsNarrow)
+            {
+                MetricsCol2.Width = new GridLength(0);
+                MetricsCol3.Width = new GridLength(0);
+                // 2 Cột x 4 Hàng
+                Grid.SetRow(CardUv, 0); Grid.SetColumn(CardUv, 0);
+                Grid.SetRow(CardAqi, 0); Grid.SetColumn(CardAqi, 1);
+                Grid.SetRow(CardWind, 1); Grid.SetColumn(CardWind, 0);
+                Grid.SetRow(CardHumidity, 1); Grid.SetColumn(CardHumidity, 1);
+                Grid.SetRow(CardRain, 2); Grid.SetColumn(CardRain, 0);
+                Grid.SetRow(CardPressure, 2); Grid.SetColumn(CardPressure, 1);
+                Grid.SetRow(CardSunMoon, 3); Grid.SetColumn(CardSunMoon, 0);
+                Grid.SetRow(CardPollutants, 3); Grid.SetColumn(CardPollutants, 1);
+            }
+            else
+            {
+                MetricsCol2.Width = new GridLength(1, GridUnitType.Star);
+                MetricsCol3.Width = new GridLength(1, GridUnitType.Star);
+                // 4 Cột x 2 Hàng
+                Grid.SetRow(CardUv, 0); Grid.SetColumn(CardUv, 0);
+                Grid.SetRow(CardAqi, 0); Grid.SetColumn(CardAqi, 1);
+                Grid.SetRow(CardWind, 0); Grid.SetColumn(CardWind, 2);
+                Grid.SetRow(CardHumidity, 0); Grid.SetColumn(CardHumidity, 3);
+                Grid.SetRow(CardRain, 1); Grid.SetColumn(CardRain, 0);
+                Grid.SetRow(CardPressure, 1); Grid.SetColumn(CardPressure, 1);
+                Grid.SetRow(CardSunMoon, 1); Grid.SetColumn(CardSunMoon, 2);
+                Grid.SetRow(CardPollutants, 1); Grid.SetColumn(CardPollutants, 3);
+            }
+        }
+    }
+
+    public void RenderVisualGauges()
+    {
+        if (ViewModel?.CurrentWeather == null) return;
+
+        // 1. La bàn gió xoay theo độ hướng gió thực tế
+        if (WindNeedleRotate != null)
+        {
+            WindNeedleRotate.Angle = ViewModel.CurrentWeather.WindDirectionDegrees;
+        }
+
+        // 2. Con trỏ thanh quang phổ UV
+        if (UvGaugeCanvas != null)
+        {
+            UvGaugeCanvas.Children.Clear();
+            double width = UvGaugeCanvas.ActualWidth;
+            if (width > 20)
+            {
+                double progress = Math.Clamp(ViewModel.CurrentWeather.UvIndexValue / 11.0, 0.05, 0.95);
+                double x = progress * width;
+                var dot = new Microsoft.UI.Xaml.Shapes.Ellipse
+                {
+                    Width = 8,
+                    Height = 8,
+                    Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                    Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 15, 23, 42)),
+                    StrokeThickness = 1.5
+                };
+                Canvas.SetLeft(dot, x - 4);
+                Canvas.SetTop(dot, 0);
+                UvGaugeCanvas.Children.Add(dot);
+            }
+        }
+
+        // 3. Con trỏ thanh quang phổ AQI
+        if (AqiGaugeCanvas != null)
+        {
+            AqiGaugeCanvas.Children.Clear();
+            double width = AqiGaugeCanvas.ActualWidth;
+            if (width > 20)
+            {
+                double progress = Math.Clamp((double)ViewModel.CurrentWeather.AqiValue / 300.0, 0.05, 0.95);
+                double x = progress * width;
+                var dot = new Microsoft.UI.Xaml.Shapes.Ellipse
+                {
+                    Width = 8,
+                    Height = 8,
+                    Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                    Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 15, 23, 42)),
+                    StrokeThickness = 1.5
+                };
+                Canvas.SetLeft(dot, x - 4);
+                Canvas.SetTop(dot, 0);
+                AqiGaugeCanvas.Children.Add(dot);
+            }
+        }
     }
 }

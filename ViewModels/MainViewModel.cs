@@ -90,6 +90,12 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _showInaccurateOptions;
 
+    public string FeedbackButtonLabel => FeedbackSubmitted
+        ? (Services.LocalizationService.Instance.IsVietnamese ? "Đã góp ý ✓" : "Feedback Sent ✓")
+        : (Services.LocalizationService.Instance.IsVietnamese ? "Góp ý thời tiết" : "Weather Feedback");
+
+    partial void OnFeedbackSubmittedChanged(bool value) => OnPropertyChanged(nameof(FeedbackButtonLabel));
+
     [ObservableProperty]
     private string _currentTimeDisplay = "--:--:--";
 
@@ -292,6 +298,7 @@ public partial class MainViewModel : ObservableObject
             OnPropertyChanged(nameof(FavoriteButtonToolTip));
             OnPropertyChanged(nameof(AmbientSoundButtonText));
             OnPropertyChanged(nameof(AmbientSoundButtonToolTip));
+            OnPropertyChanged(nameof(FeedbackButtonLabel));
             UpdateClock();
             UpdateQuickChips();
             if (_rawWeatherData != null)

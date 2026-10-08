@@ -48,6 +48,17 @@ public class CurrentWeatherDisplay
     public string HeroGradientStart { get; set; } = "#1E3C72";
     public string HeroGradientEnd { get; set; } = "#2A5298";
 
+    // Các trường dữ liệu phục vụ trực quan hoá Visual Gauges (Bento Grid v3.0.6)
+    public double WindDirectionDegrees { get; set; } = 0;
+    public double UvIndexValue { get; set; } = 0;
+    public double HumidityValue { get; set; } = 0;
+    public double RainProbabilityValue { get; set; } = 0;
+    public string DewPointText { get; set; } = "--°C";
+    public string PressureTrendText { get; set; } = "Ổn định";
+    public double UvProgressPercent => Math.Clamp(UvIndexValue / 11.0, 0.05, 1.0);
+    public double HumidityProgressPercent => Math.Clamp(HumidityValue / 100.0, 0.05, 1.0);
+    public double RainProgressPercent => Math.Clamp(RainProbabilityValue / 100.0, 0.0, 1.0);
+
     // Báo cáo Chất lượng không khí & Bụi mịn chuyên sâu (Air Quality Tracker)
     public int AqiValue { get; set; } = 0;
     public string AqiDescription { get; set; } = "Trong lành";

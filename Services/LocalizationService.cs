@@ -136,6 +136,17 @@ public class LocalizationService : INotifyPropertyChanged
     public string FeedbackWhatIsActual => IsVietnamese ? "Thực tế ngoài trời tại bạn đang như thế nào?" : "What is the actual weather outside?";
     public string FeedbackClose => IsVietnamese ? "Đóng" : "Close";
     public string FeedbackChangeAgain => IsVietnamese ? "Đổi lại" : "Change";
+    public string FeedbackPillTooltip => IsVietnamese ? "Góp ý thời tiết thực tế để cải thiện độ chính xác" : "Submit real-world weather feedback";
+
+    public string CompassNorth => IsVietnamese ? "B" : "N";
+    public string CompassSouth => IsVietnamese ? "N" : "S";
+    public string CompassEast => IsVietnamese ? "Đ" : "E";
+    public string CompassWest => IsVietnamese ? "T" : "W";
+
+    public string UvLevelSafe => IsVietnamese ? "An toàn" : "Safe";
+    public string UvLevelCaution => IsVietnamese ? "Cần che chắn" : "Use protection";
+    public string UvLevelExtreme => IsVietnamese ? "Nguy hại" : "Extreme";
+    public string UnifiedTimelineDesc => IsVietnamese ? "Kéo thanh trượt hoặc nhấp vào từng giờ để xem chi tiết" : "Drag slider or click an hour to preview details";
 
     #endregion
 
