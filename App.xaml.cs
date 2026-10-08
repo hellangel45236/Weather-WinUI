@@ -73,7 +73,21 @@ public partial class App : Application
         {
             _window = new MainWindow();
             MainWindow = _window;
-            _window.Activate();
+
+            string cmdLine = Environment.CommandLine;
+            var settings = new Services.SettingsService().LoadSettings();
+            bool isAutoStart = cmdLine.Contains("--autostart", StringComparison.OrdinalIgnoreCase) ||
+                               cmdLine.Contains("--minimized", StringComparison.OrdinalIgnoreCase);
+
+            if (isAutoStart && settings.StartMinimizedToTray)
+            {
+                // Khởi động ngầm thu nhỏ vào khay hệ thống theo cấu hình
+                _window.AppWindow.Hide();
+            }
+            else
+            {
+                _window.Activate();
+            }
         }
         catch (Exception ex)
         {

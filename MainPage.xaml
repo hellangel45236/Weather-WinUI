@@ -637,6 +637,7 @@
                               SelectionChanged="ChangelogVersionComboBox_SelectionChanged"
                               MinWidth="240"
                               CornerRadius="8">
+                        <ComboBoxItem Content="v3.0.1 (Dynamic Day &amp; Night Wallpapers, Ambient Soundscapes Flyout, GitHub Update Checker, Battery Saver)" Tag="3.0.1"/>
                         <ComboBoxItem Content="v3.0.0 (Đại Tu Kiến Trúc Modular 7 Tab, Sóng Triều 24h, Radar 360°, Tối Ưu Win10/11)" Tag="3.0.0"/>
                         <ComboBoxItem Content="v2.2.3 (Fix Lưu Cài Đặt &amp; Widget 20%, Cảnh Báo Ngập Úng &amp; Triều Cường Đô Thị)" Tag="2.2.3"/>
                         <ComboBoxItem Content="v2.2.1 (Fix Icon Win10, Tìm Kiếm Toàn Diện, Responsive &lt; FullHD &amp; Fix AV)" Tag="2.2.1"/>
@@ -664,13 +665,13 @@
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Có gì mới trong Weather WinUI 3.0.0?" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Có gì mới trong Weather WinUI 3.0.1?" FontSize="16" FontWeight="Bold" Foreground="White"/>
                                 <Border Background="#10B981" CornerRadius="6" Padding="6,2">
-                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.0.0 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.0.1 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
                                 </Border>
                             </StackPanel>
                             <TextBlock x:Name="ChangelogHeaderSubtitle"
-                                       Text="Bước chuyển mình toàn diện sang Hệ Điều Hành Vi Khí Hậu: Khung điều hướng Fluent 7 Tab chuyên sâu, kiến trúc Modular UserControl tải lười (Lazy Loading), mô phỏng sóng bán nhật triều 24h &amp; đếm ngược đỉnh triều, Radar Doppler 360°, Lịch Vạn Niên Inline Details, Widget Studio ghim 4 kiểu dáng và tối ưu hóa thích ứng toàn diện Windows 10 &amp; 11."
+                                       Text="Nâng tầm trải nghiệm thị giác &amp; âm thanh: Hình nền thành phố động theo giờ Mặt Trời (Dynamic Day &amp; Night), bộ âm thanh thiên nhiên Fluent Flyout với 5 cảnh âm thanh, tự động kiểm tra bản cập nhật mới trên GitHub (In-App Update Checker), khởi động thu nhỏ vào khay và chế độ tối ưu tiết kiệm pin Laptop thông minh."
                                        FontSize="11.5" Foreground="White" Opacity="0.88" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Grid>
@@ -679,8 +680,65 @@
                 <!-- NỘI DUNG CHANGELOG THEO TỪNG PHIÊN BẢN -->
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                     <Grid Padding="2">
+                        <!-- ==================== CHANGELOG v3.0.1 ==================== -->
+                        <StackPanel x:Name="ChangelogContent_v301" Spacing="10" Visibility="Visible">
+                            <!-- 1. Dynamic Day & Night Wallpapers -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#25F59E0B">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf186;" Foreground="#F59E0B" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#F59E0B" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="THỊ GIÁC ĐỈNH CAO" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Ảnh Nền Thành Phố Động Theo Giờ Mặt Trời (Dynamic Day &amp; Night)" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Tự động nhận diện chu kỳ Ngày / Đêm theo mặt trời mọc/lặn thực tế. Tự động chuyển đổi sang ảnh đêm thành phố rực rỡ lên đèn (Sài Gòn Đêm, Hà Nội Đêm, Đà Nẵng Đêm...) khi trời tối, đồng bộ tức thời với Live Preview trong cài đặt." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 2. Fluent Ambient Soundscapes -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#2538BDF8">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf025;" Foreground="#38BDF8" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#38BDF8" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="ÂM THANH THƯ GIÃN" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Không Gian Âm Thanh Thiên Nhiên Đa Dạng Kèm Fluent Flyout" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Nâng cấp nút Thư giãn thành menu Fluent Flyout với thanh trượt chỉnh âm lượng mượt mà và 5 cảnh âm thanh thiên nhiên sống động (Mưa rào mùa hạ, Sấm chớp đêm mưa, Gió rừng thông Đà Lạt, Sóng biển Nha Trang, Mưa quán cà phê). Tổng hợp âm thanh bằng thuật toán Procedural Audio toán học trực tiếp, 0 MB phụ thuộc file ngoài và không tốn RAM." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 3. GitHub Update Checker & Tối Ưu Hệ Thống -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#2510B981">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf021;" Foreground="#10B981" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#10B981" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="HỆ THỐNG &amp; CẬP NHẬT" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Kiểm Tra Cập Nhật GitHub, Khởi Động Khay &amp; Smart Battery Saver" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Tự động kiểm tra bản phát hành mới qua GitHub API, hiển thị thông báo và tải về với 1 click; Tùy chọn khởi động ngầm thu nhỏ vào góc Taskbar khi bật Windows; Cơ chế Smart Battery Saver tự động phát hiện chế độ tiết kiệm pin laptop để tạm dừng hiệu ứng động, tối ưu pin tối đa." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
                         <!-- ==================== CHANGELOG v3.0.0 ==================== -->
-                        <StackPanel x:Name="ChangelogContent_v300" Spacing="10" Visibility="Visible">
+                        <StackPanel x:Name="ChangelogContent_v300" Spacing="10" Visibility="Collapsed">
                             <!-- 1. Kiến trúc Modular UserControl & Tải lười -->
                             <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">

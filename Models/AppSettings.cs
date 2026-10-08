@@ -60,9 +60,12 @@ public class AppSettings
     // 11. Khay hệ thống (System Tray)
     public bool MinimizeToTray { get; set; } = true;
     public bool CloseToTray { get; set; } = false;
+    public bool StartMinimizedToTray { get; set; } = false;
 
-    // 12. Quản lý phiên bản & Changelog
+    // 12. Quản lý phiên bản & Tự động hóa hệ thống (v3.0.1)
     public string LastSeenVersion { get; set; } = string.Empty;
+    public bool AutoCheckForUpdates { get; set; } = true;
+    public bool EnableBatterySaverOptimization { get; set; } = true;
 
     // 13. Tính năng mới v1.7
     public List<FavoriteLocationItem> FavoriteLocations { get; set; } = new()

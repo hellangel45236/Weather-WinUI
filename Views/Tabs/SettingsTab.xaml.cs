@@ -155,6 +155,10 @@ public sealed partial class SettingsTab : UserControl
 
             // Performance & Effects
             if (StartupToggle != null) StartupToggle.IsOn = s.LaunchAtStartup;
+            if (StartMinimizedToggle != null) StartMinimizedToggle.IsOn = s.StartMinimizedToTray;
+            if (StartMinimizedContainer != null) StartMinimizedContainer.Visibility = s.LaunchAtStartup ? Visibility.Visible : Visibility.Collapsed;
+            if (BatterySaverToggle != null) BatterySaverToggle.IsOn = s.EnableBatterySaverOptimization;
+            if (AutoCheckUpdatesCheck != null) AutoCheckUpdatesCheck.IsChecked = s.AutoCheckForUpdates;
             if (MinimizeToTrayToggle != null) MinimizeToTrayToggle.IsOn = s.MinimizeToTray;
             if (CloseToTrayToggle != null) CloseToTrayToggle.IsOn = s.CloseToTray;
             if (AppearanceEffectsToggle != null) AppearanceEffectsToggle.IsOn = s.EnableWeatherEffects;
@@ -644,7 +648,34 @@ public sealed partial class SettingsTab : UserControl
     private void StartupToggle_Toggled(object sender, RoutedEventArgs e)
     {
         if (_isSyncing || ViewModel == null) return;
-        ViewModel.SetStartup(StartupToggle?.IsOn ?? false);
+        bool isOn = StartupToggle?.IsOn ?? false;
+        ViewModel.SetStartup(isOn);
+        if (StartMinimizedContainer != null)
+        {
+            StartMinimizedContainer.Visibility = isOn ? Visibility.Visible : Visibility.Collapsed;
+        }
+        AutoSave();
+    }
+
+    private void StartMinimizedToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null) return;
+        ViewModel.SetStartMinimizedToTray(StartMinimizedToggle?.IsOn ?? false);
+        AutoSave();
+    }
+
+    private void BatterySaverToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null) return;
+        ViewModel.Settings.EnableBatterySaverOptimization = BatterySaverToggle?.IsOn ?? false;
+        ViewModel.ApplyPowerSavingOptimization();
+        AutoSave();
+    }
+
+    private void AutoCheckUpdatesCheck_Click(object sender, RoutedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null) return;
+        ViewModel.Settings.AutoCheckForUpdates = AutoCheckUpdatesCheck?.IsChecked ?? true;
         AutoSave();
     }
 

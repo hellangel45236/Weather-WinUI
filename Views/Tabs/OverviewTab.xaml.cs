@@ -47,7 +47,8 @@ public sealed partial class OverviewTab : UserControl
     {
         if (e.PropertyName == nameof(MainViewModel.CurrentWeather) ||
             e.PropertyName == nameof(MainViewModel.Settings) ||
-            e.PropertyName == nameof(MainViewModel.LocationTitle))
+            e.PropertyName == nameof(MainViewModel.LocationTitle) ||
+            e.PropertyName == nameof(MainViewModel.IsBatterySavingActive))
         {
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -99,7 +100,9 @@ public sealed partial class OverviewTab : UserControl
 
     public void StartEffects()
     {
-        if (ViewModel?.Settings.EnableWeatherEffects == true)
+        bool shouldRun = ViewModel?.Settings.EnableWeatherEffects == true &&
+            !(ViewModel.Settings.EnableBatterySaverOptimization && ViewModel.IsBatterySavingActive);
+        if (shouldRun)
         {
             _weatherEffectRenderer?.Resume();
         }
@@ -114,8 +117,11 @@ public sealed partial class OverviewTab : UserControl
     {
         if (ViewModel?.CurrentWeather == null) return;
 
-        // Cập nhật hiệu ứng thời tiết nền nếu người dùng bật
-        if (ViewModel.Settings.EnableWeatherEffects)
+        // Cập nhật hiệu ứng thời tiết nền nếu người dùng bật và không bị tiết kiệm pin
+        bool shouldRunEffects = ViewModel.Settings.EnableWeatherEffects &&
+            !(ViewModel.Settings.EnableBatterySaverOptimization && ViewModel.IsBatterySavingActive);
+
+        if (shouldRunEffects)
         {
             _weatherEffectRenderer?.SetWeatherEffect(ViewModel.CurrentWeather.WeatherEffect);
             _weatherEffectRenderer?.Resume();

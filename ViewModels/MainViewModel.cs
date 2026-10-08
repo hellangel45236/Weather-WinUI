@@ -125,6 +125,40 @@ public partial class MainViewModel : ObservableObject
     public bool IsSchoolOccasionSelected => SelectedOutfitOccasion == "School";
     public bool IsCasualOccasionSelected => SelectedOutfitOccasion == "Casual";
 
+    // Tính năng mới v3.0.1: Kiểm tra cập nhật GitHub & Quản lý tiết kiệm pin Laptop
+    private readonly UpdateCheckService _updateCheckService = new();
+    private readonly PowerManagementService _powerService = new();
+
+    [ObservableProperty]
+    private string _appVersionDisplay = "v3.0.1";
+
+    [ObservableProperty]
+    private bool _isCheckingForUpdates;
+
+    [ObservableProperty]
+    private string _updateCheckStatusText = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasAvailableUpdate;
+
+    [ObservableProperty]
+    private string _latestVersionText = string.Empty;
+
+    [ObservableProperty]
+    private string _latestReleaseTitle = string.Empty;
+
+    [ObservableProperty]
+    private string _latestReleaseUrl = "https://github.com/hellangel45236/Weather-WinUI/releases";
+
+    [ObservableProperty]
+    private string _latestDownloadUrl = string.Empty;
+
+    [ObservableProperty]
+    private string _latestChangelog = string.Empty;
+
+    [ObservableProperty]
+    private bool _isBatterySavingActive;
+
     // Tính năng mới v2.2.3: Cảnh báo ngập úng & Triều cường đô thị (Urban Flood & Tide Alert)
     private readonly UrbanFloodService _floodService = new();
 
@@ -214,6 +248,36 @@ public partial class MainViewModel : ObservableObject
         SetupAutoRefreshTimer();
         StartRamMonitor();
         InitializeCalendar();
+
+        try
+        {
+            var dq = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+            _powerService.PowerSavingStateChanged += (s, active) =>
+            {
+                dq?.TryEnqueue(() =>
+                {
+                    IsBatterySavingActive = active;
+                    ApplyPowerSavingOptimization();
+                });
+            };
+            IsBatterySavingActive = _powerService.IsPowerSavingActive;
+            ApplyPowerSavingOptimization();
+        }
+        catch { }
+
+        // Tự động kiểm tra bản cập nhật mới khi mở ứng dụng nếu được bật
+        if (_settings.AutoCheckForUpdates)
+        {
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(4000);
+                var dq = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+                dq?.TryEnqueue(async () =>
+                {
+                    await CheckForUpdatesAsync(isManual: false);
+                });
+            });
+        }
     }
 
     private void SyncSettingsToProperties()
@@ -1049,8 +1113,95 @@ public partial class MainViewModel : ObservableObject
     public void SetStartup(bool enabled)
     {
         Settings.LaunchAtStartup = enabled;
-        StartupService.SetStartupEnabled(enabled);
+        StartupService.SetStartupEnabled(enabled, Settings.StartMinimizedToTray);
         _settingsService.SaveSettings(Settings);
+    }
+
+    public void SetStartMinimizedToTray(bool enabled)
+    {
+        Settings.StartMinimizedToTray = enabled;
+        if (Settings.LaunchAtStartup)
+        {
+            StartupService.SetStartupEnabled(true, enabled);
+        }
+        _settingsService.SaveSettings(Settings);
+    }
+
+    [RelayCommand]
+    public async Task CheckForUpdatesAsync(bool isManual = true)
+    {
+        if (IsCheckingForUpdates) return;
+
+        IsCheckingForUpdates = true;
+        UpdateCheckStatusText = "Đang kết nối GitHub để kiểm tra phiên bản mới...";
+
+        try
+        {
+            var info = await _updateCheckService.CheckForUpdatesAsync();
+
+            HasAvailableUpdate = info.HasUpdate;
+            LatestVersionText = info.LatestVersion;
+            LatestReleaseTitle = info.ReleaseTitle;
+            LatestReleaseUrl = info.ReleaseUrl;
+            LatestDownloadUrl = info.DownloadUrl;
+            LatestChangelog = info.Changelog;
+
+            if (info.HasUpdate)
+            {
+                UpdateCheckStatusText = $"🚀 Đã có phiên bản mới {info.LatestVersion}! Bấm để tải về ngay.";
+            }
+            else if (info.IsCheckingSuccess)
+            {
+                UpdateCheckStatusText = $"✨ Bạn đang sử dụng phiên bản mới nhất ({UpdateCheckService.CurrentAppVersion}).";
+            }
+            else
+            {
+                UpdateCheckStatusText = isManual
+                    ? $"⚠️ Không thể kiểm tra: {info.ErrorMessage ?? "Vui lòng kiểm tra lại kết nối mạng"}"
+                    : string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            if (isManual)
+            {
+                UpdateCheckStatusText = $"⚠️ Lỗi kiểm tra: {ex.Message}";
+            }
+        }
+        finally
+        {
+            IsCheckingForUpdates = false;
+        }
+    }
+
+    [RelayCommand]
+    public async Task OpenLatestReleaseUrlAsync()
+    {
+        try
+        {
+            string url = !string.IsNullOrEmpty(LatestDownloadUrl) ? LatestDownloadUrl : LatestReleaseUrl;
+            if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            {
+                await Windows.System.Launcher.LaunchUriAsync(uri);
+            }
+        }
+        catch { }
+    }
+
+    public void ApplyPowerSavingOptimization()
+    {
+        try
+        {
+            if (Settings.EnableBatterySaverOptimization && IsBatterySavingActive)
+            {
+                _ramMonitorTimer.Interval = TimeSpan.FromSeconds(10);
+            }
+            else
+            {
+                _ramMonitorTimer.Interval = TimeSpan.FromSeconds(2);
+            }
+        }
+        catch { }
     }
 
     [RelayCommand]

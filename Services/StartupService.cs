@@ -22,7 +22,7 @@ public static class StartupService
         }
     }
 
-    public static bool SetStartupEnabled(bool enable)
+    public static bool SetStartupEnabled(bool enable, bool startMinimized = false)
     {
         try
         {
@@ -34,7 +34,8 @@ public static class StartupService
                 string? exePath = Environment.ProcessPath;
                 if (!string.IsNullOrEmpty(exePath))
                 {
-                    key.SetValue(AppName, $"\"{exePath}\"");
+                    string args = startMinimized ? " --autostart" : "";
+                    key.SetValue(AppName, $"\"{exePath}\"{args}");
                     return true;
                 }
             }
