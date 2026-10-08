@@ -281,6 +281,18 @@
                                         <StackPanel x:Name="CityBgControlsPanel" Spacing="12">
                                             <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" Opacity="0.5"/>
 
+                                            <!-- Tự động chuyển đổi Ngày & Đêm theo chu kỳ mặt trời -->
+                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                                <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf186;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Text="Đổi ảnh nền theo Ngày &amp; Đêm (Dynamic Day &amp; Night)" FontWeight="SemiBold" FontSize="12.5"/>
+                                                    <TextBlock Text="Tự động chuyển sang ảnh thành phố ban đêm lên đèn lung linh khi trời tối theo giờ mặt trời lặn" FontSize="11" Opacity="0.7"/>
+                                                </StackPanel>
+                                                <ToggleSwitch Grid.Column="2" x:Name="DynamicDayNightToggle" Toggled="DynamicDayNightToggle_Toggled" VerticalAlignment="Center"/>
+                                            </Grid>
+
+                                            <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" Opacity="0.3"/>
+
                                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                                                 <ComboBox x:Name="CityImageModeComboBox" SelectionChanged="CityImageModeComboBox_SelectionChanged" HorizontalAlignment="Stretch">
                                                     <ComboBoxItem Content="🌐 Tự động theo địa điểm thời tiết" Tag="Auto"/>

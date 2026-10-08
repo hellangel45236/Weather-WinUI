@@ -74,6 +74,7 @@ public sealed partial class SettingsTab : UserControl
             // City Background
             if (CityBgToggle != null) CityBgToggle.IsOn = s.EnableCityBackground;
             if (CityBgControlsPanel != null) CityBgControlsPanel.Visibility = s.EnableCityBackground ? Visibility.Visible : Visibility.Collapsed;
+            if (DynamicDayNightToggle != null) DynamicDayNightToggle.IsOn = s.EnableDynamicDayNightWallpaper;
             if (CityImageModeComboBox != null)
             {
                 for (int i = 0; i < CityImageModeComboBox.Items.Count; i++)
@@ -301,6 +302,15 @@ public sealed partial class SettingsTab : UserControl
         AutoSave();
     }
 
+    private void DynamicDayNightToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null) return;
+        ViewModel.Settings.EnableDynamicDayNightWallpaper = DynamicDayNightToggle?.IsOn ?? false;
+        ViewModel.UpdateCityBackground();
+        UpdateCityPreview();
+        AutoSave();
+    }
+
     private void CityImageModeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (_isSyncing || ViewModel == null) return;
@@ -427,7 +437,7 @@ public sealed partial class SettingsTab : UserControl
 
         if (PreviewCityImageBorder != null) PreviewCityImageBorder.Visibility = Visibility.Visible;
 
-        string? imgPath = CityBackgroundHelper.ResolveImagePath(ViewModel.LocationTitle, s);
+        string? imgPath = CityBackgroundHelper.ResolveImagePath(ViewModel.LocationTitle, s, ViewModel.CurrentWeather?.IsDay ?? true);
         if (!string.IsNullOrEmpty(imgPath) && File.Exists(imgPath))
         {
             if (PreviewCityImageBrush != null)

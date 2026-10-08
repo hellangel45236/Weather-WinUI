@@ -44,6 +44,12 @@ public class AppSettings
     public string CityBackgroundMode { get; set; } = "Auto"; // "Auto", "Preset", "Custom"
     public string SelectedCityImage { get; set; } = "Auto";
     public string CustomCityImagePath { get; set; } = string.Empty;
+    public bool EnableDynamicDayNightWallpaper { get; set; } = true;
+
+    // Cấu hình Âm thanh Thiên nhiên Thư giãn (Ambient Soundscapes)
+    public bool EnableAmbientSound { get; set; } = false;
+    public double AmbientSoundVolume { get; set; } = 0.5;
+    public string SelectedAmbientSound { get; set; } = "Auto"; // "Auto", "Rain", "Thunderstorm", "PineWind", "OceanWaves", "CafeRain"
 
     // 10. Cảnh báo thông minh (Windows Toast Notifications)
     public bool EnableToastNotifications { get; set; } = true;
@@ -66,8 +72,6 @@ public class AppSettings
         new FavoriteLocationItem { Name = "Đà Lạt", Country = "Việt Nam", Latitude = 11.9404, Longitude = 108.4583 },
         new FavoriteLocationItem { Name = "Đà Nẵng", Country = "Việt Nam", Latitude = 16.0544, Longitude = 108.2022 }
     };
-    public bool EnableAmbientSound { get; set; } = false;
-    public double AmbientSoundVolume { get; set; } = 0.5;
     public bool EnableRadarMap { get; set; } = true;
     public bool EnableLifestyleIndices { get; set; } = true;
     public bool EnableLunarCalendar { get; set; } = true;

@@ -87,17 +87,107 @@
                                             </StackPanel>
                                         </Button>
 
-                                        <!-- Nút Bật/Tắt Âm Thanh Thiên Nhiên Thư Giãn -->
-                                        <Button Command="{x:Bind ViewModel.ToggleAmbientSoundCommand}"
+                                        <!-- Nút Bật/Tắt Âm Thanh Thiên Nhiên Thư Giãn kèm Flyout chọn cảnh âm thanh -->
+                                        <Button x:Name="AmbientSoundButton"
                                                 Background="#26FFFFFF"
                                                 BorderThickness="0"
                                                 CornerRadius="12"
                                                 Padding="8,4"
-                                                ToolTipService.ToolTip="Bật hoặc tắt âm thanh tự nhiên thư giãn (tiếng mưa/gió trắng)">
+                                                ToolTipService.ToolTip="{x:Bind ViewModel.AmbientSoundButtonToolTip, Mode=OneWay}">
                                             <StackPanel Orientation="Horizontal" Spacing="5">
-                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf025;" FontSize="11" Foreground="White"/>
-                                                <TextBlock Text="Thư giãn" FontSize="11.5" Foreground="White" Opacity="0.9"/>
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind ViewModel.AmbientSoundIconGlyph, Mode=OneWay}" FontSize="11" Foreground="White"/>
+                                                <TextBlock Text="{x:Bind ViewModel.AmbientSoundButtonText, Mode=OneWay}" FontSize="11.5" Foreground="White" Opacity="0.9"/>
                                             </StackPanel>
+                                            <Button.Flyout>
+                                                <Flyout Placement="BottomEdgeAlignedRight" Opened="Flyout_Opened">
+                                                    <Border Width="310" Padding="2">
+                                                        <StackPanel Spacing="12">
+                                                            <!-- Tiêu đề Flyout & Switch bật/tắt nhanh -->
+                                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf025;" FontSize="14" Foreground="#38BDF8"/>
+                                                                    <TextBlock Text="Âm Thanh Thư Giãn" FontWeight="Bold" FontSize="13"/>
+                                                                </StackPanel>
+                                                                <ToggleSwitch Grid.Column="2" x:Name="FlyoutAmbientToggle" IsOn="{x:Bind ViewModel.IsAmbientSoundPlaying, Mode=OneWay}" Toggled="FlyoutAmbientToggle_Toggled" OnContent="" OffContent="" VerticalAlignment="Center"/>
+                                                            </Grid>
+
+                                                            <!-- Thanh chỉnh âm lượng -->
+                                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                                                <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf027;" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
+                                                                <Slider Grid.Column="1" x:Name="FlyoutVolumeSlider" Minimum="0" Maximum="100" StepFrequency="5" Value="50" ValueChanged="FlyoutVolumeSlider_ValueChanged" VerticalAlignment="Center"/>
+                                                                <TextBlock Grid.Column="2" x:Name="FlyoutVolumeText" Text="50%" FontSize="11" Width="34" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                                            </Grid>
+
+                                                            <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" Opacity="0.4"/>
+
+                                                            <!-- Danh sách các cảnh âm thanh -->
+                                                            <StackPanel Spacing="6">
+                                                                <TextBlock Text="Chọn không gian âm thanh thiên nhiên:" FontSize="11" Opacity="0.7" FontWeight="SemiBold"/>
+
+                                                                <Button x:Name="BtnSoundAuto" Tag="Auto" Click="SoundPresetButton_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0ac;" FontSize="12" Foreground="#38BDF8"/>
+                                                                        <StackPanel Spacing="1">
+                                                                            <TextBlock Text="🌐 Tự động theo thời tiết" FontSize="12" FontWeight="SemiBold"/>
+                                                                            <TextBlock Text="Tự khớp tiếng mưa hoặc gió theo thời tiết" FontSize="10" Opacity="0.7"/>
+                                                                        </StackPanel>
+                                                                    </StackPanel>
+                                                                </Button>
+
+                                                                <Button x:Name="BtnSoundRain" Tag="Rain" Click="SoundPresetButton_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" FontSize="12" Foreground="#38BDF8"/>
+                                                                        <StackPanel Spacing="1">
+                                                                            <TextBlock Text="🌧️ Mưa rào mùa hạ" FontSize="12" FontWeight="SemiBold"/>
+                                                                            <TextBlock Text="Tiếng mưa rơi lộp độp êm dịu, dễ ngủ" FontSize="10" Opacity="0.7"/>
+                                                                        </StackPanel>
+                                                                    </StackPanel>
+                                                                </Button>
+
+                                                                <Button x:Name="BtnSoundThunder" Tag="Thunderstorm" Click="SoundPresetButton_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e7;" FontSize="12" Foreground="#F59E0B"/>
+                                                                        <StackPanel Spacing="1">
+                                                                            <TextBlock Text="⛈️ Sấm chớp đêm mưa" FontSize="12" FontWeight="SemiBold"/>
+                                                                            <TextBlock Text="Mưa rào nặng hạt kèm sấm rền từ xa" FontSize="10" Opacity="0.7"/>
+                                                                        </StackPanel>
+                                                                    </StackPanel>
+                                                                </Button>
+
+                                                                <Button x:Name="BtnSoundPineWind" Tag="PineWind" Click="SoundPresetButton_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf1bb;" FontSize="12" Foreground="#10B981"/>
+                                                                        <StackPanel Spacing="1">
+                                                                            <TextBlock Text="🌲 Gió rừng thông Đà Lạt" FontSize="12" FontWeight="SemiBold"/>
+                                                                            <TextBlock Text="Gió thoảng vi vu qua rặng thông đại ngàn" FontSize="10" Opacity="0.7"/>
+                                                                        </StackPanel>
+                                                                    </StackPanel>
+                                                                </Button>
+
+                                                                <Button x:Name="BtnSoundOcean" Tag="OceanWaves" Click="SoundPresetButton_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75c;" FontSize="12" Foreground="#0EA5E9"/>
+                                                                        <StackPanel Spacing="1">
+                                                                            <TextBlock Text="🌊 Sóng biển Nha Trang" FontSize="12" FontWeight="SemiBold"/>
+                                                                            <TextBlock Text="Từng đợt sóng dạt dào xô bờ cát thư thái" FontSize="10" Opacity="0.7"/>
+                                                                        </StackPanel>
+                                                                    </StackPanel>
+                                                                </Button>
+
+                                                                <Button x:Name="BtnSoundCafeRain" Tag="CafeRain" Click="SoundPresetButton_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0f4;" FontSize="12" Foreground="#F97316"/>
+                                                                        <StackPanel Spacing="1">
+                                                                            <TextBlock Text="☕ Mưa quán cà phê" FontSize="12" FontWeight="SemiBold"/>
+                                                                            <TextBlock Text="Tiếng mưa trầm ấm như ngồi bên hiên cà phê" FontSize="10" Opacity="0.7"/>
+                                                                        </StackPanel>
+                                                                    </StackPanel>
+                                                                </Button>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </Flyout>
+                                            </Button.Flyout>
                                         </Button>
                                     </StackPanel>
                                 </Grid>

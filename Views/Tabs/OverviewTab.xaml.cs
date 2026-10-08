@@ -234,6 +234,70 @@ public sealed partial class OverviewTab : UserControl
         ShareRequested?.Invoke(this, EventArgs.Empty);
     }
 
+    private void Flyout_Opened(object sender, object e)
+    {
+        if (ViewModel == null) return;
+        FlyoutAmbientToggle.IsOn = ViewModel.IsAmbientSoundPlaying;
+        FlyoutVolumeSlider.Value = ViewModel.Settings.AmbientSoundVolume * 100.0;
+        FlyoutVolumeText.Text = $"{(int)FlyoutVolumeSlider.Value}%";
+        UpdateSoundPresetButtonsHighlight();
+    }
+
+    private void FlyoutAmbientToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel != null && ViewModel.IsAmbientSoundPlaying != FlyoutAmbientToggle.IsOn)
+        {
+            ViewModel.ToggleAmbientSound();
+        }
+    }
+
+    private void FlyoutVolumeSlider_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (FlyoutVolumeText != null)
+        {
+            FlyoutVolumeText.Text = $"{(int)e.NewValue}%";
+        }
+        if (ViewModel != null)
+        {
+            ViewModel.ChangeAmbientSoundVolume(e.NewValue / 100.0);
+        }
+    }
+
+    private void SoundPresetButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is string tag && ViewModel != null)
+        {
+            ViewModel.ChangeAmbientSound(tag);
+            FlyoutAmbientToggle.IsOn = ViewModel.IsAmbientSoundPlaying;
+            UpdateSoundPresetButtonsHighlight();
+        }
+    }
+
+    private void UpdateSoundPresetButtonsHighlight()
+    {
+        if (ViewModel == null) return;
+        string activePreset = ViewModel.Settings.SelectedAmbientSound ?? "Auto";
+
+        Button[] buttons = { BtnSoundAuto, BtnSoundRain, BtnSoundThunder, BtnSoundPineWind, BtnSoundOcean, BtnSoundCafeRain };
+        foreach (var b in buttons)
+        {
+            if (b == null) continue;
+            bool isActive = string.Equals(b.Tag as string, activePreset, StringComparison.OrdinalIgnoreCase);
+            if (isActive)
+            {
+                b.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(50, 56, 189, 248));
+                b.BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(140, 56, 189, 248));
+                b.BorderThickness = new Thickness(1);
+            }
+            else
+            {
+                b.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(15, 255, 255, 255));
+                b.BorderBrush = null;
+                b.BorderThickness = new Thickness(0);
+            }
+        }
+    }
+
     public void RenderHourlyTemperatureTrendline()
     {
         try

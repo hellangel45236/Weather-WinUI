@@ -145,10 +145,35 @@ public static class CityBackgroundHelper
                 }
             }
         }
-        return list;
+
+        string[] order = 
+        {
+            "Hà Nội.jpg", "Hà Nội Đêm.jpg",
+            "Sài Gòn.jpg", "Sài Gòn Đêm.jpg",
+            "Đà Nẵng.jpg", "Đà Nẵng Đêm.jpg",
+            "Đà Lạt.jpg", "Nha Trang.jpg", "Hải Phòng.png", "Hạ Long.jpg", "Tây Ninh.jpg",
+            "Tokyo.jpg", "New York.jpg"
+        };
+
+        var sorted = new List<string>();
+        foreach (var item in order)
+        {
+            if (list.Contains(item, StringComparer.OrdinalIgnoreCase))
+            {
+                sorted.Add(item);
+            }
+        }
+        foreach (var item in list)
+        {
+            if (!sorted.Contains(item, StringComparer.OrdinalIgnoreCase))
+            {
+                sorted.Add(item);
+            }
+        }
+        return sorted;
     }
 
-    public static string? ResolveImagePath(string locationTitle, AppSettings settings)
+    public static string? ResolveImagePath(string locationTitle, AppSettings settings, bool isDay = true)
     {
         if (!settings.EnableCityBackground) return null;
 
@@ -163,6 +188,16 @@ public static class CityBackgroundHelper
         // 2. Chế độ chọn ảnh cố định từ danh sách mẫu
         if (settings.CityBackgroundMode == "Preset" && !string.IsNullOrEmpty(settings.SelectedCityImage) && settings.SelectedCityImage != "Auto")
         {
+            if (settings.EnableDynamicDayNightWallpaper && !isDay)
+            {
+                string baseName = Path.GetFileNameWithoutExtension(settings.SelectedCityImage);
+                if (!baseName.EndsWith("Đêm", StringComparison.OrdinalIgnoreCase))
+                {
+                    string nightCandidate = Path.Combine(dir, $"{baseName} Đêm.jpg");
+                    if (File.Exists(nightCandidate)) return nightCandidate;
+                }
+            }
+
             string presetPath = Path.Combine(dir, settings.SelectedCityImage);
             if (File.Exists(presetPath)) return presetPath;
         }
@@ -177,14 +212,26 @@ public static class CityBackgroundHelper
                 string keywordNorm = RemoveDiacritics(kvp.Key);
                 if (locationTitle.Contains(kvp.Key, StringComparison.OrdinalIgnoreCase) || normalized.Contains(keywordNorm, StringComparison.OrdinalIgnoreCase))
                 {
-                    string matchedPath = Path.Combine(dir, kvp.Value);
+                    string matchedFileName = kvp.Value;
+                    if (settings.EnableDynamicDayNightWallpaper && !isDay)
+                    {
+                        string baseName = Path.GetFileNameWithoutExtension(matchedFileName);
+                        if (!baseName.EndsWith("Đêm", StringComparison.OrdinalIgnoreCase))
+                        {
+                            string nightCandidate = Path.Combine(dir, $"{baseName} Đêm.jpg");
+                            if (File.Exists(nightCandidate)) return nightCandidate;
+                        }
+                    }
+
+                    string matchedPath = Path.Combine(dir, matchedFileName);
                     if (File.Exists(matchedPath)) return matchedPath;
                 }
             }
         }
 
-        // 4. Fallback mặc định: đảm bảo luôn có hình nền nghệ thuật khi tính năng này được BẬT
-        string defaultPath = Path.Combine(dir, "Sài Gòn.jpg");
+        // 4. Fallback mặc định: tự động chọn ảnh ngày hoặc đêm theo thời gian thực
+        string defaultFileName = (settings.EnableDynamicDayNightWallpaper && !isDay) ? "Sài Gòn Đêm.jpg" : "Sài Gòn.jpg";
+        string defaultPath = Path.Combine(dir, defaultFileName);
         if (File.Exists(defaultPath)) return defaultPath;
 
         var available = GetAvailablePresets();

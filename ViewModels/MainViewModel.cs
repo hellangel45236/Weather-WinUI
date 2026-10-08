@@ -950,10 +950,65 @@ public partial class MainViewModel : ObservableObject
         }
         else
         {
-            AmbientSoundService.PlayForWeather(CurrentWeather.WeatherEffect, Settings.AmbientSoundVolume);
-            IsAmbientSoundPlaying = true;
+            PlaySelectedAmbientSound();
         }
+        OnPropertyChanged(nameof(AmbientSoundButtonToolTip));
+        OnPropertyChanged(nameof(AmbientSoundIconGlyph));
+        OnPropertyChanged(nameof(AmbientSoundButtonText));
     }
+
+    public void PlaySelectedAmbientSound()
+    {
+        if (Settings.SelectedAmbientSound == "Auto")
+        {
+            AmbientSoundService.PlayForWeather(CurrentWeather?.WeatherEffect ?? WeatherEffectType.ClearSunny, Settings.AmbientSoundVolume);
+        }
+        else
+        {
+            var type = AmbientSoundService.ParseType(Settings.SelectedAmbientSound);
+            AmbientSoundService.SetVolume(Settings.AmbientSoundVolume);
+            AmbientSoundService.Play(type);
+        }
+        IsAmbientSoundPlaying = true;
+        OnPropertyChanged(nameof(AmbientSoundButtonToolTip));
+        OnPropertyChanged(nameof(AmbientSoundIconGlyph));
+        OnPropertyChanged(nameof(AmbientSoundButtonText));
+    }
+
+    public void ChangeAmbientSound(string soundType)
+    {
+        Settings.SelectedAmbientSound = soundType;
+        _settingsService.SaveSettings(Settings);
+        if (IsAmbientSoundPlaying)
+        {
+            PlaySelectedAmbientSound();
+        }
+        OnPropertyChanged(nameof(AmbientSoundButtonToolTip));
+        OnPropertyChanged(nameof(AmbientSoundButtonText));
+    }
+
+    public void ChangeAmbientSoundVolume(double volume)
+    {
+        Settings.AmbientSoundVolume = Math.Clamp(volume, 0.0, 1.0);
+        AmbientSoundService.SetVolume(Settings.AmbientSoundVolume);
+        _settingsService.SaveSettings(Settings);
+    }
+
+    public string AmbientSoundIconGlyph => IsAmbientSoundPlaying ? "\uf028" : "\uf025";
+    public string AmbientSoundButtonText => IsAmbientSoundPlaying ? "Đang phát" : "Thư giãn";
+    public string AmbientSoundButtonToolTip => IsAmbientSoundPlaying
+        ? $"Đang phát: {GetAmbientSoundDisplayName(Settings.SelectedAmbientSound)} - Bấm để dừng hoặc tùy chỉnh"
+        : "Bật âm thanh thiên nhiên thư giãn (mưa rào, sóng biển, gió thông, sấm chớp, cà phê)";
+
+    public static string GetAmbientSoundDisplayName(string key) => key switch
+    {
+        "Rain" => "Mưa rào mùa hạ",
+        "Thunderstorm" => "Sấm chớp đêm mưa",
+        "PineWind" => "Gió rừng thông",
+        "OceanWaves" => "Sóng biển Nha Trang",
+        "CafeRain" => "Mưa quán cà phê",
+        _ => "Tự động theo thời tiết"
+    };
 
     [RelayCommand]
     public void ToggleUnit()
@@ -1919,7 +1974,10 @@ public partial class MainViewModel : ObservableObject
             // Tính năng mới v1.7: Cập nhật âm thanh thư giãn nếu đang phát
             if (IsAmbientSoundPlaying)
             {
-                AmbientSoundService.PlayForWeather(CurrentWeather.WeatherEffect, Settings.AmbientSoundVolume);
+                if (Settings.SelectedAmbientSound == "Auto")
+                {
+                    AmbientSoundService.PlayForWeather(CurrentWeather.WeatherEffect, Settings.AmbientSoundVolume);
+                }
             }
 
             UpdateRamUsage();
@@ -1934,7 +1992,8 @@ public partial class MainViewModel : ObservableObject
     {
         if (CurrentWeather != null)
         {
-            string? path = CityBackgroundHelper.ResolveImagePath(LocationTitle, Settings);
+            bool isDay = CurrentWeather.IsDay;
+            string? path = CityBackgroundHelper.ResolveImagePath(LocationTitle, Settings, isDay);
             CurrentWeather.CityImagePath = path;
             OnPropertyChanged(nameof(CurrentWeather));
         }

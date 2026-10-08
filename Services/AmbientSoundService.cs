@@ -8,7 +8,7 @@ namespace WeatherApp.Services;
 
 /// <summary>
 /// Dịch vụ phát âm thanh thời tiết tự nhiên (Ambient Soundscapes / White Noise)
-/// Tự động sinh sóng âm thanh mưa rơi hoặc gió thoảng chân thực (Procedural Audio)
+/// Tự động sinh sóng âm thanh thiên nhiên chân thực (Procedural Audio)
 /// chạy lặp vô tận (Seamless Loop), không tốn RAM và không cần kết nối mạng.
 /// </summary>
 public class AmbientSoundService : IDisposable
@@ -19,6 +19,8 @@ public class AmbientSoundService : IDisposable
     private double _volume = 0.5;
 
     public bool IsPlaying => _isPlaying;
+
+    public AmbientSoundType CurrentType { get; private set; } = AmbientSoundType.Rain;
 
     public AmbientSoundService()
     {
@@ -46,24 +48,42 @@ public class AmbientSoundService : IDisposable
     {
         _volume = Math.Clamp(volume, 0.0, 1.0);
 
-        bool isRain = effect is WeatherEffectType.LightRain 
-            or WeatherEffectType.ModerateRain 
-            or WeatherEffectType.HeavyRain 
-            or WeatherEffectType.Thunderstorm;
+        AmbientSoundType type = effect switch
+        {
+            WeatherEffectType.Thunderstorm => AmbientSoundType.Thunderstorm,
+            WeatherEffectType.HeavyRain or WeatherEffectType.ModerateRain => AmbientSoundType.Rain,
+            WeatherEffectType.LightRain => AmbientSoundType.CafeRain,
+            WeatherEffectType.Fog => AmbientSoundType.PineWind,
+            _ => AmbientSoundType.PineWind
+        };
 
-        Play(isRain ? AmbientSoundType.Rain : AmbientSoundType.GentleBreeze);
+        Play(type);
     }
 
     public enum AmbientSoundType
     {
-        Rain,
-        GentleBreeze
+        Rain,           // 🌧️ Mưa rào mùa hạ
+        Thunderstorm,   // ⛈️ Sấm chớp đêm mưa
+        PineWind,       // 🌲 Gió rừng thông Đà Lạt
+        OceanWaves,     // 🌊 Sóng biển Nha Trang
+        CafeRain        // ☕ Mưa quán cà phê
     }
+
+    public static AmbientSoundType ParseType(string? name) => name switch
+    {
+        "Thunderstorm" => AmbientSoundType.Thunderstorm,
+        "PineWind" => AmbientSoundType.PineWind,
+        "OceanWaves" => AmbientSoundType.OceanWaves,
+        "CafeRain" => AmbientSoundType.CafeRain,
+        _ => AmbientSoundType.Rain
+    };
 
     public void Play(AmbientSoundType type)
     {
         try
         {
+            CurrentType = type;
+
             if (_mediaPlayer == null)
             {
                 _mediaPlayer = new MediaPlayer
@@ -73,21 +93,37 @@ public class AmbientSoundService : IDisposable
                 };
             }
 
-            // Tạo file sóng âm WAV thủ tục trong thư mục Temp nếu chưa có
             string tempDir = Path.Combine(Path.GetTempPath(), "WeatherAppAudio");
             Directory.CreateDirectory(tempDir);
-            string fileName = type == AmbientSoundType.Rain ? "ambient_rain.wav" : "ambient_breeze.wav";
+            string fileName = type switch
+            {
+                AmbientSoundType.Thunderstorm => "ambient_thunderstorm.wav",
+                AmbientSoundType.PineWind => "ambient_pinewind.wav",
+                AmbientSoundType.OceanWaves => "ambient_oceanwaves.wav",
+                AmbientSoundType.CafeRain => "ambient_caferain.wav",
+                _ => "ambient_rain.wav"
+            };
             _tempAudioFilePath = Path.Combine(tempDir, fileName);
 
             if (!File.Exists(_tempAudioFilePath) || new FileInfo(_tempAudioFilePath).Length < 1000)
             {
-                if (type == AmbientSoundType.Rain)
+                switch (type)
                 {
-                    GenerateRainSoundWav(_tempAudioFilePath, durationSeconds: 6);
-                }
-                else
-                {
-                    GenerateBreezeSoundWav(_tempAudioFilePath, durationSeconds: 6);
+                    case AmbientSoundType.Thunderstorm:
+                        GenerateThunderstormWav(_tempAudioFilePath, durationSeconds: 8);
+                        break;
+                    case AmbientSoundType.PineWind:
+                        GeneratePineWindWav(_tempAudioFilePath, durationSeconds: 7);
+                        break;
+                    case AmbientSoundType.OceanWaves:
+                        GenerateOceanWavesWav(_tempAudioFilePath, durationSeconds: 8);
+                        break;
+                    case AmbientSoundType.CafeRain:
+                        GenerateCafeRainWav(_tempAudioFilePath, durationSeconds: 6);
+                        break;
+                    default:
+                        GenerateRainSoundWav(_tempAudioFilePath, durationSeconds: 6);
+                        break;
                 }
             }
 
@@ -99,7 +135,7 @@ public class AmbientSoundService : IDisposable
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[AmbientSound] Error playing: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[AmbientSound] Error playing {type}: {ex.Message}");
             _isPlaying = false;
         }
     }
@@ -118,7 +154,7 @@ public class AmbientSoundService : IDisposable
     }
 
     /// <summary>
-    /// Thuật toán tạo sóng âm mưa rơi tí tách (Filtered Pink Noise + Droplet Bursts)
+    /// 1. Mưa rào mùa hạ: Pink noise + giọt nước tí tách
     /// </summary>
     private static void GenerateRainSoundWav(string filePath, int durationSeconds)
     {
@@ -134,7 +170,6 @@ public class AmbientSoundService : IDisposable
 
         for (int i = 0; i < totalSamples; i++)
         {
-            // Pink noise Paul Kellet filter
             double white = (random.NextDouble() * 2.0) - 1.0;
             b0 = 0.99886 * b0 + white * 0.0555179;
             b1 = 0.99332 * b1 + white * 0.0750759;
@@ -145,7 +180,6 @@ public class AmbientSoundService : IDisposable
             double pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
             b6 = white * 0.115926;
 
-            // Mưa rơi tí tách: thi thoảng có giọt nước nhỏ va chạm
             double droplet = 0;
             if (random.Next(250) == 0)
             {
@@ -161,9 +195,59 @@ public class AmbientSoundService : IDisposable
     }
 
     /// <summary>
-    /// Thuật toán tạo sóng âm gió thoảng dịu êm (Modulated Low-Pass Brown Noise)
+    /// 2. Sấm chớp đêm mưa: Mưa to dồn dập kèm tiếng sấm rền trầm ấm từ xa
     /// </summary>
-    private static void GenerateBreezeSoundWav(string filePath, int durationSeconds)
+    private static void GenerateThunderstormWav(string filePath, int durationSeconds)
+    {
+        int sampleRate = 22050;
+        short channels = 1;
+        short bitsPerSample = 16;
+        int totalSamples = sampleRate * durationSeconds;
+
+        var random = new Random(99);
+        short[] samples = new short[totalSamples];
+
+        double b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+
+        for (int i = 0; i < totalSamples; i++)
+        {
+            double white = (random.NextDouble() * 2.0) - 1.0;
+            b0 = 0.99886 * b0 + white * 0.0555179;
+            b1 = 0.99332 * b1 + white * 0.0750759;
+            b2 = 0.96900 * b2 + white * 0.1538520;
+            b3 = 0.86650 * b3 + white * 0.3104856;
+            b4 = 0.55000 * b4 + white * 0.5329522;
+            b5 = -0.7616 * b5 - white * 0.0168980;
+            double pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+            b6 = white * 0.115926;
+
+            double timeSec = (double)i / sampleRate;
+            double thunder = 0;
+            if (timeSec >= 1.5 && timeSec <= 3.8)
+            {
+                double envelope = Math.Sin((timeSec - 1.5) / 2.3 * Math.PI);
+                double freq = 45.0 + 8.0 * Math.Sin(timeSec * 7.0);
+                thunder = Math.Sin(2.0 * Math.PI * freq * timeSec) * envelope * 0.45;
+            }
+            else if (timeSec >= 5.2 && timeSec <= 7.2)
+            {
+                double envelope = Math.Sin((timeSec - 5.2) / 2.0 * Math.PI);
+                double freq = 38.0 + 6.0 * Math.Sin(timeSec * 5.0);
+                thunder = Math.Sin(2.0 * Math.PI * freq * timeSec) * envelope * 0.35;
+            }
+
+            double sample = (pink * 0.16) + thunder;
+            sample = Math.Clamp(sample, -1.0, 1.0);
+            samples[i] = (short)(sample * short.MaxValue * 0.48);
+        }
+
+        WriteWavFile(filePath, samples, sampleRate, channels, bitsPerSample);
+    }
+
+    /// <summary>
+    /// 3. Gió rừng thông Đà Lạt: Brown noise lọc sâu với tiếng gió rít êm qua rặng thông
+    /// </summary>
+    private static void GeneratePineWindWav(string filePath, int durationSeconds)
     {
         int sampleRate = 22050;
         short channels = 1;
@@ -173,18 +257,98 @@ public class AmbientSoundService : IDisposable
         var random = new Random(108);
         short[] samples = new short[totalSamples];
 
-        double lastOutput = 0.0;
+        double lastBrown = 0.0;
 
         for (int i = 0; i < totalSamples; i++)
         {
             double white = (random.NextDouble() * 2.0) - 1.0;
-            // Brown noise (tích phân của white noise lọc tần số thấp)
-            lastOutput = (lastOutput + (0.025 * white)) / 1.025;
+            lastBrown = (lastBrown + (0.02 * white)) / 1.02;
 
-            // Điều chế biên độ hình sin mô phỏng từng đợt gió thoảng
-            double lfo = 0.6 + 0.4 * Math.Sin((2.0 * Math.PI * i) / (sampleRate * 2.5));
-            double sample = lastOutput * 3.2 * lfo;
+            double timeSec = (double)i / sampleRate;
+            double lfo = 0.5 + 0.5 * Math.Sin((2.0 * Math.PI * timeSec) / 3.5);
+            double pineHarmonic = Math.Sin(2.0 * Math.PI * 440.0 * timeSec) * 0.04 * lfo;
 
+            double sample = (lastBrown * 3.5 * lfo) + pineHarmonic;
+            sample = Math.Clamp(sample, -1.0, 1.0);
+            samples[i] = (short)(sample * short.MaxValue * 0.42);
+        }
+
+        WriteWavFile(filePath, samples, sampleRate, channels, bitsPerSample);
+    }
+
+    /// <summary>
+    /// 4. Sóng biển Nha Trang: Từng đợt sóng dạt dào xô bờ cát và bọt nước tan
+    /// </summary>
+    private static void GenerateOceanWavesWav(string filePath, int durationSeconds)
+    {
+        int sampleRate = 22050;
+        short channels = 1;
+        short bitsPerSample = 16;
+        int totalSamples = sampleRate * durationSeconds;
+
+        var random = new Random(77);
+        short[] samples = new short[totalSamples];
+
+        double lastBrown = 0.0;
+
+        for (int i = 0; i < totalSamples; i++)
+        {
+            double white = (random.NextDouble() * 2.0) - 1.0;
+            lastBrown = (lastBrown + (0.03 * white)) / 1.03;
+
+            double wavePeriod = 4.0;
+            double timeInWave = ((double)i / sampleRate) % wavePeriod;
+            double wavePhase = timeInWave / wavePeriod; // 0.0 -> 1.0
+
+            double surge;
+            if (wavePhase < 0.6)
+            {
+                surge = Math.Sin(wavePhase / 0.6 * Math.PI * 0.5);
+            }
+            else
+            {
+                surge = Math.Cos((wavePhase - 0.6) / 0.4 * Math.PI * 0.5);
+            }
+
+            double foam = (white * 0.08) * (wavePhase > 0.45 && wavePhase < 0.75 ? 1.0 : 0.2);
+
+            double sample = (lastBrown * 2.8 * surge) + foam;
+            sample = Math.Clamp(sample, -1.0, 1.0);
+            samples[i] = (short)(sample * short.MaxValue * 0.45);
+        }
+
+        WriteWavFile(filePath, samples, sampleRate, channels, bitsPerSample);
+    }
+
+    /// <summary>
+    /// 5. Mưa quán cà phê: Tiếng mưa tí tách trầm ấm nghe từ bên trong ô cửa kính
+    /// </summary>
+    private static void GenerateCafeRainWav(string filePath, int durationSeconds)
+    {
+        int sampleRate = 22050;
+        short channels = 1;
+        short bitsPerSample = 16;
+        int totalSamples = sampleRate * durationSeconds;
+
+        var random = new Random(222);
+        short[] samples = new short[totalSamples];
+
+        double lowPass1 = 0, lowPass2 = 0;
+
+        for (int i = 0; i < totalSamples; i++)
+        {
+            double white = (random.NextDouble() * 2.0) - 1.0;
+
+            lowPass1 = lowPass1 + 0.08 * (white - lowPass1);
+            lowPass2 = lowPass2 + 0.08 * (lowPass1 - lowPass2);
+
+            double softDroplet = 0;
+            if (random.Next(350) == 0)
+            {
+                softDroplet = (random.NextDouble() * 0.8) - 0.4;
+            }
+
+            double sample = (lowPass2 * 0.9) + softDroplet;
             sample = Math.Clamp(sample, -1.0, 1.0);
             samples[i] = (short)(sample * short.MaxValue * 0.40);
         }
@@ -201,22 +365,19 @@ public class AmbientSoundService : IDisposable
         using var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read);
         using var bw = new BinaryWriter(fs);
 
-        // RIFF header
         bw.Write(System.Text.Encoding.ASCII.GetBytes("RIFF"));
         bw.Write(36 + dataChunkSize);
         bw.Write(System.Text.Encoding.ASCII.GetBytes("WAVE"));
 
-        // fmt subchunk
         bw.Write(System.Text.Encoding.ASCII.GetBytes("fmt "));
-        bw.Write(16); // subchunk1 size
-        bw.Write((short)1); // PCM format
+        bw.Write(16);
+        bw.Write((short)1);
         bw.Write(channels);
         bw.Write(sampleRate);
         bw.Write(byteRate);
         bw.Write(blockAlign);
         bw.Write(bitsPerSample);
 
-        // data subchunk
         bw.Write(System.Text.Encoding.ASCII.GetBytes("data"));
         bw.Write(dataChunkSize);
 
