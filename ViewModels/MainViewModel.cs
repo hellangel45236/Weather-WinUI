@@ -129,7 +129,7 @@ public partial class MainViewModel : ObservableObject
     private readonly UrbanFloodService _floodService = new();
 
     [ObservableProperty]
-    private UrbanFloodWarning? _urbanFloodWarning;
+    private UrbanFloodWarning _urbanFloodWarning = new();
 
     [ObservableProperty]
     private ObservableCollection<FloodHotspotRoad> _displayedFloodRoads = new();
@@ -257,7 +257,110 @@ public partial class MainViewModel : ObservableObject
         UpdateOutfitAdvice();
     }
 
+    // ==================== v3.0 BETA: 24H INTERACTIVE TIME SCRUBBER ====================
+    [ObservableProperty]
+    private bool _isTimeScrubbingActive = false;
+
+    [ObservableProperty]
+    private double _scrubbedSliderValue = 0;
+
+    [ObservableProperty]
+    private string _scrubbedTimeLabel = string.Empty;
+
+    [ObservableProperty]
+    private string _scrubbedTempText = string.Empty;
+
+    [ObservableProperty]
+    private string _scrubbedConditionText = string.Empty;
+
+    [ObservableProperty]
+    private string _scrubbedRainText = string.Empty;
+
+    [ObservableProperty]
+    private string _scrubbedGradientStart = "#1E293B";
+
+    [ObservableProperty]
+    private string _scrubbedGradientEnd = "#0F172A";
+
+    [ObservableProperty]
+    private string _scrubbedIconGlyph = "\uf185";
+
+    [ObservableProperty]
+    private string _scrubbedSvgIconPath = "ms-appx:///Assets/weather-icons-main/production/fill/svg/clear-day.svg";
+
+    public void ScrubToHour(int hour)
+    {
+        if (HourlyForecast == null || HourlyForecast.Count == 0) return;
+        var item = HourlyForecast.FirstOrDefault(h => h.HourNumber == hour) ?? HourlyForecast.FirstOrDefault();
+        if (item == null) return;
+
+        IsTimeScrubbingActive = true;
+        ScrubbedSliderValue = hour;
+        ScrubbedTimeLabel = $"{hour:D2}:00 ({item.TimeDisplay})";
+        ScrubbedTempText = item.TempDisplay;
+        ScrubbedConditionText = item.ConditionText;
+        ScrubbedRainText = item.RainProbabilityText;
+        ScrubbedIconGlyph = item.IconGlyph;
+        ScrubbedSvgIconPath = item.SvgIconPath;
+
+        // Dynamic Chromatic Sky colors based on hour & condition
+        if (hour >= 5 && hour < 7)
+        {
+            ScrubbedGradientStart = "#D97706"; // Rạng đông cam đào
+            ScrubbedGradientEnd = "#7C3AED";   // Tím rạng đông
+        }
+        else if (hour >= 7 && hour < 16)
+        {
+            ScrubbedGradientStart = "#0284C7"; // Ban ngày xanh biếc
+            ScrubbedGradientEnd = "#0369A1";
+        }
+        else if (hour >= 16 && hour < 19)
+        {
+            ScrubbedGradientStart = "#EA580C"; // Hoàng hôn hổ phách
+            ScrubbedGradientEnd = "#4C1D95";   // Tím chiều
+        }
+        else
+        {
+            ScrubbedGradientStart = "#0F172A"; // Đêm tím than
+            ScrubbedGradientEnd = "#1E1B4B";   // Đêm huyền ảo
+        }
+    }
+
     [RelayCommand]
+    public void ResetTimeScrubbing()
+    {
+        IsTimeScrubbingActive = false;
+        ScrubbedSliderValue = DateTime.Now.Hour;
+    }
+
+    // ==================== v3.0 BETA: FLUENT NAVIGATION STATE ====================
+    [ObservableProperty]
+    private string _currentNavTag = "overview";
+
+    public bool IsOverviewVisible => CurrentNavTag == "overview";
+    public bool IsFloodVisible => CurrentNavTag == "flood";
+    public bool IsRadarVisible => CurrentNavTag == "radar";
+    public bool IsLifestyleVisible => CurrentNavTag == "lifestyle";
+    public bool IsCalendarVisible => CurrentNavTag == "calendar";
+    public bool IsWidgetVisible => CurrentNavTag == "widget";
+    public bool IsSettingsVisible => CurrentNavTag == "settings";
+
+    public void SwitchNav(string tag)
+    {
+        if (string.IsNullOrWhiteSpace(tag)) return;
+        CurrentNavTag = tag.ToLowerInvariant();
+        OnPropertyChanged(nameof(IsOverviewVisible));
+        OnPropertyChanged(nameof(IsFloodVisible));
+        OnPropertyChanged(nameof(IsRadarVisible));
+        OnPropertyChanged(nameof(IsLifestyleVisible));
+        OnPropertyChanged(nameof(IsCalendarVisible));
+        OnPropertyChanged(nameof(IsWidgetVisible));
+        OnPropertyChanged(nameof(IsSettingsVisible));
+    }
+
+
+    [RelayCommand]
+
     public void ToggleFloodRoadsExpanded()
     {
         IsFloodRoadsExpanded = !IsFloodRoadsExpanded;
@@ -308,6 +411,14 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    [ObservableProperty]
+    private string _floodStreetSearchQuery = string.Empty;
+
+    partial void OnFloodStreetSearchQueryChanged(string value)
+    {
+        UpdateDisplayedFloodRoads();
+    }
+
     private void UpdateDisplayedFloodRoads()
     {
         DisplayedFloodRoads.Clear();
@@ -319,9 +430,14 @@ public partial class MainViewModel : ObservableObject
             query = query.Where(r => r.District == SelectedFloodDistrict);
         }
 
-        if (!IsFloodRoadsExpanded)
+        if (!string.IsNullOrWhiteSpace(FloodStreetSearchQuery))
         {
-            query = query.Take(4);
+            string q = FloodStreetSearchQuery.Trim().ToLowerInvariant();
+            query = query.Where(r => r.StreetName.ToLowerInvariant().Contains(q) || r.District.ToLowerInvariant().Contains(q));
+        }
+        else if (!IsFloodRoadsExpanded)
+        {
+            query = query.Take(6);
         }
 
         foreach (var road in query)
@@ -1763,6 +1879,7 @@ public partial class MainViewModel : ObservableObject
             {
                 DailyForecast.Add(item);
             }
+            OnPropertyChanged(nameof(DailyForecast));
 
             // Cập nhật lại toàn bộ Lịch Tháng với dữ liệu thời tiết của thành phố mới
             CalendarLocationSubtitle = LocationTitle;
@@ -2082,6 +2199,16 @@ public partial class MainViewModel : ObservableObject
             AttachWeatherToCalendarDay(item);
             EvaluateWeatherConflict(item);
             CalendarDays.Add(item);
+        }
+
+        if (SelectedCalendarDay == null || SelectedCalendarDay.Date.Month != _calendarMonth || SelectedCalendarDay.Date.Year != _calendarYear)
+        {
+            var targetDay = CalendarDays.FirstOrDefault(d => d.IsToday) ?? CalendarDays.FirstOrDefault(d => d.IsCurrentMonth) ?? CalendarDays.FirstOrDefault();
+            if (targetDay != null)
+            {
+                SelectedCalendarDay = targetDay;
+                EvaluateWeatherConflict(SelectedCalendarDay);
+            }
         }
     }
 

@@ -115,4 +115,20 @@ public class UrbanFloodWarning
     public int HotspotRoadsCount => HotspotRoads?.Count ?? 0;
     public bool HasHotspotRoads => HotspotRoadsCount > 0;
     public bool HasCriticalRisk => RiskLevel >= 2;
+
+    // v3.0 Beta: Dữ liệu đồ thị sóng triều bán nhật triều 24h & Đếm ngược đỉnh triều
+    public List<TideHourlyPoint> TideCurve24h { get; set; } = new();
+    public string NextPeakCountdown { get; set; } = string.Empty;
+    public double PeakTideMeters { get; set; } = 1.60;
 }
+
+public class TideHourlyPoint
+{
+    public int Hour { get; set; }
+    public string TimeLabel => $"{Hour:D2}:00";
+    public double LevelMeters { get; set; }
+    public string LevelDisplay => $"{LevelMeters:F2} m";
+    public bool IsCurrentHour { get; set; }
+    public bool IsPeak { get; set; }
+}
+

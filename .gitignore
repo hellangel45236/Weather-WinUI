@@ -40,9 +40,11 @@ BundleArtifacts/
 
 # Publish output
 publish/
+publish_beta/
 Output/
 *.pubxml
 PublishScripts/
+*.bak
 
 # Code analysis and tooling
 _ReSharper*/

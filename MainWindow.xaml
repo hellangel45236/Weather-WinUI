@@ -9,7 +9,7 @@
     Title="Thời Tiết WinUI 3"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid x:Name="RootWindowGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />

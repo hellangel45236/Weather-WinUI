@@ -85,6 +85,7 @@ public class CurrentWeatherDisplay
 
 public class HourlyForecastItem
 {
+    public int HourNumber { get; set; }
     public string TimeDisplay { get; set; } = string.Empty;
     public string TempDisplay { get; set; } = string.Empty;
     public double TempValue { get; set; }

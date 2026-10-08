@@ -19,16 +19,31 @@ public sealed partial class MainWindow : Window
         // Khởi tạo ThemeHelper
         ThemeHelper.Initialize(this);
 
-        // Tương thích đa nền tảng Windows 10 & 11: áp dụng Mica nếu hỗ trợ (Win11), ngược lại dùng DesktopAcrylic (Win10)
+        // Tương thích đa nền tảng Windows 10 & 11:
+        // - Windows 11: Áp dụng MicaAlt cao cấp tự nhiên
+        // - Windows 10: Áp dụng DesktopAcrylic với lớp nền bổ trợ Slate Dark chống lóa/chống trong suốt quá mức
         try
         {
-            if (Microsoft.UI.Composition.SystemBackdrops.MicaController.IsSupported())
+            bool isWindows11 = Environment.OSVersion.Version.Build >= 22000;
+            if (isWindows11 && Microsoft.UI.Composition.SystemBackdrops.MicaController.IsSupported())
             {
-                SystemBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+                SystemBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop
+                {
+                    Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
+                };
             }
             else if (Microsoft.UI.Composition.SystemBackdrops.DesktopAcrylicController.IsSupported())
             {
                 SystemBackdrop = new Microsoft.UI.Xaml.Media.DesktopAcrylicBackdrop();
+                // Bổ trợ lớp nền slate tối đầm chắc cho Windows 10 để các thẻ card nổi bật, không bị lóa
+                RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                    Windows.UI.Color.FromArgb(248, 15, 23, 42));
+            }
+            else
+            {
+                // Fallback vững chắc cho Windows 10 cũ không hỗ trợ Acrylic Controller
+                RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                    Windows.UI.Color.FromArgb(255, 15, 23, 42));
             }
         }
         catch { }
