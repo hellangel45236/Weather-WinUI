@@ -165,6 +165,7 @@ public sealed partial class MainPage : Page
                         (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();
                         var lifestyleTab = FindName(nameof(TabLifestyle)) as LifestyleTab;
                         lifestyleTab?.UpdateOccasionButtonsVisual();
+                        lifestyleTab?.UpdateGenderButtonsVisual();
                         break;
 
                     case "calendar":

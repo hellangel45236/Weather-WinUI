@@ -134,6 +134,50 @@ public class LocalizationService : INotifyPropertyChanged
 
     #endregion
 
+    #region Lifestyle & OOTD Tab Strings
+    public string OotdHeaderTitle => IsVietnamese ? "Hôm Nay Mặc Gì?" : "What to Wear Today?";
+    public string OotdHeaderSub => IsVietnamese ? "Hệ thống tư vấn thời trang thông minh OOTD & bảo vệ sức khỏe theo khí tượng" : "AI-driven outfit stylist & wellness recommendations based on real-time weather";
+    public string OotdBadge => "OOTD Studio v3.0";
+    public string OotdOccasionWork => IsVietnamese ? "Công sở" : "Office";
+    public string OotdOccasionSchool => IsVietnamese ? "Đi học" : "Campus";
+    public string OotdOccasionCasual => IsVietnamese ? "Dạo phố" : "Casual";
+    public string OotdOccasionSport => IsVietnamese ? "Thể thao" : "Sport";
+    public string OotdOccasionTravel => IsVietnamese ? "Dã ngoại" : "Travel";
+    public string OotdGenderAll => IsVietnamese ? "Tự do" : "Unisex";
+    public string OotdGenderMen => IsVietnamese ? "Nam" : "Men";
+    public string OotdGenderWomen => IsVietnamese ? "Nữ" : "Women";
+    public string OotdCopyBtn => IsVietnamese ? "Sao chép gợi ý" : "Copy Advice";
+    public string OotdTopClothing => IsVietnamese ? "Áo & Thân trên" : "Tops & Upper Body";
+    public string OotdBottomClothing => IsVietnamese ? "Quần & Thân dưới" : "Bottoms & Pants";
+    public string OotdOuterwear => IsVietnamese ? "Áo khoác & Che chắn" : "Outerwear & Layers";
+    public string OotdFootwear => IsVietnamese ? "Giày & Dép" : "Footwear & Shoes";
+    public string OotdAccessories => IsVietnamese ? "Vật Dụng & Phụ Kiện Nên Mang Theo" : "Essential Accessories & Items";
+    public string OotdColorPalette => IsVietnamese ? "Bảng màu đề xuất hôm nay" : "Today's Color Palette";
+    public string OotdFabricAdvice => IsVietnamese ? "Chất liệu khuyên dùng" : "Recommended Fabric";
+    public string OotdMotorbikeCommute => IsVietnamese ? "Cảnh Báo Di Chuyển Xe Máy & 2 Bánh" : "Two-Wheeler & Motorbike Advice";
+    public string OotdRaincoatAdvice => IsVietnamese ? "Trang bị đi mưa" : "Rain Gear Advice";
+
+    public string LifestyleHeader => IsVietnamese ? "Chỉ Số Hoạt Động & Đời Sống" : "Lifestyle & Activity Indices";
+    public string LifestyleSub => IsVietnamese ? "Khuyến nghị sinh hoạt & chăm sóc sức khỏe theo điều kiện khí tượng" : "Practical living & health recommendations based on weather conditions";
+
+    public string WorkoutWindowsHeader => IsVietnamese ? "Khung Giờ Vàng Thể Thao & Vận Động" : "Best Workout Windows";
+    public string WorkoutWindowsSub => IsVietnamese ? "Thời điểm lý tưởng nhất trong ngày cho chạy bộ, đạp xe & tập luyện" : "Optimal timeframes today for running, cycling & workouts";
+
+    public string AirQualityHeader => IsVietnamese ? "Chất Lượng Không Khí & Bụi Mịn" : "Air Quality & Pollution Tracker";
+    public string AirQualitySub => IsVietnamese ? "Thang đo US-AQI và bảo vệ đường hô hấp" : "US-AQI scale and respiratory health protection";
+    public string HealthAdviceTitle => IsVietnamese ? "Lời khuyên sức khỏe khí tượng" : "Health & Medical Advice";
+    public string SkinDefenseHeader => IsVietnamese ? "Chỉ Số Chống Nắng UV & Bảo Vệ Da" : "UV Defense & Skincare Index";
+    public string SkinDefenseSub => IsVietnamese ? "Khuyến nghị SPF kem chống nắng và giới hạn phơi nắng an toàn" : "Sunscreen SPF advice & safe sun exposure limit";
+    public string RecommendedSpfLabel => IsVietnamese ? "Chỉ số SPF khuyên dùng" : "Recommended SPF";
+    public string SafeSunTimeLabel => IsVietnamese ? "Thời gian nắng an toàn" : "Safe Sun Time";
+    public string MaskAdviceLabel => IsVietnamese ? "Khuyến nghị khẩu trang" : "Mask Advice";
+
+    public string Pm25Label => IsVietnamese ? "Bụi mịn PM2.5" : "Fine Dust PM2.5";
+    public string Pm10Label => IsVietnamese ? "Bụi thô PM10" : "Inhalable Dust PM10";
+    public string OzoneLabel => IsVietnamese ? "Khí Ozone (O₃)" : "Ozone (O₃)";
+    public string No2Label => IsVietnamese ? "Khí Nitơ (NO₂)" : "Nitrogen Dioxide (NO₂)";
+    #endregion
+
     #region Settings Tab Strings
 
     public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.0.3)" : "Settings & Personalization Center (Version 3.0.3)";

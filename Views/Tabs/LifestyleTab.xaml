@@ -9,347 +9,634 @@
     mc:Ignorable="d">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Spacing="16" Padding="0,0,16,24">
-                    <!-- ==================== TÍNH NĂNG MỚI v2.1: GỢI Ý TRANG PHỤC HÔM NAY MẶC GÌ (OOTD ADVISOR) ==================== -->
-                    <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="1"
-                            CornerRadius="16"
-                            Padding="20">
-                        <StackPanel Spacing="14">
-                            <!-- Tiêu đề & Chọn dịp (Công sở, Đi học, Dạo phố) -->
-                            <Grid ColumnDefinitions="*,Auto">
-                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
-                                    <Border Width="34" Height="34" CornerRadius="8" Background="#2638BDF8">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf553;" FontSize="15" Foreground="#38BDF8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                    <StackPanel Spacing="1">
-                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                            <TextBlock Text="Hôm Nay Mặc Gì?" FontSize="16" FontWeight="Bold"/>
-                                            <Border Background="#1A10B981" CornerRadius="4" Padding="5,1">
-                                                <TextBlock Text="OOTD v2.1" FontSize="9.5" FontWeight="Bold" Foreground="#10B981"/>
-                                            </Border>
-                                        </StackPanel>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.ThermalComfortNotice, Mode=OneWay}"
-                                                   FontSize="11.5" Opacity="0.75" TextWrapping="Wrap"/>
-                                    </StackPanel>
-                                </StackPanel>
+        <StackPanel Spacing="18" Padding="0,0,16,24">
 
-                                <!-- Bộ chọn Dịp (Công sở / Đi học / Dạo phố) -->
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                                    <Button x:Name="OccasionWorkButton" Click="OccasionButton_Click" Tag="Work"
-                                            Background="{ThemeResource AccentFillColorDefaultBrush}" Foreground="White"
-                                            BorderBrush="{ThemeResource AccentFillColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="9,5">
-                                        <StackPanel Orientation="Horizontal" Spacing="5">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0b1;" FontSize="10.5"/>
-                                            <TextBlock Text="Công sở" FontSize="11.5" FontWeight="SemiBold"/>
-                                        </StackPanel>
-                                    </Button>
+            <!-- Thông báo sao chép OOTD vào clipboard -->
+            <InfoBar IsOpen="{x:Bind ViewModel.IsOotdCopiedOpen, Mode=TwoWay}"
+                     Severity="Success"
+                     Message="{x:Bind ViewModel.OotdCopiedMessage, Mode=OneWay}"
+                     IsClosable="True"/>
 
-                                    <Button x:Name="OccasionSchoolButton" Click="OccasionButton_Click" Tag="School"
-                                            Background="{ThemeResource SubtleFillColorSecondaryBrush}" Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="9,5">
-                                        <StackPanel Orientation="Horizontal" Spacing="5">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf19d;" FontSize="10.5"/>
-                                            <TextBlock Text="Đi học" FontSize="11.5" FontWeight="SemiBold"/>
-                                        </StackPanel>
-                                    </Button>
-
-                                    <Button x:Name="OccasionCasualButton" Click="OccasionButton_Click" Tag="Casual"
-                                            Background="{ThemeResource SubtleFillColorSecondaryBrush}" Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="9,5">
-                                        <StackPanel Orientation="Horizontal" Spacing="5">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf70c;" FontSize="10.5"/>
-                                            <TextBlock Text="Dạo phố" FontSize="11.5" FontWeight="SemiBold"/>
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
-                            </Grid>
-
-                            <!-- Headline nổi bật của bộ trang phục -->
-                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="10" Padding="12,9">
-                                <Grid ColumnDefinitions="Auto,*">
-                                    <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf058;" FontSize="13" Foreground="#10B981" Margin="0,1,8,0" VerticalAlignment="Top"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentOutfitAdvice.Headline, Mode=OneWay}"
-                                               FontSize="12.5" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                                </Grid>
+            <!-- ==================== PHẦN 1: GỢI Ý TRANG PHỤC THÔNG MINH (OOTD STUDIO v3.0) ==================== -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="16">
+                    <!-- Tiêu đề OOTD Studio & Nút thao tác -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <Border Width="40" Height="40" CornerRadius="10" Background="#2638BDF8">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf553;" FontSize="17" Foreground="#38BDF8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-
-                            <!-- Lưới 4 ô trang phục (Áo & Thân trên, Quần & Thân dưới, Áo khoác / Lớp ngoài, Giày dép) -->
-                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
-                                <!-- 1. Áo & Thân trên -->
-                                <Border Grid.Row="0" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="10" Padding="12,10">
-                                    <StackPanel Spacing="4">
-                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf553;" FontSize="11" Foreground="#38BDF8"/>
-                                            <TextBlock Text="Áo &amp; Thân trên" FontSize="10.5" FontWeight="Bold" Opacity="0.7"/>
-                                        </StackPanel>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.TopClothing, Mode=OneWay}"
-                                                   FontSize="11.5" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- 2. Quần & Thân dưới -->
-                                <Border Grid.Row="0" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="10" Padding="12,10">
-                                    <StackPanel Spacing="4">
-                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf005;" FontSize="11" Foreground="#818CF8"/>
-                                            <TextBlock Text="Quần &amp; Thân dưới" FontSize="10.5" FontWeight="Bold" Opacity="0.7"/>
-                                        </StackPanel>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.BottomClothing, Mode=OneWay}"
-                                                   FontSize="11.5" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- 3. Áo khoác & Che chắn -->
-                                <Border Grid.Row="1" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="10" Padding="12,10">
-                                    <StackPanel Spacing="4">
-                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" FontSize="11" Foreground="#F59E0B"/>
-                                            <TextBlock Text="Áo khoác &amp; Che chắn" FontSize="10.5" FontWeight="Bold" Opacity="0.7"/>
-                                        </StackPanel>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.Outerwear, Mode=OneWay}"
-                                                   FontSize="11.5" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- 4. Giày dép -->
-                                <Border Grid.Row="1" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="10" Padding="12,10">
-                                    <StackPanel Spacing="4">
-                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf549;" FontSize="11" Foreground="#34D399"/>
-                                            <TextBlock Text="Giày &amp; Dép" FontSize="10.5" FontWeight="Bold" Opacity="0.7"/>
-                                        </StackPanel>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.Footwear, Mode=OneWay}"
-                                                   FontSize="11.5" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                                    </StackPanel>
-                                </Border>
-                            </Grid>
-
-                            <!-- Checklist Phụ kiện & Vật dụng cần mang (Accessories Checklist) -->
-                            <StackPanel Spacing="7">
-                                <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf468;" FontSize="11" Foreground="#60A5FA"/>
-                                    <TextBlock Text="Vật Dụng &amp; Phụ Kiện Nên Mang Theo" FontSize="11.5" FontWeight="Bold" Opacity="0.8"/>
+                            <StackPanel Spacing="2">
+                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.OotdHeaderTitle, Mode=OneWay}" FontSize="17" FontWeight="Bold"/>
+                                    <Border Background="#1A10B981" CornerRadius="5" Padding="6,2">
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdBadge, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#10B981"/>
+                                    </Border>
                                 </StackPanel>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.OotdHeaderSub, Mode=OneWay}" FontSize="11.5" Opacity="0.7" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </StackPanel>
 
-                                <ItemsControl ItemsSource="{x:Bind ViewModel.CurrentOutfitAdvice.Accessories, Mode=OneWay}">
+                        <!-- Nút sao chép gợi ý OOTD -->
+                        <Button Grid.Column="1" x:Name="CopyOotdButton" Click="CopyOotdButton_Click"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="8" Padding="12,7" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="7">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c5;" FontSize="12" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.OotdCopyBtn, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <!-- Thanh chọn Dịp & Phong cách Giới tính -->
+                    <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="12,10">
+                        <StackPanel Spacing="10">
+                            <!-- Hàng 1: Chọn Dịp (5 Occasions) -->
+                            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Left">
+                                <Button x:Name="OccasionWorkButton" Click="OccasionButton_Click" Tag="Work"
+                                        CornerRadius="8" Padding="10,6">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0b1;" FontSize="11"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionWork, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button x:Name="OccasionSchoolButton" Click="OccasionButton_Click" Tag="School"
+                                        CornerRadius="8" Padding="10,6">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf19d;" FontSize="11"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionSchool, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button x:Name="OccasionCasualButton" Click="OccasionButton_Click" Tag="Casual"
+                                        CornerRadius="8" Padding="10,6">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf70c;" FontSize="11"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionCasual, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button x:Name="OccasionSportButton" Click="OccasionButton_Click" Tag="Sport"
+                                        CornerRadius="8" Padding="10,6">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf44b;" FontSize="11"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionSport, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button x:Name="OccasionTravelButton" Click="OccasionButton_Click" Tag="Travel"
+                                        CornerRadius="8" Padding="10,6">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" FontSize="11"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionTravel, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+
+                            <!-- Hàng 2: Chọn Giới tính (3 Gender Styles) -->
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Button x:Name="GenderAllButton" Click="GenderButton_Click" Tag="All"
+                                        CornerRadius="14" Padding="12,4">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf183;" FontSize="10.5"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdGenderAll, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button x:Name="GenderMenButton" Click="GenderButton_Click" Tag="Men"
+                                        CornerRadius="14" Padding="12,4">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf007;" FontSize="10.5"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdGenderMen, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button x:Name="GenderWomenButton" Click="GenderButton_Click" Tag="Women"
+                                        CornerRadius="14" Padding="12,4">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf182;" FontSize="10.5"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdGenderWomen, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Banner Cảm Nhận Nhiệt & Headline Bộ Đồ -->
+                    <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,12">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18"
+                                    Background="{x:Bind ViewModel.CurrentOutfitAdvice.ThermalTagColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                    VerticalAlignment="Center">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf058;" FontSize="15" Foreground="White"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.Headline, Mode=OneWay}"
+                                           FontSize="13.5" FontWeight="Bold" TextWrapping="Wrap"/>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.ThermalComfortNotice, Mode=OneWay}"
+                                           FontSize="11.5" Opacity="0.75" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <Border Grid.Column="2" Background="{ThemeResource SubtleFillColorTertiaryBrush}"
+                                    CornerRadius="8" Padding="10,5" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.FashionStyleTag, Mode=OneWay}"
+                                           FontSize="11" FontWeight="Bold" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Lưới 4 ô trang phục Bento (Áo, Quần, Áo khoác, Giày dép) -->
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                        <!-- 1. Áo & Thân trên -->
+                        <Border Grid.Row="0" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,12">
+                            <StackPanel Spacing="6">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf553;" FontSize="12" Foreground="#38BDF8"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.OotdTopClothing, Mode=OneWay}" FontSize="11" FontWeight="Bold" Opacity="0.7"/>
+                                </StackPanel>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.TopClothing, Mode=OneWay}"
+                                           FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" LineHeight="18"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 2. Quần & Thân dưới -->
+                        <Border Grid.Row="0" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,12">
+                            <StackPanel Spacing="6">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf005;" FontSize="12" Foreground="#818CF8"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.OotdBottomClothing, Mode=OneWay}" FontSize="11" FontWeight="Bold" Opacity="0.7"/>
+                                </StackPanel>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.BottomClothing, Mode=OneWay}"
+                                           FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" LineHeight="18"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 3. Áo khoác & Che chắn -->
+                        <Border Grid.Row="1" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,12">
+                            <StackPanel Spacing="6">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" FontSize="12" Foreground="#F59E0B"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.OotdOuterwear, Mode=OneWay}" FontSize="11" FontWeight="Bold" Opacity="0.7"/>
+                                </StackPanel>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.Outerwear, Mode=OneWay}"
+                                           FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" LineHeight="18"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 4. Giày dép -->
+                        <Border Grid.Row="1" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,12">
+                            <StackPanel Spacing="6">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf549;" FontSize="12" Foreground="#34D399"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.OotdFootwear, Mode=OneWay}" FontSize="11" FontWeight="Bold" Opacity="0.7"/>
+                                </StackPanel>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.Footwear, Mode=OneWay}"
+                                           FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" LineHeight="18"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Bảng màu đề xuất & Chất liệu khuyên dùng -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <!-- Bảng màu (Color Palette) -->
+                        <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,12">
+                            <StackPanel Spacing="8">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf53f;" FontSize="12" Foreground="#EC4899"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.OotdColorPalette, Mode=OneWay}" FontSize="11" FontWeight="Bold" Opacity="0.7"/>
+                                </StackPanel>
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.CurrentOutfitAdvice.SuggestedColors, Mode=OneWay}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <StackPanel Orientation="Horizontal" Spacing="8"/>
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
-                                        <DataTemplate x:DataType="models:OutfitAccessoryItem">
-                                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                                    BorderBrush="{x:Bind AccentColor, Converter={StaticResource HexToBrushConverter}}"
-                                                    BorderThickness="1" CornerRadius="8" Padding="9,5"
-                                                    ToolTipService.ToolTip="{x:Bind Reason}">
-                                                <StackPanel Orientation="Horizontal" Spacing="6">
-                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}" FontSize="11"
-                                                              Foreground="{x:Bind AccentColor, Converter={StaticResource HexToBrushConverter}}"/>
-                                                    <TextBlock Text="{x:Bind Name}" FontSize="11" FontWeight="SemiBold"/>
+                                        <DataTemplate x:DataType="models:OutfitColorItem">
+                                            <Border Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="12" Padding="8,5">
+                                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                    <Border Width="16" Height="16" CornerRadius="8"
+                                                            Background="{x:Bind HexColor, Converter={StaticResource HexToBrushConverter}}"
+                                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"/>
+                                                    <TextBlock Text="{x:Bind Name}" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                                 </StackPanel>
                                             </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </StackPanel>
+                        </Border>
 
-                            <!-- Cảnh báo di chuyển xe máy (Motorbike Commute Advice) -->
-                            <Border Background="#25F59E0B" BorderBrush="#80F59E0B" BorderThickness="1" CornerRadius="10" Padding="12,9">
-                                <Grid ColumnDefinitions="Auto,*">
-                                    <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}"
-                                              Glyph="{x:Bind ViewModel.CurrentOutfitAdvice.MotorbikeWarningIcon, Mode=OneWay}"
-                                              FontSize="13" Foreground="{x:Bind ViewModel.CurrentOutfitAdvice.MotorbikeWarningColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
-                                              Margin="0,1,10,0" VerticalAlignment="Top"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentOutfitAdvice.MotorbikeWarning, Mode=OneWay}"
-                                               FontSize="11.5" Foreground="{ThemeResource TextFillColorPrimaryBrush}" FontWeight="Medium" TextWrapping="Wrap" LineHeight="17"/>
-                                </Grid>
-                            </Border>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- CHỈ SỐ HOẠT ĐỘNG NGOÀI TRỜI & ĐỜI SỐNG (LIFESTYLE INDICES - MỚI v1.7) -->
-                    <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="1"
-                            CornerRadius="16"
-                            Padding="20">
-                        <StackPanel Spacing="14">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf1ae;" FontSize="15" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                                    <TextBlock Text="Chỉ Số Hoạt Động &amp; Đời Sống" FontSize="16" FontWeight="Bold"/>
+                        <!-- Chất liệu vải khuyên dùng (Fabric Advice) -->
+                        <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,12">
+                            <StackPanel Spacing="6">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf02c;" FontSize="12" Foreground="#06B6D4"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.OotdFabricAdvice, Mode=OneWay}" FontSize="11" FontWeight="Bold" Opacity="0.7"/>
                                 </StackPanel>
-                                <TextBlock Grid.Column="1" Text="Khuyến nghị theo thời tiết" FontSize="11.5" Opacity="0.6" VerticalAlignment="Center"/>
-                            </Grid>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.FabricRecommendation, Mode=OneWay}"
+                                           FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" LineHeight="18"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
 
-                            <!-- Danh sách 4 chỉ số sinh hoạt -->
-                            <ItemsControl ItemsSource="{x:Bind ViewModel.LifestyleIndices, Mode=OneWay}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Spacing="8"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="models:LifestyleIndexItem">
-                                        <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                                BorderThickness="1"
-                                                CornerRadius="10"
-                                                Padding="12,8">
-                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" VerticalAlignment="Center">
-                                                <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18"
-                                                        Background="{x:Bind RatingColor, Converter={StaticResource HexToBrushConverter}}"
-                                                        Opacity="0.95" VerticalAlignment="Center">
-                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}"
-                                                              FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
-                                                    <TextBlock Text="{x:Bind Title}" FontSize="13.5" FontWeight="Bold"/>
-                                                    <TextBlock Text="{x:Bind Advice}" FontSize="12" Opacity="0.85" TextWrapping="Wrap" LineHeight="18"/>
+                    <!-- Checklist Phụ kiện & Vật dụng cần mang -->
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf468;" FontSize="12" Foreground="#60A5FA"/>
+                            <TextBlock Text="{x:Bind ViewModel.Loc.OotdAccessories, Mode=OneWay}" FontSize="12" FontWeight="Bold" Opacity="0.8"/>
+                        </StackPanel>
+
+                        <ItemsControl ItemsSource="{x:Bind ViewModel.CurrentOutfitAdvice.Accessories, Mode=OneWay}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="8"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:OutfitAccessoryItem">
+                                    <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                            BorderBrush="{x:Bind AccentColor, Converter={StaticResource HexToBrushConverter}}"
+                                            BorderThickness="1" CornerRadius="10" Padding="10,6">
+                                        <StackPanel Orientation="Horizontal" Spacing="7">
+                                            <Border Width="26" Height="26" CornerRadius="13"
+                                                    Background="{x:Bind AccentColor, Converter={StaticResource HexToBrushConverter}}"
+                                                    Opacity="0.2">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}" FontSize="11.5"
+                                                          Foreground="{x:Bind AccentColor, Converter={StaticResource HexToBrushConverter}}"
+                                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel VerticalAlignment="Center" Spacing="1">
+                                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                                    <TextBlock Text="{x:Bind Name}" FontSize="11.5" FontWeight="SemiBold"/>
+                                                    <Border Background="{x:Bind AccentColor, Converter={StaticResource HexToBrushConverter}}"
+                                                            CornerRadius="4" Padding="5,1">
+                                                        <TextBlock Text="{x:Bind BadgeText}" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                                    </Border>
                                                 </StackPanel>
-                                                <Border Grid.Column="2" Background="{x:Bind RatingColor, Converter={StaticResource HexToBrushConverter}}"
-                                                        CornerRadius="8" Padding="12,5" VerticalAlignment="Center">
-                                                    <TextBlock Text="{x:Bind Rating}" FontSize="11.5" FontWeight="Bold" Foreground="White"/>
-                                                </Border>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-                    </Border>
+                                                <TextBlock Text="{x:Bind Reason}" FontSize="10.5" Opacity="0.75" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
 
-                    <!-- BÁO CÁO CHẤT LƯỢNG KHÔNG KHÍ & BỤI MỊN (AIR QUALITY & POLLUTION TRACKER - THUẦN XAML NATIVE) -->
-                    <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="1"
-                            CornerRadius="16"
-                            Padding="20">
-                        <StackPanel Spacing="16">
-                            <!-- Tiêu đề & Phân loại AQI -->
-                            <Grid ColumnDefinitions="*,Auto">
-                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75f;" FontSize="15" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                                    <TextBlock Text="Chất Lượng Không Khí &amp; Bụi Mịn" FontSize="16" FontWeight="Bold"/>
+                    <!-- Cảnh báo Xe Máy & Trang bị Áo Mưa (2 Cột) -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <!-- Xe máy -->
+                        <Border Grid.Column="0" Background="#20F59E0B" BorderBrush="#60F59E0B" BorderThickness="1" CornerRadius="12" Padding="12,10">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}"
+                                          Glyph="{x:Bind ViewModel.CurrentOutfitAdvice.MotorbikeWarningIcon, Mode=OneWay}"
+                                          FontSize="14" Foreground="{x:Bind ViewModel.CurrentOutfitAdvice.MotorbikeWarningColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                          Margin="0,1,0,0" VerticalAlignment="Top"/>
+                                <StackPanel Grid.Column="1" Spacing="2">
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.OotdMotorbikeCommute, Mode=OneWay}" FontSize="11" FontWeight="Bold" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.MotorbikeWarning, Mode=OneWay}"
+                                               FontSize="11.5" TextWrapping="Wrap" LineHeight="17" Opacity="0.9"/>
                                 </StackPanel>
-                                <Border Grid.Column="1"
-                                        Background="{x:Bind ViewModel.CurrentWeather.AqiColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
-                                        CornerRadius="12" Padding="10,4">
-                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf05a;" FontSize="11" Foreground="White"/>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiDescription, Mode=OneWay}" FontSize="11.5" FontWeight="Bold" Foreground="White"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Áo mưa -->
+                        <Border Grid.Column="1" Background="#2038BDF8" BorderBrush="#6038BDF8" BorderThickness="1" CornerRadius="12" Padding="12,10">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;"
+                                          FontSize="14" Foreground="#38BDF8" Margin="0,1,0,0" VerticalAlignment="Top"/>
+                                <StackPanel Grid.Column="1" Spacing="2">
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.OotdRaincoatAdvice, Mode=OneWay}" FontSize="11" FontWeight="Bold" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.RaincoatAdvice, Mode=OneWay}"
+                                               FontSize="11.5" TextWrapping="Wrap" LineHeight="17" Opacity="0.9"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ==================== PHẦN 2: KHUNG GIỜ VÀNG THỂ THAO & VẬN ĐỘNG (WORKOUT TIMELINE) ==================== -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+                            <Border Width="36" Height="36" CornerRadius="9" Background="#2610B981">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf44b;" FontSize="15" Foreground="#10B981" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Spacing="1">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WorkoutWindowsHeader, Mode=OneWay}" FontSize="16" FontWeight="Bold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WorkoutWindowsSub, Mode=OneWay}" FontSize="11.5" Opacity="0.7"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Danh sách 4 khung giờ vận động -->
+                    <ItemsControl ItemsSource="{x:Bind ViewModel.WorkoutWindows, Mode=OneWay}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="9"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:WorkoutWindowItem">
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1" CornerRadius="12" Padding="14,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="14" VerticalAlignment="Center">
+                                        <!-- Icon & Time Range -->
+                                        <Border Grid.Column="0" Width="38" Height="38" CornerRadius="10"
+                                                Background="{x:Bind StatusColor, Converter={StaticResource HexToBrushConverter}}"
+                                                Opacity="0.95" VerticalAlignment="Center">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}"
+                                                      FontSize="15" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <!-- Label, Advice -->
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="{x:Bind TimeRange}" FontSize="13" FontWeight="Bold"/>
+                                                <TextBlock Text="•" Opacity="0.4"/>
+                                                <TextBlock Text="{x:Bind Label}" FontSize="12.5" FontWeight="SemiBold" Opacity="0.9"/>
+                                            </StackPanel>
+                                            <TextBlock Text="{x:Bind Advice}" FontSize="11.5" Opacity="0.8" TextWrapping="Wrap"/>
+                                        </StackPanel>
+
+                                        <!-- Temp & Condition -->
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Spacing="1">
+                                            <TextBlock Text="{x:Bind Temperature}" FontSize="14.5" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                            <TextBlock Text="{x:Bind Condition}" FontSize="10.5" Opacity="0.65" HorizontalAlignment="Right"/>
+                                        </StackPanel>
+
+                                        <!-- Status badge -->
+                                        <Border Grid.Column="3" Background="{x:Bind StatusColor, Converter={StaticResource HexToBrushConverter}}"
+                                                CornerRadius="8" Padding="10,5" VerticalAlignment="Center">
+                                            <TextBlock Text="{x:Bind Status}" FontSize="11" FontWeight="Bold" Foreground="White"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- ==================== PHẦN 3: CHỈ SỐ HOẠT ĐỘNG & ĐỜI SỐNG (LIFESTYLE INDICES) ==================== -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+                            <Border Width="36" Height="36" CornerRadius="9" Background="#268B5CF6">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf1ae;" FontSize="15" Foreground="#8B5CF6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Spacing="1">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.LifestyleHeader, Mode=OneWay}" FontSize="16" FontWeight="Bold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.LifestyleSub, Mode=OneWay}" FontSize="11.5" Opacity="0.7"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Danh sách 6 chỉ số sinh hoạt -->
+                    <ItemsControl ItemsSource="{x:Bind ViewModel.LifestyleIndices, Mode=OneWay}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="9"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:LifestyleIndexItem">
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="12"
+                                        Padding="14,10">
+                                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+                                        <!-- Dòng 0: Icon, Danh mục, Tiêu đề, Badge số liệu, Nhãn đánh giá -->
+                                        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                                            <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18"
+                                                    Background="{x:Bind RatingColor, Converter={StaticResource HexToBrushConverter}}"
+                                                    Opacity="0.95" VerticalAlignment="Center">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}"
+                                                          FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                                                <TextBlock Text="{x:Bind Category}" FontSize="9.5" FontWeight="Bold" Opacity="0.6"/>
+                                                <TextBlock Text="{x:Bind Title}" FontSize="13" FontWeight="Bold"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="2" Background="{ThemeResource SubtleFillColorTertiaryBrush}"
+                                                    CornerRadius="6" Padding="8,3" VerticalAlignment="Center">
+                                                <TextBlock Text="{x:Bind MetricBadge}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Border>
+                                            <Border Grid.Column="3" Background="{x:Bind RatingColor, Converter={StaticResource HexToBrushConverter}}"
+                                                    CornerRadius="8" Padding="10,4" VerticalAlignment="Center">
+                                                <TextBlock Text="{x:Bind Rating}" FontSize="11.5" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- Dòng 1: Lời khuyên chi tiết -->
+                                        <TextBlock Grid.Row="1" Text="{x:Bind Advice}" FontSize="11.5" Opacity="0.85" TextWrapping="Wrap" LineHeight="17" Margin="48,0,0,0"/>
+
+                                        <!-- Dòng 2: Thanh điểm số trực quan (Score Progress) -->
+                                        <ProgressBar Grid.Row="2" Value="{x:Bind ScoreProgress}" Minimum="0" Maximum="100"
+                                                     Foreground="{x:Bind RatingColor, Converter={StaticResource HexToBrushConverter}}"
+                                                     Height="3" CornerRadius="1.5" Margin="48,2,0,0"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- ==================== PHẦN 4: CHẤT LƯỢNG KHÔNG KHÍ & BẢO VỆ DA (AQI & SKIN DEFENSE HUB) ==================== -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="16">
+                    <!-- Tiêu đề -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+                            <Border Width="36" Height="36" CornerRadius="9" Background="#2638BDF8">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75f;" FontSize="15" Foreground="#38BDF8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Spacing="1">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.AirQualityHeader, Mode=OneWay}" FontSize="16" FontWeight="Bold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.AirQualitySub, Mode=OneWay}" FontSize="11.5" Opacity="0.7"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <Border Grid.Column="1"
+                                Background="{x:Bind ViewModel.CurrentWeather.AqiColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                CornerRadius="12" Padding="10,4">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf05a;" FontSize="11" Foreground="White"/>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiDescription, Mode=OneWay}" FontSize="11.5" FontWeight="Bold" Foreground="White"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Hàng 1: Thẻ AQI Tổng Quan & Thẻ Bảo Vệ Da (2 Cột) -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <!-- Cột Trái: Điểm US-AQI & Khuyến cáo Hô hấp -->
+                        <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="14" Padding="16,14">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" VerticalAlignment="Center">
+                                <Border Grid.Column="0" Width="68" Height="68" CornerRadius="34"
+                                        Background="{x:Bind ViewModel.CurrentWeather.AqiColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}">
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="0">
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiValue, Mode=OneWay}"
+                                                   FontSize="22" FontWeight="Black" Foreground="White" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="US AQI" FontSize="8.5" FontWeight="Bold" Foreground="White" Opacity="0.85" HorizontalAlignment="Center"/>
                                     </StackPanel>
                                 </Border>
-                            </Grid>
 
-                            <!-- Thẻ tóm tắt chỉ số AQI chính & Lời khuyên sức khỏe -->
-                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="14"
-                                    Padding="16,14">
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalAlignment="Center">
-                                    <!-- Vòng tròn điểm số AQI nổi bật -->
-                                    <Border Grid.Column="0" Width="72" Height="72" CornerRadius="36"
-                                            Background="{x:Bind ViewModel.CurrentWeather.AqiColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}">
-                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="0">
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiValue, Mode=OneWay}"
-                                                       FontSize="24" FontWeight="Black" Foreground="White" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="US AQI" FontSize="9" FontWeight="Bold" Foreground="White" Opacity="0.85" HorizontalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiDescription, Mode=OneWay}"
+                                               FontSize="13.5" FontWeight="SemiBold"
+                                               Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiAdvice, Mode=OneWay}"
+                                               FontSize="11.5" Opacity="0.8" TextWrapping="Wrap" LineHeight="16"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Cột Phải: Trung Tâm Chống Nắng UV & Bảo Vệ Da -->
+                        <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="14" Padding="16,14">
+                            <StackPanel Spacing="8">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="12" Foreground="#F59E0B"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.SkinDefenseHeader, Mode=OneWay}" FontSize="12" FontWeight="Bold"/>
+                                </StackPanel>
+
+                                <!-- 3 thông số: SPF, Thời gian an toàn, Khẩu trang -->
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                                    <!-- SPF -->
+                                    <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="6,6">
+                                        <StackPanel Spacing="2" HorizontalAlignment="Center">
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.RecommendedSpfLabel, Mode=OneWay}" FontSize="9" Opacity="0.65" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind ViewModel.SkinDefense.RecommendedSpf, Mode=OneWay}" FontSize="12" FontWeight="Bold" Foreground="#F59E0B" HorizontalAlignment="Center"/>
                                         </StackPanel>
                                     </Border>
 
-                                    <!-- Lời khuyên sức khỏe tương ứng -->
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiDescription, Mode=OneWay}"
-                                                   FontSize="14" FontWeight="SemiBold"
-                                                   Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiAdvice, Mode=OneWay}"
-                                                   FontSize="12" Opacity="0.8" TextWrapping="Wrap" LineHeight="17"
-                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
+                                    <!-- Safe Sun Time -->
+                                    <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="6,6">
+                                        <StackPanel Spacing="2" HorizontalAlignment="Center">
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.SafeSunTimeLabel, Mode=OneWay}" FontSize="9" Opacity="0.65" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind ViewModel.SkinDefense.MaxSafeSunTime, Mode=OneWay}" FontSize="12" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
 
-                            <!-- Thang đo phân cấp ô nhiễm trực quan (Visual Air Quality Spectrum Bar) -->
-                            <StackPanel Spacing="6">
-                                <Grid ColumnDefinitions="*,*,*,*,*,*" ColumnSpacing="4">
-                                    <Border Grid.Column="0" Height="6" CornerRadius="3" Background="#10B981" ToolTipService.ToolTip="0 - 50: Tốt (Trong lành)"/>
-                                    <Border Grid.Column="1" Height="6" CornerRadius="3" Background="#F59E0B" ToolTipService.ToolTip="51 - 100: Trung bình"/>
-                                    <Border Grid.Column="2" Height="6" CornerRadius="3" Background="#EA580C" ToolTipService.ToolTip="101 - 150: Kém (Nhóm nhạy cảm)"/>
-                                    <Border Grid.Column="3" Height="6" CornerRadius="3" Background="#DC2626" ToolTipService.ToolTip="151 - 200: Xấu (Có hại sức khỏe)"/>
-                                    <Border Grid.Column="4" Height="6" CornerRadius="3" Background="#9333EA" ToolTipService.ToolTip="201 - 300: Rất xấu"/>
-                                    <Border Grid.Column="5" Height="6" CornerRadius="3" Background="#7F1D1D" ToolTipService.ToolTip="300+: Nguy hại nghiêm trọng"/>
+                                    <!-- Mask -->
+                                    <Border Grid.Column="2" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="6,6">
+                                        <StackPanel Spacing="2" HorizontalAlignment="Center">
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.MaskAdviceLabel, Mode=OneWay}" FontSize="9" Opacity="0.65" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind ViewModel.SkinDefense.MaskRecommendation, Mode=OneWay}" FontSize="11" FontWeight="Bold" Foreground="{ThemeResource AccentFillColorDefaultBrush}" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+                                    </Border>
                                 </Grid>
-                                <Grid ColumnDefinitions="*,*,*,*,*,*">
-                                    <TextBlock Grid.Column="0" Text="0 - 50" FontSize="9.5" Opacity="0.6" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Column="1" Text="51 - 100" FontSize="9.5" Opacity="0.6" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Column="2" Text="101 - 150" FontSize="9.5" Opacity="0.6" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Column="3" Text="151 - 200" FontSize="9.5" Opacity="0.6" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Column="4" Text="201 - 300" FontSize="9.5" Opacity="0.6" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Column="5" Text="300+" FontSize="9.5" Opacity="0.6" HorizontalAlignment="Center"/>
-                                </Grid>
+
+                                <TextBlock Text="{x:Bind ViewModel.SkinDefense.SkincareAdvice, Mode=OneWay}"
+                                           FontSize="11" Opacity="0.8" TextWrapping="Wrap" LineHeight="15"/>
                             </StackPanel>
+                        </Border>
+                    </Grid>
 
-                            <!-- Lưới 4 chỉ số ô nhiễm chi tiết (PM2.5, PM10, O3, NO2) -->
-                            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" RowSpacing="10" ColumnSpacing="10">
-                                <!-- 1. Bụi mịn PM2.5 -->
-                                <Border Grid.Row="0" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="12">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Grid.Column="0" Spacing="3">
-                                            <TextBlock Text="Bụi mịn PM2.5" FontSize="11" Opacity="0.7"/>
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.Pm25Text, Mode=OneWay}" FontSize="15" FontWeight="Bold"/>
-                                        </StackPanel>
-                                        <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="6" Padding="6,2" VerticalAlignment="Center">
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.Pm25Status, Mode=OneWay}" FontSize="10" FontWeight="SemiBold"/>
-                                        </Border>
-                                    </Grid>
-                                </Border>
+                    <!-- Thang đo phân cấp ô nhiễm trực quan (Visual Air Quality Spectrum Bar) -->
+                    <StackPanel Spacing="6">
+                        <Grid ColumnDefinitions="*,*,*,*,*,*" ColumnSpacing="4">
+                            <Border Grid.Column="0" Height="6" CornerRadius="3" Background="#10B981"/>
+                            <Border Grid.Column="1" Height="6" CornerRadius="3" Background="#F59E0B"/>
+                            <Border Grid.Column="2" Height="6" CornerRadius="3" Background="#EA580C"/>
+                            <Border Grid.Column="3" Height="6" CornerRadius="3" Background="#DC2626"/>
+                            <Border Grid.Column="4" Height="6" CornerRadius="3" Background="#9333EA"/>
+                            <Border Grid.Column="5" Height="6" CornerRadius="3" Background="#7F1D1D"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="*,*,*,*,*,*">
+                            <TextBlock Grid.Column="0" Text="0 - 50" FontSize="9.5" Opacity="0.6" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="51 - 100" FontSize="9.5" Opacity="0.6" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="101 - 150" FontSize="9.5" Opacity="0.6" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="3" Text="151 - 200" FontSize="9.5" Opacity="0.6" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="4" Text="201 - 300" FontSize="9.5" Opacity="0.6" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="5" Text="300+" FontSize="9.5" Opacity="0.6" HorizontalAlignment="Center"/>
+                        </Grid>
+                    </StackPanel>
 
-                                <!-- 2. Bụi thô PM10 -->
-                                <Border Grid.Row="0" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="12">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Grid.Column="0" Spacing="3">
-                                            <TextBlock Text="Bụi thô PM10" FontSize="11" Opacity="0.7"/>
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.Pm10Text, Mode=OneWay}" FontSize="15" FontWeight="Bold"/>
-                                        </StackPanel>
-                                        <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="6" Padding="6,2" VerticalAlignment="Center">
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.Pm10Status, Mode=OneWay}" FontSize="10" FontWeight="SemiBold"/>
-                                        </Border>
-                                    </Grid>
-                                </Border>
-
-                                <!-- 3. Khí Ozone (O₃) -->
-                                <Border Grid.Row="1" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="12">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Grid.Column="0" Spacing="3">
-                                            <TextBlock Text="Khí Ozone (O₃)" FontSize="11" Opacity="0.7"/>
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.OzoneText, Mode=OneWay}" FontSize="15" FontWeight="Bold"/>
-                                        </StackPanel>
-                                        <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="6" Padding="6,2" VerticalAlignment="Center">
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.OzoneStatus, Mode=OneWay}" FontSize="10" FontWeight="SemiBold"/>
-                                        </Border>
-                                    </Grid>
-                                </Border>
-
-                                <!-- 4. Khí Nitrogen Dioxide (NO₂) -->
-                                <Border Grid.Row="1" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="12">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Grid.Column="0" Spacing="3">
-                                            <TextBlock Text="Khí Nitơ (NO₂)" FontSize="11" Opacity="0.7"/>
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.No2Text, Mode=OneWay}" FontSize="15" FontWeight="Bold"/>
-                                        </StackPanel>
-                                        <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="6" Padding="6,2" VerticalAlignment="Center">
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.No2Status, Mode=OneWay}" FontSize="10" FontWeight="SemiBold"/>
-                                        </Border>
-                                    </Grid>
+                    <!-- Lưới 4 chỉ số ô nhiễm chi tiết (PM2.5, PM10, O3, NO2) -->
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" RowSpacing="10" ColumnSpacing="10">
+                        <!-- 1. Bụi mịn PM2.5 -->
+                        <Border Grid.Row="0" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="12">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="3">
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.Pm25Label, Mode=OneWay}" FontSize="11" Opacity="0.7"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.Pm25Text, Mode=OneWay}" FontSize="15" FontWeight="Bold"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="6" Padding="6,2" VerticalAlignment="Center">
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.Pm25Status, Mode=OneWay}" FontSize="10" FontWeight="SemiBold"/>
                                 </Border>
                             </Grid>
-                        </StackPanel>
-                    </Border>
-                    </StackPanel>
+                        </Border>
+
+                        <!-- 2. Bụi thô PM10 -->
+                        <Border Grid.Row="0" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="12">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="3">
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.Pm10Label, Mode=OneWay}" FontSize="11" Opacity="0.7"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.Pm10Text, Mode=OneWay}" FontSize="15" FontWeight="Bold"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="6" Padding="6,2" VerticalAlignment="Center">
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.Pm10Status, Mode=OneWay}" FontSize="10" FontWeight="SemiBold"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- 3. Khí Ozone (O₃) -->
+                        <Border Grid.Row="1" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="12">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="3">
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.OzoneLabel, Mode=OneWay}" FontSize="11" Opacity="0.7"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.OzoneText, Mode=OneWay}" FontSize="15" FontWeight="Bold"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="6" Padding="6,2" VerticalAlignment="Center">
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.OzoneStatus, Mode=OneWay}" FontSize="10" FontWeight="SemiBold"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- 4. Khí Nitrogen Dioxide (NO₂) -->
+                        <Border Grid.Row="1" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="12">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="3">
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.No2Label, Mode=OneWay}" FontSize="11" Opacity="0.7"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.No2Text, Mode=OneWay}" FontSize="15" FontWeight="Bold"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="6" Padding="6,2" VerticalAlignment="Center">
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.No2Status, Mode=OneWay}" FontSize="10" FontWeight="SemiBold"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
     </ScrollViewer>
 </UserControl>

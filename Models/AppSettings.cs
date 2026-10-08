@@ -94,8 +94,9 @@ public class AppSettings
     public bool CommuteSat { get; set; } = false;
     public bool CommuteSun { get; set; } = false;
 
-    // 15. Gợi ý trang phục Hôm nay mặc gì (OOTD v2.1)
-    public string SelectedOutfitOccasion { get; set; } = "Work"; // "Work", "School", "Casual"
+    // 15. Gợi ý trang phục Hôm nay mặc gì (OOTD v3.0 Pro)
+    public string SelectedOutfitOccasion { get; set; } = "Work"; // "Work", "School", "Casual", "Sport", "Travel"
+    public string SelectedOutfitGender { get; set; } = "All"; // "All", "Men", "Women"
     public string ShareCardFormat { get; set; } = "Landscape"; // "Landscape" (1920x1080), "Story" (1080x1920)
 
     // 16. Bộ biểu tượng thời tiết (Icon Pack)

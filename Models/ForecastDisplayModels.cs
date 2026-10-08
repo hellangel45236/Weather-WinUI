@@ -127,4 +127,31 @@ public class LifestyleIndexItem
     public string RatingColor { get; set; } = "#10B981";
     public string Advice { get; set; } = string.Empty;
     public string IconGlyph { get; set; } = "\uf44b";
+    public double ScoreProgress { get; set; } = 80;
+    public string MetricBadge { get; set; } = string.Empty;
+}
+
+public class WorkoutWindowItem
+{
+    public string TimeRange { get; set; } = "06:00 - 08:30";
+    public string Label { get; set; } = "Sáng sớm • Giờ Vàng";
+    public string Temperature { get; set; } = "24°C";
+    public string Condition { get; set; } = "Mát mẻ, tạnh ráo";
+    public string Status { get; set; } = "Rất lý tưởng";
+    public string StatusColor { get; set; } = "#10B981";
+    public string IconGlyph { get; set; } = "\uf185";
+    public string Advice { get; set; } = "Thời điểm chạy bộ & đạp xe tốt nhất";
+}
+
+public class SkinDefenseModel
+{
+    public double UvIndex { get; set; } = 0;
+    public string UvLevelText { get; set; } = "Thấp (An toàn)";
+    public string UvColor { get; set; } = "#10B981";
+    public string RecommendedSpf { get; set; } = "SPF 30+";
+    public string MaxSafeSunTime { get; set; } = "Không giới hạn";
+    public string MaskRecommendation { get; set; } = "Khẩu trang thông thường";
+    public string MaskColor { get; set; } = "#10B981";
+    public string MaskIcon { get; set; } = "\uf6cf";
+    public string SkincareAdvice { get; set; } = "Bôi kem chống nắng nhẹ khi ra đường.";
 }

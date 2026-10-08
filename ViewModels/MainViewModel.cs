@@ -119,18 +119,39 @@ public partial class MainViewModel : ObservableObject
     private OutfitAdvice? _currentOutfitAdvice;
 
     [ObservableProperty]
-    private string _selectedOutfitOccasion = "Work"; // "Work", "School", "Casual"
+    private string _selectedOutfitOccasion = "Work"; // "Work", "School", "Casual", "Sport", "Travel"
+
+    [ObservableProperty]
+    private string _selectedOutfitGender = "All"; // "All", "Men", "Women"
+
+    [ObservableProperty]
+    private ObservableCollection<WorkoutWindowItem> _workoutWindows = new();
+
+    [ObservableProperty]
+    private SkinDefenseModel? _skinDefense = new();
+
+    [ObservableProperty]
+    private bool _isOotdCopiedOpen = false;
+
+    [ObservableProperty]
+    private string _ootdCopiedMessage = string.Empty;
 
     public bool IsWorkOccasionSelected => SelectedOutfitOccasion == "Work";
     public bool IsSchoolOccasionSelected => SelectedOutfitOccasion == "School";
     public bool IsCasualOccasionSelected => SelectedOutfitOccasion == "Casual";
+    public bool IsSportOccasionSelected => SelectedOutfitOccasion == "Sport";
+    public bool IsTravelOccasionSelected => SelectedOutfitOccasion == "Travel";
+
+    public bool IsGenderAllSelected => SelectedOutfitGender == "All";
+    public bool IsGenderMenSelected => SelectedOutfitGender == "Men";
+    public bool IsGenderWomenSelected => SelectedOutfitGender == "Women";
 
     // Tính năng mới v3.0.1: Kiểm tra cập nhật GitHub & Quản lý tiết kiệm pin Laptop
     private readonly UpdateCheckService _updateCheckService = new();
     private readonly PowerManagementService _powerService = new();
 
     [ObservableProperty]
-    private string _appVersionDisplay = "v3.0.2";
+    private string _appVersionDisplay = "v3.0.3 Official";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(GpsButtonBackground))]
@@ -326,6 +347,10 @@ public partial class MainViewModel : ObservableObject
         {
             SelectedOutfitOccasion = Settings.SelectedOutfitOccasion;
         }
+        if (!string.IsNullOrWhiteSpace(Settings.SelectedOutfitGender))
+        {
+            SelectedOutfitGender = Settings.SelectedOutfitGender;
+        }
     }
 
     public void UpdateOutfitAdvice()
@@ -333,7 +358,7 @@ public partial class MainViewModel : ObservableObject
         if (CurrentWeather == null) return;
         try
         {
-            CurrentOutfitAdvice = _outfitService.GenerateOutfitAdvice(CurrentWeather, _lastRawWeatherData, SelectedOutfitOccasion);
+            CurrentOutfitAdvice = _outfitService.GenerateOutfitAdvice(CurrentWeather, _lastRawWeatherData, SelectedOutfitOccasion, SelectedOutfitGender);
         }
         catch (Exception ex)
         {
@@ -351,7 +376,47 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(IsWorkOccasionSelected));
         OnPropertyChanged(nameof(IsSchoolOccasionSelected));
         OnPropertyChanged(nameof(IsCasualOccasionSelected));
+        OnPropertyChanged(nameof(IsSportOccasionSelected));
+        OnPropertyChanged(nameof(IsTravelOccasionSelected));
         UpdateOutfitAdvice();
+    }
+
+    [RelayCommand]
+    public void SelectOutfitGender(string gender)
+    {
+        if (string.IsNullOrWhiteSpace(gender)) return;
+        SelectedOutfitGender = gender;
+        Settings.SelectedOutfitGender = gender;
+        _settingsService.SaveSettings(Settings);
+        OnPropertyChanged(nameof(IsGenderAllSelected));
+        OnPropertyChanged(nameof(IsGenderMenSelected));
+        OnPropertyChanged(nameof(IsGenderWomenSelected));
+        UpdateOutfitAdvice();
+    }
+
+    [RelayCommand]
+    public void CopyOotdAdvice()
+    {
+        if (CurrentOutfitAdvice == null) return;
+        try
+        {
+            var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
+            dataPackage.RequestedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+            string textToCopy = !string.IsNullOrWhiteSpace(CurrentOutfitAdvice.ShareableSummaryText)
+                ? CurrentOutfitAdvice.ShareableSummaryText
+                : $"{CurrentOutfitAdvice.Headline} - {CurrentOutfitAdvice.ThermalComfortNotice}";
+            dataPackage.SetText(textToCopy);
+            Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+
+            OotdCopiedMessage = LocalizationService.Instance.IsVietnamese
+                ? "Đã sao chép gợi ý OOTD vào Clipboard!"
+                : "OOTD advice copied to clipboard!";
+            IsOotdCopiedOpen = true;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[MainViewModel] CopyOotdAdvice error: {ex.Message}");
+        }
     }
 
     // ==================== v3.0 BETA: 24H INTERACTIVE TIME SCRUBBER ====================
@@ -2139,7 +2204,7 @@ public partial class MainViewModel : ObservableObject
             GenerateCalendar();
             UpdateQuickChips();
 
-            // Tính năng mới v1.7: Chỉ số đời sống & phong cách sống (Lifestyle Indices)
+            // Tính năng mới v1.7 & v3.0.3: Chỉ số đời sống, Khung giờ vận động & Bảo vệ da
             try
             {
                 var lifestyle = _lifestyleService.GenerateLifestyleIndices(CurrentWeather, data);
@@ -2148,6 +2213,15 @@ public partial class MainViewModel : ObservableObject
                 {
                     LifestyleIndices.Add(l);
                 }
+
+                var workouts = _lifestyleService.GenerateWorkoutWindows(CurrentWeather, data);
+                WorkoutWindows.Clear();
+                foreach (var w in workouts)
+                {
+                    WorkoutWindows.Add(w);
+                }
+
+                SkinDefense = _lifestyleService.GenerateSkinDefenseAdvice(CurrentWeather);
             }
             catch { }
 
