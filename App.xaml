@@ -25,7 +25,7 @@
             <helpers:BoolToHourlyCardBorderBrushConverter x:Key="BoolToHourlyCardBorderBrushConverter" />
             <helpers:BoolToHourlyCardBackgroundConverter x:Key="BoolToHourlyCardBackgroundConverter" />
             <FontFamily x:Key="SymbolThemeFontFamily">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
-            <FontFamily x:Key="FontAwesomeSolid">ms-appx:///Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, Font Awesome 6 Free Solid, Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
+            <FontFamily x:Key="FontAwesomeSolid">Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, Font Awesome 6 Free Solid, ms-appx:///Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, Font Awesome 6 Free</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

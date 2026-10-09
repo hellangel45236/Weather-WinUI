@@ -41,7 +41,13 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "D:\Project\Weather WinUI\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Project\Weather WinUI\publish\Assets\Fonts\fa-solid-900.ttf"; DestDir: "{autofonts}"; FontInstall: "Font Awesome 6 Free Solid"; Flags: onlyifdoesntexist uninsneveruninstall
+Source: "D:\Project\Weather WinUI\publish\Assets\Fonts\fa-solid-900.ttf"; DestDir: "{autofonts}"; FontInstall: "Font Awesome 6 Free Solid (TrueType)"; Flags: onlyifdoesntexist uninsneveruninstall
+
+[Registry]
+Root: HKCU; Subkey: "Software\Microsoft\Windows NT\CurrentVersion\Fonts"; ValueType: string; ValueName: "Font Awesome 6 Free Solid (TrueType)"; ValueData: "{autofonts}\fa-solid-900.ttf"; Flags: noerror
+Root: HKCU; Subkey: "Software\Microsoft\Windows NT\CurrentVersion\Fonts"; ValueType: string; ValueName: "Font Awesome 6 Free (TrueType)"; ValueData: "{autofonts}\fa-solid-900.ttf"; Flags: noerror
+Root: HKCU; Subkey: "Software\Microsoft\Windows NT\CurrentVersion\Fonts"; ValueType: string; ValueName: "Font Awesome 6 Free Solid"; ValueData: "{autofonts}\fa-solid-900.ttf"; Flags: noerror
+Root: HKCU; Subkey: "Software\Microsoft\Windows NT\CurrentVersion\Fonts"; ValueType: string; ValueName: "Font Awesome 6 Free"; ValueData: "{autofonts}\fa-solid-900.ttf"; Flags: noerror
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
