@@ -489,7 +489,8 @@
                         </Grid>
 
                         <!-- KHUNG XỔ XUỐNG 5 LỜI KHUYÊN SINH HOẠT CHI TIẾT -->
-                        <StackPanel Visibility="{x:Bind ViewModel.IsAdviceExpanded, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                        <StackPanel x:Name="AdviceDetailsPanel"
+                                    Visibility="{x:Bind ViewModel.IsAdviceExpanded, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                     Spacing="8" Margin="0,4,0,0">
                             <Border Height="1" Background="#35FFFFFF" Margin="0,2,0,2"/>
 

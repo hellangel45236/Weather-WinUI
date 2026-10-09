@@ -638,6 +638,7 @@
                               SelectionChanged="ChangelogVersionComboBox_SelectionChanged"
                               MinWidth="240"
                               CornerRadius="8">
+                        <ComboBoxItem Content="v3.0.6 (Giao Diện Bento Grid, Fluent Motion Animation System &amp; 100% Win10/11)" Tag="3.0.6"/>
                         <ComboBoxItem Content="v3.0.5 (Hoàn Thiện Song Ngữ Tiếng Anh, Tối Ưu Co Giãn Responsive, 100% Win10 Compatibility)" Tag="3.0.5"/>
                         <ComboBoxItem Content="v3.0.4 (Chau Chuốt Lịch Âm Dương Vạn Niên, Đếm Ngược Lễ Hội, Can Chi Ba Trụ)" Tag="3.0.4"/>
                         <ComboBoxItem Content="v3.0.3 (Song Ngữ Tiếng Việt &amp; English, Giao Diện Co Giãn Thích Ứng, Cá Nhân Hóa)" Tag="3.0.3"/>
@@ -685,8 +686,65 @@
                 <!-- NỘI DUNG CHANGELOG THEO TỪNG PHIÊN BẢN -->
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                     <Grid Padding="2">
+                        <!-- ==================== CHANGELOG v3.0.6 ==================== -->
+                        <StackPanel x:Name="ChangelogContent_v306" Spacing="10" Visibility="Visible">
+                            <!-- 1. Giao diện Bento Grid Overview -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#2538BDF8">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf009;" Foreground="#38BDF8" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#38BDF8" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="BENTO GRID" FontSize="9" FontWeight="Bold" Foreground="#0F172A"/>
+                                            </Border>
+                                            <TextBlock Text="Đại Tu Bố Cục Thẻ Hero Bento &amp; Lưới 8 Khí Tượng Trực Quan" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Cấu trúc bất đối xứng hiện đại: Thẻ bên trái làm tâm điểm nhiệt độ, trạng thái và vector động; Thẻ bên phải tích hợp AI Briefing tóm tắt thông minh và lời khuyên sinh hoạt nổi bật. Lưới 8 chỉ số khí tượng tự động thích ứng 4 cột trên màn hình rộng và 2 cột trên màn hình nhỏ." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 2. Fluent Motion System -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#25F59E0B">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e7;" Foreground="#F59E0B" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#F59E0B" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="FLUENT MOTION" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Hệ Thống Animation Tự Nhiên &amp; Micro-Interactions Nhịp Nhàng" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Biểu tượng Hero dao động lơ lửng bồng bềnh (Sine ease float), kim La bàn gió xoay theo cung góc ngắn nhất (shortest angular arc), con trỏ quang phổ UV và AQI lướt êm dịu (BackEase glide), hiệu ứng chuyển tab Fluent Slide-Up &amp; Fade-In." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 3. Vật lý vi mô & Tương thích tuyệt đối -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#2510B981">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf245;" Foreground="#10B981" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#10B981" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="CARD PHYSICS &amp; WIN10/11" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Vật Lý Vi Mô Thẻ Card, Tăng Tốc GPU &amp; An Toàn Tiết Kiệm Pin" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Hiệu ứng phóng to nhẹ nhàng và ấn lún khi rê chuột (Card Hover &amp; Press Physics); toàn bộ chuyển động render trực tiếp trên GPU Compositor; tự động tuân thủ cài đặt Windows Reduce Motion và chế độ Tiết kiệm pin." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
                         <!-- ==================== CHANGELOG v3.0.5 ==================== -->
-                        <StackPanel x:Name="ChangelogContent_v305" Spacing="10" Visibility="Visible">
+                        <StackPanel x:Name="ChangelogContent_v305" Spacing="10" Visibility="Collapsed">
                             <!-- 1. Song ngữ toàn diện không sót chữ -->
                             <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">

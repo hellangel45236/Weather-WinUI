@@ -153,6 +153,7 @@ public sealed partial class MainPage : Page
                         TabOverview?.StartEffects();
                         TabOverview?.RedrawCanvases();
                         (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();
+                        AnimationHelper.SlideUpFadeIn(TabOverview);
                         break;
 
                     case "flood":
@@ -160,12 +161,14 @@ public sealed partial class MainPage : Page
                         (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();
                         var floodTab = FindName(nameof(TabFlood)) as UrbanFloodTab;
                         floodTab?.RenderTidalSineWave();
+                        AnimationHelper.SlideUpFadeIn(floodTab);
                         break;
 
                     case "radar":
                         TabOverview?.StopEffects();
                         var radarTab = FindName(nameof(TabRadar)) as RadarTab;
                         radarTab?.StartRadarSweep();
+                        AnimationHelper.SlideUpFadeIn(radarTab);
                         break;
 
                     case "lifestyle":
@@ -174,18 +177,21 @@ public sealed partial class MainPage : Page
                         var lifestyleTab = FindName(nameof(TabLifestyle)) as LifestyleTab;
                         lifestyleTab?.UpdateOccasionButtonsVisual();
                         lifestyleTab?.UpdateGenderButtonsVisual();
+                        AnimationHelper.SlideUpFadeIn(lifestyleTab);
                         break;
 
                     case "calendar":
                         TabOverview?.StopEffects();
                         (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();
-                        _ = FindName(nameof(TabCalendar)) as CalendarTab;
+                        var calendarTab = FindName(nameof(TabCalendar)) as CalendarTab;
+                        AnimationHelper.SlideUpFadeIn(calendarTab);
                         break;
 
                     case "widget":
                         TabOverview?.StopEffects();
                         (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();
-                        _ = FindName(nameof(TabWidgetStudio)) as WidgetStudioTab;
+                        var widgetTab = FindName(nameof(TabWidgetStudio)) as WidgetStudioTab;
+                        AnimationHelper.SlideUpFadeIn(widgetTab);
                         break;
 
                     case "settings":
@@ -193,6 +199,7 @@ public sealed partial class MainPage : Page
                         (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();
                         var settingsTab = FindName(nameof(TabSettings)) as SettingsTab;
                         settingsTab?.SyncAllSettings();
+                        AnimationHelper.SlideUpFadeIn(settingsTab);
                         break;
                 }
             }
@@ -709,7 +716,7 @@ public sealed partial class MainPage : Page
 
     private void CheckAndShowChangelog()
     {
-        string currentVersion = "3.0.5";
+        string currentVersion = "3.0.6";
         string lastSeen = ViewModel.Settings.LastSeenVersion ?? string.Empty;
 
         if (string.IsNullOrEmpty(lastSeen) || lastSeen != currentVersion)
@@ -771,6 +778,7 @@ public sealed partial class MainPage : Page
     {
         var panels = new[]
         {
+            (ChangelogContent_v306, "3.0.6"),
             (ChangelogContent_v305, "3.0.5"),
             (ChangelogContent_v304, "3.0.4"),
             (ChangelogContent_v303, "3.0.3"),
@@ -807,6 +815,7 @@ public sealed partial class MainPage : Page
         {
             ChangelogHeaderTitle.Text = versionTag switch
             {
+                "3.0.6" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.6" : "Official Release Notes v3.0.6",
                 "3.0.5" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.5" : "Official Release Notes v3.0.5",
                 "3.0.4" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.4" : "Official Release Notes v3.0.4",
                 "3.0.3" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.3" : "Official Release Notes v3.0.3",
@@ -825,16 +834,32 @@ public sealed partial class MainPage : Page
             };
         }
 
-        if (ChangelogHeaderBadge != null && versionTag == "3.0.5")
+        if (ChangelogHeaderBadge != null)
         {
-            ChangelogHeaderBadge.Text = isVi ? "v3.0.5 BẢN CHÍNH THỨC" : "v3.0.5 OFFICIAL";
+            if (versionTag == "3.0.6")
+            {
+                ChangelogHeaderBadge.Text = isVi ? "v3.0.6 BẢN CHÍNH THỨC" : "v3.0.6 OFFICIAL";
+            }
+            else if (versionTag == "3.0.5")
+            {
+                ChangelogHeaderBadge.Text = isVi ? "v3.0.5 BẢN CHÍNH THỨC" : "v3.0.5 OFFICIAL";
+            }
         }
 
-        if (ChangelogHeaderSubtitle != null && versionTag == "3.0.5")
+        if (ChangelogHeaderSubtitle != null)
         {
-            ChangelogHeaderSubtitle.Text = isVi
-                ? "Bản cập nhật v3.0.5 hoàn thiện 100% song ngữ Tiếng Anh toàn bộ ứng dụng, đại tu bố cục giao diện co giãn Responsive chống tràn cắt chữ và đảm bảo độ tương thích hiển thị tuyệt đối trên Windows 10 & 11."
-                : "Version 3.0.5 delivers 100% comprehensive English localization across the entire app, responsive layout scaling overhaul preventing text clipping, and guaranteed visual compatibility on Windows 10 & 11.";
+            if (versionTag == "3.0.6")
+            {
+                ChangelogHeaderSubtitle.Text = isVi
+                    ? "Bản cập nhật v3.0.6 ra mắt cấu trúc Bento Grid hiện đại cho tab Tổng quan, hệ thống hoạt họa Fluent Motion nhịp nhàng (kim la bàn xoay ngắn nhất, UV/AQI lướt êm, biểu tượng thở lơ lửng, vật lý vi mô thẻ card) và chuyển tab mượt mà 100% trên Win 10 & 11."
+                    : "Version 3.0.6 introduces a modern Bento Grid Overview layout, a comprehensive Fluent Motion animation system (shortest-arc compass, gliding UV/AQI indicators, breathing hero icon, card hover physics) and seamless tab transitions on Win 10 & 11.";
+            }
+            else if (versionTag == "3.0.5")
+            {
+                ChangelogHeaderSubtitle.Text = isVi
+                    ? "Bản cập nhật v3.0.5 hoàn thiện 100% song ngữ Tiếng Anh toàn bộ ứng dụng, đại tu bố cục giao diện co giãn Responsive chống tràn cắt chữ và đảm bảo độ tương thích hiển thị tuyệt đối trên Windows 10 & 11."
+                    : "Version 3.0.5 delivers 100% comprehensive English localization across the entire app, responsive layout scaling overhaul preventing text clipping, and guaranteed visual compatibility on Windows 10 & 11.";
+            }
         }
     }
 

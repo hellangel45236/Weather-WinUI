@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using WeatherApp.Helpers;
 using WeatherApp.Models;
@@ -25,6 +26,21 @@ public sealed partial class OverviewTab : UserControl
     public event EventHandler? ShareRequested;
 
     private WeatherEffectRenderer? _weatherEffectRenderer;
+    private Storyboard? _heroIconStoryboard;
+    private Storyboard? _windNeedleStoryboard;
+    private double _currentWindAngle = 0;
+
+    private Microsoft.UI.Xaml.Shapes.Ellipse? _uvDot;
+    private TranslateTransform? _uvDotTransform;
+    private Storyboard? _uvDotStoryboard;
+    private double _currentUvX = -999;
+
+    private Microsoft.UI.Xaml.Shapes.Ellipse? _aqiDot;
+    private TranslateTransform? _aqiDotTransform;
+    private Storyboard? _aqiDotStoryboard;
+    private double _currentAqiX = -999;
+
+    private bool _hoverPhysicsInitialized = false;
 
     private static void OnViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -59,6 +75,16 @@ public sealed partial class OverviewTab : UserControl
                 RedrawCanvases();
             });
         }
+        else if (e.PropertyName == nameof(MainViewModel.IsAdviceExpanded))
+        {
+            if (ViewModel?.IsAdviceExpanded == true && AdviceDetailsPanel != null)
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    AnimationHelper.SlideUpFadeIn(AdviceDetailsPanel, 12, 300);
+                });
+            }
+        }
     }
 
     public OverviewTab()
@@ -74,9 +100,11 @@ public sealed partial class OverviewTab : UserControl
                 ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
                 ViewModel.PropertyChanged += ViewModel_PropertyChanged;
             }
+            SetupAllCardHoverPhysics();
             UpdateResponsiveLayout(this.ActualWidth);
             UpdateWeatherVisuals();
             RedrawCanvases();
+            StartHeroIconAnimation();
         };
 
         this.Unloaded += (s, e) =>
@@ -85,6 +113,10 @@ public sealed partial class OverviewTab : UserControl
             {
                 ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
             }
+            StopHeroIconAnimation();
+            _windNeedleStoryboard?.Stop();
+            _uvDotStoryboard?.Stop();
+            _aqiDotStoryboard?.Stop();
         };
 
         this.SizeChanged += (s, e) =>
@@ -126,12 +158,14 @@ public sealed partial class OverviewTab : UserControl
         if (shouldRun)
         {
             _weatherEffectRenderer?.Resume();
+            StartHeroIconAnimation();
         }
     }
 
     public void StopEffects()
     {
         _weatherEffectRenderer?.Pause();
+        StopHeroIconAnimation();
     }
 
     public void UpdateWeatherVisuals()
@@ -146,11 +180,13 @@ public sealed partial class OverviewTab : UserControl
         {
             _weatherEffectRenderer?.SetWeatherEffect(ViewModel.CurrentWeather.WeatherEffect);
             _weatherEffectRenderer?.Resume();
+            StartHeroIconAnimation();
         }
         else
         {
             _weatherEffectRenderer?.Pause();
             WeatherEffectsCanvas.Children.Clear();
+            StopHeroIconAnimation();
         }
 
         // Cập nhật hình nền thành phố nếu được bật
@@ -690,58 +726,301 @@ public sealed partial class OverviewTab : UserControl
 
     public void RenderVisualGauges()
     {
-        if (ViewModel?.CurrentWeather == null) return;
+        var cw = ViewModel?.CurrentWeather;
+        if (cw == null) return;
 
-        // 1. La bàn gió xoay theo độ hướng gió thực tế
-        if (WindNeedleRotate != null)
-        {
-            WindNeedleRotate.Angle = ViewModel.CurrentWeather.WindDirectionDegrees;
-        }
+        // 1. La bàn gió xoay theo độ hướng gió thực tế (Shortest angular arc animation)
+        AnimateWindNeedle(cw.WindDirectionDegrees);
 
-        // 2. Con trỏ thanh quang phổ UV
+        // 2. Con trỏ thanh quang phổ UV mượt mà
         if (UvGaugeCanvas != null)
         {
-            UvGaugeCanvas.Children.Clear();
             double width = UvGaugeCanvas.ActualWidth;
             if (width > 20)
             {
-                double progress = Math.Clamp(ViewModel.CurrentWeather.UvIndexValue / 11.0, 0.05, 0.95);
-                double x = progress * width;
-                var dot = new Microsoft.UI.Xaml.Shapes.Ellipse
+                if (_uvDot == null || !UvGaugeCanvas.Children.Contains(_uvDot))
                 {
-                    Width = 8,
-                    Height = 8,
-                    Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
-                    Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 15, 23, 42)),
-                    StrokeThickness = 1.5
-                };
-                Canvas.SetLeft(dot, x - 4);
-                Canvas.SetTop(dot, 0);
-                UvGaugeCanvas.Children.Add(dot);
+                    UvGaugeCanvas.Children.Clear();
+                    _uvDotTransform = new TranslateTransform();
+                    _uvDot = new Microsoft.UI.Xaml.Shapes.Ellipse
+                    {
+                        Width = 8,
+                        Height = 8,
+                        Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                        Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 15, 23, 42)),
+                        StrokeThickness = 1.5,
+                        RenderTransform = _uvDotTransform
+                    };
+                    Canvas.SetLeft(_uvDot, 0);
+                    Canvas.SetTop(_uvDot, 0);
+                    UvGaugeCanvas.Children.Add(_uvDot);
+                }
+
+                double progress = Math.Clamp(cw.UvIndexValue / 11.0, 0.05, 0.95);
+                double targetX = (progress * width) - 4;
+
+                bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
+                    !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true);
+
+                if (!shouldAnimate || _currentUvX < -500)
+                {
+                    _uvDotStoryboard?.Stop();
+                    _uvDotStoryboard = null;
+                    _currentUvX = targetX;
+                    if (_uvDotTransform != null) _uvDotTransform.X = targetX;
+                }
+                else if (Math.Abs(_currentUvX - targetX) > 0.5)
+                {
+                    _uvDotStoryboard?.Stop();
+                    var anim = new DoubleAnimation
+                    {
+                        From = _currentUvX,
+                        To = targetX,
+                        Duration = new Duration(TimeSpan.FromMilliseconds(550)),
+                        EasingFunction = new BackEase { Amplitude = 0.25, EasingMode = EasingMode.EaseOut }
+                    };
+                    Storyboard.SetTarget(anim, _uvDotTransform);
+                    Storyboard.SetTargetProperty(anim, "X");
+
+                    _uvDotStoryboard = new Storyboard();
+                    _uvDotStoryboard.Children.Add(anim);
+                    _uvDotStoryboard.Begin();
+                    _currentUvX = targetX;
+                }
             }
         }
 
-        // 3. Con trỏ thanh quang phổ AQI
+        // 3. Con trỏ thanh quang phổ AQI mượt mà
         if (AqiGaugeCanvas != null)
         {
-            AqiGaugeCanvas.Children.Clear();
             double width = AqiGaugeCanvas.ActualWidth;
             if (width > 20)
             {
-                double progress = Math.Clamp((double)ViewModel.CurrentWeather.AqiValue / 300.0, 0.05, 0.95);
-                double x = progress * width;
-                var dot = new Microsoft.UI.Xaml.Shapes.Ellipse
+                if (_aqiDot == null || !AqiGaugeCanvas.Children.Contains(_aqiDot))
                 {
-                    Width = 8,
-                    Height = 8,
-                    Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
-                    Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 15, 23, 42)),
-                    StrokeThickness = 1.5
-                };
-                Canvas.SetLeft(dot, x - 4);
-                Canvas.SetTop(dot, 0);
-                AqiGaugeCanvas.Children.Add(dot);
+                    AqiGaugeCanvas.Children.Clear();
+                    _aqiDotTransform = new TranslateTransform();
+                    _aqiDot = new Microsoft.UI.Xaml.Shapes.Ellipse
+                    {
+                        Width = 8,
+                        Height = 8,
+                        Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                        Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 15, 23, 42)),
+                        StrokeThickness = 1.5,
+                        RenderTransform = _aqiDotTransform
+                    };
+                    Canvas.SetLeft(_aqiDot, 0);
+                    Canvas.SetTop(_aqiDot, 0);
+                    AqiGaugeCanvas.Children.Add(_aqiDot);
+                }
+
+                double progress = Math.Clamp((double)cw.AqiValue / 300.0, 0.05, 0.95);
+                double targetX = (progress * width) - 4;
+
+                bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
+                    !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true);
+
+                if (!shouldAnimate || _currentAqiX < -500)
+                {
+                    _aqiDotStoryboard?.Stop();
+                    _aqiDotStoryboard = null;
+                    _currentAqiX = targetX;
+                    if (_aqiDotTransform != null) _aqiDotTransform.X = targetX;
+                }
+                else if (Math.Abs(_currentAqiX - targetX) > 0.5)
+                {
+                    _aqiDotStoryboard?.Stop();
+                    var anim = new DoubleAnimation
+                    {
+                        From = _currentAqiX,
+                        To = targetX,
+                        Duration = new Duration(TimeSpan.FromMilliseconds(550)),
+                        EasingFunction = new BackEase { Amplitude = 0.25, EasingMode = EasingMode.EaseOut }
+                    };
+                    Storyboard.SetTarget(anim, _aqiDotTransform);
+                    Storyboard.SetTargetProperty(anim, "X");
+
+                    _aqiDotStoryboard = new Storyboard();
+                    _aqiDotStoryboard.Children.Add(anim);
+                    _aqiDotStoryboard.Begin();
+                    _currentAqiX = targetX;
+                }
             }
         }
+    }
+
+    private void AnimateWindNeedle(double targetAngle)
+    {
+        if (WindNeedleRotate == null) return;
+
+        bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
+            !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true);
+
+        if (!shouldAnimate)
+        {
+            _windNeedleStoryboard?.Stop();
+            _windNeedleStoryboard = null;
+            _currentWindAngle = targetAngle;
+            WindNeedleRotate.Angle = targetAngle;
+            return;
+        }
+
+        double diff = AnimationHelper.CalculateShortestAngularDifference(_currentWindAngle, targetAngle);
+        double toAngle = _currentWindAngle + diff;
+
+        _windNeedleStoryboard?.Stop();
+        var anim = new DoubleAnimation
+        {
+            From = _currentWindAngle,
+            To = toAngle,
+            Duration = new Duration(TimeSpan.FromMilliseconds(650)),
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+        };
+
+        Storyboard.SetTarget(anim, WindNeedleRotate);
+        Storyboard.SetTargetProperty(anim, "Angle");
+
+        _windNeedleStoryboard = new Storyboard();
+        _windNeedleStoryboard.Children.Add(anim);
+        _windNeedleStoryboard.Completed += (s, e) =>
+        {
+            _currentWindAngle = (toAngle % 360 + 360) % 360;
+            WindNeedleRotate.Angle = _currentWindAngle;
+        };
+        _windNeedleStoryboard.Begin();
+        _currentWindAngle = toAngle;
+    }
+
+    public void StartHeroIconAnimation()
+    {
+        if (_heroIconStoryboard != null) return;
+        if (WeatherIconFloatTransform == null) return;
+
+        bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
+            !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true) &&
+            (ViewModel?.Settings.EnableWeatherEffects != false);
+
+        if (!shouldAnimate)
+        {
+            WeatherIconFloatTransform.Y = 0;
+            return;
+        }
+
+        var anim = new DoubleAnimation
+        {
+            From = 0.0,
+            To = -5.0,
+            Duration = new Duration(TimeSpan.FromMilliseconds(2200)),
+            AutoReverse = true,
+            RepeatBehavior = RepeatBehavior.Forever,
+            EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut }
+        };
+
+        Storyboard.SetTarget(anim, WeatherIconFloatTransform);
+        Storyboard.SetTargetProperty(anim, "Y");
+
+        _heroIconStoryboard = new Storyboard();
+        _heroIconStoryboard.Children.Add(anim);
+        _heroIconStoryboard.Begin();
+    }
+
+    public void StopHeroIconAnimation()
+    {
+        if (_heroIconStoryboard != null)
+        {
+            _heroIconStoryboard.Stop();
+            _heroIconStoryboard = null;
+        }
+        if (WeatherIconFloatTransform != null)
+        {
+            WeatherIconFloatTransform.Y = 0;
+        }
+    }
+
+    private void SetupAllCardHoverPhysics()
+    {
+        if (_hoverPhysicsInitialized) return;
+        _hoverPhysicsInitialized = true;
+
+        SetupCardHoverPhysics(HeroBentoLeftCard);
+        SetupCardHoverPhysics(HeroBentoRightCard);
+        SetupCardHoverPhysics(CardUv);
+        SetupCardHoverPhysics(CardAqi);
+        SetupCardHoverPhysics(CardWind);
+        SetupCardHoverPhysics(CardHumidity);
+        SetupCardHoverPhysics(CardRain);
+        SetupCardHoverPhysics(CardPressure);
+        SetupCardHoverPhysics(CardSunMoon);
+        SetupCardHoverPhysics(CardPollutants);
+    }
+
+    private void SetupCardHoverPhysics(Border? card)
+    {
+        if (card == null) return;
+
+        var scaleTransform = new ScaleTransform { ScaleX = 1.0, ScaleY = 1.0 };
+        var translateTransform = new TranslateTransform { Y = 0 };
+        var group = new TransformGroup();
+        group.Children.Add(scaleTransform);
+        group.Children.Add(translateTransform);
+        card.RenderTransform = group;
+        card.RenderTransformOrigin = new Windows.Foundation.Point(0.5, 0.5);
+
+        Storyboard? currentAnim = null;
+
+        void AnimateTo(double targetScale, double targetY, double durationMs)
+        {
+            if (!AnimationHelper.AreAnimationsEnabled || (ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true))
+            {
+                currentAnim?.Stop();
+                currentAnim = null;
+                scaleTransform.ScaleX = targetScale;
+                scaleTransform.ScaleY = targetScale;
+                translateTransform.Y = targetY;
+                return;
+            }
+
+            currentAnim?.Stop();
+            var sb = new Storyboard();
+
+            var scaleXAnim = new DoubleAnimation
+            {
+                To = targetScale,
+                Duration = new Duration(TimeSpan.FromMilliseconds(durationMs)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            Storyboard.SetTarget(scaleXAnim, scaleTransform);
+            Storyboard.SetTargetProperty(scaleXAnim, "ScaleX");
+
+            var scaleYAnim = new DoubleAnimation
+            {
+                To = targetScale,
+                Duration = new Duration(TimeSpan.FromMilliseconds(durationMs)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            Storyboard.SetTarget(scaleYAnim, scaleTransform);
+            Storyboard.SetTargetProperty(scaleYAnim, "ScaleY");
+
+            var transAnim = new DoubleAnimation
+            {
+                To = targetY,
+                Duration = new Duration(TimeSpan.FromMilliseconds(durationMs)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            Storyboard.SetTarget(transAnim, translateTransform);
+            Storyboard.SetTargetProperty(transAnim, "Y");
+
+            sb.Children.Add(scaleXAnim);
+            sb.Children.Add(scaleYAnim);
+            sb.Children.Add(transAnim);
+            currentAnim = sb;
+            sb.Begin();
+        }
+
+        card.PointerEntered += (s, e) => AnimateTo(1.015, -2.5, 180);
+        card.PointerExited += (s, e) => AnimateTo(1.0, 0, 220);
+        card.PointerPressed += (s, e) => AnimateTo(0.985, 0, 80);
+        card.PointerReleased += (s, e) => AnimateTo(1.015, -2.5, 150);
+        card.PointerCaptureLost += (s, e) => AnimateTo(1.0, 0, 200);
     }
 }

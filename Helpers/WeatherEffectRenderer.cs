@@ -69,6 +69,12 @@ public class WeatherEffectRenderer
 
     public void Resume()
     {
+        if (!AnimationHelper.AreAnimationsEnabled)
+        {
+            Pause();
+            return;
+        }
+
         if (!_renderTimer.IsEnabled)
         {
             _renderTimer.Start();
@@ -310,7 +316,7 @@ public class WeatherEffectRenderer
 
     private async void LightningTimer_Tick(object? sender, object e)
     {
-        _lightningTimer.Interval = TimeSpan.FromSeconds(_random.Next(3, 7));
+        _lightningTimer.Interval = TimeSpan.FromSeconds(_random.Next(4, 8));
 
         if (_currentEffect != WeatherEffectType.Thunderstorm)
         {
@@ -320,22 +326,23 @@ public class WeatherEffectRenderer
 
         try
         {
-            // Tia chớp 1: Bật sáng nhẹ
-            _lightningOverlay.Opacity = 0.5;
+            // Pha 1: Tia chớp mồi nhẹ
+            _lightningOverlay.Opacity = 0.35;
             await Task.Delay(50);
             if (_currentEffect != WeatherEffectType.Thunderstorm) { _lightningOverlay.Opacity = 0; return; }
 
-            _lightningOverlay.Opacity = 0.1;
+            // Giảm tối chớp nhoáng
+            _lightningOverlay.Opacity = 0.05;
             await Task.Delay(40);
             if (_currentEffect != WeatherEffectType.Thunderstorm) { _lightningOverlay.Opacity = 0; return; }
 
-            // Tia chớp 2: Sáng mạnh rực rỡ
-            _lightningOverlay.Opacity = 0.75;
-            await Task.Delay(70);
+            // Pha 2: Chớp cực mạnh rực rỡ
+            _lightningOverlay.Opacity = 0.85;
+            await Task.Delay(100);
             if (_currentEffect != WeatherEffectType.Thunderstorm) { _lightningOverlay.Opacity = 0; return; }
 
-            // Tắt dần
-            for (int i = 6; i >= 0; i--)
+            // Tàn dần mềm mại
+            for (int i = 8; i >= 0; i--)
             {
                 if (_currentEffect != WeatherEffectType.Thunderstorm) { _lightningOverlay.Opacity = 0; return; }
                 _lightningOverlay.Opacity = i * 0.1;
@@ -352,6 +359,11 @@ public class WeatherEffectRenderer
 
     private void RenderTimer_Tick(object? sender, object e)
     {
+        if (!AnimationHelper.AreAnimationsEnabled || _canvas.ActualWidth <= 0 || _canvas.ActualHeight <= 0)
+        {
+            return;
+        }
+
         _animationTime += 0.033;
         double height = _canvas.ActualHeight > 100 ? _canvas.ActualHeight : 220;
         double width = _canvas.ActualWidth > 100 ? _canvas.ActualWidth : 700;
