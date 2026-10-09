@@ -96,6 +96,13 @@ public sealed partial class OverviewTab : UserControl
                 DispatcherQueue.TryEnqueue(HideMetricDetailModal);
             }
         }
+        else if (e.PropertyName == nameof(MainViewModel.SelectedMetricDetail))
+        {
+            if (ViewModel?.IsMetricDetailOpen == true)
+            {
+                DispatcherQueue.TryEnqueue(ShowMetricDetailModal);
+            }
+        }
     }
 
     public OverviewTab()
@@ -1050,22 +1057,85 @@ public sealed partial class OverviewTab : UserControl
             sb.Begin();
         }
 
+        bool isPointerDown = false;
+        Windows.Foundation.Point pressPosition = default;
+        long pressTimestamp = 0;
+
         card.PointerEntered += (s, e) => AnimateTo(1.015, -2.5, 180);
-        card.PointerExited += (s, e) => AnimateTo(1.0, 0, 220);
-        card.PointerPressed += (s, e) => AnimateTo(0.985, 0, 80);
-        card.PointerReleased += (s, e) => AnimateTo(1.015, -2.5, 150);
-        card.PointerCaptureLost += (s, e) => AnimateTo(1.0, 0, 200);
+        card.PointerExited += (s, e) =>
+        {
+            isPointerDown = false;
+            AnimateTo(1.0, 0, 220);
+        };
+
+        card.PointerPressed += (s, e) =>
+        {
+            if (isClickableMetric)
+            {
+                isPointerDown = true;
+                pressTimestamp = Environment.TickCount64;
+                try { pressPosition = e.GetCurrentPoint(this).Position; } catch { }
+            }
+            AnimateTo(0.992, -0.5, 70);
+        };
+
+        card.PointerReleased += (s, e) =>
+        {
+            AnimateTo(1.015, -2.5, 150);
+
+            if (isClickableMetric && isPointerDown)
+            {
+                isPointerDown = false;
+                Windows.Foundation.Point releasePosition = default;
+                try { releasePosition = e.GetCurrentPoint(this).Position; } catch { }
+                long duration = Environment.TickCount64 - pressTimestamp;
+
+                double dx = Math.Abs(releasePosition.X - pressPosition.X);
+                double dy = Math.Abs(releasePosition.Y - pressPosition.Y);
+
+                // Nếu thao tác là click chuột (< 20px dịch chuyển và nhả chuột trong vòng 1.2s)
+                if (dx < 20 && dy < 20 && duration < 1200)
+                {
+                    if (card.Tag is string tag && !string.IsNullOrEmpty(tag))
+                    {
+                        TriggerMetricOpen(tag);
+                    }
+                }
+            }
+        };
+
+        card.PointerCaptureLost += (s, e) =>
+        {
+            isPointerDown = false;
+            AnimateTo(1.0, 0, 200);
+        };
     }
 
     #region DEEP-DIVE METRIC DETAIL MODAL ANIMATION & HANDLERS
     private Storyboard? _modalOpenStoryboard;
     private Storyboard? _modalCloseStoryboard;
+    private long _lastMetricOpenTime = 0;
+
+    private void TriggerMetricOpen(string? tag)
+    {
+        if (string.IsNullOrEmpty(tag) || ViewModel == null) return;
+
+        long now = Environment.TickCount64;
+        if (now - _lastMetricOpenTime < 250) return;
+        _lastMetricOpenTime = now;
+
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            ViewModel.OpenMetricDetail(tag);
+            ShowMetricDetailModal();
+        });
+    }
 
     private void MetricCard_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
     {
         if (sender is FrameworkElement fe && fe.Tag is string tag)
         {
-            ViewModel?.OpenMetricDetail(tag);
+            TriggerMetricOpen(tag);
         }
     }
 
@@ -1100,13 +1170,17 @@ public sealed partial class OverviewTab : UserControl
     {
         if (MetricDetailOverlay == null || ModalScaleTransform == null || ModalTranslateTransform == null) return;
 
+        try { this.ProtectedCursor = null; } catch { }
         UpdateModalResponsiveSize();
 
-        bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
-            !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true);
+        _modalCloseStoryboard?.Stop();
+        _modalOpenStoryboard?.Stop();
 
         MetricDetailOverlay.Visibility = Visibility.Visible;
         MetricDetailOverlay.IsHitTestVisible = true;
+
+        bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
+            !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true);
 
         if (!shouldAnimate)
         {
@@ -1116,9 +1190,6 @@ public sealed partial class OverviewTab : UserControl
             ModalTranslateTransform.Y = 0;
             return;
         }
-
-        _modalCloseStoryboard?.Stop();
-        _modalOpenStoryboard?.Stop();
 
         MetricDetailOverlay.Opacity = 0.0;
         ModalScaleTransform.ScaleX = 0.95;
@@ -1174,6 +1245,14 @@ public sealed partial class OverviewTab : UserControl
         Storyboard.SetTargetProperty(transY, "Y");
         sb.Children.Add(transY);
 
+        sb.Completed += (s, e) =>
+        {
+            MetricDetailOverlay.Opacity = 1.0;
+            ModalScaleTransform.ScaleX = 1.0;
+            ModalScaleTransform.ScaleY = 1.0;
+            ModalTranslateTransform.Y = 0;
+        };
+
         _modalOpenStoryboard = sb;
         sb.Begin();
     }
@@ -1187,8 +1266,11 @@ public sealed partial class OverviewTab : UserControl
 
         if (!shouldAnimate)
         {
+            _modalOpenStoryboard?.Stop();
+            _modalCloseStoryboard?.Stop();
             MetricDetailOverlay.Visibility = Visibility.Collapsed;
             MetricDetailOverlay.IsHitTestVisible = false;
+            MetricDetailOverlay.Opacity = 0.0;
             if (ViewModel != null) ViewModel.IsMetricDetailOpen = false;
             return;
         }
@@ -1242,6 +1324,7 @@ public sealed partial class OverviewTab : UserControl
         {
             MetricDetailOverlay.Visibility = Visibility.Collapsed;
             MetricDetailOverlay.IsHitTestVisible = false;
+            MetricDetailOverlay.Opacity = 0.0;
             if (ViewModel != null) ViewModel.IsMetricDetailOpen = false;
         };
 

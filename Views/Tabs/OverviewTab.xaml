@@ -1016,6 +1016,7 @@
     <!-- 4. MODAL POPUP CHI TIẾT CHỈ SỐ KHÍ TƯỢNG & DỰ BÁO 7 NGÀY (DEEP-DIVE METRIC POPUP)    -->
     <!-- =================================================================================== -->
     <Grid x:Name="MetricDetailOverlay"
+          Canvas.ZIndex="999"
           Visibility="Collapsed"
           Opacity="0"
           HorizontalAlignment="Stretch"
