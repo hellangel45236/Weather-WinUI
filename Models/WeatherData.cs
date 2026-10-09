@@ -87,6 +87,9 @@ public class HourlyWeatherDto
 
     [JsonPropertyName("surface_pressure")]
     public List<double>? SurfacePressure { get; set; }
+
+    [JsonPropertyName("uv_index")]
+    public List<double>? UvIndex { get; set; }
 }
 
 public class DailyWeatherDto

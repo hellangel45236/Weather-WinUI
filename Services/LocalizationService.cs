@@ -631,4 +631,12 @@ public class LocalizationService : INotifyPropertyChanged
     public string WidgetWindowCityPickerQuick => IsVietnamese ? "Hoặc chọn nhanh:" : "Or quick select:";
 
     #endregion
+
+    #region Overview Tab - Hourly Metric Switcher & Compact Header
+    public string HourlyModeTemp => IsVietnamese ? "Nhiệt độ" : "Temperature";
+    public string HourlyModeRain => IsVietnamese ? "Khả năng mưa" : "Rain Chance";
+    public string HourlyModeWind => IsVietnamese ? "Tốc độ gió" : "Wind Speed";
+    public string HourlyModeUv => IsVietnamese ? "Chỉ số UV" : "UV Index";
+    public string ScrollToTopTooltip => IsVietnamese ? "Cuộn lên đầu trang" : "Scroll to top";
+    #endregion
 }

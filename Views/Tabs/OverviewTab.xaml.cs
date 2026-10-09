@@ -111,6 +111,11 @@ public sealed partial class OverviewTab : UserControl
 
         _weatherEffectRenderer = new WeatherEffectRenderer(WeatherEffectsCanvas, LightningFlashOverlay);
 
+        if (OverviewScrollViewer != null)
+        {
+            OverviewScrollViewer.ViewChanged += OverviewScrollViewer_ViewChanged;
+        }
+
         this.KeyDown += (s, e) =>
         {
             if (e.Key == Windows.System.VirtualKey.Escape && ViewModel?.IsMetricDetailOpen == true)
@@ -392,7 +397,65 @@ public sealed partial class OverviewTab : UserControl
         }
     }
 
-    public void RenderHourlyTemperatureTrendline()
+    public enum HourlyChartMetricMode
+    {
+        Temperature,
+        RainProbability,
+        WindSpeed,
+        UvIndex
+    }
+
+    private HourlyChartMetricMode _currentHourlyMetric = HourlyChartMetricMode.Temperature;
+
+    private void HourlyMetricTab_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is string tagStr)
+        {
+            if (Enum.TryParse<HourlyChartMetricMode>(tagStr, true, out var mode))
+            {
+                if (_currentHourlyMetric == mode) return;
+                _currentHourlyMetric = mode;
+                UpdateHourlyMetricButtonsStyle();
+                RenderHourlyTrendline();
+            }
+        }
+    }
+
+    private void UpdateHourlyMetricButtonsStyle()
+    {
+        Button[] buttons = { BtnHourlyTemp, BtnHourlyRain, BtnHourlyWind, BtnHourlyUv };
+        HourlyChartMetricMode[] modes = { HourlyChartMetricMode.Temperature, HourlyChartMetricMode.RainProbability, HourlyChartMetricMode.WindSpeed, HourlyChartMetricMode.UvIndex };
+
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            var btn = buttons[i];
+            if (btn == null) continue;
+            bool isActive = modes[i] == _currentHourlyMetric;
+
+            if (isActive)
+            {
+                btn.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(45, 56, 189, 248));
+                btn.BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(140, 56, 189, 248));
+                btn.BorderThickness = new Thickness(1);
+            }
+            else
+            {
+                btn.Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+                btn.BorderBrush = new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+                btn.BorderThickness = new Thickness(1);
+            }
+
+            if (btn.Content is StackPanel sp && sp.Children.Count > 1 && sp.Children[1] is TextBlock tb)
+            {
+                tb.FontWeight = isActive ? Microsoft.UI.Text.FontWeights.Bold : Microsoft.UI.Text.FontWeights.Normal;
+                tb.Opacity = isActive ? 1.0 : 0.75;
+            }
+        }
+    }
+
+    public void RenderHourlyTemperatureTrendline() => RenderHourlyTrendline();
+
+    public void RenderHourlyTrendline()
     {
         try
         {
@@ -413,9 +476,62 @@ public sealed partial class OverviewTab : UserControl
             double canvasHeight = 74.0;
             HourlyTrendlineCanvas.Height = canvasHeight;
 
-            double minTemp = items.Min(x => x.TempValue);
-            double maxTemp = items.Max(x => x.TempValue);
-            double tempRange = Math.Max(1.0, maxTemp - minTemp);
+            // 1. Trích xuất giá trị và nhãn tương ứng theo metric được chọn
+            double GetItemValue(HourlyForecastItem it) => _currentHourlyMetric switch
+            {
+                HourlyChartMetricMode.Temperature => it.TempValue,
+                HourlyChartMetricMode.RainProbability => (double)it.RainProbabilityValue,
+                HourlyChartMetricMode.WindSpeed => it.WindSpeedValue,
+                HourlyChartMetricMode.UvIndex => it.UvValue,
+                _ => it.TempValue
+            };
+
+            string GetItemDisplay(HourlyForecastItem it) => _currentHourlyMetric switch
+            {
+                HourlyChartMetricMode.Temperature => it.TempDisplay,
+                HourlyChartMetricMode.RainProbability => it.RainProbabilityText,
+                HourlyChartMetricMode.WindSpeed => it.WindSpeedDisplay,
+                HourlyChartMetricMode.UvIndex => it.UvDisplay,
+                _ => it.TempDisplay
+            };
+
+            // Bảng màu stroke & fill tương ứng
+            var (strokeColor, fillStartColor, fillEndColor) = _currentHourlyMetric switch
+            {
+                HourlyChartMetricMode.Temperature => (
+                    Windows.UI.Color.FromArgb(230, 56, 189, 248),
+                    Windows.UI.Color.FromArgb(90, 56, 189, 248),
+                    Windows.UI.Color.FromArgb(10, 56, 189, 248)),
+                HourlyChartMetricMode.RainProbability => (
+                    Windows.UI.Color.FromArgb(240, 14, 165, 233),
+                    Windows.UI.Color.FromArgb(100, 14, 165, 233),
+                    Windows.UI.Color.FromArgb(12, 14, 165, 233)),
+                HourlyChartMetricMode.WindSpeed => (
+                    Windows.UI.Color.FromArgb(240, 16, 185, 129),
+                    Windows.UI.Color.FromArgb(100, 16, 185, 129),
+                    Windows.UI.Color.FromArgb(12, 16, 185, 129)),
+                HourlyChartMetricMode.UvIndex => (
+                    Windows.UI.Color.FromArgb(240, 245, 158, 11),
+                    Windows.UI.Color.FromArgb(100, 245, 158, 11),
+                    Windows.UI.Color.FromArgb(12, 245, 158, 11)),
+                _ => (
+                    Windows.UI.Color.FromArgb(230, 56, 189, 248),
+                    Windows.UI.Color.FromArgb(90, 56, 189, 248),
+                    Windows.UI.Color.FromArgb(10, 56, 189, 248))
+            };
+
+            double minVal = items.Min(GetItemValue);
+            double maxVal = items.Max(GetItemValue);
+
+            // Đảm bảo dải đo tối thiểu để biểu đồ không bị phẳng lì
+            double rangeMinFloor = _currentHourlyMetric switch
+            {
+                HourlyChartMetricMode.RainProbability => 10.0,
+                HourlyChartMetricMode.UvIndex => 1.0,
+                HourlyChartMetricMode.WindSpeed => 2.0,
+                _ => 1.0
+            };
+            double valRange = Math.Max(rangeMinFloor, maxVal - minVal);
 
             double topPadding = 24.0;
             double bottomPadding = 14.0;
@@ -425,7 +541,7 @@ public sealed partial class OverviewTab : UserControl
             for (int i = 0; i < count; i++)
             {
                 double x = i * colWidth + (cardWidth / 2.0);
-                double normalized = (items[i].TempValue - minTemp) / tempRange;
+                double normalized = (GetItemValue(items[i]) - minVal) / valRange;
                 double y = topPadding + (1.0 - normalized) * usableHeight;
                 points.Add(new Windows.Foundation.Point(x, y));
             }
@@ -480,9 +596,9 @@ public sealed partial class OverviewTab : UserControl
                 StartPoint = new Windows.Foundation.Point(0, 0),
                 EndPoint = new Windows.Foundation.Point(0, 1)
             };
-            fillBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(90, 56, 189, 248), Offset = 0.0 });
-            fillBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(10, 56, 189, 248), Offset = 0.75 });
-            fillBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(0, 56, 189, 248), Offset = 1.0 });
+            fillBrush.GradientStops.Add(new GradientStop { Color = fillStartColor, Offset = 0.0 });
+            fillBrush.GradientStops.Add(new GradientStop { Color = fillEndColor, Offset = 0.75 });
+            fillBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(0, fillStartColor.R, fillStartColor.G, fillStartColor.B), Offset = 1.0 });
 
             var areaFill = new Microsoft.UI.Xaml.Shapes.Path
             {
@@ -497,7 +613,7 @@ public sealed partial class OverviewTab : UserControl
             var strokePath = new Microsoft.UI.Xaml.Shapes.Path
             {
                 Data = strokeGeo,
-                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 56, 189, 248)),
+                Stroke = new SolidColorBrush(strokeColor),
                 StrokeThickness = 2.5
             };
             HourlyTrendlineCanvas.Children.Add(strokePath);
@@ -506,17 +622,20 @@ public sealed partial class OverviewTab : UserControl
             {
                 var pt = points[i];
 
-                // Cột xác suất mưa mờ ở chân biểu đồ (Dual-layer chart)
-                if (items[i].HasRainChance && int.TryParse(items[i].RainProbabilityText.Replace("%", ""), out int rainProb) && rainProb > 0)
+                // Cột xác suất mưa mờ ở chân biểu đồ khi đang ở chế độ nhiệt độ hoặc chế độ mưa
+                if ((_currentHourlyMetric == HourlyChartMetricMode.Temperature || _currentHourlyMetric == HourlyChartMetricMode.RainProbability) &&
+                    items[i].HasRainChance && items[i].RainProbabilityValue > 0)
                 {
-                    double barH = Math.Clamp((rainProb / 100.0) * 18.0, 3.0, 18.0);
+                    double barH = Math.Clamp((items[i].RainProbabilityValue / 100.0) * 18.0, 3.0, 18.0);
                     var rainBar = new Microsoft.UI.Xaml.Shapes.Rectangle
                     {
                         Width = 12,
                         Height = barH,
                         RadiusX = 2.5,
                         RadiusY = 2.5,
-                        Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(65, 0, 153, 188))
+                        Fill = new SolidColorBrush(_currentHourlyMetric == HourlyChartMetricMode.RainProbability 
+                            ? Windows.UI.Color.FromArgb(120, 14, 165, 233) 
+                            : Windows.UI.Color.FromArgb(65, 0, 153, 188))
                     };
                     Canvas.SetLeft(rainBar, pt.X - 6);
                     Canvas.SetTop(rainBar, canvasHeight - barH);
@@ -528,7 +647,7 @@ public sealed partial class OverviewTab : UserControl
                     Width = 6,
                     Height = 6,
                     Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
-                    Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248)),
+                    Stroke = new SolidColorBrush(strokeColor),
                     StrokeThickness = 2
                 };
                 Canvas.SetLeft(dot, pt.X - 3);
@@ -537,14 +656,14 @@ public sealed partial class OverviewTab : UserControl
 
                 var label = new TextBlock
                 {
-                    Text = items[i].TempDisplay,
-                    FontSize = 10.5,
+                    Text = GetItemDisplay(items[i]),
+                    FontSize = 10.0,
                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 255, 255, 255)),
+                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(235, 255, 255, 255)),
                     TextAlignment = TextAlignment.Center,
-                    Width = 40
+                    Width = 56
                 };
-                Canvas.SetLeft(label, pt.X - 20);
+                Canvas.SetLeft(label, pt.X - 28);
                 Canvas.SetTop(label, pt.Y - 18);
                 HourlyTrendlineCanvas.Children.Add(label);
             }
@@ -564,7 +683,7 @@ public sealed partial class OverviewTab : UserControl
                         Y1 = 4,
                         X2 = targetPt.X,
                         Y2 = canvasHeight - 2,
-                        Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 56, 189, 248)),
+                        Stroke = new SolidColorBrush(strokeColor),
                         StrokeThickness = 2,
                         StrokeDashArray = new DoubleCollection { 3, 2 }
                     };
@@ -574,7 +693,7 @@ public sealed partial class OverviewTab : UserControl
                     {
                         Width = 16,
                         Height = 16,
-                        Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(80, 56, 189, 248))
+                        Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(80, strokeColor.R, strokeColor.G, strokeColor.B))
                     };
                     Canvas.SetLeft(halo, targetPt.X - 8);
                     Canvas.SetTop(halo, targetPt.Y - 8);
@@ -1061,11 +1180,29 @@ public sealed partial class OverviewTab : UserControl
         Windows.Foundation.Point pressPosition = default;
         long pressTimestamp = 0;
 
-        card.PointerEntered += (s, e) => AnimateTo(1.015, -2.5, 180);
+        Brush? defaultBorderBrush = card.BorderBrush;
+        Brush? defaultBackground = card.Background;
+
+        card.PointerEntered += (s, e) =>
+        {
+            AnimateTo(1.015, -2.5, 180);
+            if (isClickableMetric && card.Tag is string tag)
+            {
+                var glowColor = GetMetricGlowColor(tag);
+                card.BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(190, glowColor.R, glowColor.G, glowColor.B));
+                card.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(20, glowColor.R, glowColor.G, glowColor.B));
+            }
+        };
+
         card.PointerExited += (s, e) =>
         {
             isPointerDown = false;
             AnimateTo(1.0, 0, 220);
+            if (isClickableMetric)
+            {
+                card.BorderBrush = defaultBorderBrush;
+                card.Background = defaultBackground;
+            }
         };
 
         card.PointerPressed += (s, e) =>
@@ -1108,7 +1245,49 @@ public sealed partial class OverviewTab : UserControl
         {
             isPointerDown = false;
             AnimateTo(1.0, 0, 200);
+            if (isClickableMetric)
+            {
+                card.BorderBrush = defaultBorderBrush;
+                card.Background = defaultBackground;
+            }
         };
+    }
+
+    private Windows.UI.Color GetMetricGlowColor(string? tag)
+    {
+        return tag switch
+        {
+            "UvIndex" => Windows.UI.Color.FromArgb(255, 245, 158, 11),       // Vàng cam ấm (#F59E0B)
+            "AirQuality" => GetAqiGlowColor(),                               // Động theo AQI
+            "Wind" => Windows.UI.Color.FromArgb(255, 16, 185, 129),          // Xanh lục bảo ngọc (#10B981)
+            "Humidity" => Windows.UI.Color.FromArgb(255, 14, 165, 233),      // Xanh lam ngọc (#0EA5E9)
+            "Rain" => Windows.UI.Color.FromArgb(255, 2, 132, 199),          // Xanh biển sâu (#0284C7)
+            "Pressure" => Windows.UI.Color.FromArgb(255, 139, 92, 246),      // Tím thạch anh (#8B5CF6)
+            "SunMoon" => Windows.UI.Color.FromArgb(255, 234, 179, 8),        // Vàng kim (#EAB308)
+            "Pollutants" => Windows.UI.Color.FromArgb(255, 20, 184, 166),    // Xanh ngọc khói (#14B8A6)
+            _ => Windows.UI.Color.FromArgb(255, 56, 189, 248)
+        };
+    }
+
+    private Windows.UI.Color GetAqiGlowColor()
+    {
+        try
+        {
+            string? hex = ViewModel?.CurrentWeather?.AqiColor;
+            if (!string.IsNullOrEmpty(hex))
+            {
+                hex = hex.TrimStart('#');
+                if (hex.Length == 6)
+                {
+                    byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                    byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                    byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+                    return Windows.UI.Color.FromArgb(255, r, g, b);
+                }
+            }
+        }
+        catch { }
+        return Windows.UI.Color.FromArgb(255, 16, 185, 129);
     }
 
     #region DEEP-DIVE METRIC DETAIL MODAL ANIMATION & HANDLERS
@@ -1330,6 +1509,75 @@ public sealed partial class OverviewTab : UserControl
 
         _modalCloseStoryboard = sb;
         sb.Begin();
+    }
+    #endregion
+
+    #region MINI WEATHER BAR (SCROLL COMPACT HEADER)
+    private bool _isMiniPillVisible = false;
+    private Storyboard? _miniPillStoryboard;
+
+    private void OverviewScrollViewer_ViewChanged(object? sender, ScrollViewerViewChangedEventArgs e)
+    {
+        if (OverviewScrollViewer == null) return;
+        double offset = OverviewScrollViewer.VerticalOffset;
+
+        if (offset > 240 && !_isMiniPillVisible)
+        {
+            _isMiniPillVisible = true;
+            AnimateMiniPill(true);
+        }
+        else if (offset <= 190 && _isMiniPillVisible)
+        {
+            _isMiniPillVisible = false;
+            AnimateMiniPill(false);
+        }
+    }
+
+    private void AnimateMiniPill(bool show)
+    {
+        if (MiniWeatherPill == null || MiniPillTranslate == null) return;
+
+        MiniWeatherPill.IsHitTestVisible = show;
+        _miniPillStoryboard?.Stop();
+
+        bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
+            !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true);
+
+        if (!shouldAnimate)
+        {
+            MiniWeatherPill.Opacity = show ? 1.0 : 0.0;
+            MiniPillTranslate.Y = show ? 0 : -45;
+            return;
+        }
+
+        var sb = new Storyboard();
+        var fade = new DoubleAnimation
+        {
+            To = show ? 1.0 : 0.0,
+            Duration = new Duration(TimeSpan.FromMilliseconds(200)),
+            EasingFunction = new CubicEase { EasingMode = show ? EasingMode.EaseOut : EasingMode.EaseIn }
+        };
+        Storyboard.SetTarget(fade, MiniWeatherPill);
+        Storyboard.SetTargetProperty(fade, "Opacity");
+        sb.Children.Add(fade);
+
+        var slide = new DoubleAnimation
+        {
+            To = show ? 0 : -45,
+            Duration = new Duration(TimeSpan.FromMilliseconds(220)),
+            EasingFunction = new BackEase { Amplitude = show ? 0.2 : 0, EasingMode = show ? EasingMode.EaseOut : EasingMode.EaseIn }
+        };
+        Storyboard.SetTarget(slide, MiniPillTranslate);
+        Storyboard.SetTargetProperty(slide, "Y");
+        sb.Children.Add(slide);
+
+        _miniPillStoryboard = sb;
+        sb.Begin();
+    }
+
+    private void MiniWeatherPill_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        OverviewScrollViewer?.ChangeView(null, 0, null, false);
     }
     #endregion
 }

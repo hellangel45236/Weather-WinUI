@@ -104,6 +104,11 @@ public class HourlyForecastItem
     public string SvgIconPath { get; set; } = string.Empty;
     public string ConditionText { get; set; } = string.Empty;
     public string RainProbabilityText { get; set; } = "0%";
+    public int RainProbabilityValue { get; set; } = 0;
+    public double WindSpeedValue { get; set; } = 0;
+    public string WindSpeedDisplay { get; set; } = string.Empty;
+    public double UvValue { get; set; } = 0;
+    public string UvDisplay { get; set; } = string.Empty;
     public bool HasRainChance => !string.IsNullOrEmpty(RainProbabilityText) && RainProbabilityText != "0%";
 }
 

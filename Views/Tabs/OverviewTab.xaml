@@ -10,7 +10,7 @@
     mc:Ignorable="d">
 
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ScrollViewer x:Name="OverviewScrollViewer" VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="16" Padding="0,0,16,24">
 
             <!-- =================================================================================== -->
@@ -881,6 +881,56 @@
                         </Button>
                     </Grid>
 
+                    <!-- THANH CHUYỂN ĐỔI CHỈ SỐ BIỂU ĐỒ (HOURLY METRIC SEGMENTED PILL SWITCHER) -->
+                    <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="3"
+                            HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <!-- Nút Nhiệt độ -->
+                            <Button x:Name="BtnHourlyTemp" Click="HourlyMetricTab_Click" Tag="Temperature"
+                                    Background="#2538BDF8" BorderBrush="#6038BDF8" BorderThickness="1"
+                                    CornerRadius="8" Padding="10,5">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2c9;" FontSize="11" Foreground="#38BDF8"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.HourlyModeTemp, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold" Foreground="White"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Nút Khả năng mưa -->
+                            <Button x:Name="BtnHourlyRain" Click="HourlyMetricTab_Click" Tag="RainProbability"
+                                    Background="Transparent" BorderBrush="Transparent" BorderThickness="1"
+                                    CornerRadius="8" Padding="10,5">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" FontSize="11" Foreground="#0EA5E9"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.HourlyModeRain, Mode=OneWay}" FontSize="11.5" FontWeight="Normal" Opacity="0.8"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Nút Tốc độ gió -->
+                            <Button x:Name="BtnHourlyWind" Click="HourlyMetricTab_Click" Tag="WindSpeed"
+                                    Background="Transparent" BorderBrush="Transparent" BorderThickness="1"
+                                    CornerRadius="8" Padding="10,5">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" FontSize="11" Foreground="#10B981"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.HourlyModeWind, Mode=OneWay}" FontSize="11.5" FontWeight="Normal" Opacity="0.8"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Nút Tia UV -->
+                            <Button x:Name="BtnHourlyUv" Click="HourlyMetricTab_Click" Tag="UvIndex"
+                                    Background="Transparent" BorderBrush="Transparent" BorderThickness="1"
+                                    CornerRadius="8" Padding="10,5">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="11" Foreground="#F59E0B"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.HourlyModeUv, Mode=OneWay}" FontSize="11.5" FontWeight="Normal" Opacity="0.8"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
                     <!-- Thanh trượt tua nhanh tích hợp -->
                     <Slider x:Name="TimeScrubberSlider"
                             Minimum="0" Maximum="23"
@@ -1292,5 +1342,54 @@
             </Grid>
         </Border>
     </Grid>
+
+    <!-- =================================================================================== -->
+    <!-- 5. MINI WEATHER BAR THU GỌN KHI CUỘN CHUỘT (SCROLL COMPACT HEADER PILL)             -->
+    <!-- =================================================================================== -->
+    <Border x:Name="MiniWeatherPill"
+            Canvas.ZIndex="500"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Margin="0,12,0,0"
+            Opacity="0"
+            IsHitTestVisible="False"
+            Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="20"
+            Padding="14,6"
+            PointerPressed="MiniWeatherPill_PointerPressed"
+            ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ScrollToTopTooltip, Mode=OneWay}">
+        <Border.RenderTransform>
+            <TranslateTransform x:Name="MiniPillTranslate" Y="-45"/>
+        </Border.RenderTransform>
+        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="10" VerticalAlignment="Center">
+            <!-- Icon thời tiết mini -->
+            <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}"
+                      Glyph="{x:Bind ViewModel.CurrentWeather.IconGlyph, Mode=OneWay}"
+                      Foreground="#F59E0B" FontSize="14" VerticalAlignment="Center"/>
+            
+            <!-- Nhiệt độ hiện tại -->
+            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}"
+                       FontSize="13.5" FontWeight="Bold" VerticalAlignment="Center"/>
+
+            <!-- Vị trí & Tình trạng thời tiết -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                <TextBlock Text="{x:Bind ViewModel.LocationTitle, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"
+                           MaxWidth="140" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                <TextBlock Text="•" Opacity="0.5" VerticalAlignment="Center"/>
+                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.ConditionText, Mode=OneWay}" FontSize="12"
+                           Opacity="0.85" MaxWidth="160" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Nút Cuộn lên đỉnh -->
+            <Border Grid.Column="3" Width="22" Height="22" CornerRadius="11"
+                    Background="{ThemeResource SubtleFillColorSecondaryBrush}" VerticalAlignment="Center">
+                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf077;" FontSize="9.5"
+                          Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+        </Grid>
+    </Border>
 </Grid>
 </UserControl>
