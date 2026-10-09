@@ -84,6 +84,9 @@ public class HourlyWeatherDto
 
     [JsonPropertyName("wind_speed_10m")]
     public List<double>? WindSpeed { get; set; }
+
+    [JsonPropertyName("surface_pressure")]
+    public List<double>? SurfacePressure { get; set; }
 }
 
 public class DailyWeatherDto
@@ -120,6 +123,12 @@ public class DailyWeatherDto
 
     [JsonPropertyName("precipitation_probability_max")]
     public List<int>? PrecipitationProbabilityMax { get; set; }
+
+    [JsonPropertyName("wind_speed_10m_max")]
+    public List<double>? WindSpeedMax { get; set; }
+
+    [JsonPropertyName("wind_direction_10m_dominant")]
+    public List<double>? WindDirectionDominant { get; set; }
 }
 
 public class AirQualityData

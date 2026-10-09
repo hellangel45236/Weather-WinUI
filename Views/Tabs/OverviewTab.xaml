@@ -9,8 +9,9 @@
     xmlns:helpers="using:WeatherApp.Helpers"
     mc:Ignorable="d">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Spacing="16" Padding="0,0,16,24">
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="16" Padding="0,0,16,24">
 
             <!-- =================================================================================== -->
             <!-- 1. THẺ HERO BENTO: 2 CỘT BẤT ĐỐI XỨNG HIỆN ĐẠI (ASUMMETRIC BENTO HERO)               -->
@@ -567,6 +568,8 @@
 
                         <!-- 1. CHỈ SỐ UV (QUANG PHỔ 5 MỨC ĐỘ) -->
                         <Border x:Name="CardUv" Grid.Row="0" Grid.Column="0"
+                                Tag="UvIndex" Tapped="MetricCard_Tapped"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1" CornerRadius="14" Padding="14,12">
@@ -587,17 +590,17 @@
                                 <Border Height="6" CornerRadius="3" Margin="0,2,0,0">
                                     <Border.Background>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                            <GradientStop Color="#10B981" Offset="0.0"/>
-                                            <GradientStop Color="#FBBF24" Offset="0.3"/>
-                                            <GradientStop Color="#F97316" Offset="0.6"/>
-                                            <GradientStop Color="#EF4444" Offset="0.85"/>
-                                            <GradientStop Color="#A855F7" Offset="1.0"/>
+                                             <GradientStop Color="#10B981" Offset="0.0"/>
+                                             <GradientStop Color="#FBBF24" Offset="0.3"/>
+                                             <GradientStop Color="#F97316" Offset="0.6"/>
+                                             <GradientStop Color="#EF4444" Offset="0.85"/>
+                                             <GradientStop Color="#A855F7" Offset="1.0"/>
                                         </LinearGradientBrush>
                                     </Border.Background>
                                 </Border>
 
                                 <!-- Canvas con trỏ vị trí UV -->
-                                <Canvas x:Name="UvGaugeCanvas" Height="8" HorizontalAlignment="Stretch" Margin="0,-2,0,0"/>
+                                <Canvas x:Name="UvGaugeCanvas" IsHitTestVisible="False" Height="8" HorizontalAlignment="Stretch" Margin="0,-2,0,0"/>
 
                                 <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,-4,0,0" Opacity="0.6">
                                     <TextBlock Grid.Column="0" Text="0" FontSize="9.5"/>
@@ -609,6 +612,8 @@
 
                         <!-- 2. KHÔNG KHÍ (AQI & PM2.5) -->
                         <Border x:Name="CardAqi" Grid.Row="0" Grid.Column="1"
+                                Tag="AirQuality" Tapped="MetricCard_Tapped"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1" CornerRadius="14" Padding="14,12">
@@ -642,7 +647,7 @@
                                 </Border>
 
                                 <!-- Canvas con trỏ vị trí AQI -->
-                                <Canvas x:Name="AqiGaugeCanvas" Height="8" HorizontalAlignment="Stretch" Margin="0,-2,0,0"/>
+                                <Canvas x:Name="AqiGaugeCanvas" IsHitTestVisible="False" Height="8" HorizontalAlignment="Stretch" Margin="0,-2,0,0"/>
 
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" Margin="0,-4,0,0">
                                     <TextBlock Grid.Column="0" Text="PM2.5:" FontSize="10" Opacity="0.7" FontWeight="SemiBold"/>
@@ -653,6 +658,8 @@
 
                         <!-- 3. GIÓ & LA BÀN HƯỚNG GIÓ TRỰC QUAN -->
                         <Border x:Name="CardWind" Grid.Row="0" Grid.Column="2"
+                                Tag="Wind" Tapped="MetricCard_Tapped"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1" CornerRadius="14" Padding="14,12">
@@ -689,6 +696,8 @@
 
                         <!-- 4. ĐỘ ẨM & ĐIỂM SƯƠNG -->
                         <Border x:Name="CardHumidity" Grid.Row="0" Grid.Column="3"
+                                Tag="Humidity" Tapped="MetricCard_Tapped"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1" CornerRadius="14" Padding="14,12">
@@ -713,6 +722,8 @@
 
                         <!-- 5. KHẢ NĂNG MƯA & LƯỢNG MƯA -->
                         <Border x:Name="CardRain" Grid.Row="1" Grid.Column="0"
+                                Tag="Rain" Tapped="MetricCard_Tapped"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1" CornerRadius="14" Padding="14,12">
@@ -737,6 +748,8 @@
 
                         <!-- 6. ÁP SUẤT KHÍ QUYỂN -->
                         <Border x:Name="CardPressure" Grid.Row="1" Grid.Column="1"
+                                Tag="Pressure" Tapped="MetricCard_Tapped"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1" CornerRadius="14" Padding="14,12">
@@ -760,6 +773,8 @@
 
                         <!-- 7. VÒNG CUNG MẶT TRỜI & MẶT TRĂNG -->
                         <Border x:Name="CardSunMoon" Grid.Row="1" Grid.Column="2"
+                                Tag="SunMoon" Tapped="MetricCard_Tapped"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1" CornerRadius="14" Padding="14,10">
@@ -774,7 +789,7 @@
                                     <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.SunStatusText, Mode=OneWay}" FontSize="10" Foreground="#38BDF8" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                 </Grid>
 
-                                <Canvas x:Name="SunArcCanvas" Height="36" Margin="2,2" HorizontalAlignment="Stretch"/>
+                                <Canvas x:Name="SunArcCanvas" IsHitTestVisible="False" Height="36" Margin="2,2" HorizontalAlignment="Stretch"/>
 
                                 <Grid ColumnDefinitions="Auto,*,Auto">
                                     <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.CurrentWeather.SunriseText, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Opacity="0.85"/>
@@ -785,6 +800,8 @@
 
                         <!-- 8. CHI TIẾT Ô NHIỄM & BỤI MỊN -->
                         <Border x:Name="CardPollutants" Grid.Row="1" Grid.Column="3"
+                                Tag="Pollutants" Tapped="MetricCard_Tapped"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1" CornerRadius="14" Padding="14,12">
@@ -994,4 +1011,285 @@
 
         </StackPanel>
     </ScrollViewer>
+
+    <!-- =================================================================================== -->
+    <!-- 4. MODAL POPUP CHI TIẾT CHỈ SỐ KHÍ TƯỢNG & DỰ BÁO 7 NGÀY (DEEP-DIVE METRIC POPUP)    -->
+    <!-- =================================================================================== -->
+    <Grid x:Name="MetricDetailOverlay"
+          Visibility="Collapsed"
+          Opacity="0"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch">
+        
+        <!-- Lớp nền mờ (Backdrop) với hiệu ứng làm tối và làm mờ -->
+        <Border x:Name="MetricDetailBackdrop"
+                Background="#75000000"
+                PointerPressed="MetricDetailBackdrop_PointerPressed"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"/>
+
+        <!-- Thẻ Modal Card trung tâm (Fluent Design, Bo góc 18px, Viền tinh tế) -->
+        <Border x:Name="MetricDetailCard"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                MaxWidth="660"
+                MaxHeight="680"
+                Margin="20"
+                Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="18"
+                RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform x:Name="ModalScaleTransform" ScaleX="0.95" ScaleY="0.95"/>
+                    <TranslateTransform x:Name="ModalTranslateTransform" Y="8"/>
+                </TransformGroup>
+            </Border.RenderTransform>
+
+            <Grid RowDefinitions="Auto,*,Auto">
+                <!-- Header: Tiêu đề + Icon + Nút X -->
+                <Border Grid.Row="0"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="0,0,0,1"
+                        CornerRadius="18,18,0,0"
+                        Padding="18,14">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" VerticalAlignment="Center">
+                        <!-- Icon badge -->
+                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="10"
+                                Background="{ThemeResource SubtleFillColorTertiaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}"
+                                      Glyph="{x:Bind ViewModel.SelectedMetricDetail.IconGlyph, Mode=OneWay}"
+                                      Foreground="{x:Bind ViewModel.SelectedMetricDetail.IconColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                      FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <!-- Tiêu đề & Mô tả ngắn -->
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.SelectedMetricDetail.Title, Mode=OneWay}"
+                                           FontSize="15" FontWeight="Bold"/>
+                                <Border Background="{x:Bind ViewModel.SelectedMetricDetail.StatusBadgeColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                        CornerRadius="6" Padding="6,1.5">
+                                    <TextBlock Text="{x:Bind ViewModel.SelectedMetricDetail.StatusBadgeText, Mode=OneWay}"
+                                               FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                </Border>
+                            </StackPanel>
+                            <TextBlock Text="{x:Bind ViewModel.SelectedMetricDetail.Subtitle, Mode=OneWay}"
+                                       FontSize="11.5" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+
+                        <!-- Nút Đóng [X] -->
+                        <Button Grid.Column="2" Click="CloseMetricModalButton_Click"
+                                Background="Transparent" BorderThickness="0"
+                                CornerRadius="8" Width="32" Height="32" Padding="0"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClose, Mode=OneWay}">
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00d;" FontSize="13"/>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- Body Scrollable Content -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="18,16">
+                    <StackPanel Spacing="16">
+                        
+                        <!-- KHỐI 1: CHỈ SỐ HIỆN TẠI & THƯỚC ĐO QUANG PHỔ -->
+                        <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="12" Padding="16,14">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                    <StackPanel Grid.Column="0" Spacing="2">
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.EssentialMetrics, Mode=OneWay}"
+                                                   FontSize="10.5" FontWeight="SemiBold"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                   CharacterSpacing="40"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Bottom">
+                                            <TextBlock Text="{x:Bind ViewModel.SelectedMetricDetail.PrimaryValueText, Mode=OneWay}"
+                                                       FontSize="30" FontWeight="Bold"/>
+                                            <TextBlock Text="{x:Bind ViewModel.SelectedMetricDetail.UnitText, Mode=OneWay}"
+                                                       FontSize="14" FontWeight="SemiBold"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                       Margin="0,0,0,4" VerticalAlignment="Bottom"/>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock Text="{x:Bind ViewModel.SelectedMetricDetail.ScaleStandardName, Mode=OneWay}"
+                                                   FontSize="10" Opacity="0.75" HorizontalAlignment="Right"/>
+                                        <TextBlock Text="{x:Bind ViewModel.SelectedMetricDetail.SecondaryInfoText, Mode=OneWay}"
+                                                   FontSize="11" FontWeight="SemiBold"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                   HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Thanh thước đo phân cấp độ -->
+                                <StackPanel Spacing="4">
+                                    <Border Height="8" CornerRadius="4">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                <GradientStop Color="#10B981" Offset="0.0"/>
+                                                <GradientStop Color="#FACC15" Offset="0.35"/>
+                                                <GradientStop Color="#F97316" Offset="0.65"/>
+                                                <GradientStop Color="#EF4444" Offset="0.9"/>
+                                                <GradientStop Color="#A855F7" Offset="1.0"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+
+                                    <!-- Nhãn vạch đo (Min, Mid, Max) -->
+                                    <Grid ColumnDefinitions="Auto,*,Auto" Opacity="0.7">
+                                        <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.SelectedMetricDetail.GaugeMinLabel, Mode=OneWay}" FontSize="10"/>
+                                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.SelectedMetricDetail.GaugeMidLabel, Mode=OneWay}" FontSize="10" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="{x:Bind ViewModel.SelectedMetricDetail.GaugeMaxLabel, Mode=OneWay}" FontSize="10"/>
+                                    </Grid>
+                                </StackPanel>
+
+                                <!-- Giải thích khoa học -->
+                                <Border Background="{ThemeResource SubtleFillColorTertiaryBrush}"
+                                        CornerRadius="8" Padding="12,9" Margin="0,4,0,0">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf05a;"
+                                                  FontSize="12" Foreground="#38BDF8" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                                        <TextBlock Text="{x:Bind ViewModel.SelectedMetricDetail.ScientificExplanation, Mode=OneWay}"
+                                                   FontSize="11.5" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                   TextWrapping="Wrap" LineHeight="17"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- KHỐI 2: LỜI KHUYÊN & HƯỚNG DẪN HÀNH ĐỘNG THÔNG MINH -->
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0eb;" FontSize="13" Foreground="#F59E0B"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.MetricPopupAdviceTitle, Mode=OneWay}" FontSize="13" FontWeight="Bold"/>
+                            </StackPanel>
+
+                            <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedMetricDetail.Advices, Mode=OneWay}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Spacing="8"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:MetricAdviceItem">
+                                        <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                BorderThickness="1" CornerRadius="10" Padding="12,10">
+                                            <Grid ColumnDefinitions="Auto,*">
+                                                <Border Grid.Column="0" Width="30" Height="30" CornerRadius="8"
+                                                        Background="{ThemeResource SubtleFillColorTertiaryBrush}"
+                                                        VerticalAlignment="Top" Margin="0,1,10,0">
+                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}"
+                                                              Glyph="{x:Bind IconGlyph}" FontSize="13"
+                                                              Foreground="{x:Bind IconColor, Converter={StaticResource HexToBrushConverter}}"
+                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+
+                                                <StackPanel Grid.Column="1" Spacing="3">
+                                                    <Grid ColumnDefinitions="*,Auto">
+                                                        <TextBlock Grid.Column="0" Text="{x:Bind Category}" FontSize="10.5" FontWeight="Bold" Foreground="#38BDF8"/>
+                                                        <Border Grid.Column="1" Background="{x:Bind BadgeBackground, Converter={StaticResource HexToBrushConverter}}" CornerRadius="5" Padding="5,1.5">
+                                                            <TextBlock Text="{x:Bind BadgeText}" FontSize="9.5" FontWeight="Bold" Foreground="White"/>
+                                                        </Border>
+                                                    </Grid>
+                                                    <TextBlock Text="{x:Bind Title}" FontSize="12.5" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                                    <TextBlock Text="{x:Bind Description}" FontSize="11.5" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" LineHeight="16"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                        <!-- KHỐI 3: DỰ BÁO 7 NGÀY TIẾP THEO CỦA RIÊNG CHỈ SỐ NÀY -->
+                        <StackPanel Spacing="8">
+                            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" FontSize="13" Foreground="#38BDF8"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.MetricPopup7DayTitle, Mode=OneWay}" FontSize="13" FontWeight="Bold"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.MetricPopupWeekCompare, Mode=OneWay}" FontSize="10.5" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </Grid>
+
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="12" Padding="12,10">
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedMetricDetail.DailyTrends, Mode=OneWay}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Spacing="6"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:MetricDailyTrendItem">
+                                            <Border Background="{ThemeResource SubtleFillColorTertiaryBrush}"
+                                                    CornerRadius="8" Padding="10,6">
+                                                <Grid ColumnDefinitions="84,28,*,100,Auto" ColumnSpacing="8" VerticalAlignment="Center">
+                                                    <!-- Tên thứ & Ngày -->
+                                                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="1">
+                                                        <TextBlock Text="{x:Bind DayName}" FontSize="11.5" FontWeight="SemiBold"/>
+                                                        <TextBlock Text="{x:Bind DateDisplay}" FontSize="10" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                                    </StackPanel>
+
+                                                    <!-- Icon thời tiết ngày đó -->
+                                                    <FontIcon Grid.Column="1" FontFamily="{StaticResource FontAwesomeSolid}"
+                                                              Glyph="{x:Bind IconGlyph}" FontSize="13" Foreground="#F59E0B"
+                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                    <!-- Giá trị chỉ số & Mô tả -->
+                                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="1">
+                                                        <TextBlock Text="{x:Bind ValueText}" FontSize="12" FontWeight="Bold"/>
+                                                        <TextBlock Text="{x:Bind ExtraInfo}" FontSize="9.5" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                                    </StackPanel>
+
+                                                    <!-- Thanh đo tương đối giữa các ngày -->
+                                                    <ProgressBar Grid.Column="3" Value="{x:Bind BarPercent}" Minimum="0" Maximum="1" Height="5" CornerRadius="2.5"
+                                                                 Foreground="{x:Bind BarColor, Converter={StaticResource HexToBrushConverter}}" VerticalAlignment="Center"/>
+
+                                                    <!-- Huy hiệu trạng thái -->
+                                                    <Border Grid.Column="4" Background="{x:Bind BarColor, Converter={StaticResource HexToBrushConverter}}"
+                                                            CornerRadius="5" Padding="6,2" MinWidth="48" HorizontalAlignment="Right">
+                                                        <TextBlock Text="{x:Bind StatusBadge}" FontSize="9.5" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+                        </StackPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Footer: Nút Đóng -->
+                <Border Grid.Row="2"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="0,1,0,0"
+                        CornerRadius="0,0,18,18"
+                        Padding="16,10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}"
+                                   FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                        <Button Grid.Column="1" Click="CloseMetricModalButton_Click"
+                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                CornerRadius="8" Padding="16,5">
+                            <TextBlock Text="{x:Bind ViewModel.Loc.MetricPopupClose, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Grid>
 </UserControl>

@@ -521,6 +521,35 @@ public partial class MainViewModel : ObservableObject
         ScrubbedSliderValue = DateTime.Now.Hour;
     }
 
+    // ==================== v3.0.6: DEEP-DIVE METRIC DETAIL MODAL POPUP ====================
+    [ObservableProperty]
+    private WeatherMetricDetailPopupData? _selectedMetricDetail;
+
+    [ObservableProperty]
+    private bool _isMetricDetailOpen = false;
+
+    [RelayCommand]
+    public void OpenMetricDetail(string metricKey)
+    {
+        if (Enum.TryParse<WeatherMetricType>(metricKey, true, out var type))
+        {
+            SelectedMetricDetail = WeatherMetricDetailService.Instance.GenerateDetailData(
+                type,
+                CurrentWeather,
+                _rawWeatherData,
+                _lastAirQuality,
+                Settings,
+                LocalizationService.Instance);
+            IsMetricDetailOpen = true;
+        }
+    }
+
+    [RelayCommand]
+    public void CloseMetricDetail()
+    {
+        IsMetricDetailOpen = false;
+    }
+
     // ==================== v3.0 BETA: FLUENT NAVIGATION STATE ====================
     [ObservableProperty]
     private string _currentNavTag = "overview";

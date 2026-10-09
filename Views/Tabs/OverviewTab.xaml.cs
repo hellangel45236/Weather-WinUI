@@ -85,6 +85,17 @@ public sealed partial class OverviewTab : UserControl
                 });
             }
         }
+        else if (e.PropertyName == nameof(MainViewModel.IsMetricDetailOpen))
+        {
+            if (ViewModel?.IsMetricDetailOpen == true)
+            {
+                DispatcherQueue.TryEnqueue(ShowMetricDetailModal);
+            }
+            else
+            {
+                DispatcherQueue.TryEnqueue(HideMetricDetailModal);
+            }
+        }
     }
 
     public OverviewTab()
@@ -92,6 +103,15 @@ public sealed partial class OverviewTab : UserControl
         this.InitializeComponent();
 
         _weatherEffectRenderer = new WeatherEffectRenderer(WeatherEffectsCanvas, LightningFlashOverlay);
+
+        this.KeyDown += (s, e) =>
+        {
+            if (e.Key == Windows.System.VirtualKey.Escape && ViewModel?.IsMetricDetailOpen == true)
+            {
+                HideMetricDetailModal();
+                e.Handled = true;
+            }
+        };
 
         this.Loaded += (s, e) =>
         {
@@ -122,6 +142,7 @@ public sealed partial class OverviewTab : UserControl
         this.SizeChanged += (s, e) =>
         {
             UpdateResponsiveLayout(e.NewSize.Width);
+            UpdateModalResponsiveSize();
             RenderVisualGauges();
         };
 
@@ -944,19 +965,31 @@ public sealed partial class OverviewTab : UserControl
 
         SetupCardHoverPhysics(HeroBentoLeftCard);
         SetupCardHoverPhysics(HeroBentoRightCard);
-        SetupCardHoverPhysics(CardUv);
-        SetupCardHoverPhysics(CardAqi);
-        SetupCardHoverPhysics(CardWind);
-        SetupCardHoverPhysics(CardHumidity);
-        SetupCardHoverPhysics(CardRain);
-        SetupCardHoverPhysics(CardPressure);
-        SetupCardHoverPhysics(CardSunMoon);
-        SetupCardHoverPhysics(CardPollutants);
+        SetupCardHoverPhysics(CardUv, true);
+        SetupCardHoverPhysics(CardAqi, true);
+        SetupCardHoverPhysics(CardWind, true);
+        SetupCardHoverPhysics(CardHumidity, true);
+        SetupCardHoverPhysics(CardRain, true);
+        SetupCardHoverPhysics(CardPressure, true);
+        SetupCardHoverPhysics(CardSunMoon, true);
+        SetupCardHoverPhysics(CardPollutants, true);
     }
 
-    private void SetupCardHoverPhysics(Border? card)
+    private void SetupCardHoverPhysics(Border? card, bool isClickableMetric = false)
     {
         if (card == null) return;
+
+        if (isClickableMetric)
+        {
+            card.PointerEntered += (s, e) =>
+            {
+                try { this.ProtectedCursor = Microsoft.UI.Input.InputSystemCursor.Create(Microsoft.UI.Input.InputSystemCursorShape.Hand); } catch { }
+            };
+            card.PointerExited += (s, e) =>
+            {
+                try { this.ProtectedCursor = null; } catch { }
+            };
+        }
 
         var scaleTransform = new ScaleTransform { ScaleX = 1.0, ScaleY = 1.0 };
         var translateTransform = new TranslateTransform { Y = 0 };
@@ -1023,4 +1056,197 @@ public sealed partial class OverviewTab : UserControl
         card.PointerReleased += (s, e) => AnimateTo(1.015, -2.5, 150);
         card.PointerCaptureLost += (s, e) => AnimateTo(1.0, 0, 200);
     }
+
+    #region DEEP-DIVE METRIC DETAIL MODAL ANIMATION & HANDLERS
+    private Storyboard? _modalOpenStoryboard;
+    private Storyboard? _modalCloseStoryboard;
+
+    private void MetricCard_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.Tag is string tag)
+        {
+            ViewModel?.OpenMetricDetail(tag);
+        }
+    }
+
+    private void CloseMetricModalButton_Click(object sender, RoutedEventArgs e)
+    {
+        HideMetricDetailModal();
+    }
+
+    private void MetricDetailBackdrop_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        HideMetricDetailModal();
+    }
+
+    private void UpdateModalResponsiveSize()
+    {
+        if (MetricDetailCard != null)
+        {
+            double availableHeight = this.ActualHeight - 48;
+            if (availableHeight > 250)
+            {
+                MetricDetailCard.MaxHeight = Math.Min(680, availableHeight);
+            }
+            double availableWidth = this.ActualWidth - 32;
+            if (availableWidth > 250)
+            {
+                MetricDetailCard.MaxWidth = Math.Min(660, availableWidth);
+            }
+        }
+    }
+
+    public void ShowMetricDetailModal()
+    {
+        if (MetricDetailOverlay == null || ModalScaleTransform == null || ModalTranslateTransform == null) return;
+
+        UpdateModalResponsiveSize();
+
+        bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
+            !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true);
+
+        MetricDetailOverlay.Visibility = Visibility.Visible;
+        MetricDetailOverlay.IsHitTestVisible = true;
+
+        if (!shouldAnimate)
+        {
+            MetricDetailOverlay.Opacity = 1.0;
+            ModalScaleTransform.ScaleX = 1.0;
+            ModalScaleTransform.ScaleY = 1.0;
+            ModalTranslateTransform.Y = 0;
+            return;
+        }
+
+        _modalCloseStoryboard?.Stop();
+        _modalOpenStoryboard?.Stop();
+
+        MetricDetailOverlay.Opacity = 0.0;
+        ModalScaleTransform.ScaleX = 0.95;
+        ModalScaleTransform.ScaleY = 0.95;
+        ModalTranslateTransform.Y = 8;
+
+        var sb = new Storyboard();
+
+        // 1. Fade-in Overlay
+        var fadeIn = new DoubleAnimation
+        {
+            From = 0.0,
+            To = 1.0,
+            Duration = new Duration(TimeSpan.FromMilliseconds(180)),
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+        };
+        Storyboard.SetTarget(fadeIn, MetricDetailOverlay);
+        Storyboard.SetTargetProperty(fadeIn, "Opacity");
+        sb.Children.Add(fadeIn);
+
+        // 2. Scale-up Card
+        var scaleX = new DoubleAnimation
+        {
+            From = 0.95,
+            To = 1.0,
+            Duration = new Duration(TimeSpan.FromMilliseconds(200)),
+            EasingFunction = new BackEase { Amplitude = 0.12, EasingMode = EasingMode.EaseOut }
+        };
+        Storyboard.SetTarget(scaleX, ModalScaleTransform);
+        Storyboard.SetTargetProperty(scaleX, "ScaleX");
+        sb.Children.Add(scaleX);
+
+        var scaleY = new DoubleAnimation
+        {
+            From = 0.95,
+            To = 1.0,
+            Duration = new Duration(TimeSpan.FromMilliseconds(200)),
+            EasingFunction = new BackEase { Amplitude = 0.12, EasingMode = EasingMode.EaseOut }
+        };
+        Storyboard.SetTarget(scaleY, ModalScaleTransform);
+        Storyboard.SetTargetProperty(scaleY, "ScaleY");
+        sb.Children.Add(scaleY);
+
+        // 3. Translate Y Card
+        var transY = new DoubleAnimation
+        {
+            From = 8,
+            To = 0,
+            Duration = new Duration(TimeSpan.FromMilliseconds(200)),
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+        };
+        Storyboard.SetTarget(transY, ModalTranslateTransform);
+        Storyboard.SetTargetProperty(transY, "Y");
+        sb.Children.Add(transY);
+
+        _modalOpenStoryboard = sb;
+        sb.Begin();
+    }
+
+    public void HideMetricDetailModal()
+    {
+        if (MetricDetailOverlay == null || MetricDetailOverlay.Visibility != Visibility.Visible) return;
+
+        bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
+            !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true);
+
+        if (!shouldAnimate)
+        {
+            MetricDetailOverlay.Visibility = Visibility.Collapsed;
+            MetricDetailOverlay.IsHitTestVisible = false;
+            if (ViewModel != null) ViewModel.IsMetricDetailOpen = false;
+            return;
+        }
+
+        _modalOpenStoryboard?.Stop();
+        _modalCloseStoryboard?.Stop();
+
+        var sb = new Storyboard();
+
+        var fadeOut = new DoubleAnimation
+        {
+            To = 0.0,
+            Duration = new Duration(TimeSpan.FromMilliseconds(140)),
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+        };
+        Storyboard.SetTarget(fadeOut, MetricDetailOverlay);
+        Storyboard.SetTargetProperty(fadeOut, "Opacity");
+        sb.Children.Add(fadeOut);
+
+        var scaleX = new DoubleAnimation
+        {
+            To = 0.96,
+            Duration = new Duration(TimeSpan.FromMilliseconds(140)),
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+        };
+        Storyboard.SetTarget(scaleX, ModalScaleTransform);
+        Storyboard.SetTargetProperty(scaleX, "ScaleX");
+        sb.Children.Add(scaleX);
+
+        var scaleY = new DoubleAnimation
+        {
+            To = 0.96,
+            Duration = new Duration(TimeSpan.FromMilliseconds(140)),
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+        };
+        Storyboard.SetTarget(scaleY, ModalScaleTransform);
+        Storyboard.SetTargetProperty(scaleY, "ScaleY");
+        sb.Children.Add(scaleY);
+
+        var transY = new DoubleAnimation
+        {
+            To = 6,
+            Duration = new Duration(TimeSpan.FromMilliseconds(140)),
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+        };
+        Storyboard.SetTarget(transY, ModalTranslateTransform);
+        Storyboard.SetTargetProperty(transY, "Y");
+        sb.Children.Add(transY);
+
+        sb.Completed += (s, e) =>
+        {
+            MetricDetailOverlay.Visibility = Visibility.Collapsed;
+            MetricDetailOverlay.IsHitTestVisible = false;
+            if (ViewModel != null) ViewModel.IsMetricDetailOpen = false;
+        };
+
+        _modalCloseStoryboard = sb;
+        sb.Begin();
+    }
+    #endregion
 }

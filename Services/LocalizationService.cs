@@ -148,6 +148,13 @@ public class LocalizationService : INotifyPropertyChanged
     public string UvLevelExtreme => IsVietnamese ? "Nguy hại" : "Extreme";
     public string UnifiedTimelineDesc => IsVietnamese ? "Kéo thanh trượt hoặc nhấp vào từng giờ để xem chi tiết" : "Drag slider or click an hour to preview details";
 
+    public string MetricPopupClose => IsVietnamese ? "Đóng" : "Close";
+    public string MetricPopup7DayTitle => IsVietnamese ? "Dự Báo 7 Ngày Tới Của Chỉ Số Này" : "7-Day Forecast for This Metric";
+    public string MetricPopupAdviceTitle => IsVietnamese ? "Lời Khuyên Thông Minh & Hướng Dẫn Hành Động" : "Smart Actionable Advice & Guidance";
+    public string MetricPopupScienceTitle => IsVietnamese ? "Ý Nghĩa Khí Tượng & Thang Đo Chuẩn" : "Meteorological Context & Standard Scale";
+    public string MetricPopupClickHint => IsVietnamese ? "Bấm vào để xem phân tích chi tiết & dự báo 7 ngày" : "Click to view deep-dive analysis & 7-day forecast";
+    public string MetricPopupWeekCompare => IsVietnamese ? "So sánh xu hướng trong tuần" : "Weekly trend comparison";
+
     #endregion
 
     #region Lifestyle & OOTD Tab Strings
