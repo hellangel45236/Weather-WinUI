@@ -146,6 +146,7 @@ public sealed partial class WidgetWindow : Window
         LocationName = string.IsNullOrWhiteSpace(locationName) ? (_settings.LastLocationName ?? "Hà Nội") : locationName;
         Latitude = latitude != 0 ? latitude : _settings.LastLatitude;
         Longitude = longitude != 0 ? longitude : _settings.LastLongitude;
+        _isAlwaysOnTop = _settings.WidgetAlwaysOnTop;
 
         InitializeComponent();
 
@@ -250,10 +251,24 @@ public sealed partial class WidgetWindow : Window
             int physicalWidth = (int)Math.Round(385 * scale);
 
             int offsetCount = Math.Max(0, ActiveWidgets.Count - 1);
-            int x = displayArea.WorkArea.Width - physicalWidth - 30 - (offsetCount * 30);
-            int y = 60 + (offsetCount * 70);
+            if (offsetCount == 0 && _settings.WidgetLastX >= 0 && _settings.WidgetLastY >= 0)
+            {
+                int x = _settings.WidgetLastX;
+                int y = _settings.WidgetLastY;
+                if (x < displayArea.WorkArea.X + displayArea.WorkArea.Width - 50 &&
+                    y < displayArea.WorkArea.Y + displayArea.WorkArea.Height - 50 &&
+                    x >= displayArea.WorkArea.X - 100 &&
+                    y >= displayArea.WorkArea.Y)
+                {
+                    _appWindow.Move(new Windows.Graphics.PointInt32(x, y));
+                    return;
+                }
+            }
 
-            _appWindow.Move(new Windows.Graphics.PointInt32(x, y));
+            int defaultX = displayArea.WorkArea.Width - physicalWidth - 30 - (offsetCount * 30);
+            int defaultY = 60 + (offsetCount * 70);
+
+            _appWindow.Move(new Windows.Graphics.PointInt32(defaultX, defaultY));
         }
     }
 
@@ -443,6 +458,11 @@ public sealed partial class WidgetWindow : Window
         WidgetFeelsLikeText.Text = _currentWeather.FeelsLikeText;
 
         // 5 Thẻ thông số nhanh
+        var loc = LocalizationService.Instance;
+        if (WidgetHumidityLabel != null) WidgetHumidityLabel.Text = loc.Humidity;
+        if (WidgetWindLabel != null) WidgetWindLabel.Text = loc.Wind;
+        if (WidgetRainLabel != null) WidgetRainLabel.Text = loc.IsVietnamese ? "Mưa" : "Rain";
+
         WidgetHumidityText.Text = _currentWeather.HumidityText;
         WidgetWindText.Text = _currentWeather.WindText;
         WidgetUvText.Text = _currentWeather.UvIndexText;
@@ -841,25 +861,38 @@ public sealed partial class WidgetWindow : Window
         }
     }
 
-    private void PinButton_Click(object sender, RoutedEventArgs e)
+    public void SetAlwaysOnTop(bool isAlwaysOnTop)
     {
+        _isAlwaysOnTop = isAlwaysOnTop;
         if (_appWindow?.Presenter is OverlappedPresenter presenter)
         {
-            _isAlwaysOnTop = !_isAlwaysOnTop;
             presenter.IsAlwaysOnTop = _isAlwaysOnTop;
-            UpdatePinButtonVisual();
         }
+        UpdatePinButtonVisual();
+    }
+
+    private void PinButton_Click(object sender, RoutedEventArgs e)
+    {
+        _isAlwaysOnTop = !_isAlwaysOnTop;
+        if (_appWindow?.Presenter is OverlappedPresenter presenter)
+        {
+            presenter.IsAlwaysOnTop = _isAlwaysOnTop;
+        }
+        _settings.WidgetAlwaysOnTop = _isAlwaysOnTop;
+        _settingsService.SaveSettings(_settings);
+        UpdatePinButtonVisual();
     }
 
     private void UpdatePinButtonVisual()
     {
+        var loc = LocalizationService.Instance;
         if (_isAlwaysOnTop)
         {
             PinButton.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0x35, 0x00, 0x78, 0xD4));
             PinIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0x38, 0xBD, 0xF8));
             CompactPinIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0x38, 0xBD, 0xF8));
             if (BryanCPinIcon != null) BryanCPinIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0x38, 0xBD, 0xF8));
-            ToolTipService.SetToolTip(PinButton, "Đang ghim trên cùng (Bấm để bỏ ghim)");
+            ToolTipService.SetToolTip(PinButton, loc.WidgetWindowPinTooltipActive);
         }
         else
         {
@@ -867,7 +900,7 @@ public sealed partial class WidgetWindow : Window
             PinIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0x94, 0xA3, 0xB8));
             CompactPinIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0x94, 0xA3, 0xB8));
             if (BryanCPinIcon != null) BryanCPinIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.White);
-            ToolTipService.SetToolTip(PinButton, "Ghim trên cùng (Always on top)");
+            ToolTipService.SetToolTip(PinButton, loc.WidgetWindowPinTooltipInactive);
         }
     }
 
@@ -890,12 +923,13 @@ public sealed partial class WidgetWindow : Window
 
     private void ShowCityPickerFlyout(FrameworkElement target)
     {
+        var loc = LocalizationService.Instance;
         var flyout = new Flyout();
         var rootPanel = new StackPanel { Width = 260, Spacing = 8, Padding = new Thickness(4) };
 
         rootPanel.Children.Add(new TextBlock 
         { 
-            Text = "📍 Thành Phố Cho Widget", 
+            Text = loc.WidgetWindowCityPickerTitle, 
             FontWeight = Microsoft.UI.Text.FontWeights.Bold, 
             FontSize = 13, 
             Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.White) 
@@ -903,14 +937,14 @@ public sealed partial class WidgetWindow : Window
 
         rootPanel.Children.Add(new TextBlock 
         { 
-            Text = $"Đang hiển thị: {LocationName}", 
+            Text = $"{loc.WidgetWindowCityPickerCurrent} {LocationName}", 
             FontSize = 11, 
             Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0x38, 0xBD, 0xF8)) 
         });
 
         var searchBox = new AutoSuggestBox
         {
-            PlaceholderText = "Tìm thành phố...",
+            PlaceholderText = loc.WidgetWindowCityPickerSearchPlaceholder,
             QueryIcon = new SymbolIcon(Symbol.Find)
         };
 
@@ -938,7 +972,7 @@ public sealed partial class WidgetWindow : Window
 
         rootPanel.Children.Add(new TextBlock 
         { 
-            Text = "Hoặc chọn nhanh:", 
+            Text = loc.WidgetWindowCityPickerQuick, 
             FontSize = 10.5, 
             Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0x94, 0xA3, 0xB8)) 
         });
@@ -1082,6 +1116,14 @@ public sealed partial class WidgetWindow : Window
             _isDragging = false;
             WidgetRoot.ReleasePointerCapture(e.Pointer);
             e.Handled = true;
+
+            // Lưu tọa độ desktop đã kéo thả
+            if (_appWindow != null)
+            {
+                _settings.WidgetLastX = _appWindow.Position.X;
+                _settings.WidgetLastY = _appWindow.Position.Y;
+                _settingsService.SaveSettings(_settings);
+            }
         }
     }
 

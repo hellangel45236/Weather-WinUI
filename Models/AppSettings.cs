@@ -39,6 +39,9 @@ public class AppSettings
     // 8. Cấu hình Widget Desktop
     public string WidgetStyle { get; set; } = "BryanCDynamic"; // "BryanCDynamic", "GlassCard", "Compact", "MiniIsland"
     public double WidgetOpacity { get; set; } = 1.0; // 0.3 - 1.0 (50% = 0.5)
+    public int WidgetLastX { get; set; } = -1;
+    public int WidgetLastY { get; set; } = -1;
+    public bool WidgetAlwaysOnTop { get; set; } = true;
 
     // 9. Cấu hình Hình nền Thành phố (City Picture)
     public bool EnableCityBackground { get; set; } = true;

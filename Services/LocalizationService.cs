@@ -581,4 +581,47 @@ public class LocalizationService : INotifyPropertyChanged
     public string CityPresetHeader => IsVietnamese ? "Danh sách 10 thành phố mẫu (Bấm để chọn nhanh làm hình nền):" : "10 preset cities (Click to set as wallpaper):";
 
     #endregion
+
+    #region Widget Studio Tab & Widget Window Strings
+
+    public string WidgetStudioHeader => IsVietnamese ? "Studio Thiết Kế Desktop Widget (Bộ Sưu Tập Trực Quan)" : "Desktop Widget Studio (Visual Gallery)";
+    public string WidgetStudioSub => IsVietnamese ? "Chọn kiểu dáng trực quan, tinh chỉnh độ mờ Acrylic và ghim ra màn hình Desktop" : "Select visual styles, fine-tune acrylic transparency and pin to your desktop";
+    public string WidgetStudioBadge => "WinUI 3 Glass Studio";
+    public string WidgetStudioSelected => IsVietnamese ? "✓ Đang chọn" : "✓ Selected";
+    public string WidgetStudioBryanCTitle => "✨ Bryan C Dynamic";
+    public string WidgetStudioBryanCDesc => IsVietnamese ? "Tự động biến đổi nền bầu trời, hình học mặt trời & vầng trăng theo điều kiện thực tế" : "Dynamically changes sky canvas, sun aura & moon arc based on real-time weather";
+    public string WidgetStudioGlassTitle => "🪟 Fluent Glass Card";
+    public string WidgetStudioGlassDesc => IsVietnamese ? "Thẻ kính mờ hiệu ứng Mica/Acrylic đầy đủ chi tiết độ ẩm, gió và chất lượng không khí" : "Frosted acrylic glass card with full details: humidity, wind, and air quality";
+    public string WidgetStudioCompactTitle => "➖ Compact Bar";
+    public string WidgetStudioCompactDesc => IsVietnamese ? "Thanh ngang dài thanh mảnh, chiếm diện tích tối thiểu, đặt sát góc trên màn hình" : "Ultra-slim horizontal bar taking minimal desktop space, ideal for screen edges";
+    public string WidgetStudioIslandTitle => "💊 Dynamic Island Pill";
+    public string WidgetStudioIslandDesc => IsVietnamese ? "Viên thuốc bo tròn tinh tế, tối giản sang trọng, luôn nổi nhẹ nhàng trên màn hình" : "Sleek floating capsule pill with minimalist luxury, always gently present";
+    public string WidgetStudio4DayForecast => IsVietnamese ? "Dự báo 4 ngày" : "4-Day Forecast";
+    public string WidgetStudioAqiGood => IsVietnamese ? "AQI Chuẩn" : "AQI Good";
+    public string WidgetStudioControlsHeader => IsVietnamese ? "Tùy Biến & Điều Khiển Widget" : "Widget Controls & Customization";
+    public string WidgetStudioStyleLabel => IsVietnamese ? "Danh sách kiểu dáng Widget:" : "Widget Style:";
+    public string WidgetStudioOpacityLabel => IsVietnamese ? "Độ trong suốt Widget:" : "Widget Opacity:";
+    public string WidgetStudioAlwaysOnTop => IsVietnamese ? "Luôn nổi trên cùng (Always on Top)" : "Always on top of other windows";
+    public string WidgetStudioAlwaysOnTopSub => IsVietnamese ? "Giữ Widget luôn hiển thị phía trên các cửa sổ ứng dụng khác" : "Keep widget visible above all other running application windows";
+    public string WidgetStudioPinCurrentBtn => IsVietnamese ? "📌 Ghim Ra Desktop" : "📌 Pin to Desktop";
+    public string WidgetStudioOpenOtherBtn => IsVietnamese ? "➕ Mở Thành Phố Khác..." : "➕ Add Other City...";
+    public string WidgetStudioCloseAllBtn => IsVietnamese ? "❌ Đóng Tất Cả Widget" : "❌ Close All Widgets";
+    public string WidgetStudioCityDialogTitle => IsVietnamese ? "➕ Mở Widget Cho Thành Phố Khác" : "➕ Open Widget for Another City";
+    public string WidgetStudioCityDialogPlaceholder => IsVietnamese ? "Nhập tên thành phố (VD: Đà Nẵng, Tokyo, Paris, New York...)" : "Enter city name (e.g. Da Nang, Tokyo, Paris, New York...)";
+    public string WidgetStudioCityDialogCreate => IsVietnamese ? "Tạo Widget" : "Create Widget";
+    public string WidgetStudioCityDialogCancel => IsVietnamese ? "Hủy" : "Cancel";
+
+    public string WidgetWindowCityTooltip => IsVietnamese ? "Bấm để đổi thành phố hoặc mở thêm Widget" : "Click to change city or add another widget";
+    public string WidgetWindowAddTooltip => IsVietnamese ? "Mở thêm một Widget mới cho thành phố khác" : "Open another widget for a different city";
+    public string WidgetWindowStyleTooltip => IsVietnamese ? "Đổi kiểu Widget (Bryan C / GlassCard / Compact / Island)" : "Switch widget style (Bryan C / GlassCard / Compact / Island)";
+    public string WidgetWindowRefreshTooltip => IsVietnamese ? "Cập nhật thời tiết mới nhất" : "Refresh latest weather";
+    public string WidgetWindowPinTooltipActive => IsVietnamese ? "Đang ghim trên cùng (Bấm để bỏ ghim)" : "Currently pinned on top (Click to unpin)";
+    public string WidgetWindowPinTooltipInactive => IsVietnamese ? "Ghim trên cùng (Always on top)" : "Pin on top (Always on top)";
+    public string WidgetWindowCloseTooltip => IsVietnamese ? "Đóng widget này" : "Close this widget";
+    public string WidgetWindowCityPickerTitle => IsVietnamese ? "📍 Thành Phố Cho Widget" : "📍 City for Widget";
+    public string WidgetWindowCityPickerCurrent => IsVietnamese ? "Đang hiển thị:" : "Currently showing:";
+    public string WidgetWindowCityPickerSearchPlaceholder => IsVietnamese ? "Tìm thành phố..." : "Search city...";
+    public string WidgetWindowCityPickerQuick => IsVietnamese ? "Hoặc chọn nhanh:" : "Or quick select:";
+
+    #endregion
 }

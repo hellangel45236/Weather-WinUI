@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:WeatherApp.ViewModels"
     xmlns:models="using:WeatherApp.Models"
+    xmlns:helpers="using:WeatherApp.Helpers"
     mc:Ignorable="d">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -53,78 +54,84 @@
                         </Button>
                     </Grid>
 
-                    <!-- Thanh chọn Dịp & Phong cách Giới tính -->
+                    <!-- Thanh chọn Dịp & Phong cách Giới tính (Smooth Scrolling on Narrow Windows) -->
                     <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="12,10">
                         <StackPanel Spacing="10">
                             <!-- Hàng 1: Chọn Dịp (5 Occasions) -->
-                            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Left">
-                                <Button x:Name="OccasionWorkButton" Click="OccasionButton_Click" Tag="Work"
-                                        CornerRadius="8" Padding="10,6">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0b1;" FontSize="11"/>
-                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionWork, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
-                                    </StackPanel>
-                                </Button>
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                                          HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled">
+                                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Left">
+                                    <Button x:Name="OccasionWorkButton" Click="OccasionButton_Click" Tag="Work"
+                                            CornerRadius="8" Padding="10,6">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0b1;" FontSize="11"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionWork, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
 
-                                <Button x:Name="OccasionSchoolButton" Click="OccasionButton_Click" Tag="School"
-                                        CornerRadius="8" Padding="10,6">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf19d;" FontSize="11"/>
-                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionSchool, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
-                                    </StackPanel>
-                                </Button>
+                                    <Button x:Name="OccasionSchoolButton" Click="OccasionButton_Click" Tag="School"
+                                            CornerRadius="8" Padding="10,6">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf19d;" FontSize="11"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionSchool, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
 
-                                <Button x:Name="OccasionCasualButton" Click="OccasionButton_Click" Tag="Casual"
-                                        CornerRadius="8" Padding="10,6">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf70c;" FontSize="11"/>
-                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionCasual, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
-                                    </StackPanel>
-                                </Button>
+                                    <Button x:Name="OccasionCasualButton" Click="OccasionButton_Click" Tag="Casual"
+                                            CornerRadius="8" Padding="10,6">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf70c;" FontSize="11"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionCasual, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
 
-                                <Button x:Name="OccasionSportButton" Click="OccasionButton_Click" Tag="Sport"
-                                        CornerRadius="8" Padding="10,6">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf44b;" FontSize="11"/>
-                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionSport, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
-                                    </StackPanel>
-                                </Button>
+                                    <Button x:Name="OccasionSportButton" Click="OccasionButton_Click" Tag="Sport"
+                                            CornerRadius="8" Padding="10,6">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf44b;" FontSize="11"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionSport, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
 
-                                <Button x:Name="OccasionTravelButton" Click="OccasionButton_Click" Tag="Travel"
-                                        CornerRadius="8" Padding="10,6">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" FontSize="11"/>
-                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionTravel, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
-                                    </StackPanel>
-                                </Button>
-                            </StackPanel>
+                                    <Button x:Name="OccasionTravelButton" Click="OccasionButton_Click" Tag="Travel"
+                                            CornerRadius="8" Padding="10,6">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" FontSize="11"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.OotdOccasionTravel, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </ScrollViewer>
 
                             <!-- Hàng 2: Chọn Giới tính (3 Gender Styles) -->
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Button x:Name="GenderAllButton" Click="GenderButton_Click" Tag="All"
-                                        CornerRadius="14" Padding="12,4">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf183;" FontSize="10.5"/>
-                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdGenderAll, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"/>
-                                    </StackPanel>
-                                </Button>
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                                          HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled">
+                                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Left">
+                                    <Button x:Name="GenderAllButton" Click="GenderButton_Click" Tag="All"
+                                            CornerRadius="14" Padding="12,4">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf183;" FontSize="10.5"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.OotdGenderAll, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
 
-                                <Button x:Name="GenderMenButton" Click="GenderButton_Click" Tag="Men"
-                                        CornerRadius="14" Padding="12,4">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf007;" FontSize="10.5"/>
-                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdGenderMen, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"/>
-                                    </StackPanel>
-                                </Button>
+                                    <Button x:Name="GenderMenButton" Click="GenderButton_Click" Tag="Men"
+                                            CornerRadius="14" Padding="12,4">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf007;" FontSize="10.5"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.OotdGenderMen, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
 
-                                <Button x:Name="GenderWomenButton" Click="GenderButton_Click" Tag="Women"
-                                        CornerRadius="14" Padding="12,4">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf182;" FontSize="10.5"/>
-                                        <TextBlock Text="{x:Bind ViewModel.Loc.OotdGenderWomen, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"/>
-                                    </StackPanel>
-                                </Button>
-                            </StackPanel>
+                                    <Button x:Name="GenderWomenButton" Click="GenderButton_Click" Tag="Women"
+                                            CornerRadius="14" Padding="12,4">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf182;" FontSize="10.5"/>
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.OotdGenderWomen, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </ScrollViewer>
                         </StackPanel>
                     </Border>
 
@@ -203,8 +210,8 @@
                     </Grid>
 
                     <!-- Bảng màu đề xuất & Chất liệu khuyên dùng -->
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                        <!-- Bảng màu (Color Palette) -->
+                    <Grid x:Name="PaletteFabricGrid" ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <!-- Bảng màu (Color Palette - 2 Cột chip không bao giờ bị cắt chữ) -->
                         <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,12">
                             <StackPanel Spacing="8">
                                 <StackPanel Orientation="Horizontal" Spacing="7">
@@ -214,17 +221,17 @@
                                 <ItemsControl ItemsSource="{x:Bind ViewModel.CurrentOutfitAdvice.SuggestedColors, Mode=OneWay}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <StackPanel Orientation="Horizontal" Spacing="8"/>
+                                            <helpers:UniformGrid Columns="2"/>
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="models:OutfitColorItem">
-                                            <Border Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="12" Padding="8,5">
+                                            <Border Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="10" Padding="8,5" Margin="0,0,6,6">
                                                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                                     <Border Width="16" Height="16" CornerRadius="8"
                                                             Background="{x:Bind HexColor, Converter={StaticResource HexToBrushConverter}}"
                                                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"/>
-                                                    <TextBlock Text="{x:Bind Name}" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{x:Bind Name}" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                                 </StackPanel>
                                             </Border>
                                         </DataTemplate>
@@ -246,7 +253,7 @@
                         </Border>
                     </Grid>
 
-                    <!-- Checklist Phụ kiện & Vật dụng cần mang -->
+                    <!-- Checklist Phụ kiện & Vật dụng cần mang (Responsive 2x2/4 Adaptive Grid - Không bao giờ tràn lề phải) -->
                     <StackPanel Spacing="8">
                         <StackPanel Orientation="Horizontal" Spacing="7">
                             <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf468;" FontSize="12" Foreground="#60A5FA"/>
@@ -256,41 +263,41 @@
                         <ItemsControl ItemsSource="{x:Bind ViewModel.CurrentOutfitAdvice.Accessories, Mode=OneWay}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" Spacing="8"/>
+                                    <helpers:UniformGrid Columns="2"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="models:OutfitAccessoryItem">
                                     <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                             BorderBrush="{x:Bind AccentColor, Converter={StaticResource HexToBrushConverter}}"
-                                            BorderThickness="1" CornerRadius="10" Padding="10,6">
-                                        <StackPanel Orientation="Horizontal" Spacing="7">
-                                            <Border Width="26" Height="26" CornerRadius="13"
+                                            BorderThickness="1" CornerRadius="10" Padding="10,8" Margin="0,0,8,8">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" VerticalAlignment="Center">
+                                            <Border Grid.Column="0" Width="32" Height="32" CornerRadius="16"
                                                     Background="{x:Bind AccentColor, Converter={StaticResource HexToBrushConverter}}"
-                                                    Opacity="0.2">
-                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}" FontSize="11.5"
+                                                    Opacity="0.2" VerticalAlignment="Center">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}" FontSize="12.5"
                                                           Foreground="{x:Bind AccentColor, Converter={StaticResource HexToBrushConverter}}"
                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Border>
-                                            <StackPanel VerticalAlignment="Center" Spacing="1">
-                                                <StackPanel Orientation="Horizontal" Spacing="5">
-                                                    <TextBlock Text="{x:Bind Name}" FontSize="11.5" FontWeight="SemiBold"/>
-                                                    <Border Background="{x:Bind AccentColor, Converter={StaticResource HexToBrushConverter}}"
-                                                            CornerRadius="4" Padding="5,1">
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                                                    <TextBlock Grid.Column="0" Text="{x:Bind Name}" FontSize="11.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                                    <Border Grid.Column="1" Background="{x:Bind AccentColor, Converter={StaticResource HexToBrushConverter}}"
+                                                            CornerRadius="4" Padding="5,1" VerticalAlignment="Center">
                                                         <TextBlock Text="{x:Bind BadgeText}" FontSize="9" FontWeight="Bold" Foreground="White"/>
                                                     </Border>
-                                                </StackPanel>
-                                                <TextBlock Text="{x:Bind Reason}" FontSize="10.5" Opacity="0.75" TextWrapping="Wrap"/>
+                                                </Grid>
+                                                <TextBlock Text="{x:Bind Reason}" FontSize="10.5" Opacity="0.75" TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis"/>
                                             </StackPanel>
-                                        </StackPanel>
+                                        </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </StackPanel>
 
-                    <!-- Cảnh báo Xe Máy & Trang bị Áo Mưa (2 Cột) -->
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <!-- Cảnh báo Xe Máy & Trang bị Áo Mưa (2 Cột / 1 Cột Responsive) -->
+                    <Grid x:Name="MotorbikeRainGrid" ColumnDefinitions="*,*" ColumnSpacing="12">
                         <!-- Xe máy -->
                         <Border Grid.Column="0" Background="#20F59E0B" BorderBrush="#60F59E0B" BorderThickness="1" CornerRadius="12" Padding="12,10">
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
@@ -490,8 +497,8 @@
                         </Border>
                     </Grid>
 
-                    <!-- Hàng 1: Thẻ AQI Tổng Quan & Thẻ Bảo Vệ Da (2 Cột) -->
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <!-- Hàng 1: Thẻ AQI Tổng Quan & Thẻ Bảo Vệ Da (2 Cột / 1 Cột Responsive) -->
+                    <Grid x:Name="AqiSkinDefenseGrid" ColumnDefinitions="*,*" ColumnSpacing="12">
                         <!-- Cột Trái: Điểm US-AQI & Khuyến cáo Hô hấp -->
                         <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"

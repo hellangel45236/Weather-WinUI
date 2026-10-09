@@ -31,7 +31,15 @@ public sealed partial class WidgetStudioTab : UserControl
     public WidgetStudioTab()
     {
         this.InitializeComponent();
-        this.Loaded += (s, e) => SyncVisuals();
+        this.Loaded += (s, e) =>
+        {
+            SyncVisuals();
+            UpdateResponsiveLayout(this.ActualWidth);
+        };
+        this.SizeChanged += (s, e) =>
+        {
+            UpdateResponsiveLayout(e.NewSize.Width);
+        };
     }
 
     private void SyncVisuals()
@@ -58,12 +66,99 @@ public sealed partial class WidgetStudioTab : UserControl
             if (StudioOpacitySlider != null)
             {
                 double op = ViewModel.Settings.WidgetOpacity;
-                StudioOpacitySlider.Value = op > 1.0 ? op : op * 100.0;
+                double percent = op > 1.0 ? op : op * 100.0;
+                StudioOpacitySlider.Value = percent;
+                if (OpacityValueText != null)
+                {
+                    OpacityValueText.Text = $"{(int)percent}%";
+                }
+            }
+
+            if (AlwaysOnTopSwitch != null)
+            {
+                AlwaysOnTopSwitch.IsOn = ViewModel.Settings.WidgetAlwaysOnTop;
             }
         }
         finally
         {
             _isSyncing = false;
+        }
+    }
+
+    private void UpdateResponsiveLayout(double width)
+    {
+        if (width <= 0) return;
+
+        bool isNarrow = width < 950;
+
+        // 1. Gallery Grid (Chuyển giữa 2x2 trên màn rộng và 1x4 trên màn hẹp)
+        if (GalleryGrid != null)
+        {
+            if (isNarrow)
+            {
+                GalleryGrid.ColumnDefinitions.Clear();
+                GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                GalleryGrid.RowDefinitions.Clear();
+                GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+                if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
+                if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 0); Grid.SetRow(CardWidgetGlassCard, 1); }
+                if (CardWidgetCompact != null) { Grid.SetColumn(CardWidgetCompact, 0); Grid.SetRow(CardWidgetCompact, 2); }
+                if (CardWidgetMiniIsland != null) { Grid.SetColumn(CardWidgetMiniIsland, 0); Grid.SetRow(CardWidgetMiniIsland, 3); }
+            }
+            else
+            {
+                GalleryGrid.ColumnDefinitions.Clear();
+                GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                GalleryGrid.RowDefinitions.Clear();
+                GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+                if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
+                if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 1); Grid.SetRow(CardWidgetGlassCard, 0); }
+                if (CardWidgetCompact != null) { Grid.SetColumn(CardWidgetCompact, 0); Grid.SetRow(CardWidgetCompact, 1); }
+                if (CardWidgetMiniIsland != null) { Grid.SetColumn(CardWidgetMiniIsland, 1); Grid.SetRow(CardWidgetMiniIsland, 1); }
+            }
+        }
+
+        // 2. Controls Grid
+        if (ControlsGrid != null)
+        {
+            if (isNarrow)
+            {
+                ControlsGrid.ColumnDefinitions.Clear();
+                ControlsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                ControlsGrid.RowDefinitions.Clear();
+                ControlsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                ControlsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+                if (ControlsGrid.Children.Count >= 2)
+                {
+                    Grid.SetColumn((FrameworkElement)ControlsGrid.Children[0], 0);
+                    Grid.SetRow((FrameworkElement)ControlsGrid.Children[0], 0);
+                    Grid.SetColumn((FrameworkElement)ControlsGrid.Children[1], 0);
+                    Grid.SetRow((FrameworkElement)ControlsGrid.Children[1], 1);
+                }
+            }
+            else
+            {
+                ControlsGrid.RowDefinitions.Clear();
+                ControlsGrid.ColumnDefinitions.Clear();
+                ControlsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                ControlsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+                if (ControlsGrid.Children.Count >= 2)
+                {
+                    Grid.SetColumn((FrameworkElement)ControlsGrid.Children[0], 0);
+                    Grid.SetRow((FrameworkElement)ControlsGrid.Children[0], 0);
+                    Grid.SetColumn((FrameworkElement)ControlsGrid.Children[1], 1);
+                    Grid.SetRow((FrameworkElement)ControlsGrid.Children[1], 0);
+                }
+            }
         }
     }
 
@@ -85,6 +180,22 @@ public sealed partial class WidgetStudioTab : UserControl
     private void CardWidgetMiniIsland_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         SelectWidgetStyle("MiniIsland");
+    }
+
+    private void Card_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (sender is Border border)
+        {
+            border.Opacity = 0.95;
+        }
+    }
+
+    private void Card_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (sender is Border border)
+        {
+            border.Opacity = 1.0;
+        }
     }
 
     private void SelectWidgetStyle(string styleTag)
@@ -156,6 +267,11 @@ public sealed partial class WidgetStudioTab : UserControl
 
     private void WidgetOpacitySlider_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
+        if (OpacityValueText != null)
+        {
+            OpacityValueText.Text = $"{(int)e.NewValue}%";
+        }
+
         if (_isSyncing || ViewModel == null) return;
         double val = e.NewValue;
         double normalizedOpacity = val > 1.0 ? val / 100.0 : val;
@@ -169,6 +285,21 @@ public sealed partial class WidgetStudioTab : UserControl
         }
     }
 
+    private void AlwaysOnTopSwitch_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null) return;
+        if (sender is ToggleSwitch ts)
+        {
+            ViewModel.Settings.WidgetAlwaysOnTop = ts.IsOn;
+            ViewModel.ApplySettings();
+
+            foreach (var w in WidgetWindow.ActiveWidgets)
+            {
+                try { w.SetAlwaysOnTop(ts.IsOn); } catch { }
+            }
+        }
+    }
+
     private void OpenCurrentCityWidget_Click(object sender, RoutedEventArgs e)
     {
         if (ViewModel == null) return;
@@ -179,22 +310,24 @@ public sealed partial class WidgetStudioTab : UserControl
         var widgetWindow = new WidgetWindow(ViewModel);
         widgetWindow.ApplyWidgetStyle(chosenStyle);
         widgetWindow.SetOpacity(chosenOpacity);
+        widgetWindow.SetAlwaysOnTop(ViewModel.Settings.WidgetAlwaysOnTop);
         widgetWindow.Activate();
     }
 
     private async void OpenCustomCityWidget_Click(object sender, RoutedEventArgs e)
     {
+        var loc = LocalizationService.Instance;
         var inputTextBox = new TextBox
         {
-            PlaceholderText = "Nhập tên thành phố (VD: Đà Nẵng, Tokyo, Paris, New York...)",
+            PlaceholderText = loc.WidgetStudioCityDialogPlaceholder,
             Height = 38
         };
         var dialog = new ContentDialog
         {
-            Title = "➕ Tạo Widget Mới Cho Thành Phố Khác",
+            Title = loc.WidgetStudioCityDialogTitle,
             Content = inputTextBox,
-            PrimaryButtonText = "Tạo Widget",
-            CloseButtonText = "Hủy",
+            PrimaryButtonText = loc.WidgetStudioCityDialogCreate,
+            CloseButtonText = loc.WidgetStudioCityDialogCancel,
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = this.XamlRoot
         };
@@ -206,6 +339,7 @@ public sealed partial class WidgetStudioTab : UserControl
             string chosenStyle = ViewModel?.Settings.WidgetStyle ?? "BryanCDynamic";
             double chosenOpacity = ViewModel?.Settings.WidgetOpacity ?? 1.0;
             if (chosenOpacity <= 0.05) chosenOpacity = 1.0;
+            bool alwaysOnTop = ViewModel?.Settings.WidgetAlwaysOnTop ?? true;
 
             try
             {
@@ -217,6 +351,7 @@ public sealed partial class WidgetStudioTab : UserControl
                     var widget = new WidgetWindow(ViewModel, $"{first.Name}, {first.Country}", first.Latitude, first.Longitude);
                     widget.ApplyWidgetStyle(chosenStyle);
                     widget.SetOpacity(chosenOpacity);
+                    widget.SetAlwaysOnTop(alwaysOnTop);
                     widget.Activate();
                 }
                 else
@@ -224,6 +359,7 @@ public sealed partial class WidgetStudioTab : UserControl
                     var widget = new WidgetWindow(ViewModel, city, 21.0285, 105.8542);
                     widget.ApplyWidgetStyle(chosenStyle);
                     widget.SetOpacity(chosenOpacity);
+                    widget.SetAlwaysOnTop(alwaysOnTop);
                     widget.Activate();
                 }
             }
@@ -232,6 +368,7 @@ public sealed partial class WidgetStudioTab : UserControl
                 var widget = new WidgetWindow(ViewModel, city, 21.0285, 105.8542);
                 widget.ApplyWidgetStyle(chosenStyle);
                 widget.SetOpacity(chosenOpacity);
+                widget.SetAlwaysOnTop(alwaysOnTop);
                 widget.Activate();
             }
         }

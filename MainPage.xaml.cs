@@ -102,12 +102,12 @@ public sealed partial class MainPage : Page
         if (width < 1140)
         {
             if (AppSubtitleText != null) AppSubtitleText.Visibility = Visibility.Collapsed;
-            if (ThemeComboBox != null) ThemeComboBox.Width = width < 980 ? 95 : 105;
+            if (ThemeComboBox != null) ThemeComboBox.Width = width < 980 ? 116 : 124;
         }
         else
         {
             if (AppSubtitleText != null) AppSubtitleText.Visibility = Visibility.Visible;
-            if (ThemeComboBox != null) ThemeComboBox.Width = 110;
+            if (ThemeComboBox != null) ThemeComboBox.Width = 124;
         }
 
         // Tự co giãn MaxWidth ô tìm kiếm khi cửa sổ hẹp

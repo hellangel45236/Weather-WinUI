@@ -54,7 +54,134 @@ public sealed partial class LifestyleTab : UserControl
         {
             UpdateOccasionButtonsVisual();
             UpdateGenderButtonsVisual();
+            UpdateResponsiveLayout(this.ActualWidth);
         };
+        this.SizeChanged += (s, e) =>
+        {
+            UpdateResponsiveLayout(e.NewSize.Width);
+        };
+    }
+
+    private void UpdateResponsiveLayout(double width)
+    {
+        if (width <= 0) return;
+
+        bool isNarrow = width < 950;
+        bool isUltraWide = width >= 1250;
+
+        // 1. Palette & Fabric Advice (Chuyển giữa 2 cột và 1 cột xếp dọc)
+        if (PaletteFabricGrid != null)
+        {
+            if (isNarrow)
+            {
+                PaletteFabricGrid.ColumnDefinitions.Clear();
+                PaletteFabricGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                PaletteFabricGrid.RowDefinitions.Clear();
+                PaletteFabricGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                PaletteFabricGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                PaletteFabricGrid.RowSpacing = 12;
+
+                if (PaletteFabricGrid.Children.Count >= 2)
+                {
+                    Grid.SetColumn((FrameworkElement)PaletteFabricGrid.Children[0], 0);
+                    Grid.SetRow((FrameworkElement)PaletteFabricGrid.Children[0], 0);
+                    Grid.SetColumn((FrameworkElement)PaletteFabricGrid.Children[1], 0);
+                    Grid.SetRow((FrameworkElement)PaletteFabricGrid.Children[1], 1);
+                }
+            }
+            else
+            {
+                PaletteFabricGrid.RowDefinitions.Clear();
+                PaletteFabricGrid.RowSpacing = 0;
+                PaletteFabricGrid.ColumnDefinitions.Clear();
+                PaletteFabricGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                PaletteFabricGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+                if (PaletteFabricGrid.Children.Count >= 2)
+                {
+                    Grid.SetColumn((FrameworkElement)PaletteFabricGrid.Children[0], 0);
+                    Grid.SetRow((FrameworkElement)PaletteFabricGrid.Children[0], 0);
+                    Grid.SetColumn((FrameworkElement)PaletteFabricGrid.Children[1], 1);
+                    Grid.SetRow((FrameworkElement)PaletteFabricGrid.Children[1], 0);
+                }
+            }
+        }
+
+        // 3. Motorbike & Rain gear
+        if (MotorbikeRainGrid != null)
+        {
+            if (isNarrow)
+            {
+                MotorbikeRainGrid.ColumnDefinitions.Clear();
+                MotorbikeRainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                MotorbikeRainGrid.RowDefinitions.Clear();
+                MotorbikeRainGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                MotorbikeRainGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                MotorbikeRainGrid.RowSpacing = 12;
+
+                if (MotorbikeRainGrid.Children.Count >= 2)
+                {
+                    Grid.SetColumn((FrameworkElement)MotorbikeRainGrid.Children[0], 0);
+                    Grid.SetRow((FrameworkElement)MotorbikeRainGrid.Children[0], 0);
+                    Grid.SetColumn((FrameworkElement)MotorbikeRainGrid.Children[1], 0);
+                    Grid.SetRow((FrameworkElement)MotorbikeRainGrid.Children[1], 1);
+                }
+            }
+            else
+            {
+                MotorbikeRainGrid.RowDefinitions.Clear();
+                MotorbikeRainGrid.RowSpacing = 0;
+                MotorbikeRainGrid.ColumnDefinitions.Clear();
+                MotorbikeRainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                MotorbikeRainGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+                if (MotorbikeRainGrid.Children.Count >= 2)
+                {
+                    Grid.SetColumn((FrameworkElement)MotorbikeRainGrid.Children[0], 0);
+                    Grid.SetRow((FrameworkElement)MotorbikeRainGrid.Children[0], 0);
+                    Grid.SetColumn((FrameworkElement)MotorbikeRainGrid.Children[1], 1);
+                    Grid.SetRow((FrameworkElement)MotorbikeRainGrid.Children[1], 0);
+                }
+            }
+        }
+
+        // 4. AQI & Skin defense
+        if (AqiSkinDefenseGrid != null)
+        {
+            if (isNarrow)
+            {
+                AqiSkinDefenseGrid.ColumnDefinitions.Clear();
+                AqiSkinDefenseGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                AqiSkinDefenseGrid.RowDefinitions.Clear();
+                AqiSkinDefenseGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                AqiSkinDefenseGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                AqiSkinDefenseGrid.RowSpacing = 12;
+
+                if (AqiSkinDefenseGrid.Children.Count >= 2)
+                {
+                    Grid.SetColumn((FrameworkElement)AqiSkinDefenseGrid.Children[0], 0);
+                    Grid.SetRow((FrameworkElement)AqiSkinDefenseGrid.Children[0], 0);
+                    Grid.SetColumn((FrameworkElement)AqiSkinDefenseGrid.Children[1], 0);
+                    Grid.SetRow((FrameworkElement)AqiSkinDefenseGrid.Children[1], 1);
+                }
+            }
+            else
+            {
+                AqiSkinDefenseGrid.RowDefinitions.Clear();
+                AqiSkinDefenseGrid.RowSpacing = 0;
+                AqiSkinDefenseGrid.ColumnDefinitions.Clear();
+                AqiSkinDefenseGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                AqiSkinDefenseGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+                if (AqiSkinDefenseGrid.Children.Count >= 2)
+                {
+                    Grid.SetColumn((FrameworkElement)AqiSkinDefenseGrid.Children[0], 0);
+                    Grid.SetRow((FrameworkElement)AqiSkinDefenseGrid.Children[0], 0);
+                    Grid.SetColumn((FrameworkElement)AqiSkinDefenseGrid.Children[1], 1);
+                    Grid.SetRow((FrameworkElement)AqiSkinDefenseGrid.Children[1], 0);
+                }
+            }
+        }
     }
 
     private void OccasionButton_Click(object sender, RoutedEventArgs e)

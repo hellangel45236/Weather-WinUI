@@ -72,7 +72,8 @@
                 <ComboBox x:Name="ThemeComboBox"
                           SelectedIndex="2"
                           SelectionChanged="ThemeComboBox_SelectionChanged"
-                          Width="105"
+                          Width="124"
+                          MinWidth="116"
                           ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ThemeTooltip, Mode=OneWay}">
                     <ComboBoxItem Content="☀️ Sáng" Tag="light"/>
                     <ComboBoxItem Content="🌙 Tối" Tag="dark"/>
