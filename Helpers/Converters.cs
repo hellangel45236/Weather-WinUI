@@ -205,3 +205,27 @@ public class NullToVisibilityConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotImplementedException();
 }
 
+public class BoolToHourlyCardBorderBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        return (value is bool b && b)
+            ? new SolidColorBrush(Windows.UI.Color.FromArgb(230, 56, 189, 248))
+            : new SolidColorBrush(Windows.UI.Color.FromArgb(30, 255, 255, 255));
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotImplementedException();
+}
+
+public class BoolToHourlyCardBackgroundConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        return (value is bool b && b)
+            ? new SolidColorBrush(Windows.UI.Color.FromArgb(55, 56, 189, 248))
+            : new SolidColorBrush(Windows.UI.Color.FromArgb(16, 255, 255, 255));
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotImplementedException();
+}
+

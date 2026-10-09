@@ -94,7 +94,7 @@ public class CurrentWeatherDisplay
     public string SmartSummaryText { get; set; } = string.Empty;
 }
 
-public class HourlyForecastItem
+public class HourlyForecastItem : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
 {
     public int HourNumber { get; set; }
     public string TimeDisplay { get; set; } = string.Empty;
@@ -109,6 +109,62 @@ public class HourlyForecastItem
     public string WindSpeedDisplay { get; set; } = string.Empty;
     public double UvValue { get; set; } = 0;
     public string UvDisplay { get; set; } = string.Empty;
+    public string UvLevelText { get; set; } = string.Empty;
+    public string PrecipitationText { get; set; } = "0.0 mm";
+    public string WindDirectionText { get; set; } = string.Empty;
+    public double WindDirectionDegrees { get; set; } = 0;
+    public bool IsNow { get; set; } = false;
+
+    private bool _isSelected = false;
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set => SetProperty(ref _isSelected, value);
+    }
+
+    private string _primaryMetricText = string.Empty;
+    public string PrimaryMetricText
+    {
+        get => _primaryMetricText;
+        set => SetProperty(ref _primaryMetricText, value);
+    }
+
+    private string _secondaryMetricText = string.Empty;
+    public string SecondaryMetricText
+    {
+        get => _secondaryMetricText;
+        set => SetProperty(ref _secondaryMetricText, value);
+    }
+
+    private string _secondaryIconGlyph = "\uf043";
+    public string SecondaryIconGlyph
+    {
+        get => _secondaryIconGlyph;
+        set => SetProperty(ref _secondaryIconGlyph, value);
+    }
+
+    private string _secondaryColor = "#0099BC";
+    public string SecondaryColor
+    {
+        get => _secondaryColor;
+        set => SetProperty(ref _secondaryColor, value);
+    }
+
+    private string _badgeText = string.Empty;
+    public string BadgeText
+    {
+        get => _badgeText;
+        set => SetProperty(ref _badgeText, value);
+    }
+
+    private string _badgeColor = string.Empty;
+    public string BadgeColor
+    {
+        get => _badgeColor;
+        set => SetProperty(ref _badgeColor, value);
+    }
+
+    public bool HasBadge => !string.IsNullOrEmpty(BadgeText);
     public bool HasRainChance => !string.IsNullOrEmpty(RainProbabilityText) && RainProbabilityText != "0%";
 }
 

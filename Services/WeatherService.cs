@@ -29,7 +29,7 @@ public class WeatherService : IWeatherService
 
             string url = $"https://api.open-meteo.com/v1/forecast?latitude={latStr}&longitude={lonStr}" +
                          "&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m" +
-                         "&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m,surface_pressure,uv_index" +
+                         "&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m,surface_pressure,uv_index,wind_direction_10m" +
                          "&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_direction_10m_dominant" +
                          "&timezone=auto";
 
@@ -355,7 +355,9 @@ public class WeatherService : IWeatherService
         var temps = data.Hourly.Temperature;
         var codes = data.Hourly.WeatherCode;
         var rainProbs = data.Hourly.PrecipitationProbability;
+        var precips = data.Hourly.Precipitation;
         var winds = data.Hourly.WindSpeed;
+        var windDirections = data.Hourly.WindDirection;
         var uvs = data.Hourly.UvIndex;
 
         DateTime now = DateTime.Now;
@@ -396,6 +398,13 @@ public class WeatherService : IWeatherService
             int code = (codes != null && idx < codes.Count) ? codes[idx] : 0;
             int rainProb = (rainProbs != null && idx < rainProbs.Count) ? rainProbs[idx] : 0;
 
+            double rawPrecip = (precips != null && idx < precips.Count) ? Math.Max(0, precips[idx]) : 0;
+            string precipDisplay = settings?.PrecipitationUnit switch
+            {
+                "inch" => $"{rawPrecip * 0.0393701:F2} in",
+                _ => $"{rawPrecip:F1} mm"
+            };
+
             double rawWind = (winds != null && idx < winds.Count) ? winds[idx] : 0;
             double convertedWind = settings?.WindSpeedUnit switch
             {
@@ -411,28 +420,43 @@ public class WeatherService : IWeatherService
             };
             string windDisplay = $"{convertedWind} {windUnit}";
 
+            double rawWindDir = (windDirections != null && idx < windDirections.Count) ? windDirections[idx] : 0;
+            string windDirText = WeatherCodeHelper.GetWindDirection(rawWindDir);
+
             double rawUv = (uvs != null && idx < uvs.Count) ? Math.Max(0, uvs[idx]) : 0;
             string uvDisplay = $"UV {rawUv:F1}";
+            var (uvLevel, _) = WeatherCodeHelper.GetUvInterpretation(rawUv);
 
             var (desc, glyph) = WeatherCodeHelper.GetConditionInfo(code, isDayHour);
             string iconPack = settings?.SelectedIconPack ?? "Meteocons";
             string svgPath = WeatherCodeHelper.GetWeatherIconPath(code, isDayHour, iconPack);
 
+            string tempDisplay = $"{Math.Round(t)}{unit}";
+
             list.Add(new HourlyForecastItem
             {
                 HourNumber = hourNum,
                 TimeDisplay = timeDisplay,
-                TempDisplay = $"{Math.Round(t)}{unit}",
+                TempDisplay = tempDisplay,
                 TempValue = Math.Round(t, 1),
                 IconGlyph = glyph,
                 SvgIconPath = svgPath,
                 ConditionText = desc,
                 RainProbabilityText = rainProb > 0 ? $"{rainProb}%" : "0%",
                 RainProbabilityValue = rainProb,
+                PrecipitationText = precipDisplay,
                 WindSpeedValue = convertedWind,
                 WindSpeedDisplay = windDisplay,
+                WindDirectionDegrees = rawWindDir,
+                WindDirectionText = windDirText,
                 UvValue = Math.Round(rawUv, 1),
-                UvDisplay = uvDisplay
+                UvDisplay = uvDisplay,
+                UvLevelText = uvLevel,
+                IsNow = i == 0,
+                PrimaryMetricText = tempDisplay,
+                SecondaryMetricText = rainProb > 0 ? $"{rainProb}%" : (isVi ? "Tạnh ráo" : "Dry"),
+                BadgeText = i == 0 ? (isVi ? "Hiện tại" : "Now") : string.Empty,
+                BadgeColor = i == 0 ? "#0EA5E9" : string.Empty
             });
         }
 

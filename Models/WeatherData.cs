@@ -90,6 +90,9 @@ public class HourlyWeatherDto
 
     [JsonPropertyName("uv_index")]
     public List<double>? UvIndex { get; set; }
+
+    [JsonPropertyName("wind_direction_10m")]
+    public List<double>? WindDirection { get; set; }
 }
 
 public class DailyWeatherDto

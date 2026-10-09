@@ -476,42 +476,52 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string _scrubbedSvgIconPath = "ms-appx:///Assets/weather-icons-main/production/fill/svg/clear-day.svg";
 
-    public void ScrubToHour(int hour)
+    public void ScrubToItem(HourlyForecastItem item)
     {
-        if (HourlyForecast == null || HourlyForecast.Count == 0) return;
-        var item = HourlyForecast.FirstOrDefault(h => h.HourNumber == hour) ?? HourlyForecast.FirstOrDefault();
-        if (item == null) return;
+        if (item == null || HourlyForecast == null) return;
+        foreach (var h in HourlyForecast)
+        {
+            h.IsSelected = (h == item);
+        }
 
         IsTimeScrubbingActive = true;
-        ScrubbedSliderValue = hour;
-        ScrubbedTimeLabel = $"{hour:D2}:00 ({item.TimeDisplay})";
+        ScrubbedSliderValue = item.HourNumber;
+        ScrubbedTimeLabel = item.IsNow ? item.TimeDisplay : $"{item.TimeDisplay}";
         ScrubbedTempText = item.TempDisplay;
         ScrubbedConditionText = item.ConditionText;
         ScrubbedRainText = item.RainProbabilityText;
         ScrubbedIconGlyph = item.IconGlyph;
         ScrubbedSvgIconPath = item.SvgIconPath;
 
-        // Dynamic Chromatic Sky colors based on hour & condition
+        int hour = item.HourNumber;
         if (hour >= 5 && hour < 7)
         {
-            ScrubbedGradientStart = "#D97706"; // Rạng đông cam đào
-            ScrubbedGradientEnd = "#7C3AED";   // Tím rạng đông
+            ScrubbedGradientStart = "#D97706";
+            ScrubbedGradientEnd = "#7C3AED";
         }
         else if (hour >= 7 && hour < 16)
         {
-            ScrubbedGradientStart = "#0284C7"; // Ban ngày xanh biếc
+            ScrubbedGradientStart = "#0284C7";
             ScrubbedGradientEnd = "#0369A1";
         }
         else if (hour >= 16 && hour < 19)
         {
-            ScrubbedGradientStart = "#EA580C"; // Hoàng hôn hổ phách
-            ScrubbedGradientEnd = "#4C1D95";   // Tím chiều
+            ScrubbedGradientStart = "#EA580C";
+            ScrubbedGradientEnd = "#4C1D95";
         }
         else
         {
-            ScrubbedGradientStart = "#0F172A"; // Đêm tím than
-            ScrubbedGradientEnd = "#1E1B4B";   // Đêm huyền ảo
+            ScrubbedGradientStart = "#0F172A";
+            ScrubbedGradientEnd = "#1E1B4B";
         }
+    }
+
+    public void ScrubToHour(int hour)
+    {
+        if (HourlyForecast == null || HourlyForecast.Count == 0) return;
+        var item = HourlyForecast.FirstOrDefault(h => h.HourNumber == hour) ?? HourlyForecast.FirstOrDefault();
+        if (item == null) return;
+        ScrubToItem(item);
     }
 
     [RelayCommand]
@@ -519,6 +529,13 @@ public partial class MainViewModel : ObservableObject
     {
         IsTimeScrubbingActive = false;
         ScrubbedSliderValue = DateTime.Now.Hour;
+        if (HourlyForecast != null)
+        {
+            foreach (var h in HourlyForecast)
+            {
+                h.IsSelected = false;
+            }
+        }
     }
 
     // ==================== v3.0.6: DEEP-DIVE METRIC DETAIL MODAL POPUP ====================

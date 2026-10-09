@@ -67,10 +67,12 @@ public sealed partial class OverviewTab : UserControl
             e.PropertyName == nameof(MainViewModel.LocationTitle) ||
             e.PropertyName == nameof(MainViewModel.IsBatterySavingActive) ||
             e.PropertyName == nameof(MainViewModel.IsTimeScrubbingActive) ||
-            e.PropertyName == nameof(MainViewModel.ScrubbedSliderValue))
+            e.PropertyName == nameof(MainViewModel.ScrubbedSliderValue) ||
+            e.PropertyName == nameof(MainViewModel.HourlyForecast))
         {
             DispatcherQueue.TryEnqueue(() =>
             {
+                UpdateHourlyItemsForCurrentMetric();
                 UpdateWeatherVisuals();
                 RedrawCanvases();
             });
@@ -134,6 +136,7 @@ public sealed partial class OverviewTab : UserControl
             }
             SetupAllCardHoverPhysics();
             UpdateResponsiveLayout(this.ActualWidth);
+            UpdateHourlyItemsForCurrentMetric();
             UpdateWeatherVisuals();
             RedrawCanvases();
             StartHeroIconAnimation();
@@ -324,6 +327,22 @@ public sealed partial class OverviewTab : UserControl
         {
             ViewModel?.ResetTimeScrubbing();
             UpdateWeatherVisuals();
+            RenderHourlyTrendline();
+        }
+        catch { }
+    }
+
+    private void HourlyScrollViewer_PointerWheelChanged(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        try
+        {
+            var props = e.GetCurrentPoint(HourlyScrollViewer).Properties;
+            int delta = props.MouseWheelDelta;
+            if (delta != 0 && HourlyScrollViewer != null)
+            {
+                HourlyScrollViewer.ChangeView(HourlyScrollViewer.HorizontalOffset - delta, null, null, false);
+                e.Handled = true;
+            }
         }
         catch { }
     }
@@ -416,7 +435,47 @@ public sealed partial class OverviewTab : UserControl
                 if (_currentHourlyMetric == mode) return;
                 _currentHourlyMetric = mode;
                 UpdateHourlyMetricButtonsStyle();
+                UpdateHourlyItemsForCurrentMetric();
                 RenderHourlyTrendline();
+            }
+        }
+    }
+
+    public void UpdateHourlyItemsForCurrentMetric()
+    {
+        if (ViewModel?.HourlyForecast == null) return;
+
+        foreach (var it in ViewModel.HourlyForecast)
+        {
+            switch (_currentHourlyMetric)
+            {
+                case HourlyChartMetricMode.Temperature:
+                    it.PrimaryMetricText = it.TempDisplay;
+                    it.SecondaryMetricText = it.RainProbabilityText;
+                    it.SecondaryIconGlyph = "\uf043"; // Giọt nước
+                    it.SecondaryColor = "#0099BC";
+                    break;
+
+                case HourlyChartMetricMode.RainProbability:
+                    it.PrimaryMetricText = it.RainProbabilityText;
+                    it.SecondaryMetricText = it.PrecipitationText;
+                    it.SecondaryIconGlyph = "\uf73d"; // Mây mưa
+                    it.SecondaryColor = "#0EA5E9";
+                    break;
+
+                case HourlyChartMetricMode.WindSpeed:
+                    it.PrimaryMetricText = it.WindSpeedDisplay;
+                    it.SecondaryMetricText = it.WindDirectionText;
+                    it.SecondaryIconGlyph = "\uf14e"; // La bàn
+                    it.SecondaryColor = "#10B981";
+                    break;
+
+                case HourlyChartMetricMode.UvIndex:
+                    it.PrimaryMetricText = it.UvDisplay;
+                    it.SecondaryMetricText = it.UvLevelText;
+                    it.SecondaryIconGlyph = "\uf185"; // Mặt trời
+                    it.SecondaryColor = "#F59E0B";
+                    break;
             }
         }
     }
@@ -473,7 +532,7 @@ public sealed partial class OverviewTab : UserControl
             double totalWidth = count * colWidth;
             HourlyTrendlineCanvas.Width = totalWidth;
 
-            double canvasHeight = 74.0;
+            double canvasHeight = 80.0;
             HourlyTrendlineCanvas.Height = canvasHeight;
 
             // 1. Trích xuất giá trị và nhãn tương ứng theo metric được chọn
@@ -533,7 +592,7 @@ public sealed partial class OverviewTab : UserControl
             };
             double valRange = Math.Max(rangeMinFloor, maxVal - minVal);
 
-            double topPadding = 24.0;
+            double topPadding = 26.0;
             double bottomPadding = 14.0;
             double usableHeight = canvasHeight - topPadding - bottomPadding;
 
@@ -642,37 +701,53 @@ public sealed partial class OverviewTab : UserControl
                     HourlyTrendlineCanvas.Children.Add(rainBar);
                 }
 
+                bool isNow = items[i].IsNow || i == 0;
+                bool isItemSel = items[i].IsSelected;
+
                 var dot = new Microsoft.UI.Xaml.Shapes.Ellipse
                 {
-                    Width = 6,
-                    Height = 6,
-                    Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                    Width = isItemSel ? 10 : (isNow ? 8 : 6),
+                    Height = isItemSel ? 10 : (isNow ? 8 : 6),
+                    Fill = isItemSel
+                        ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248))
+                        : (isNow
+                            ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 245, 158, 11))
+                            : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255))),
                     Stroke = new SolidColorBrush(strokeColor),
-                    StrokeThickness = 2
+                    StrokeThickness = isItemSel ? 2.5 : 2
                 };
-                Canvas.SetLeft(dot, pt.X - 3);
-                Canvas.SetTop(dot, pt.Y - 3);
+                double dotOffset = (isItemSel ? 10 : (isNow ? 8 : 6)) / 2.0;
+                Canvas.SetLeft(dot, pt.X - dotOffset);
+                Canvas.SetTop(dot, pt.Y - dotOffset);
                 HourlyTrendlineCanvas.Children.Add(dot);
 
                 var label = new TextBlock
                 {
                     Text = GetItemDisplay(items[i]),
-                    FontSize = 10.0,
-                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(235, 255, 255, 255)),
+                    FontSize = isItemSel ? 11.5 : (isNow ? 11.0 : 10.0),
+                    FontWeight = (isItemSel || isNow) ? Microsoft.UI.Text.FontWeights.Bold : Microsoft.UI.Text.FontWeights.SemiBold,
+                    Foreground = isItemSel
+                        ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248))
+                        : (isNow
+                            ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 245, 158, 11))
+                            : new SolidColorBrush(Windows.UI.Color.FromArgb(235, 255, 255, 255))),
                     TextAlignment = TextAlignment.Center,
-                    Width = 56
+                    Width = 60
                 };
-                Canvas.SetLeft(label, pt.X - 28);
-                Canvas.SetTop(label, pt.Y - 18);
+                Canvas.SetLeft(label, pt.X - 30);
+                Canvas.SetTop(label, pt.Y - 20);
                 HourlyTrendlineCanvas.Children.Add(label);
             }
 
             // Vạch kim thẳng đứng phát sáng nếu người dùng đang tua thời gian
             if (ViewModel?.IsTimeScrubbingActive == true)
             {
-                int scrubbedHour = (int)Math.Round(ViewModel.ScrubbedSliderValue);
-                int scrubbedIdx = items.FindIndex(x => x.HourNumber == scrubbedHour);
+                int scrubbedIdx = items.FindIndex(x => x.IsSelected);
+                if (scrubbedIdx < 0)
+                {
+                    int scrubbedHour = (int)Math.Round(ViewModel.ScrubbedSliderValue);
+                    scrubbedIdx = items.FindIndex(x => x.HourNumber == scrubbedHour);
+                }
                 if (scrubbedIdx >= 0 && scrubbedIdx < points.Count)
                 {
                     var targetPt = points[scrubbedIdx];
@@ -691,12 +766,12 @@ public sealed partial class OverviewTab : UserControl
 
                     var halo = new Microsoft.UI.Xaml.Shapes.Ellipse
                     {
-                        Width = 16,
-                        Height = 16,
+                        Width = 18,
+                        Height = 18,
                         Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(80, strokeColor.R, strokeColor.G, strokeColor.B))
                     };
-                    Canvas.SetLeft(halo, targetPt.X - 8);
-                    Canvas.SetTop(halo, targetPt.Y - 8);
+                    Canvas.SetLeft(halo, targetPt.X - 9);
+                    Canvas.SetTop(halo, targetPt.Y - 9);
                     HourlyTrendlineCanvas.Children.Add(halo);
                 }
             }
@@ -801,7 +876,8 @@ public sealed partial class OverviewTab : UserControl
     {
         if (sender is FrameworkElement fe && fe.DataContext is HourlyForecastItem item)
         {
-            ViewModel?.ScrubToHour(item.HourNumber);
+            ViewModel?.ScrubToItem(item);
+            RenderHourlyTrendline();
         }
     }
 
