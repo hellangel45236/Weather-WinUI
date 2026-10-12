@@ -78,7 +78,9 @@ public class WeatherService : IWeatherService
         var display = new CurrentWeatherDisplay
         {
             LocationName = string.IsNullOrWhiteSpace(locationName) ? "Vị trí hiện tại" : locationName,
-            UpdatedTimeText = $"Cập nhật lúc {DateTime.Now:HH:mm}"
+            UpdatedTimeText = $"Cập nhật lúc {DateTime.Now:HH:mm}",
+            Latitude = data.Latitude,
+            Longitude = data.Longitude
         };
 
         if (airQuality != null && airQuality.Aqi > 0)
@@ -174,6 +176,7 @@ public class WeatherService : IWeatherService
         };
         display.WindDirectionText = WeatherCodeHelper.GetWindDirection(cur.WindDirection);
         display.WindDirectionDegrees = cur.WindDirection;
+        display.WindSpeedValue = cur.WindSpeed;
 
         // Áp suất theo đơn vị đã cài đặt
         display.PressureText = settings.PressureUnit switch

@@ -74,6 +74,8 @@ public class GeocodingItem
         ? $"{Name}, {Admin1}, {Country}"
         : $"{Name}, {Country}";
 
+    public string DisplayName => DisplayText;
+
     public override string ToString() => DisplayText;
 }
 

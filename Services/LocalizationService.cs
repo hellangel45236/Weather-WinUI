@@ -203,13 +203,13 @@ public class LocalizationService : INotifyPropertyChanged
 
     #region Settings Tab Strings
 
-    public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.0.8)" : "Settings & Personalization Center (Version 3.0.8)";
+    public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.0.9)" : "Settings & Personalization Center (Version 3.0.9)";
     public string SettingsSubtitle => IsVietnamese ? "Quản lý giao diện, ngôn ngữ, biểu tượng, đơn vị, hình nền và hiệu năng hệ thống" : "Manage appearance, language, icons, units, wallpapers and system performance";
     public string SettingsHeaderTitle => SettingsTitle;
     public string SettingsHeaderSubtitle => SettingsSubtitle;
     public string SaveAndApply => IsVietnamese ? "Lưu & Áp Dụng" : "Save & Apply";
     public string SaveApplyButton => SaveAndApply;
-    public string VersionOfficial => IsVietnamese ? "Version 3.0.8 (Chính Thức)" : "Version 3.0.8 (Official)";
+    public string VersionOfficial => IsVietnamese ? "Version 3.0.9 (Chính Thức)" : "Version 3.0.9 (Official)";
     public string VersionBadge => VersionOfficial;
     public string AppDescription => IsVietnamese ? "Ứng dụng thời tiết hiện đại, siêu nhẹ, tương thích hoàn hảo Windows 10 & 11" : "Modern, lightweight weather application, perfectly compatible with Windows 10 & 11";
 
@@ -638,5 +638,30 @@ public class LocalizationService : INotifyPropertyChanged
     public string HourlyModeWind => IsVietnamese ? "Tốc độ gió" : "Wind Speed";
     public string HourlyModeUv => IsVietnamese ? "Chỉ số UV" : "UV Index";
     public string ScrollToTopTooltip => IsVietnamese ? "Cuộn lên đầu trang" : "Scroll to top";
+    #endregion
+
+    #region Weather Duel Comparison & Live Particle FX
+    public string WeatherComparisonButton => IsVietnamese ? "So sánh" : "Compare";
+    public string WeatherComparisonTooltip => IsVietnamese ? "So sánh thời tiết đối đầu giữa 2 thành phố (Weather Duel)" : "Head-to-head weather comparison between 2 cities (Weather Duel)";
+    public string WeatherComparisonTitle => IsVietnamese ? "So Sánh Thời Tiết Đối Đầu (Weather Duel)" : "Weather Duel Comparison";
+    public string WeatherComparisonSubtitle => IsVietnamese ? "Đối chiếu trực quan các chỉ số khí tượng & Cố vấn hành lý di chuyển" : "Head-to-head meteorological metrics & travel packing advisor";
+    public string CompareCurrentCity => IsVietnamese ? "Thành phố hiện tại" : "Current City";
+    public string CompareTargetCity => IsVietnamese ? "Thành phố đối sánh" : "Comparison City";
+    public string CompareSelectPrompt => IsVietnamese ? "Chọn nhanh thành phố hoặc tìm kiếm:" : "Quick select or search city:";
+    public string CompareSearchPlaceholder => IsVietnamese ? "Tìm thành phố khác (Tokyo, Seoul, London, Paris...)" : "Search any city (Tokyo, Seoul, London, Paris...)";
+    public string CompareSwitchLocation => IsVietnamese ? "Đặt Làm Thành Phố Chính" : "Set as Primary City";
+    public string CompareClose => IsVietnamese ? "Đóng" : "Close";
+    public string CompareVersus => "VS";
+    public string CompareMetricTitle => IsVietnamese ? "Bảng Đối Chiếu Chỉ Số Khí Tượng" : "Meteorological Metrics Comparison";
+    public string CompareTravelAdviceTitle => IsVietnamese ? "Cố Vấn Di Chuyển & Hành Lý" : "Travel & Packing Advice";
+
+    public string ParticleFxPreviewTitle => IsVietnamese ? "Hiệu Ứng Sống Động" : "Live Weather FX";
+    public string ParticleFxPreviewTooltip => IsVietnamese ? "Xem thử hiệu ứng thời tiết hạt sống động (Live Particle FX)" : "Preview live weather particle effects";
+    public string ParticleFxAuto => IsVietnamese ? "Tự động (Theo thời tiết thực)" : "Auto (Live Weather)";
+    public string ParticleFxSunny => IsVietnamese ? "Nắng óng ánh (Sunbeams & Bokeh)" : "Sunny Glow & Bokeh";
+    public string ParticleFxRain => IsVietnamese ? "Mưa rào & Bọt nước (Rain & Splash)" : "Rain & Splash Ripples";
+    public string ParticleFxThunder => IsVietnamese ? "Dông bão sấm sét (Thunderstorm)" : "Thunderstorm & Lightning";
+    public string ParticleFxSnow => IsVietnamese ? "Hoa tuyết rơi (Snowfall)" : "Snowfall";
+    public string ParticleFxFog => IsVietnamese ? "Sương mù & Mây trôi (Misty Clouds)" : "Misty Clouds & Fog";
     #endregion
 }

@@ -214,6 +214,19 @@
                                     </StackPanel>
                                 </Button>
 
+                                <!-- Nút So Sánh Thời Tiết Đối Đầu (Weather Duel v3.0.9) -->
+                                <Button Command="{x:Bind ViewModel.OpenWeatherComparisonCommand}"
+                                        Background="#26FFFFFF"
+                                        BorderThickness="0"
+                                        CornerRadius="12"
+                                        Padding="8,4"
+                                        ToolTipService.ToolTip="{x:Bind ViewModel.Loc.WeatherComparisonTooltip, Mode=OneWay}">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf362;" FontSize="11" Foreground="#38BDF8"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.WeatherComparisonButton, Mode=OneWay}" FontSize="11.5" Foreground="White" Opacity="0.95"/>
+                                    </StackPanel>
+                                </Button>
+
                                 <!-- Nút Chia sẻ ảnh -->
                                 <Button Click="ShareWeatherCardButton_Click"
                                         Background="#26FFFFFF"
@@ -312,6 +325,73 @@
                                                                     <TextBlock Text="{x:Bind ViewModel.Loc.SoundCafeRainTitle, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
                                                                     <TextBlock Text="{x:Bind ViewModel.Loc.SoundCafeRainDesc, Mode=OneWay}" FontSize="10" Opacity="0.7"/>
                                                                 </StackPanel>
+                                                            </StackPanel>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+
+                                <!-- Nút Thử Hiệu Ứng Sống Động (Live Particle FX v3.0.9) -->
+                                <Button x:Name="WeatherFxPreviewButton"
+                                        Background="#26FFFFFF"
+                                        BorderThickness="0"
+                                        CornerRadius="12"
+                                        Padding="8,4"
+                                        ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ParticleFxPreviewTooltip, Mode=OneWay}">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf042;" FontSize="11" Foreground="#FDE047"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.ParticleFxPreviewTitle, Mode=OneWay}" FontSize="11.5" Foreground="White" Opacity="0.95"/>
+                                    </StackPanel>
+                                    <Button.Flyout>
+                                        <Flyout Placement="BottomEdgeAlignedRight">
+                                            <Border Width="290" Padding="4">
+                                                <StackPanel Spacing="10">
+                                                    <Grid ColumnDefinitions="Auto,*">
+                                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf042;" FontSize="14" Foreground="#FDE047"/>
+                                                            <TextBlock Text="{x:Bind ViewModel.Loc.ParticleFxPreviewTitle, Mode=OneWay}" FontWeight="Bold" FontSize="13"/>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                    <TextBlock Text="{x:Bind ViewModel.Loc.ParticleFxPreviewTooltip, Mode=OneWay}" FontSize="11" Opacity="0.75" TextWrapping="Wrap"/>
+                                                    <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" Opacity="0.4"/>
+                                                    <StackPanel Spacing="5">
+                                                        <Button Click="FxPreviewAuto_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0ac;" FontSize="12" Foreground="#38BDF8"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.ParticleFxAuto, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <Button Click="FxPreviewSunny_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="12" Foreground="#FDE047"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.ParticleFxSunny, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <Button Click="FxPreviewRain_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" FontSize="12" Foreground="#38BDF8"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.ParticleFxRain, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <Button Click="FxPreviewThunder_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e7;" FontSize="12" Foreground="#F59E0B"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.ParticleFxThunder, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <Button Click="FxPreviewSnow_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2dc;" FontSize="12" Foreground="#E0F2FE"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.ParticleFxSnow, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <Button Click="FxPreviewFog_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75f;" FontSize="12" Foreground="#94A3B8"/>
+                                                                <TextBlock Text="{x:Bind ViewModel.Loc.ParticleFxFog, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
                                                             </StackPanel>
                                                         </Button>
                                                     </StackPanel>
@@ -1372,7 +1452,353 @@
     </Grid>
 
     <!-- =================================================================================== -->
-    <!-- 5. MINI WEATHER BAR THU GỌN KHI CUỘN CHUỘT (SCROLL COMPACT HEADER PILL)             -->
+    <!-- 5. MODAL SO SÁNH THỜI TIẾT ĐỐI ĐẦU 2 THÀNH PHỐ (WEATHER DUEL COMPARISON v3.0.9)     -->
+    <!-- =================================================================================== -->
+    <Grid x:Name="WeatherComparisonOverlay"
+          Canvas.ZIndex="1000"
+          Visibility="{x:Bind ViewModel.IsComparisonOpen, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch">
+
+        <!-- Nền mờ Backdrop -->
+        <Border x:Name="WeatherComparisonBackdrop"
+                Background="#7A000000"
+                PointerPressed="WeatherComparisonBackdrop_PointerPressed"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"/>
+
+        <!-- Thẻ Modal Đối Đầu (Fluent Glass Card) -->
+        <Border x:Name="WeatherComparisonCard"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                MaxWidth="740"
+                MaxHeight="700"
+                Margin="20"
+                Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="20"
+                RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform x:Name="ComparisonScaleTransform" ScaleX="1.0" ScaleY="1.0"/>
+                    <TranslateTransform x:Name="ComparisonTranslateTransform" Y="0"/>
+                </TransformGroup>
+            </Border.RenderTransform>
+
+            <Grid RowDefinitions="Auto,*,Auto">
+                <!-- HEADER: Tiêu đề + Huy hiệu + Nút X -->
+                <Border Grid.Row="0"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="0,0,0,1"
+                        CornerRadius="20,20,0,0"
+                        Padding="20,14">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" VerticalAlignment="Center">
+                        <Border Grid.Column="0" Width="38" Height="38" CornerRadius="12"
+                                Background="#2038BDF8" BorderBrush="#4038BDF8" BorderThickness="1">
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}"
+                                      Glyph="&#xf362;" FontSize="16" Foreground="#38BDF8"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WeatherComparisonTitle, Mode=OneWay}"
+                                           FontSize="15" FontWeight="Bold"/>
+                                <Border Background="#2538BDF8" BorderBrush="#5038BDF8" BorderThickness="1"
+                                        CornerRadius="6" Padding="6,1.5">
+                                    <TextBlock Text="v3.0.9" FontSize="10" FontWeight="Bold" Foreground="#38BDF8"/>
+                                </Border>
+                            </StackPanel>
+                            <TextBlock Text="{x:Bind ViewModel.Loc.WeatherComparisonSubtitle, Mode=OneWay}"
+                                       FontSize="11.5" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="2" Command="{x:Bind ViewModel.CloseWeatherComparisonCommand}"
+                                Background="Transparent" BorderThickness="0"
+                                CornerRadius="8" Width="32" Height="32" Padding="0"
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00d;" FontSize="13" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- NỘI DUNG CUỘN CHÍNH -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Spacing="16" Padding="20,16">
+
+                        <!-- KHỐI 1: CHỌN NHANH THÀNH PHỐ HOẶC TÌM KIẾM -->
+                        <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="14" Padding="14,12">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CompareSelectPrompt, Mode=OneWay}"
+                                           FontSize="11.5" FontWeight="SemiBold" Opacity="0.85"/>
+
+                                <!-- Danh sách cuộn ngang các thành phố gợi ý -->
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" HorizontalScrollMode="Enabled">
+                                    <ItemsControl ItemsSource="{x:Bind ViewModel.PresetCompareCities, Mode=OneWay}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" Spacing="6"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="models:QuickCompareCityItem">
+                                                <Button Click="PresetCompareCity_Click"
+                                                        Background="{ThemeResource SubtleFillColorTertiaryBrush}"
+                                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="8" Padding="10,5">
+                                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}" FontSize="10.5" Foreground="#38BDF8"/>
+                                                        <TextBlock Text="{x:Bind Name}" FontSize="11.5" FontWeight="SemiBold"/>
+                                                    </StackPanel>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+
+                                <!-- Ô Tìm Kiếm Thành Phố Bất Kỳ Trên Thế Giới -->
+                                <AutoSuggestBox x:Name="ComparisonSearchBox"
+                                                PlaceholderText="{x:Bind ViewModel.Loc.CompareSearchPlaceholder, Mode=OneWay}"
+                                                QueryIcon="Find"
+                                                TextChanged="ComparisonSearchBox_TextChanged"
+                                                QuerySubmitted="ComparisonSearchBox_QuerySubmitted"
+                                                SuggestionChosen="ComparisonSearchBox_SuggestionChosen"
+                                                ItemsSource="{x:Bind ViewModel.ComparisonSearchResults, Mode=OneWay}"
+                                                TextMemberPath="DisplayName"
+                                                HorizontalAlignment="Stretch">
+                                    <AutoSuggestBox.ItemTemplate>
+                                        <DataTemplate x:DataType="models:GeocodingItem">
+                                            <StackPanel Orientation="Horizontal" Spacing="8" Padding="4">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="11" Foreground="#38BDF8"/>
+                                                <TextBlock Text="{x:Bind DisplayName}" FontSize="12"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </AutoSuggestBox.ItemTemplate>
+                                </AutoSuggestBox>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- THANH TIẾN ĐỘ KHI ĐANG TẢI DỮ LIỆU ĐỐI SÁNH -->
+                        <ProgressBar IsIndeterminate="True"
+                                     Visibility="{x:Bind ViewModel.IsComparisonLoading, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                     Height="3" CornerRadius="1.5" Foreground="#38BDF8" Margin="0,-8,0,-8"/>
+
+                        <!-- KHỐI 2: ĐỐI ĐẦU TRỰC TIẾP (ARENA VS) -->
+                        <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="16" Padding="16,14">
+                            <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="12" VerticalAlignment="Center">
+                                <!-- Bên Trái: Thành phố hiện tại -->
+                                <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorTertiaryBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1" CornerRadius="12" Padding="14,12">
+                                    <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                        <Border Background="#2038BDF8" BorderBrush="#4038BDF8" BorderThickness="1"
+                                                CornerRadius="6" Padding="6,2" HorizontalAlignment="Center">
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.CompareCurrentCity, Mode=OneWay}" FontSize="9.5" FontWeight="Bold" Foreground="#38BDF8"/>
+                                        </Border>
+                                        <TextBlock Text="{x:Bind ViewModel.ComparisonData.CityA.LocationName, Mode=OneWay}"
+                                                   FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}"
+                                                      Glyph="{x:Bind ViewModel.ComparisonData.CityA.IconGlyph, Mode=OneWay}"
+                                                      FontSize="24" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind ViewModel.ComparisonData.CityA.TemperatureText, Mode=OneWay}"
+                                                       FontSize="26" FontWeight="Bold" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{x:Bind ViewModel.ComparisonData.CityA.ConditionText, Mode=OneWay}"
+                                                   FontSize="11.5" Opacity="0.85" HorizontalAlignment="Center" TextAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{x:Bind ViewModel.ComparisonData.CityA.HighLowTempText, Mode=OneWay}"
+                                                   FontSize="10.5" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Trung Tâm: Huy hiệu VS & Tóm tắt chênh lệch -->
+                                <StackPanel Grid.Column="1" Spacing="6" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Border Width="40" Height="40" CornerRadius="20"
+                                            Background="#20EF4444" BorderBrush="#50EF4444" BorderThickness="1.5"
+                                            HorizontalAlignment="Center">
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.CompareVersus, Mode=OneWay}"
+                                                   FontSize="13" FontWeight="Black" Foreground="#EF4444"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Border Background="#2010B981" BorderBrush="#4010B981" BorderThickness="1"
+                                            CornerRadius="6" Padding="6,2" HorizontalAlignment="Center"
+                                            Visibility="{x:Bind ViewModel.ComparisonData.TempComparisonBadge, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}">
+                                        <TextBlock Text="{x:Bind ViewModel.ComparisonData.TempComparisonBadge, Mode=OneWay}"
+                                                   FontSize="9.5" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Center"/>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Bên Phải: Thành phố đối sánh -->
+                                <Border Grid.Column="2" Background="{ThemeResource SubtleFillColorTertiaryBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1" CornerRadius="12" Padding="14,12">
+                                    <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                        <Border Background="#20F59E0B" BorderBrush="#40F59E0B" BorderThickness="1"
+                                                CornerRadius="6" Padding="6,2" HorizontalAlignment="Center">
+                                            <TextBlock Text="{x:Bind ViewModel.Loc.CompareTargetCity, Mode=OneWay}" FontSize="9.5" FontWeight="Bold" Foreground="#F59E0B"/>
+                                        </Border>
+                                        <TextBlock Text="{x:Bind ViewModel.ComparisonData.CityB.LocationName, Mode=OneWay}"
+                                                   FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}"
+                                                      Glyph="{x:Bind ViewModel.ComparisonData.CityB.IconGlyph, Mode=OneWay}"
+                                                      FontSize="24" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind ViewModel.ComparisonData.CityB.TemperatureText, Mode=OneWay}"
+                                                       FontSize="26" FontWeight="Bold" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{x:Bind ViewModel.ComparisonData.CityB.ConditionText, Mode=OneWay}"
+                                                   FontSize="11.5" Opacity="0.85" HorizontalAlignment="Center" TextAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{x:Bind ViewModel.ComparisonData.CityB.HighLowTempText, Mode=OneWay}"
+                                                   FontSize="10.5" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- KHỐI 3: PHÁN QUYẾT MỨC ĐỘ DỄ CHỊU (COMFORT VERDICT) -->
+                        <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="12" Padding="14,12">
+                            <StackPanel Spacing="6">
+                                <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf058;" FontSize="13" Foreground="#10B981"/>
+                                        <TextBlock Text="{x:Bind ViewModel.ComparisonData.VerdictTitle, Mode=OneWay}" FontSize="13" FontWeight="Bold"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1"
+                                            Background="{x:Bind ViewModel.ComparisonData.VerdictBadgeColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                            CornerRadius="6" Padding="8,2">
+                                        <TextBlock Text="{x:Bind ViewModel.ComparisonData.VerdictBadgeText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                    </Border>
+                                </Grid>
+                                <TextBlock Text="{x:Bind ViewModel.ComparisonData.VerdictDescription, Mode=OneWay}"
+                                           FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" LineHeight="17"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- KHỐI 4: BẢNG 6 CHỈ SỐ ĐỐI CHIẾU KHÍ TƯỢNG -->
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="{x:Bind ViewModel.Loc.CompareMetricTitle, Mode=OneWay}" FontSize="13" FontWeight="Bold"/>
+
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="12" Padding="12,8">
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.ComparisonData.MetricRows, Mode=OneWay}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Spacing="6"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:MetricComparisonRow">
+                                            <Border Background="{ThemeResource SubtleFillColorTertiaryBrush}"
+                                                    CornerRadius="8" Padding="12,7">
+                                                <Grid ColumnDefinitions="140,*,Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
+                                                    <!-- Tên chỉ số kèm icon -->
+                                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}"
+                                                                  Glyph="{x:Bind IconGlyph}" FontSize="12"
+                                                                  Foreground="{x:Bind IconColor, Converter={StaticResource HexToBrushConverter}}"
+                                                                  VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{x:Bind MetricName}" FontSize="11.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+
+                                                    <!-- Giá trị Thành phố A -->
+                                                    <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="1">
+                                                        <TextBlock Text="{x:Bind ValueA}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                                        <TextBlock Text="{x:Bind SubValueA}" FontSize="9.5" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Right"/>
+                                                    </StackPanel>
+
+                                                    <!-- Huy hiệu so sánh chênh lệch -->
+                                                    <Border Grid.Column="2"
+                                                            Background="{x:Bind DifferenceBadgeColor, Converter={StaticResource HexToBrushConverter}}"
+                                                            CornerRadius="6" Padding="8,2" MinWidth="68" HorizontalAlignment="Center">
+                                                        <TextBlock Text="{x:Bind DifferenceBadge}" FontSize="9.5" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                    </Border>
+
+                                                    <!-- Giá trị Thành phố B -->
+                                                    <StackPanel Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" Spacing="1">
+                                                        <TextBlock Text="{x:Bind ValueB}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Left"/>
+                                                        <TextBlock Text="{x:Bind SubValueB}" FontSize="9.5" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Left"/>
+                                                    </StackPanel>
+
+                                                    <!-- Biểu tượng mũi tên lợi thế -->
+                                                    <Border Grid.Column="4" Width="18" HorizontalAlignment="Center">
+                                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00c;" FontSize="9" Foreground="#10B981"/>
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- KHỐI 5: CỐ VẤN HÀNH LÝ & DI CHUYỂN -->
+                        <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="12" Padding="14,12">
+                            <StackPanel Spacing="8">
+                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf5b0;" FontSize="13" Foreground="#F59E0B"/>
+                                    <TextBlock Text="{x:Bind ViewModel.ComparisonData.TravelAdviceTitle, Mode=OneWay}" FontSize="13" FontWeight="Bold"/>
+                                </StackPanel>
+                                <TextBlock Text="{x:Bind ViewModel.ComparisonData.TravelAdviceDescription, Mode=OneWay}"
+                                           FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" LineHeight="17"/>
+                                <Border Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="10,8">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0eb;" FontSize="12" Foreground="#38BDF8" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                                        <TextBlock Text="{x:Bind ViewModel.ComparisonData.PackingTips, Mode=OneWay}"
+                                                   FontSize="11.5" FontWeight="Medium" TextWrapping="Wrap" LineHeight="16"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- FOOTER: Nút Đặt làm Thành Phố Chính & Nút Đóng -->
+                <Border Grid.Row="2"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="0,1,0,0"
+                        CornerRadius="0,0,20,20"
+                        Padding="20,12">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Button Grid.Column="0" Command="{x:Bind ViewModel.SwitchToComparedCityCommand}"
+                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                CornerRadius="8" Padding="14,6" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="11"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.CompareSwitchLocation, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Grid.Column="1" Command="{x:Bind ViewModel.CloseWeatherComparisonCommand}"
+                                Background="{ThemeResource SubtleFillColorTertiaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8" Padding="16,6">
+                            <TextBlock Text="{x:Bind ViewModel.Loc.CompareClose, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"/>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+
+    <!-- =================================================================================== -->
+    <!-- 6. MINI WEATHER BAR THU GỌN KHI CUỘN CHUỘT (SCROLL COMPACT HEADER PILL)             -->
     <!-- =================================================================================== -->
     <Border x:Name="MiniWeatherPill"
             Canvas.ZIndex="500"

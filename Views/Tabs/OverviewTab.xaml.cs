@@ -120,10 +120,18 @@ public sealed partial class OverviewTab : UserControl
 
         this.KeyDown += (s, e) =>
         {
-            if (e.Key == Windows.System.VirtualKey.Escape && ViewModel?.IsMetricDetailOpen == true)
+            if (e.Key == Windows.System.VirtualKey.Escape)
             {
-                HideMetricDetailModal();
-                e.Handled = true;
+                if (ViewModel?.IsComparisonOpen == true)
+                {
+                    ViewModel.CloseWeatherComparison();
+                    e.Handled = true;
+                }
+                else if (ViewModel?.IsMetricDetailOpen == true)
+                {
+                    HideMetricDetailModal();
+                    e.Handled = true;
+                }
             }
         };
 
@@ -214,6 +222,7 @@ public sealed partial class OverviewTab : UserControl
 
         if (shouldRunEffects)
         {
+            _weatherEffectRenderer?.SetWind(ViewModel.CurrentWeather.WindSpeedValue);
             _weatherEffectRenderer?.SetWeatherEffect(ViewModel.CurrentWeather.WeatherEffect);
             _weatherEffectRenderer?.Resume();
             StartHeroIconAnimation();
@@ -1406,17 +1415,30 @@ public sealed partial class OverviewTab : UserControl
 
     private void UpdateModalResponsiveSize()
     {
+        double availableHeight = this.ActualHeight - 48;
+        double availableWidth = this.ActualWidth - 32;
+
         if (MetricDetailCard != null)
         {
-            double availableHeight = this.ActualHeight - 48;
             if (availableHeight > 250)
             {
                 MetricDetailCard.MaxHeight = Math.Min(680, availableHeight);
             }
-            double availableWidth = this.ActualWidth - 32;
             if (availableWidth > 250)
             {
                 MetricDetailCard.MaxWidth = Math.Min(660, availableWidth);
+            }
+        }
+
+        if (WeatherComparisonCard != null)
+        {
+            if (availableHeight > 250)
+            {
+                WeatherComparisonCard.MaxHeight = Math.Min(720, availableHeight);
+            }
+            if (availableWidth > 250)
+            {
+                WeatherComparisonCard.MaxWidth = Math.Min(740, availableWidth);
             }
         }
     }
@@ -1654,6 +1676,90 @@ public sealed partial class OverviewTab : UserControl
     private void MiniWeatherPill_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         OverviewScrollViewer?.ChangeView(null, 0, null, false);
+    }
+    #endregion
+
+    #region WEATHER DUEL COMPARISON & FX PREVIEW HANDLERS (v3.0.9)
+    private void WeatherComparisonBackdrop_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        ViewModel?.CloseWeatherComparison();
+    }
+
+    private async void PresetCompareCity_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement fe && ViewModel != null)
+        {
+            var item = (fe.DataContext as QuickCompareCityItem) ?? (fe.Tag as QuickCompareCityItem);
+            if (item != null)
+            {
+                await ViewModel.SelectPresetCompareCityAsync(item);
+            }
+        }
+    }
+
+    private async void ComparisonSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    {
+        if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput && ViewModel != null)
+        {
+            await ViewModel.SearchComparisonCitiesAsync(sender.Text);
+        }
+    }
+
+    private async void ComparisonSearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+    {
+        if (ViewModel == null) return;
+
+        if (args.ChosenSuggestion is GeocodingItem item)
+        {
+            await ViewModel.SelectSearchCompareCityAsync(item);
+        }
+        else if (!string.IsNullOrWhiteSpace(args.QueryText))
+        {
+            await ViewModel.SearchComparisonCitiesAsync(args.QueryText);
+            var first = ViewModel.ComparisonSearchResults.FirstOrDefault();
+            if (first != null)
+            {
+                await ViewModel.SelectSearchCompareCityAsync(first);
+            }
+        }
+    }
+
+    private void ComparisonSearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+    {
+        if (args.SelectedItem is GeocodingItem item)
+        {
+            sender.Text = item.DisplayName;
+        }
+    }
+
+    private void FxPreviewAuto_Click(object sender, RoutedEventArgs e)
+    {
+        _weatherEffectRenderer?.SetPreviewEffect(null);
+    }
+
+    private void FxPreviewSunny_Click(object sender, RoutedEventArgs e)
+    {
+        _weatherEffectRenderer?.SetPreviewEffect(WeatherEffectType.ClearSunny);
+    }
+
+    private void FxPreviewRain_Click(object sender, RoutedEventArgs e)
+    {
+        _weatherEffectRenderer?.SetPreviewEffect(WeatherEffectType.HeavyRain);
+    }
+
+    private void FxPreviewThunder_Click(object sender, RoutedEventArgs e)
+    {
+        _weatherEffectRenderer?.SetPreviewEffect(WeatherEffectType.Thunderstorm);
+    }
+
+    private void FxPreviewSnow_Click(object sender, RoutedEventArgs e)
+    {
+        _weatherEffectRenderer?.SetPreviewEffect(WeatherEffectType.Snow);
+    }
+
+    private void FxPreviewFog_Click(object sender, RoutedEventArgs e)
+    {
+        _weatherEffectRenderer?.SetPreviewEffect(WeatherEffectType.Fog);
     }
     #endregion
 }

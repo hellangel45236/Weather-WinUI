@@ -18,6 +18,8 @@ public enum WeatherEffectType
 public class CurrentWeatherDisplay
 {
     public string LocationName { get; set; } = string.Empty;
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
     public string TemperatureText { get; set; } = "--°C";
     public double TemperatureValue { get; set; }
     public string FeelsLikeText { get; set; } = "Cảm giác: --°C";
@@ -33,8 +35,10 @@ public class CurrentWeatherDisplay
     public string WeatherAlertBadgeColor { get; set; } = "#F59E0B";
 
     public string MinMaxText { get; set; } = "Thấp nhất: --°C • Cao nhất: --°C";
+    public string HighLowTempText => MinMaxText;
     public string HumidityText { get; set; } = "--%";
     public string WindText { get; set; } = "-- km/h";
+    public double WindSpeedValue { get; set; } = 12.0;
     public string WindDirectionText { get; set; } = "--";
     public string PressureText { get; set; } = "-- hPa";
     public string UvIndexText { get; set; } = "--";

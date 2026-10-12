@@ -14,6 +14,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ILocationService _locationService;
     private readonly IWeatherAdviceService _adviceService;
     private readonly SettingsService _settingsService;
+    private readonly WeatherComparisonService _comparisonService;
 
     private double _currentLatitude;
     private double _currentLongitude;
@@ -258,6 +259,30 @@ public partial class MainViewModel : ObservableObject
         ? (Loc.IsVietnamese ? "Bỏ yêu thích địa điểm này" : "Remove from favorites") 
         : (Loc.IsVietnamese ? "Lưu địa điểm này vào danh sách yêu thích" : "Add to favorite locations");
 
+    // ===================================================================================
+    // TÍNH NĂNG V3.0.9: SO SÁNH THỜI TIẾT ĐỐI ĐẦU (WEATHER DUEL COMPARISON)
+    // ===================================================================================
+    [ObservableProperty]
+    private WeatherComparisonData? _comparisonData;
+
+    [ObservableProperty]
+    private bool _isComparisonLoading;
+
+    [ObservableProperty]
+    private bool _isComparisonOpen;
+
+    [ObservableProperty]
+    private ObservableCollection<QuickCompareCityItem> _presetCompareCities = new();
+
+    [ObservableProperty]
+    private string _comparisonSearchQuery = string.Empty;
+
+    [ObservableProperty]
+    private ObservableCollection<GeocodingItem> _comparisonSearchResults = new();
+
+    [ObservableProperty]
+    private QuickCompareCityItem? _selectedCompareCity;
+
     private readonly DispatcherTimer _clockTimer = new();
     private readonly DispatcherTimer _autoRefreshTimer = new();
     private readonly DispatcherTimer _ramMonitorTimer = new();
@@ -272,6 +297,7 @@ public partial class MainViewModel : ObservableObject
         _locationService = locationService;
         _adviceService = adviceService;
         _settingsService = settingsService ?? new SettingsService();
+        _comparisonService = new WeatherComparisonService(_weatherService);
 
         // Nạp cài đặt người dùng
         _settings = _settingsService.LoadSettings();
@@ -281,8 +307,10 @@ public partial class MainViewModel : ObservableObject
         }
         _topAdviceSummary = Loc.AdviceEmpty;
         _locationTitle = Loc.FindingLocation;
+        UpdatePresetCompareCities();
         LocalizationService.Instance.LanguageChanged += (s, e) =>
         {
+            UpdatePresetCompareCities();
             OnPropertyChanged(nameof(Loc));
             OnPropertyChanged(nameof(WelcomeGreetingText));
             UpdateTopAdviceSummary();
@@ -2636,6 +2664,119 @@ public partial class MainViewModel : ObservableObject
         EvaluateWeatherConflict(SelectedCalendarDay);
 
         OnPropertyChanged(nameof(CalendarDays));
+    }
+
+    #endregion
+
+    #region Weather Duel Comparison Methods (v3.0.9)
+
+    [RelayCommand]
+    public async Task OpenWeatherComparisonAsync()
+    {
+        IsComparisonOpen = true;
+        if (PresetCompareCities.Count == 0)
+        {
+            UpdatePresetCompareCities();
+        }
+
+        // Mặc định chọn thành phố đối sánh hợp lý
+        // Nếu hiện tại là Hà Nội thì đối sánh TP.HCM; ngược lại đối sánh Hà Nội
+        QuickCompareCityItem target = PresetCompareCities.FirstOrDefault() ?? new QuickCompareCityItem
+        {
+            Name = "Hà Nội",
+            Latitude = 21.0285,
+            Longitude = 105.8542
+        };
+
+        if (CurrentWeather.LocationName.Contains("Hà Nội", StringComparison.OrdinalIgnoreCase) && PresetCompareCities.Count > 1)
+        {
+            target = PresetCompareCities[1]; // TP. Hồ Chí Minh
+        }
+
+        await LoadWeatherComparisonAsync(target.Latitude, target.Longitude, target.Name);
+    }
+
+    [RelayCommand]
+    public void CloseWeatherComparison()
+    {
+        IsComparisonOpen = false;
+    }
+
+    public async Task LoadWeatherComparisonAsync(double latB, double lonB, string nameB)
+    {
+        try
+        {
+            IsComparisonLoading = true;
+            SelectedCompareCity = PresetCompareCities.FirstOrDefault(c => 
+                Math.Abs(c.Latitude - latB) < 0.1 && Math.Abs(c.Longitude - lonB) < 0.1);
+
+            var data = await _comparisonService.CompareWeatherAsync(
+                CurrentWeather, latB, lonB, nameB, Settings, Loc.IsVietnamese);
+
+            ComparisonData = data;
+        }
+        catch { }
+        finally
+        {
+            IsComparisonLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    public async Task SelectPresetCompareCityAsync(QuickCompareCityItem? item)
+    {
+        if (item == null) return;
+        await LoadWeatherComparisonAsync(item.Latitude, item.Longitude, item.Name);
+    }
+
+    [RelayCommand]
+    public async Task SelectSearchCompareCityAsync(GeocodingItem? item)
+    {
+        if (item == null) return;
+        ComparisonSearchResults.Clear();
+        ComparisonSearchQuery = string.Empty;
+        await LoadWeatherComparisonAsync(item.Latitude, item.Longitude, item.DisplayName);
+    }
+
+    public async Task SearchComparisonCitiesAsync(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query) || query.Trim().Length < 2)
+        {
+            ComparisonSearchResults.Clear();
+            return;
+        }
+
+        try
+        {
+            var results = await _locationService.SearchLocationsAsync(query.Trim());
+            ComparisonSearchResults.Clear();
+            foreach (var r in results.Take(6))
+            {
+                ComparisonSearchResults.Add(r);
+            }
+        }
+        catch { }
+    }
+
+    [RelayCommand]
+    public async Task SwitchToComparedCityAsync()
+    {
+        if (ComparisonData?.CityB == null) return;
+        var cityB = ComparisonData.CityB;
+        IsComparisonOpen = false;
+
+        // Chuyển địa điểm chính của ứng dụng sang City B
+        await SelectQuickCityAsync($"{cityB.LocationName}|{cityB.Latitude}|{cityB.Longitude}");
+    }
+
+    public void UpdatePresetCompareCities()
+    {
+        var list = _comparisonService.GetPresetCities(Loc.IsVietnamese);
+        PresetCompareCities.Clear();
+        foreach (var item in list)
+        {
+            PresetCompareCities.Add(item);
+        }
     }
 
     #endregion
