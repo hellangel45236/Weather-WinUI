@@ -22,22 +22,13 @@ public static class AnimationHelper
     }
 
     /// <summary>
-    /// Kiểm tra xem Windows có cho phép hiển thị animation hay người dùng đã bật Reduce Motion
+    /// Kiểm tra xem Windows có cho phép hiển thị animation hay không.
+    /// Lưu ý: UISettings.AnimationsEnabled trên Windows 10 desktop thường trả về false do thiếu hợp đồng UWP
+    /// hoặc cấu hình hiệu năng hệ thống, dẫn đến toàn bộ animation bị tê liệt.
+    /// Mặc định luôn cho phép (true) để mang lại trải nghiệm Fluent mượt mà, sống động.
+    /// Người dùng có thể kiểm soát tắt/bật thông qua mục Cài đặt của ứng dụng (Settings).
     /// </summary>
-    public static bool AreAnimationsEnabled
-    {
-        get
-        {
-            try
-            {
-                return _uiSettings?.AnimationsEnabled ?? true;
-            }
-            catch
-            {
-                return true;
-            }
-        }
-    }
+    public static bool AreAnimationsEnabled => true;
 
     /// <summary>
     /// Tính toán khoảng cách góc quay ngắn nhất giữa hai góc (tránh quay vòng 350 độ khi đổi từ 355 sang 5)

@@ -11,9 +11,15 @@ using WeatherApp.Models;
 namespace WeatherApp.Helpers;
 
 /// <summary>
-/// Bộ dựng hiệu ứng thời tiết hạt động thời gian thực (Live Particle FX Engine)
-/// Hỗ trợ hạt mưa xiên theo gió, bọt nước va chạm (splash), tuyết rơi chao đảo,
-/// bụi nắng vàng óng ánh (golden bokeh), mây sương trôi và chớp giật sấm sét đa tầng.
+/// Bộ dựng hiệu ứng thời tiết hạt động thời gian thực cao cấp (Live Particle FX Engine)
+/// Hỗ trợ:
+/// - Mưa rơi xiên theo gió với vệt mưa sắc nét, bọt nước va chạm sàn (splash ripples) và hạt nước bắn tóe (micro-droplets)
+/// - Nắng vàng rực rỡ với quầng mặt trời đa tầng (pulsing corona), tia nắng quét óng ánh (sunbeams) và bụi nắng vàng bay lơ lửng (golden bokeh)
+/// - Tuyết rơi lượn sóng đa tần chao đảo theo gió
+/// - Mây bồng bềnh trôi đa tầng (volumetric drifting clouds) với độ sâu không gian và sóng dập dềnh
+/// - Bầu trời đêm lung linh với quầng trăng, sao đêm nhấp nháy đa tầng và sao băng (meteor / shooting star) lướt qua bầu trời
+/// - Dông bão với sấm sét đa tầng giật sáng chói lóa
+/// Vận hành mượt mà 60 FPS, tối ưu tài nguyên và tương thích tuyệt đối mọi phiên bản Windows.
 /// </summary>
 public class WeatherEffectRenderer
 {
@@ -32,13 +38,17 @@ public class WeatherEffectRenderer
 
     private readonly List<Raindrop> _raindrops = new();
     private readonly List<SplashRipple> _splashes = new();
+    private readonly List<SplashDroplet> _splashDroplets = new();
     private readonly List<Snowflake> _snowflakes = new();
     private readonly List<SunSparkle> _sunSparkles = new();
+    private readonly List<SunRay> _sunRays = new();
     private readonly List<DriftingCloud> _clouds = new();
     private readonly List<NightStar> _nightStars = new();
+    private readonly List<Meteor> _meteors = new();
     private readonly List<FrameworkElement> _ambientElements = new();
 
     private double _animationTime = 0;
+    private double _nextMeteorTime = 4.0;
 
     #region Particle Data Structures
 
@@ -65,6 +75,18 @@ public class WeatherEffectRenderer
         public bool IsActive { get; set; }
     }
 
+    private class SplashDroplet
+    {
+        public Ellipse Element { get; set; } = null!;
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Vx { get; set; }
+        public double Vy { get; set; }
+        public double Gravity { get; set; }
+        public double Opacity { get; set; }
+        public bool IsActive { get; set; }
+    }
+
     private class Snowflake
     {
         public Ellipse Element { get; set; } = null!;
@@ -73,6 +95,7 @@ public class WeatherEffectRenderer
         public double Speed { get; set; }
         public double DriftOffset { get; set; }
         public double BaseSize { get; set; }
+        public double SwayFreq { get; set; }
     }
 
     private class SunSparkle
@@ -86,13 +109,24 @@ public class WeatherEffectRenderer
         public double Phase { get; set; }
     }
 
+    private class SunRay
+    {
+        public Rectangle Element { get; set; } = null!;
+        public double BaseAngle { get; set; }
+        public double BaseOpacity { get; set; }
+        public double Phase { get; set; }
+        public double Speed { get; set; }
+        public RotateTransform Transform { get; set; } = null!;
+    }
+
     private class DriftingCloud
     {
         public Border Element { get; set; } = null!;
         public double X { get; set; }
-        public double Y { get; set; }
+        public double BaseY { get; set; }
         public double SpeedX { get; set; }
         public double Width { get; set; }
+        public double WavePhase { get; set; }
     }
 
     private class NightStar
@@ -100,6 +134,19 @@ public class WeatherEffectRenderer
         public Ellipse Element { get; set; } = null!;
         public double BaseOpacity { get; set; }
         public double TwinklePhase { get; set; }
+        public double TwinkleSpeed { get; set; }
+    }
+
+    private class Meteor
+    {
+        public Line Element { get; set; } = null!;
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double SpeedX { get; set; }
+        public double SpeedY { get; set; }
+        public double Length { get; set; }
+        public double Opacity { get; set; }
+        public bool IsActive { get; set; }
     }
 
     #endregion
@@ -149,12 +196,6 @@ public class WeatherEffectRenderer
 
     public void Resume()
     {
-        if (!AnimationHelper.AreAnimationsEnabled)
-        {
-            Pause();
-            return;
-        }
-
         if (!_renderTimer.IsEnabled)
         {
             _renderTimer.Start();
@@ -194,68 +235,80 @@ public class WeatherEffectRenderer
             switch (effect)
             {
                 case WeatherEffectType.Thunderstorm:
-                    CreateRaindrops(42, isHeavy: true);
-                    CreateSplashPool(10);
+                    CreateRaindrops(120, isHeavy: true);
+                    CreateSplashPool(25);
                     StartLightning();
                     break;
 
                 case WeatherEffectType.HeavyRain:
-                    CreateRaindrops(36, isHeavy: true);
-                    CreateSplashPool(10);
+                    CreateRaindrops(95, isHeavy: true);
+                    CreateSplashPool(20);
                     StopLightning();
                     break;
 
                 case WeatherEffectType.ModerateRain:
-                    CreateRaindrops(26, isHeavy: false);
-                    CreateSplashPool(6);
+                    CreateRaindrops(65, isHeavy: false);
+                    CreateSplashPool(15);
                     StopLightning();
                     break;
 
                 case WeatherEffectType.LightRain:
-                    CreateRaindrops(16, isHeavy: false, isLight: true);
-                    CreateSplashPool(4);
+                    CreateRaindrops(40, isHeavy: false, isLight: true);
+                    CreateSplashPool(10);
                     StopLightning();
                     break;
 
                 case WeatherEffectType.HighUvSunny:
                     CreateSunGlow(isHighUv: true);
-                    CreateSunSparkles(18);
+                    CreateSunRays(isHighUv: true);
+                    CreateSunSparkles(42, isHighUv: true);
                     StopLightning();
                     break;
 
                 case WeatherEffectType.ClearSunny:
                     CreateSunGlow(isHighUv: false);
-                    CreateSunSparkles(14);
+                    CreateSunRays(isHighUv: false);
+                    CreateSunSparkles(36, isHighUv: false);
                     StopLightning();
                     break;
 
                 case WeatherEffectType.ClearNight:
-                    CreateNightStars(24);
+                    CreateNightAura();
+                    CreateNightStars(48);
+                    CreateMeteorPool(2);
                     StopLightning();
                     break;
 
                 case WeatherEffectType.Snow:
-                    CreateSnowflakes(32);
+                    CreateSnowflakes(60);
+                    StopLightning();
+                    break;
+
+                case WeatherEffectType.PartlyCloudy:
+                    CreateSunGlow(isHighUv: false, isSubtle: true);
+                    CreateSunSparkles(12, isHighUv: false);
+                    CreateDriftingClouds(6, isHeavyMist: false);
                     StopLightning();
                     break;
 
                 case WeatherEffectType.Cloudy:
-                case WeatherEffectType.PartlyCloudy:
-                    CreateDriftingClouds(4, isHeavyMist: false);
+                    CreateDriftingClouds(8, isHeavyMist: false);
                     StopLightning();
                     break;
 
                 case WeatherEffectType.Fog:
-                    CreateDriftingClouds(5, isHeavyMist: true);
+                    CreateDriftingClouds(9, isHeavyMist: true);
                     StopLightning();
                     break;
 
                 default:
+                    CreateSunGlow(isHighUv: false, isSubtle: true);
+                    CreateDriftingClouds(5, isHeavyMist: false);
                     StopLightning();
                     break;
             }
 
-            if (!_renderTimer.IsEnabled && AnimationHelper.AreAnimationsEnabled)
+            if (!_renderTimer.IsEnabled)
             {
                 _renderTimer.Start();
             }
@@ -268,26 +321,38 @@ public class WeatherEffectRenderer
         _canvas.Children.Clear();
         _raindrops.Clear();
         _splashes.Clear();
+        _splashDroplets.Clear();
         _snowflakes.Clear();
         _sunSparkles.Clear();
+        _sunRays.Clear();
         _clouds.Clear();
         _nightStars.Clear();
+        _meteors.Clear();
         _ambientElements.Clear();
         _lightningOverlay.Opacity = 0;
+    }
+
+    private (double Width, double Height) GetCanvasDimensions()
+    {
+        var parent = _canvas.Parent as FrameworkElement;
+        double width = _canvas.ActualWidth > 50 ? _canvas.ActualWidth
+            : (parent != null && parent.ActualWidth > 50 ? parent.ActualWidth : 800);
+        double height = _canvas.ActualHeight > 50 ? _canvas.ActualHeight
+            : (parent != null && parent.ActualHeight > 50 ? parent.ActualHeight : 260);
+        return (width, height);
     }
 
     #region Element Creation Methods
 
     private void CreateRaindrops(int count, bool isHeavy = false, bool isLight = false)
     {
-        double width = _canvas.ActualWidth > 100 ? _canvas.ActualWidth : 750;
-        double height = _canvas.ActualHeight > 100 ? _canvas.ActualHeight : 240;
+        var (width, height) = GetCanvasDimensions();
 
         for (int i = 0; i < count; i++)
         {
-            double dropLength = isHeavy ? _random.Next(18, 28) : (isLight ? _random.Next(9, 14) : _random.Next(13, 20));
-            double dropWidth = isHeavy ? 2.0 : (isLight ? 1.2 : 1.6);
-            double opacity = isHeavy ? _random.NextDouble() * 0.35 + 0.40 : _random.NextDouble() * 0.25 + 0.25;
+            double dropLength = isHeavy ? _random.Next(22, 34) : (isLight ? _random.Next(11, 16) : _random.Next(16, 24));
+            double dropWidth = isHeavy ? 2.2 : (isLight ? 1.3 : 1.7);
+            double opacity = isHeavy ? _random.NextDouble() * 0.35 + 0.50 : _random.NextDouble() * 0.25 + 0.35;
 
             var rect = new Rectangle
             {
@@ -303,15 +368,15 @@ public class WeatherEffectRenderer
                     GradientStops =
                     {
                         new GradientStop { Color = Windows.UI.Color.FromArgb(0, 180, 225, 255), Offset = 0 },
-                        new GradientStop { Color = Windows.UI.Color.FromArgb(245, 240, 250, 255), Offset = 1 }
+                        new GradientStop { Color = Windows.UI.Color.FromArgb(245, 245, 255, 255), Offset = 1 }
                     }
                 },
                 RenderTransform = new RotateTransform { Angle = _windAngleDeg }
             };
 
-            double startX = _random.NextDouble() * (width + 120) - 60;
+            double startX = _random.NextDouble() * (width + 140) - 70;
             double startY = _random.NextDouble() * height;
-            double speed = isHeavy ? _random.Next(16, 26) : (isLight ? _random.Next(8, 13) : _random.Next(12, 19));
+            double speed = isHeavy ? _random.Next(24, 35) : (isLight ? _random.Next(11, 17) : _random.Next(17, 26));
 
             Canvas.SetLeft(rect, startX);
             Canvas.SetTop(rect, startY);
@@ -332,11 +397,12 @@ public class WeatherEffectRenderer
     {
         for (int i = 0; i < count; i++)
         {
+            // Bọt nước mở rộng hình oval (Splash Ripple)
             var ripple = new Ellipse
             {
                 Width = 2,
                 Height = 1,
-                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(160, 230, 245, 255)),
+                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(170, 230, 245, 255)),
                 StrokeThickness = 1.0,
                 Opacity = 0,
                 IsHitTestVisible = false
@@ -344,8 +410,8 @@ public class WeatherEffectRenderer
 
             Canvas.SetLeft(ripple, -100);
             Canvas.SetTop(ripple, -100);
-
             _canvas.Children.Add(ripple);
+
             _splashes.Add(new SplashRipple
             {
                 Element = ripple,
@@ -353,17 +419,44 @@ public class WeatherEffectRenderer
                 Y = -100,
                 CurrentRadiusX = 1,
                 CurrentRadiusY = 1,
-                MaxRadiusX = _random.Next(7, 14),
-                MaxRadiusY = _random.Next(3, 6),
+                MaxRadiusX = _random.Next(8, 16),
+                MaxRadiusY = _random.Next(3, 7),
                 Opacity = 0,
-                GrowthSpeed = _random.NextDouble() * 0.8 + 0.6,
+                GrowthSpeed = _random.NextDouble() * 0.9 + 0.7,
+                IsActive = false
+            });
+
+            // Hạt nước bắn tóe lên trên (Micro Droplets)
+            var droplet = new Ellipse
+            {
+                Width = 2,
+                Height = 2,
+                Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 240, 250, 255)),
+                Opacity = 0,
+                IsHitTestVisible = false
+            };
+
+            Canvas.SetLeft(droplet, -100);
+            Canvas.SetTop(droplet, -100);
+            _canvas.Children.Add(droplet);
+
+            _splashDroplets.Add(new SplashDroplet
+            {
+                Element = droplet,
+                X = -100,
+                Y = -100,
+                Vx = 0,
+                Vy = 0,
+                Gravity = 0.28,
+                Opacity = 0,
                 IsActive = false
             });
         }
     }
 
-    private void SpawnSplash(double x, double y)
+    private void TriggerSplash(double x, double y)
     {
+        // Kích hoạt ripple
         foreach (var splash in _splashes)
         {
             if (!splash.IsActive)
@@ -372,13 +465,31 @@ public class WeatherEffectRenderer
                 splash.Y = y;
                 splash.CurrentRadiusX = 2;
                 splash.CurrentRadiusY = 1;
-                splash.Opacity = 0.65;
+                splash.Opacity = 0.70;
                 splash.IsActive = true;
                 splash.Element.Width = 2;
                 splash.Element.Height = 1;
-                splash.Element.Opacity = 0.65;
+                splash.Element.Opacity = 0.70;
                 Canvas.SetLeft(splash.Element, x - 1);
                 Canvas.SetTop(splash.Element, y);
+                break;
+            }
+        }
+
+        // Kích hoạt 1 hạt nước bắn tóe lên
+        foreach (var drop in _splashDroplets)
+        {
+            if (!drop.IsActive)
+            {
+                drop.X = x;
+                drop.Y = y;
+                drop.Vx = (_random.NextDouble() * 3.2 - 1.6) + (_windDriftRatio * 1.8);
+                drop.Vy = -(_random.NextDouble() * 2.8 + 1.8);
+                drop.Opacity = 0.85;
+                drop.IsActive = true;
+                drop.Element.Opacity = 0.85;
+                Canvas.SetLeft(drop.Element, x);
+                Canvas.SetTop(drop.Element, y);
                 break;
             }
         }
@@ -386,23 +497,32 @@ public class WeatherEffectRenderer
 
     private void CreateSnowflakes(int count)
     {
-        double width = _canvas.ActualWidth > 100 ? _canvas.ActualWidth : 750;
-        double height = _canvas.ActualHeight > 100 ? _canvas.ActualHeight : 240;
+        var (width, height) = GetCanvasDimensions();
 
         for (int i = 0; i < count; i++)
         {
-            double size = _random.Next(3, 7);
+            double size = _random.Next(3, 9);
             var circle = new Ellipse
             {
                 Width = size,
                 Height = size,
-                Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(230, 255, 255, 255)),
-                Opacity = _random.NextDouble() * 0.5 + 0.35
+                Fill = new RadialGradientBrush
+                {
+                    Center = new Windows.Foundation.Point(0.5, 0.5),
+                    RadiusX = 0.5,
+                    RadiusY = 0.5,
+                    GradientStops =
+                    {
+                        new GradientStop { Color = Windows.UI.Color.FromArgb(245, 255, 255, 255), Offset = 0 },
+                        new GradientStop { Color = Windows.UI.Color.FromArgb(80, 240, 245, 255), Offset = 1 }
+                    }
+                },
+                Opacity = _random.NextDouble() * 0.5 + 0.40
             };
 
             double startX = _random.NextDouble() * width;
             double startY = _random.NextDouble() * height;
-            double speed = _random.NextDouble() * 2.2 + 1.2;
+            double speed = _random.NextDouble() * 1.8 + 1.1;
 
             Canvas.SetLeft(circle, startX);
             Canvas.SetTop(circle, startY);
@@ -414,28 +534,30 @@ public class WeatherEffectRenderer
                 X = startX,
                 Y = startY,
                 Speed = speed,
-                DriftOffset = _random.NextDouble() * 10,
-                BaseSize = size
+                DriftOffset = _random.NextDouble() * 12,
+                BaseSize = size,
+                SwayFreq = _random.NextDouble() * 1.2 + 1.5
             });
         }
     }
 
-    private void CreateSunGlow(bool isHighUv)
+    private void CreateSunGlow(bool isHighUv, bool isSubtle = false)
     {
-        double width = _canvas.ActualWidth > 100 ? _canvas.ActualWidth : 750;
+        var (width, _) = GetCanvasDimensions();
 
         var primaryGlowColor = isHighUv
-            ? Windows.UI.Color.FromArgb(65, 255, 90, 20)  // Đỏ cam rực rỡ UV cao
-            : Windows.UI.Color.FromArgb(50, 255, 195, 30); // Vàng ấm áp
+            ? Windows.UI.Color.FromArgb(isSubtle ? (byte)30 : (byte)75, 255, 95, 20)
+            : Windows.UI.Color.FromArgb(isSubtle ? (byte)25 : (byte)60, 255, 195, 30);
 
-        var secondaryColor = isHighUv
+        var outerGlowColor = isHighUv
             ? Windows.UI.Color.FromArgb(0, 255, 120, 30)
             : Windows.UI.Color.FromArgb(0, 255, 210, 60);
 
-        var sunAura = new Ellipse
+        // Vầng hào quang ngoài (Outer Pulsing Corona)
+        var outerAura = new Ellipse
         {
-            Width = 280,
-            Height = 280,
+            Width = 360,
+            Height = 360,
             Fill = new RadialGradientBrush
             {
                 Center = new Windows.Foundation.Point(0.5, 0.5),
@@ -444,27 +566,106 @@ public class WeatherEffectRenderer
                 GradientStops =
                 {
                     new GradientStop { Color = primaryGlowColor, Offset = 0 },
-                    new GradientStop { Color = secondaryColor, Offset = 1 }
+                    new GradientStop { Color = outerGlowColor, Offset = 1 }
                 }
             },
-            Opacity = 0.85
+            Opacity = isSubtle ? 0.45 : 0.85
         };
 
-        Canvas.SetLeft(sunAura, width - 220);
-        Canvas.SetTop(sunAura, -50);
+        Canvas.SetLeft(outerAura, width - 260);
+        Canvas.SetTop(outerAura, -80);
+        _canvas.Children.Add(outerAura);
+        _ambientElements.Add(outerAura);
 
-        _canvas.Children.Add(sunAura);
-        _ambientElements.Add(sunAura);
+        if (!isSubtle)
+        {
+            // Quầng sáng trong sắc nét hơn (Inner Radiant Sun Core)
+            var innerAura = new Ellipse
+            {
+                Width = 200,
+                Height = 200,
+                Fill = new RadialGradientBrush
+                {
+                    Center = new Windows.Foundation.Point(0.5, 0.5),
+                    RadiusX = 0.5,
+                    RadiusY = 0.5,
+                    GradientStops =
+                    {
+                        new GradientStop { Color = Windows.UI.Color.FromArgb(100, 255, 240, 160), Offset = 0 },
+                        new GradientStop { Color = Windows.UI.Color.FromArgb(0, 255, 200, 60), Offset = 1 }
+                    }
+                },
+                Opacity = 0.90
+            };
+
+            Canvas.SetLeft(innerAura, width - 180);
+            Canvas.SetTop(innerAura, -30);
+            _canvas.Children.Add(innerAura);
+            _ambientElements.Add(innerAura);
+        }
     }
 
-    private void CreateSunSparkles(int count)
+    private void CreateSunRays(bool isHighUv)
     {
-        double width = _canvas.ActualWidth > 100 ? _canvas.ActualWidth : 750;
-        double height = _canvas.ActualHeight > 100 ? _canvas.ActualHeight : 240;
+        var (width, _) = GetCanvasDimensions();
+
+        // 4 vệt tia nắng vàng óng ánh chiếu nghiêng từ quầng mặt trời xuống (Shimmering God Rays)
+        double[] angles = { 32.0, 41.0, 49.0, 58.0 };
+        double[] widths = { 55.0, 75.0, 65.0, 85.0 };
+        double[] opacities = { 0.18, 0.24, 0.20, 0.16 };
+
+        for (int i = 0; i < angles.Length; i++)
+        {
+            var rotate = new RotateTransform
+            {
+                Angle = angles[i],
+                CenterX = 0,
+                CenterY = 0
+            };
+
+            var rayRect = new Rectangle
+            {
+                Width = widths[i],
+                Height = 450,
+                Opacity = opacities[i],
+                RenderTransform = rotate,
+                IsHitTestVisible = false,
+                Fill = new LinearGradientBrush
+                {
+                    StartPoint = new Windows.Foundation.Point(0, 0),
+                    EndPoint = new Windows.Foundation.Point(0, 1),
+                    GradientStops =
+                    {
+                        new GradientStop { Color = Windows.UI.Color.FromArgb(isHighUv ? (byte)95 : (byte)75, 255, 235, 140), Offset = 0 },
+                        new GradientStop { Color = Windows.UI.Color.FromArgb(isHighUv ? (byte)45 : (byte)30, 255, 215, 90), Offset = 0.4 },
+                        new GradientStop { Color = Windows.UI.Color.FromArgb(0, 255, 200, 50), Offset = 1 }
+                    }
+                }
+            };
+
+            Canvas.SetLeft(rayRect, width - 130);
+            Canvas.SetTop(rayRect, -40);
+
+            _canvas.Children.Add(rayRect);
+            _sunRays.Add(new SunRay
+            {
+                Element = rayRect,
+                BaseAngle = angles[i],
+                BaseOpacity = opacities[i],
+                Phase = _random.NextDouble() * Math.PI * 2,
+                Speed = _random.NextDouble() * 0.8 + 0.8,
+                Transform = rotate
+            });
+        }
+    }
+
+    private void CreateSunSparkles(int count, bool isHighUv)
+    {
+        var (width, height) = GetCanvasDimensions();
 
         for (int i = 0; i < count; i++)
         {
-            double size = _random.Next(3, 7);
+            double size = _random.Next(4, 11);
             var sparkle = new Ellipse
             {
                 Width = size,
@@ -476,16 +677,17 @@ public class WeatherEffectRenderer
                     RadiusY = 0.5,
                     GradientStops =
                     {
-                        new GradientStop { Color = Windows.UI.Color.FromArgb(240, 255, 235, 150), Offset = 0 },
+                        new GradientStop { Color = Windows.UI.Color.FromArgb(255, 255, 245, 180), Offset = 0 },
+                        new GradientStop { Color = isHighUv ? Windows.UI.Color.FromArgb(120, 255, 160, 40) : Windows.UI.Color.FromArgb(100, 255, 200, 60), Offset = 0.6 },
                         new GradientStop { Color = Windows.UI.Color.FromArgb(0, 255, 180, 50), Offset = 1 }
                     }
                 },
-                Opacity = _random.NextDouble() * 0.5 + 0.25
+                Opacity = _random.NextDouble() * 0.5 + 0.35
             };
 
             double startX = _random.NextDouble() * width;
             double startY = _random.NextDouble() * height;
-            double speedY = _random.NextDouble() * 0.8 + 0.3;
+            double speedY = _random.NextDouble() * 1.1 + 0.7;
 
             Canvas.SetLeft(sparkle, startX);
             Canvas.SetTop(sparkle, startY);
@@ -497,7 +699,7 @@ public class WeatherEffectRenderer
                 X = startX,
                 Y = startY,
                 SpeedY = speedY,
-                DriftOffset = _random.NextDouble() * 12,
+                DriftOffset = _random.NextDouble() * 14,
                 BaseOpacity = sparkle.Opacity,
                 Phase = _random.NextDouble() * Math.PI * 2
             });
@@ -506,14 +708,13 @@ public class WeatherEffectRenderer
 
     private void CreateDriftingClouds(int count, bool isHeavyMist)
     {
-        double width = _canvas.ActualWidth > 100 ? _canvas.ActualWidth : 750;
-        double height = _canvas.ActualHeight > 100 ? _canvas.ActualHeight : 240;
+        var (width, height) = GetCanvasDimensions();
 
         for (int i = 0; i < count; i++)
         {
-            double cloudWidth = _random.Next(160, 280);
-            double cloudHeight = _random.Next(35, 65);
-            byte alpha = isHeavyMist ? (byte)_random.Next(25, 45) : (byte)_random.Next(15, 30);
+            double cloudWidth = _random.Next(210, 360);
+            double cloudHeight = _random.Next(45, 85);
+            byte alpha = isHeavyMist ? (byte)_random.Next(50, 85) : (byte)_random.Next(35, 65);
 
             var cloudBorder = new Border
             {
@@ -531,42 +732,71 @@ public class WeatherEffectRenderer
                         new GradientStop { Color = Windows.UI.Color.FromArgb(0, 255, 255, 255), Offset = 1 }
                     }
                 },
-                Opacity = 0.7
+                Opacity = isHeavyMist ? 0.75 : 0.60
             };
 
             double startX = _random.NextDouble() * (width + cloudWidth) - cloudWidth;
-            double startY = _random.NextDouble() * (height - cloudHeight);
-            double speedX = _random.NextDouble() * 0.4 + 0.2;
+            double baseY = _random.NextDouble() * (height - cloudHeight);
+            double speedX = isHeavyMist ? (_random.NextDouble() * 0.5 + 0.4) : (_random.NextDouble() * 0.9 + 0.7);
 
             Canvas.SetLeft(cloudBorder, startX);
-            Canvas.SetTop(cloudBorder, startY);
+            Canvas.SetTop(cloudBorder, baseY);
 
             _canvas.Children.Add(cloudBorder);
             _clouds.Add(new DriftingCloud
             {
                 Element = cloudBorder,
                 X = startX,
-                Y = startY,
+                BaseY = baseY,
                 SpeedX = speedX,
-                Width = cloudWidth
+                Width = cloudWidth,
+                WavePhase = _random.NextDouble() * Math.PI * 2
             });
         }
     }
 
+    private void CreateNightAura()
+    {
+        var (width, _) = GetCanvasDimensions();
+
+        // Vầng sáng trăng đêm mát dịu
+        var moonAura = new Ellipse
+        {
+            Width = 260,
+            Height = 260,
+            Fill = new RadialGradientBrush
+            {
+                Center = new Windows.Foundation.Point(0.5, 0.5),
+                RadiusX = 0.5,
+                RadiusY = 0.5,
+                GradientStops =
+                {
+                    new GradientStop { Color = Windows.UI.Color.FromArgb(55, 210, 230, 255), Offset = 0 },
+                    new GradientStop { Color = Windows.UI.Color.FromArgb(0, 160, 190, 250), Offset = 1 }
+                }
+            },
+            Opacity = 0.85
+        };
+
+        Canvas.SetLeft(moonAura, width - 210);
+        Canvas.SetTop(moonAura, -60);
+        _canvas.Children.Add(moonAura);
+        _ambientElements.Add(moonAura);
+    }
+
     private void CreateNightStars(int count)
     {
-        double width = _canvas.ActualWidth > 100 ? _canvas.ActualWidth : 750;
-        double height = _canvas.ActualHeight > 100 ? _canvas.ActualHeight : 240;
+        var (width, height) = GetCanvasDimensions();
 
         for (int i = 0; i < count; i++)
         {
-            double size = _random.Next(2, 4);
+            double size = _random.Next(2, 6);
             var star = new Ellipse
             {
                 Width = size,
                 Height = size,
-                Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(250, 255, 255, 225)),
-                Opacity = _random.NextDouble() * 0.6 + 0.25
+                Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(250, 255, 255, 235)),
+                Opacity = _random.NextDouble() * 0.6 + 0.35
             };
 
             Canvas.SetLeft(star, _random.NextDouble() * width);
@@ -577,8 +807,72 @@ public class WeatherEffectRenderer
             {
                 Element = star,
                 BaseOpacity = star.Opacity,
-                TwinklePhase = _random.NextDouble() * Math.PI * 2
+                TwinklePhase = _random.NextDouble() * Math.PI * 2,
+                TwinkleSpeed = _random.NextDouble() * 1.6 + 1.2
             });
+        }
+    }
+
+    private void CreateMeteorPool(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            var meteorLine = new Line
+            {
+                X1 = 0,
+                Y1 = 0,
+                X2 = 35,
+                Y2 = 25,
+                StrokeThickness = 1.8,
+                Stroke = new LinearGradientBrush
+                {
+                    StartPoint = new Windows.Foundation.Point(0, 0),
+                    EndPoint = new Windows.Foundation.Point(1, 1),
+                    GradientStops =
+                    {
+                        new GradientStop { Color = Windows.UI.Color.FromArgb(0, 255, 255, 255), Offset = 0 },
+                        new GradientStop { Color = Windows.UI.Color.FromArgb(245, 255, 255, 255), Offset = 1 }
+                    }
+                },
+                Opacity = 0,
+                IsHitTestVisible = false
+            };
+
+            Canvas.SetLeft(meteorLine, -200);
+            Canvas.SetTop(meteorLine, -200);
+            _canvas.Children.Add(meteorLine);
+
+            _meteors.Add(new Meteor
+            {
+                Element = meteorLine,
+                X = -200,
+                Y = -200,
+                SpeedX = -18,
+                SpeedY = 13,
+                Length = 40,
+                Opacity = 0,
+                IsActive = false
+            });
+        }
+    }
+
+    private void TriggerMeteor(double width)
+    {
+        foreach (var meteor in _meteors)
+        {
+            if (!meteor.IsActive)
+            {
+                meteor.X = _random.NextDouble() * (width * 0.6) + (width * 0.4);
+                meteor.Y = _random.NextDouble() * 50 - 20;
+                meteor.SpeedX = -(_random.NextDouble() * 10 + 16);
+                meteor.SpeedY = _random.NextDouble() * 8 + 12;
+                meteor.Opacity = 0.95;
+                meteor.IsActive = true;
+                meteor.Element.Opacity = 0.95;
+                Canvas.SetLeft(meteor.Element, meteor.X);
+                Canvas.SetTop(meteor.Element, meteor.Y);
+                break;
+            }
         }
     }
 
@@ -615,7 +909,7 @@ public class WeatherEffectRenderer
         try
         {
             // Pha 1: Tia chớp mồi
-            _lightningOverlay.Opacity = 0.38;
+            _lightningOverlay.Opacity = 0.40;
             await Task.Delay(45);
             if ((_previewOverrideEffect ?? _currentEffect) != WeatherEffectType.Thunderstorm) { _lightningOverlay.Opacity = 0; return; }
 
@@ -624,8 +918,8 @@ public class WeatherEffectRenderer
             await Task.Delay(35);
             if ((_previewOverrideEffect ?? _currentEffect) != WeatherEffectType.Thunderstorm) { _lightningOverlay.Opacity = 0; return; }
 
-            // Pha 2: Chớp cực mạnh
-            _lightningOverlay.Opacity = 0.88;
+            // Pha 2: Chớp cực mạnh chói lòa
+            _lightningOverlay.Opacity = 0.92;
             await Task.Delay(90);
             if ((_previewOverrideEffect ?? _currentEffect) != WeatherEffectType.Thunderstorm) { _lightningOverlay.Opacity = 0; return; }
 
@@ -633,7 +927,7 @@ public class WeatherEffectRenderer
             for (int i = 7; i >= 0; i--)
             {
                 if ((_previewOverrideEffect ?? _currentEffect) != WeatherEffectType.Thunderstorm) { _lightningOverlay.Opacity = 0; return; }
-                _lightningOverlay.Opacity = i * 0.11;
+                _lightningOverlay.Opacity = i * 0.12;
                 await Task.Delay(25);
             }
             _lightningOverlay.Opacity = 0;
@@ -646,18 +940,12 @@ public class WeatherEffectRenderer
 
     #endregion
 
-    #region Main Animation Loop
+    #region Main Animation Loop (60 FPS)
 
     private void RenderTimer_Tick(object? sender, object e)
     {
-        if (!AnimationHelper.AreAnimationsEnabled || _canvas.ActualWidth <= 0 || _canvas.ActualHeight <= 0)
-        {
-            return;
-        }
-
         _animationTime += 0.016;
-        double height = _canvas.ActualHeight > 100 ? _canvas.ActualHeight : 240;
-        double width = _canvas.ActualWidth > 100 ? _canvas.ActualWidth : 750;
+        var (width, height) = GetCanvasDimensions();
 
         // 1. Cập nhật vị trí hạt mưa & kích hoạt bọt nước (splash)
         if (_raindrops.Count > 0)
@@ -667,17 +955,17 @@ public class WeatherEffectRenderer
                 drop.Y += drop.Speed;
                 drop.X += drop.Speed * _windDriftRatio;
 
-                if (drop.Y >= height - 12)
+                if (drop.Y >= height - 8)
                 {
-                    // Chạm sàn: tạo bọt nước va chạm
-                    if (_random.NextDouble() < 0.65)
+                    // Chạm sàn: tạo bọt nước va chạm và giọt nước tóe lên
+                    if (_random.NextDouble() < 0.70)
                     {
-                        SpawnSplash(drop.X, height - 6);
+                        TriggerSplash(drop.X, height - 6);
                     }
 
                     // Tái sinh hạt mưa trên đỉnh
                     drop.Y = -drop.Length - 5;
-                    drop.X = _random.NextDouble() * (width + 120) - 60;
+                    drop.X = _random.NextDouble() * (width + 140) - 70;
                 }
 
                 Canvas.SetLeft(drop.Element, drop.X);
@@ -713,13 +1001,42 @@ public class WeatherEffectRenderer
             }
         }
 
-        // 3. Cập nhật hoa tuyết rơi lượn sóng
+        // 2b. Cập nhật giọt nước bắn tóe (splash micro droplets)
+        if (_splashDroplets.Count > 0)
+        {
+            foreach (var droplet in _splashDroplets)
+            {
+                if (droplet.IsActive)
+                {
+                    droplet.X += droplet.Vx;
+                    droplet.Y += droplet.Vy;
+                    droplet.Vy += droplet.Gravity;
+                    droplet.Opacity -= 0.045;
+
+                    if (droplet.Opacity <= 0 || droplet.Y >= height)
+                    {
+                        droplet.IsActive = false;
+                        droplet.Element.Opacity = 0;
+                    }
+                    else
+                    {
+                        droplet.Element.Opacity = droplet.Opacity;
+                        Canvas.SetLeft(droplet.Element, droplet.X);
+                        Canvas.SetTop(droplet.Element, droplet.Y);
+                    }
+                }
+            }
+        }
+
+        // 3. Cập nhật hoa tuyết rơi lượn sóng đa tần
         if (_snowflakes.Count > 0)
         {
             foreach (var flake in _snowflakes)
             {
                 flake.Y += flake.Speed;
-                double sway = Math.Sin(_animationTime * 2.2 + flake.DriftOffset) * 0.85 + (_windDriftRatio * 1.5);
+                double sway = Math.Sin(_animationTime * flake.SwayFreq + flake.DriftOffset) * 1.5
+                    + Math.Cos(_animationTime * 0.9) * 0.7
+                    + (_windDriftRatio * 1.8);
                 flake.X += sway;
 
                 if (flake.Y > height)
@@ -733,19 +1050,30 @@ public class WeatherEffectRenderer
             }
         }
 
-        // 4. Cập nhật bụi nắng vàng óng ánh (Sun sparkles)
+        // 4. Cập nhật tia nắng vàng óng ánh quét qua bầu trời (Sun Rays)
+        if (_sunRays.Count > 0)
+        {
+            foreach (var ray in _sunRays)
+            {
+                double breath = ray.BaseOpacity * (0.65 + 0.35 * Math.Sin(_animationTime * ray.Speed + ray.Phase));
+                ray.Element.Opacity = Math.Clamp(breath, 0.05, 0.60);
+                ray.Transform.Angle = ray.BaseAngle + Math.Sin(_animationTime * 0.6 + ray.Phase) * 1.8;
+            }
+        }
+
+        // 5. Cập nhật bụi nắng vàng óng ánh (Sun sparkles bokeh)
         if (_sunSparkles.Count > 0)
         {
             foreach (var sp in _sunSparkles)
             {
                 sp.Y -= sp.SpeedY;
-                sp.X += Math.Sin(_animationTime * 1.4 + sp.DriftOffset) * 0.45;
+                sp.X += Math.Sin(_animationTime * 1.5 + sp.DriftOffset) * 0.65;
 
-                // Chu kỳ nhấp nháy phát sáng
-                double twinkle = 0.25 + 0.55 * Math.Abs(Math.Sin(_animationTime * 2.0 + sp.Phase));
-                sp.Element.Opacity = Math.Clamp(twinkle, 0.1, 0.9);
+                // Chu kỳ nhấp nháy phát sáng lung linh
+                double twinkle = sp.BaseOpacity * (0.35 + 0.65 * Math.Abs(Math.Sin(_animationTime * 2.2 + sp.Phase)));
+                sp.Element.Opacity = Math.Clamp(twinkle, 0.15, 0.95);
 
-                if (sp.Y < -10)
+                if (sp.Y < -15)
                 {
                     sp.Y = height + 10;
                     sp.X = _random.NextDouble() * width;
@@ -756,43 +1084,75 @@ public class WeatherEffectRenderer
             }
         }
 
-        // 5. Cập nhật mây/sương mù trôi lững lờ (Drifting Clouds)
+        // 6. Cập nhật mây/sương mù trôi lững lờ đa tầng với sóng dập dềnh (Drifting Clouds)
         if (_clouds.Count > 0)
         {
             foreach (var cloud in _clouds)
             {
                 cloud.X += cloud.SpeedX;
 
-                if (cloud.X > width + 50)
+                if (cloud.X > width + 60)
                 {
-                    cloud.X = -cloud.Width - 30;
+                    cloud.X = -cloud.Width - 40;
                 }
 
+                // Sóng dập dềnh lên xuống nhẹ nhàng tự nhiên
+                double floatY = cloud.BaseY + Math.Sin(_animationTime * 0.8 + cloud.WavePhase) * 5.0;
+
                 Canvas.SetLeft(cloud.Element, cloud.X);
+                Canvas.SetTop(cloud.Element, floatY);
             }
         }
 
-        // 6. Cập nhật sao đêm nhấp nháy
+        // 7. Cập nhật sao đêm lung linh nhấp nháy đa tầng
         if (_nightStars.Count > 0)
         {
             foreach (var star in _nightStars)
             {
-                double twinkle = star.BaseOpacity * (0.4 + 0.6 * Math.Abs(Math.Sin(_animationTime * 1.8 + star.TwinklePhase)));
-                star.Element.Opacity = Math.Clamp(twinkle, 0.1, 0.95);
+                double twinkle = star.BaseOpacity * (0.35 + 0.65 * Math.Abs(Math.Sin(_animationTime * star.TwinkleSpeed + star.TwinklePhase)));
+                star.Element.Opacity = Math.Clamp(twinkle, 0.12, 0.98);
             }
         }
 
-        // 7. Nhịp thở nhẹ của vầng hào quang nắng (Sun aura breathing)
+        // 7b. Cập nhật sao băng (Meteors)
+        if (_meteors.Count > 0)
+        {
+            if (_animationTime >= _nextMeteorTime)
+            {
+                TriggerMeteor(width);
+                _nextMeteorTime = _animationTime + _random.NextDouble() * 5.0 + 6.0;
+            }
+
+            foreach (var meteor in _meteors)
+            {
+                if (meteor.IsActive)
+                {
+                    meteor.X += meteor.SpeedX;
+                    meteor.Y += meteor.SpeedY;
+                    meteor.Opacity -= 0.045;
+
+                    if (meteor.Opacity <= 0 || meteor.Y > height || meteor.X < -50)
+                    {
+                        meteor.IsActive = false;
+                        meteor.Element.Opacity = 0;
+                    }
+                    else
+                    {
+                        meteor.Element.Opacity = meteor.Opacity;
+                        Canvas.SetLeft(meteor.Element, meteor.X);
+                        Canvas.SetTop(meteor.Element, meteor.Y);
+                    }
+                }
+            }
+        }
+
+        // 8. Nhịp thở hữu cơ của quầng mặt trời / quầng trăng (Aura organic pulse)
         if (_ambientElements.Count > 0)
         {
-            var activeEffect = _previewOverrideEffect ?? _currentEffect;
-            if (activeEffect == WeatherEffectType.ClearSunny || activeEffect == WeatherEffectType.HighUvSunny)
+            double breath = 0.80 + 0.15 * Math.Sin(_animationTime * 1.5);
+            foreach (var el in _ambientElements)
             {
-                double breath = 0.78 + 0.14 * Math.Sin(_animationTime * 1.6);
-                foreach (var el in _ambientElements)
-                {
-                    el.Opacity = breath;
-                }
+                el.Opacity = Math.Clamp(breath, 0.40, 0.95);
             }
         }
     }

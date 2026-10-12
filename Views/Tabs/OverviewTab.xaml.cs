@@ -113,6 +113,22 @@ public sealed partial class OverviewTab : UserControl
 
         _weatherEffectRenderer = new WeatherEffectRenderer(WeatherEffectsCanvas, LightningFlashOverlay);
 
+        if (HeroCardBorder != null)
+        {
+            HeroCardBorder.SizeChanged += (s, e) =>
+            {
+                if (e.NewSize.Width > 0 && e.NewSize.Height > 0)
+                {
+                    WeatherEffectsCanvas.Width = e.NewSize.Width;
+                    WeatherEffectsCanvas.Height = e.NewSize.Height;
+                    WeatherEffectsCanvas.Clip = new RectangleGeometry
+                    {
+                        Rect = new Windows.Foundation.Rect(0, 0, e.NewSize.Width, e.NewSize.Height)
+                    };
+                }
+            };
+        }
+
         if (OverviewScrollViewer != null)
         {
             OverviewScrollViewer.ViewChanged += OverviewScrollViewer_ViewChanged;
@@ -1735,31 +1751,37 @@ public sealed partial class OverviewTab : UserControl
     private void FxPreviewAuto_Click(object sender, RoutedEventArgs e)
     {
         _weatherEffectRenderer?.SetPreviewEffect(null);
+        _weatherEffectRenderer?.Resume();
     }
 
     private void FxPreviewSunny_Click(object sender, RoutedEventArgs e)
     {
         _weatherEffectRenderer?.SetPreviewEffect(WeatherEffectType.ClearSunny);
+        _weatherEffectRenderer?.Resume();
     }
 
     private void FxPreviewRain_Click(object sender, RoutedEventArgs e)
     {
         _weatherEffectRenderer?.SetPreviewEffect(WeatherEffectType.HeavyRain);
+        _weatherEffectRenderer?.Resume();
     }
 
     private void FxPreviewThunder_Click(object sender, RoutedEventArgs e)
     {
         _weatherEffectRenderer?.SetPreviewEffect(WeatherEffectType.Thunderstorm);
+        _weatherEffectRenderer?.Resume();
     }
 
     private void FxPreviewSnow_Click(object sender, RoutedEventArgs e)
     {
         _weatherEffectRenderer?.SetPreviewEffect(WeatherEffectType.Snow);
+        _weatherEffectRenderer?.Resume();
     }
 
     private void FxPreviewFog_Click(object sender, RoutedEventArgs e)
     {
         _weatherEffectRenderer?.SetPreviewEffect(WeatherEffectType.Fog);
+        _weatherEffectRenderer?.Resume();
     }
     #endregion
 }
