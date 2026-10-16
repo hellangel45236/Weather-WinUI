@@ -57,6 +57,14 @@ public sealed partial class OverviewTab : UserControl
     private TextBlock? _magneticTimeText;
     private TextBlock? _magneticValText;
 
+    // Layout & Render Cycle Guards (v3.1.0)
+    private bool _isRenderingSparkline = false;
+    private bool _isRenderingSunArc = false;
+    private bool _isRenderingVisualGauges = false;
+    private bool _isRenderingTrendline = false;
+    private bool? _wasNarrowHero = null;
+    private bool? _wasNarrowMetrics = null;
+
     private static void OnViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is OverviewTab tab)
@@ -128,14 +136,12 @@ public sealed partial class OverviewTab : UserControl
 
         _weatherEffectRenderer = new WeatherEffectRenderer(WeatherEffectsCanvas, LightningFlashOverlay);
 
-        if (HeroCardBorder != null)
+        if (WeatherEffectsCanvas != null)
         {
-            HeroCardBorder.SizeChanged += (s, e) =>
+            WeatherEffectsCanvas.SizeChanged += (s, e) =>
             {
                 if (e.NewSize.Width > 0 && e.NewSize.Height > 0)
                 {
-                    WeatherEffectsCanvas.Width = e.NewSize.Width;
-                    WeatherEffectsCanvas.Height = e.NewSize.Height;
                     WeatherEffectsCanvas.Clip = new RectangleGeometry
                     {
                         Rect = new Windows.Foundation.Rect(0, 0, e.NewSize.Width, e.NewSize.Height)
@@ -204,22 +210,46 @@ public sealed partial class OverviewTab : UserControl
 
         if (SunArcCanvas != null)
         {
-            SunArcCanvas.SizeChanged += (s, e) => RenderSunArc();
+            SunArcCanvas.SizeChanged += (s, e) =>
+            {
+                if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 1 || Math.Abs(e.NewSize.Height - e.PreviousSize.Height) > 1)
+                {
+                    DispatcherQueue.TryEnqueue(RenderSunArc);
+                }
+            };
         }
 
         if (UvGaugeCanvas != null)
         {
-            UvGaugeCanvas.SizeChanged += (s, e) => RenderVisualGauges();
+            UvGaugeCanvas.SizeChanged += (s, e) =>
+            {
+                if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 1)
+                {
+                    DispatcherQueue.TryEnqueue(RenderVisualGauges);
+                }
+            };
         }
 
         if (AqiGaugeCanvas != null)
         {
-            AqiGaugeCanvas.SizeChanged += (s, e) => RenderVisualGauges();
+            AqiGaugeCanvas.SizeChanged += (s, e) =>
+            {
+                if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 1)
+                {
+                    DispatcherQueue.TryEnqueue(RenderVisualGauges);
+                }
+            };
         }
 
         if (PressureSparklineCanvas != null)
         {
-            PressureSparklineCanvas.SizeChanged += (s, e) => RenderPressureSparkline();
+            PressureSparklineCanvas.SizeChanged += (s, e) =>
+            {
+                if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 1 || Math.Abs(e.NewSize.Height - e.PreviousSize.Height) > 1)
+                {
+                    DispatcherQueue.TryEnqueue(RenderPressureSparkline);
+                }
+            };
         }
     }
 
@@ -587,8 +617,10 @@ public sealed partial class OverviewTab : UserControl
 
     public void RenderHourlyTrendline()
     {
+        if (_isRenderingTrendline) return;
         try
         {
+            _isRenderingTrendline = true;
             if (HourlyTrendlineCanvas == null || ViewModel?.HourlyForecast == null || ViewModel.HourlyForecast.Count == 0)
                 return;
 
@@ -601,10 +633,16 @@ public sealed partial class OverviewTab : UserControl
             double colWidth = 92.0;
             double cardWidth = 82.0;
             double totalWidth = count * colWidth;
-            HourlyTrendlineCanvas.Width = totalWidth;
+            if (Math.Abs(HourlyTrendlineCanvas.Width - totalWidth) > 0.5)
+            {
+                HourlyTrendlineCanvas.Width = totalWidth;
+            }
 
             double canvasHeight = 80.0;
-            HourlyTrendlineCanvas.Height = canvasHeight;
+            if (Math.Abs(HourlyTrendlineCanvas.Height - canvasHeight) > 0.5)
+            {
+                HourlyTrendlineCanvas.Height = canvasHeight;
+            }
 
             // Bảng màu stroke & fill tương ứng
             var (strokeColor, fillStartColor, fillEndColor) = _currentHourlyMetric switch
@@ -839,6 +877,10 @@ public sealed partial class OverviewTab : UserControl
             UpdateMagneticScrubberOverlay();
         }
         catch { }
+        finally
+        {
+            _isRenderingTrendline = false;
+        }
     }
 
     private void EnsureMagneticElementsCreated()
@@ -1027,8 +1069,8 @@ public sealed partial class OverviewTab : UserControl
 
     private void RenderPressureSparkline()
     {
+        if (_isRenderingSparkline) return;
         if (PressureSparklineCanvas == null || ViewModel?.HourlyForecast == null) return;
-        PressureSparklineCanvas.Children.Clear();
 
         double width = PressureSparklineCanvas.ActualWidth;
         double height = PressureSparklineCanvas.ActualHeight;
@@ -1037,87 +1079,98 @@ public sealed partial class OverviewTab : UserControl
         var items = ViewModel.HourlyForecast.Take(6).ToList();
         if (items.Count < 2) return;
 
-        var vals = items.Select(x => x.SurfacePressure > 0 ? x.SurfacePressure : 1013.25).ToList();
-        double min = vals.Min();
-        double max = vals.Max();
-        double range = Math.Max(2.0, max - min);
-
-        double padTop = 3.0;
-        double padBottom = 3.0;
-        double usableH = height - padTop - padBottom;
-
-        var pts = new List<Windows.Foundation.Point>();
-        for (int i = 0; i < vals.Count; i++)
+        try
         {
-            double x = i * (width - 12) / (vals.Count - 1) + 6;
-            double norm = (vals[i] - min) / range;
-            double y = padTop + (1.0 - norm) * usableH;
-            pts.Add(new Windows.Foundation.Point(x, y));
-        }
+            _isRenderingSparkline = true;
+            PressureSparklineCanvas.Children.Clear();
 
-        // Path diện tích gradient mờ dưới biểu đồ
-        var fillGeo = new PathGeometry();
-        var fillFig = new PathFigure { StartPoint = new Windows.Foundation.Point(pts[0].X, height), IsClosed = true };
-        fillFig.Segments.Add(new LineSegment { Point = pts[0] });
-        for (int i = 0; i < pts.Count - 1; i++)
-        {
-            var midX = (pts[i].X + pts[i + 1].X) / 2.0;
-            fillFig.Segments.Add(new BezierSegment
+            var vals = items.Select(x => x.SurfacePressure > 0 ? x.SurfacePressure : 1013.25).ToList();
+            double min = vals.Min();
+            double max = vals.Max();
+            double range = Math.Max(2.0, max - min);
+
+            double padTop = 3.0;
+            double padBottom = 3.0;
+            double usableH = height - padTop - padBottom;
+
+            var pts = new List<Windows.Foundation.Point>();
+            for (int i = 0; i < vals.Count; i++)
             {
-                Point1 = new Windows.Foundation.Point(midX, pts[i].Y),
-                Point2 = new Windows.Foundation.Point(midX, pts[i + 1].Y),
-                Point3 = pts[i + 1]
-            });
-        }
-        fillFig.Segments.Add(new LineSegment { Point = new Windows.Foundation.Point(pts[^1].X, height) });
-        fillGeo.Figures.Add(fillFig);
+                double x = i * (width - 12) / (vals.Count - 1) + 6;
+                double norm = (vals[i] - min) / range;
+                double y = padTop + (1.0 - norm) * usableH;
+                pts.Add(new Windows.Foundation.Point(x, y));
+            }
 
-        var fillBrush = new LinearGradientBrush
-        {
-            StartPoint = new Windows.Foundation.Point(0, 0),
-            EndPoint = new Windows.Foundation.Point(0, 1)
-        };
-        fillBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(90, 167, 139, 250), Offset = 0 });
-        fillBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(5, 167, 139, 250), Offset = 1 });
-
-        var fillPath = new Microsoft.UI.Xaml.Shapes.Path { Data = fillGeo, Fill = fillBrush };
-        PressureSparklineCanvas.Children.Add(fillPath);
-
-        // Đường stroke vi mô mượt mà
-        var strokeGeo = new PathGeometry();
-        var strokeFig = new PathFigure { StartPoint = pts[0], IsClosed = false };
-        for (int i = 0; i < pts.Count - 1; i++)
-        {
-            var midX = (pts[i].X + pts[i + 1].X) / 2.0;
-            strokeFig.Segments.Add(new BezierSegment
+            // Path diện tích gradient mờ dưới biểu đồ
+            var fillGeo = new PathGeometry();
+            var fillFig = new PathFigure { StartPoint = new Windows.Foundation.Point(pts[0].X, height), IsClosed = true };
+            fillFig.Segments.Add(new LineSegment { Point = pts[0] });
+            for (int i = 0; i < pts.Count - 1; i++)
             {
-                Point1 = new Windows.Foundation.Point(midX, pts[i].Y),
-                Point2 = new Windows.Foundation.Point(midX, pts[i + 1].Y),
-                Point3 = pts[i + 1]
-            });
+                var midX = (pts[i].X + pts[i + 1].X) / 2.0;
+                fillFig.Segments.Add(new BezierSegment
+                {
+                    Point1 = new Windows.Foundation.Point(midX, pts[i].Y),
+                    Point2 = new Windows.Foundation.Point(midX, pts[i + 1].Y),
+                    Point3 = pts[i + 1]
+                });
+            }
+            fillFig.Segments.Add(new LineSegment { Point = new Windows.Foundation.Point(pts[^1].X, height) });
+            fillGeo.Figures.Add(fillFig);
+
+            var fillBrush = new LinearGradientBrush
+            {
+                StartPoint = new Windows.Foundation.Point(0, 0),
+                EndPoint = new Windows.Foundation.Point(0, 1)
+            };
+            fillBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(90, 167, 139, 250), Offset = 0 });
+            fillBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(5, 167, 139, 250), Offset = 1 });
+
+            var fillPath = new Microsoft.UI.Xaml.Shapes.Path { Data = fillGeo, Fill = fillBrush };
+            PressureSparklineCanvas.Children.Add(fillPath);
+
+            // Đường stroke vi mô mượt mà
+            var strokeGeo = new PathGeometry();
+            var strokeFig = new PathFigure { StartPoint = pts[0], IsClosed = false };
+            for (int i = 0; i < pts.Count - 1; i++)
+            {
+                var midX = (pts[i].X + pts[i + 1].X) / 2.0;
+                strokeFig.Segments.Add(new BezierSegment
+                {
+                    Point1 = new Windows.Foundation.Point(midX, pts[i].Y),
+                    Point2 = new Windows.Foundation.Point(midX, pts[i + 1].Y),
+                    Point3 = pts[i + 1]
+                });
+            }
+            strokeGeo.Figures.Add(strokeFig);
+
+            var strokePath = new Microsoft.UI.Xaml.Shapes.Path
+            {
+                Data = strokeGeo,
+                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(230, 192, 132, 252)),
+                StrokeThickness = 1.8
+            };
+            PressureSparklineCanvas.Children.Add(strokePath);
+
+            // Chấm tròn hiện tại (điểm đầu tiên)
+            var curDot = new Microsoft.UI.Xaml.Shapes.Ellipse
+            {
+                Width = 5,
+                Height = 5,
+                Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 167, 139, 250)),
+                StrokeThickness = 1.2
+            };
+            Canvas.SetLeft(curDot, pts[0].X - 2.5);
+            Canvas.SetTop(curDot, pts[0].Y - 2.5);
+            PressureSparklineCanvas.Children.Add(curDot);
         }
-        strokeGeo.Figures.Add(strokeFig);
-
-        var strokePath = new Microsoft.UI.Xaml.Shapes.Path
+        catch { }
+        finally
         {
-            Data = strokeGeo,
-            Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(230, 192, 132, 252)),
-            StrokeThickness = 1.8
-        };
-        PressureSparklineCanvas.Children.Add(strokePath);
-
-        // Chấm tròn hiện tại (điểm đầu tiên)
-        var curDot = new Microsoft.UI.Xaml.Shapes.Ellipse
-        {
-            Width = 5,
-            Height = 5,
-            Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
-            Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 167, 139, 250)),
-            StrokeThickness = 1.2
-        };
-        Canvas.SetLeft(curDot, pts[0].X - 2.5);
-        Canvas.SetTop(curDot, pts[0].Y - 2.5);
-        PressureSparklineCanvas.Children.Add(curDot);
+            _isRenderingSparkline = false;
+        }
     }
 
     private void UpdateAmbientGlowColor()
@@ -1198,95 +1251,105 @@ public sealed partial class OverviewTab : UserControl
 
     public void RenderSunArc()
     {
+        if (_isRenderingSunArc) return;
         if (SunArcCanvas == null || ViewModel?.CurrentWeather == null) return;
-
-        SunArcCanvas.Children.Clear();
 
         double width = SunArcCanvas.ActualWidth;
         double height = SunArcCanvas.ActualHeight;
         if (width <= 20 || height <= 10) return;
 
-        double horizonY = height - 4;
-        double leftX = 10;
-        double rightX = width - 10;
-        double peakY = 5;
-
-        // 1. Đường chân trời chấm nét đứt
-        var horizonLine = new Microsoft.UI.Xaml.Shapes.Line
+        try
         {
-            X1 = 4,
-            Y1 = horizonY,
-            X2 = width - 4,
-            Y2 = horizonY,
-            Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(40, 255, 255, 255)),
-            StrokeThickness = 1,
-            StrokeDashArray = new DoubleCollection { 2, 2 }
-        };
-        SunArcCanvas.Children.Add(horizonLine);
+            _isRenderingSunArc = true;
+            SunArcCanvas.Children.Clear();
 
-        // 2. Vòng cung quỹ đạo mặt trời (Cubic/Quadratic Bézier Path)
-        var pathGeometry = new PathGeometry();
-        var figure = new PathFigure
+            double horizonY = height - 4;
+            double leftX = 10;
+            double rightX = width - 10;
+            double peakY = 5;
+
+            // 1. Đường chân trời chấm nét đứt
+            var horizonLine = new Microsoft.UI.Xaml.Shapes.Line
+            {
+                X1 = 4,
+                Y1 = horizonY,
+                X2 = width - 4,
+                Y2 = horizonY,
+                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(40, 255, 255, 255)),
+                StrokeThickness = 1,
+                StrokeDashArray = new DoubleCollection { 2, 2 }
+            };
+            SunArcCanvas.Children.Add(horizonLine);
+
+            // 2. Vòng cung quỹ đạo mặt trời (Cubic/Quadratic Bézier Path)
+            var pathGeometry = new PathGeometry();
+            var figure = new PathFigure
+            {
+                StartPoint = new Windows.Foundation.Point(leftX, horizonY),
+                IsClosed = false
+            };
+
+            double midX = (leftX + rightX) / 2.0;
+            var bezier = new QuadraticBezierSegment
+            {
+                Point1 = new Windows.Foundation.Point(midX, peakY - (horizonY - peakY) * 0.9),
+                Point2 = new Windows.Foundation.Point(rightX, horizonY)
+            };
+            figure.Segments.Add(bezier);
+            pathGeometry.Figures.Add(figure);
+
+            var arcPath = new Microsoft.UI.Xaml.Shapes.Path
+            {
+                Data = pathGeometry,
+                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(90, 255, 255, 255)),
+                StrokeThickness = 1.6,
+                StrokeDashArray = new DoubleCollection { 3, 2.5 }
+            };
+            SunArcCanvas.Children.Add(arcPath);
+
+            // 3. Vị trí Mặt Trời / Mặt Trăng hiện tại trên cung
+            double progress = Math.Clamp(ViewModel.CurrentWeather.SunProgressPercent, 0.0, 1.0);
+            double angleRad = Math.PI * (1.0 - progress);
+            double radiusX = (rightX - leftX) / 2.0;
+            double radiusY = horizonY - peakY;
+            double currentX = midX + radiusX * Math.Cos(angleRad);
+            double currentY = horizonY - radiusY * Math.Sin(angleRad);
+
+            bool isSun = ViewModel.CurrentWeather.IsSunVisible;
+
+            // Vòng phát sáng ngoại vi (Glow)
+            var glow = new Microsoft.UI.Xaml.Shapes.Ellipse
+            {
+                Width = 18,
+                Height = 18,
+                Fill = new SolidColorBrush(isSun
+                    ? Windows.UI.Color.FromArgb(70, 251, 191, 36)
+                    : Windows.UI.Color.FromArgb(60, 96, 165, 250))
+            };
+            Canvas.SetLeft(glow, currentX - 9);
+            Canvas.SetTop(glow, currentY - 9);
+            SunArcCanvas.Children.Add(glow);
+
+            // Chấm tròn Mặt Trời / Mặt Trăng
+            var celestialDot = new Microsoft.UI.Xaml.Shapes.Ellipse
+            {
+                Width = 10,
+                Height = 10,
+                Fill = new SolidColorBrush(isSun
+                    ? Windows.UI.Color.FromArgb(255, 245, 158, 11)
+                    : Windows.UI.Color.FromArgb(255, 147, 197, 253)),
+                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                StrokeThickness = 1.5
+            };
+            Canvas.SetLeft(celestialDot, currentX - 5);
+            Canvas.SetTop(celestialDot, currentY - 5);
+            SunArcCanvas.Children.Add(celestialDot);
+        }
+        catch { }
+        finally
         {
-            StartPoint = new Windows.Foundation.Point(leftX, horizonY),
-            IsClosed = false
-        };
-
-        double midX = (leftX + rightX) / 2.0;
-        var bezier = new QuadraticBezierSegment
-        {
-            Point1 = new Windows.Foundation.Point(midX, peakY - (horizonY - peakY) * 0.9),
-            Point2 = new Windows.Foundation.Point(rightX, horizonY)
-        };
-        figure.Segments.Add(bezier);
-        pathGeometry.Figures.Add(figure);
-
-        var arcPath = new Microsoft.UI.Xaml.Shapes.Path
-        {
-            Data = pathGeometry,
-            Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(90, 255, 255, 255)),
-            StrokeThickness = 1.6,
-            StrokeDashArray = new DoubleCollection { 3, 2.5 }
-        };
-        SunArcCanvas.Children.Add(arcPath);
-
-        // 3. Vị trí Mặt Trời / Mặt Trăng hiện tại trên cung
-        double progress = Math.Clamp(ViewModel.CurrentWeather.SunProgressPercent, 0.0, 1.0);
-        double angleRad = Math.PI * (1.0 - progress);
-        double radiusX = (rightX - leftX) / 2.0;
-        double radiusY = horizonY - peakY;
-        double currentX = midX + radiusX * Math.Cos(angleRad);
-        double currentY = horizonY - radiusY * Math.Sin(angleRad);
-
-        bool isSun = ViewModel.CurrentWeather.IsSunVisible;
-
-        // Vòng phát sáng ngoại vi (Glow)
-        var glow = new Microsoft.UI.Xaml.Shapes.Ellipse
-        {
-            Width = 18,
-            Height = 18,
-            Fill = new SolidColorBrush(isSun
-                ? Windows.UI.Color.FromArgb(70, 251, 191, 36)
-                : Windows.UI.Color.FromArgb(60, 96, 165, 250))
-        };
-        Canvas.SetLeft(glow, currentX - 9);
-        Canvas.SetTop(glow, currentY - 9);
-        SunArcCanvas.Children.Add(glow);
-
-        // Chấm tròn Mặt Trời / Mặt Trăng
-        var celestialDot = new Microsoft.UI.Xaml.Shapes.Ellipse
-        {
-            Width = 10,
-            Height = 10,
-            Fill = new SolidColorBrush(isSun
-                ? Windows.UI.Color.FromArgb(255, 245, 158, 11)
-                : Windows.UI.Color.FromArgb(255, 147, 197, 253)),
-            Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
-            StrokeThickness = 1.5
-        };
-        Canvas.SetLeft(celestialDot, currentX - 5);
-        Canvas.SetTop(celestialDot, currentY - 5);
-        SunArcCanvas.Children.Add(celestialDot);
+            _isRenderingSunArc = false;
+        }
     }
 
     private void HourlyCard_Click(object sender, RoutedEventArgs e)
@@ -1304,192 +1367,211 @@ public sealed partial class OverviewTab : UserControl
 
         // 1. Tự động điều chỉnh cấu trúc 2 cột Bento Card của Hero
         bool isNarrow = width < 920;
-        if (HeroBentoGrid != null && HeroBentoLeftCol != null && HeroBentoRightCol != null &&
-            HeroBentoLeftCard != null && HeroBentoRightCard != null)
+        if (isNarrow != _wasNarrowHero)
         {
-            if (isNarrow)
+            _wasNarrowHero = isNarrow;
+            if (HeroBentoGrid != null && HeroBentoLeftCol != null && HeroBentoRightCol != null &&
+                HeroBentoLeftCard != null && HeroBentoRightCard != null)
             {
-                HeroBentoLeftCol.Width = new GridLength(1, GridUnitType.Star);
-                HeroBentoRightCol.Width = new GridLength(0);
-                Grid.SetColumn(HeroBentoLeftCard, 0);
-                Grid.SetRow(HeroBentoLeftCard, 0);
-                Grid.SetColumn(HeroBentoRightCard, 0);
-                Grid.SetRow(HeroBentoRightCard, 1);
-            }
-            else
-            {
-                HeroBentoLeftCol.Width = new GridLength(1.25, GridUnitType.Star);
-                HeroBentoRightCol.Width = new GridLength(1, GridUnitType.Star);
-                Grid.SetColumn(HeroBentoLeftCard, 0);
-                Grid.SetRow(HeroBentoLeftCard, 0);
-                Grid.SetColumn(HeroBentoRightCard, 1);
-                Grid.SetRow(HeroBentoRightCard, 0);
+                if (isNarrow)
+                {
+                    HeroBentoLeftCol.Width = new GridLength(1, GridUnitType.Star);
+                    HeroBentoRightCol.Width = new GridLength(0);
+                    Grid.SetColumn(HeroBentoLeftCard, 0);
+                    Grid.SetRow(HeroBentoLeftCard, 0);
+                    Grid.SetColumn(HeroBentoRightCard, 0);
+                    Grid.SetRow(HeroBentoRightCard, 1);
+                }
+                else
+                {
+                    HeroBentoLeftCol.Width = new GridLength(1.25, GridUnitType.Star);
+                    HeroBentoRightCol.Width = new GridLength(1, GridUnitType.Star);
+                    Grid.SetColumn(HeroBentoLeftCard, 0);
+                    Grid.SetRow(HeroBentoLeftCard, 0);
+                    Grid.SetColumn(HeroBentoRightCard, 1);
+                    Grid.SetRow(HeroBentoRightCard, 0);
+                }
             }
         }
 
         // 2. Tự động điều chỉnh lưới 8 chỉ số: 4 cột khi rộng, 2 cột khi hẹp để không bị ép chữ
         bool isMetricsNarrow = width < 960;
-        if (MetricsGrid != null && MetricsCol2 != null && MetricsCol3 != null &&
-            CardUv != null && CardAqi != null && CardWind != null && CardHumidity != null &&
-            CardRain != null && CardPressure != null && CardSunMoon != null && CardPollutants != null)
+        if (isMetricsNarrow != _wasNarrowMetrics)
         {
-            if (isMetricsNarrow)
+            _wasNarrowMetrics = isMetricsNarrow;
+            if (MetricsGrid != null && MetricsCol2 != null && MetricsCol3 != null &&
+                CardUv != null && CardAqi != null && CardWind != null && CardHumidity != null &&
+                CardRain != null && CardPressure != null && CardSunMoon != null && CardPollutants != null)
             {
-                MetricsCol2.Width = new GridLength(0);
-                MetricsCol3.Width = new GridLength(0);
-                // 2 Cột x 4 Hàng
-                Grid.SetRow(CardUv, 0); Grid.SetColumn(CardUv, 0);
-                Grid.SetRow(CardAqi, 0); Grid.SetColumn(CardAqi, 1);
-                Grid.SetRow(CardWind, 1); Grid.SetColumn(CardWind, 0);
-                Grid.SetRow(CardHumidity, 1); Grid.SetColumn(CardHumidity, 1);
-                Grid.SetRow(CardRain, 2); Grid.SetColumn(CardRain, 0);
-                Grid.SetRow(CardPressure, 2); Grid.SetColumn(CardPressure, 1);
-                Grid.SetRow(CardSunMoon, 3); Grid.SetColumn(CardSunMoon, 0);
-                Grid.SetRow(CardPollutants, 3); Grid.SetColumn(CardPollutants, 1);
-            }
-            else
-            {
-                MetricsCol2.Width = new GridLength(1, GridUnitType.Star);
-                MetricsCol3.Width = new GridLength(1, GridUnitType.Star);
-                // 4 Cột x 2 Hàng
-                Grid.SetRow(CardUv, 0); Grid.SetColumn(CardUv, 0);
-                Grid.SetRow(CardAqi, 0); Grid.SetColumn(CardAqi, 1);
-                Grid.SetRow(CardWind, 0); Grid.SetColumn(CardWind, 2);
-                Grid.SetRow(CardHumidity, 0); Grid.SetColumn(CardHumidity, 3);
-                Grid.SetRow(CardRain, 1); Grid.SetColumn(CardRain, 0);
-                Grid.SetRow(CardPressure, 1); Grid.SetColumn(CardPressure, 1);
-                Grid.SetRow(CardSunMoon, 1); Grid.SetColumn(CardSunMoon, 2);
-                Grid.SetRow(CardPollutants, 1); Grid.SetColumn(CardPollutants, 3);
+                if (isMetricsNarrow)
+                {
+                    MetricsCol2.Width = new GridLength(0);
+                    MetricsCol3.Width = new GridLength(0);
+                    // 2 Cột x 4 Hàng
+                    Grid.SetRow(CardUv, 0); Grid.SetColumn(CardUv, 0);
+                    Grid.SetRow(CardAqi, 0); Grid.SetColumn(CardAqi, 1);
+                    Grid.SetRow(CardWind, 1); Grid.SetColumn(CardWind, 0);
+                    Grid.SetRow(CardHumidity, 1); Grid.SetColumn(CardHumidity, 1);
+                    Grid.SetRow(CardRain, 2); Grid.SetColumn(CardRain, 0);
+                    Grid.SetRow(CardPressure, 2); Grid.SetColumn(CardPressure, 1);
+                    Grid.SetRow(CardSunMoon, 3); Grid.SetColumn(CardSunMoon, 0);
+                    Grid.SetRow(CardPollutants, 3); Grid.SetColumn(CardPollutants, 1);
+                }
+                else
+                {
+                    MetricsCol2.Width = new GridLength(1, GridUnitType.Star);
+                    MetricsCol3.Width = new GridLength(1, GridUnitType.Star);
+                    // 4 Cột x 2 Hàng
+                    Grid.SetRow(CardUv, 0); Grid.SetColumn(CardUv, 0);
+                    Grid.SetRow(CardAqi, 0); Grid.SetColumn(CardAqi, 1);
+                    Grid.SetRow(CardWind, 0); Grid.SetColumn(CardWind, 2);
+                    Grid.SetRow(CardHumidity, 0); Grid.SetColumn(CardHumidity, 3);
+                    Grid.SetRow(CardRain, 1); Grid.SetColumn(CardRain, 0);
+                    Grid.SetRow(CardPressure, 1); Grid.SetColumn(CardPressure, 1);
+                    Grid.SetRow(CardSunMoon, 1); Grid.SetColumn(CardSunMoon, 2);
+                    Grid.SetRow(CardPollutants, 1); Grid.SetColumn(CardPollutants, 3);
+                }
             }
         }
     }
 
     public void RenderVisualGauges()
     {
+        if (_isRenderingVisualGauges) return;
         var cw = ViewModel?.CurrentWeather;
         if (cw == null) return;
 
-        // 1. La bàn gió xoay theo độ hướng gió thực tế (Shortest angular arc animation)
-        AnimateWindNeedle(cw.WindDirectionDegrees);
-
-        // 2. Con trỏ thanh quang phổ UV mượt mà
-        if (UvGaugeCanvas != null)
+        try
         {
-            double width = UvGaugeCanvas.ActualWidth;
-            if (width > 20)
+            _isRenderingVisualGauges = true;
+
+            // 1. La bàn gió xoay theo độ hướng gió thực tế (Shortest angular arc animation)
+            AnimateWindNeedle(cw.WindDirectionDegrees);
+
+            // 2. Con trỏ thanh quang phổ UV mượt mà
+            if (UvGaugeCanvas != null)
             {
-                if (_uvDot == null || !UvGaugeCanvas.Children.Contains(_uvDot))
+                double width = UvGaugeCanvas.ActualWidth;
+                if (width > 20)
                 {
-                    UvGaugeCanvas.Children.Clear();
-                    _uvDotTransform = new TranslateTransform();
-                    _uvDot = new Microsoft.UI.Xaml.Shapes.Ellipse
+                    if (_uvDot == null || !UvGaugeCanvas.Children.Contains(_uvDot))
                     {
-                        Width = 8,
-                        Height = 8,
-                        Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
-                        Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 15, 23, 42)),
-                        StrokeThickness = 1.5,
-                        RenderTransform = _uvDotTransform
-                    };
-                    Canvas.SetLeft(_uvDot, 0);
-                    Canvas.SetTop(_uvDot, 0);
-                    UvGaugeCanvas.Children.Add(_uvDot);
-                }
+                        UvGaugeCanvas.Children.Clear();
+                        _uvDotTransform = new TranslateTransform();
+                        _uvDot = new Microsoft.UI.Xaml.Shapes.Ellipse
+                        {
+                            Width = 8,
+                            Height = 8,
+                            Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                            Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 15, 23, 42)),
+                            StrokeThickness = 1.5,
+                            RenderTransform = _uvDotTransform
+                        };
+                        Canvas.SetLeft(_uvDot, 0);
+                        Canvas.SetTop(_uvDot, 0);
+                        UvGaugeCanvas.Children.Add(_uvDot);
+                    }
 
-                double progress = Math.Clamp(cw.UvIndexValue / 11.0, 0.05, 0.95);
-                double targetX = (progress * width) - 4;
+                    double progress = Math.Clamp(cw.UvIndexValue / 11.0, 0.05, 0.95);
+                    double targetX = (progress * width) - 4;
 
-                bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
-                    !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true);
+                    bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
+                        !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true);
 
-                if (!shouldAnimate || _currentUvX < -500)
-                {
-                    _uvDotStoryboard?.Stop();
-                    _uvDotStoryboard = null;
-                    _currentUvX = targetX;
-                    if (_uvDotTransform != null) _uvDotTransform.X = targetX;
-                }
-                else if (Math.Abs(_currentUvX - targetX) > 0.5)
-                {
-                    _uvDotStoryboard?.Stop();
-                    var anim = new DoubleAnimation
+                    if (!shouldAnimate || _currentUvX < -500)
                     {
-                        From = _currentUvX,
-                        To = targetX,
-                        Duration = new Duration(TimeSpan.FromMilliseconds(550)),
-                        EasingFunction = new BackEase { Amplitude = 0.25, EasingMode = EasingMode.EaseOut }
-                    };
-                    Storyboard.SetTarget(anim, _uvDotTransform);
-                    Storyboard.SetTargetProperty(anim, "X");
+                        _uvDotStoryboard?.Stop();
+                        _uvDotStoryboard = null;
+                        _currentUvX = targetX;
+                        if (_uvDotTransform != null) _uvDotTransform.X = targetX;
+                    }
+                    else if (Math.Abs(_currentUvX - targetX) > 0.5)
+                    {
+                        _uvDotStoryboard?.Stop();
+                        var anim = new DoubleAnimation
+                        {
+                            From = _currentUvX,
+                            To = targetX,
+                            Duration = new Duration(TimeSpan.FromMilliseconds(550)),
+                            EasingFunction = new BackEase { Amplitude = 0.25, EasingMode = EasingMode.EaseOut }
+                        };
+                        Storyboard.SetTarget(anim, _uvDotTransform);
+                        Storyboard.SetTargetProperty(anim, "X");
 
-                    _uvDotStoryboard = new Storyboard();
-                    _uvDotStoryboard.Children.Add(anim);
-                    _uvDotStoryboard.Begin();
-                    _currentUvX = targetX;
+                        _uvDotStoryboard = new Storyboard();
+                        _uvDotStoryboard.Children.Add(anim);
+                        _uvDotStoryboard.Begin();
+                        _currentUvX = targetX;
+                    }
                 }
             }
-        }
 
-        // 3. Con trỏ thanh quang phổ AQI mượt mà
-        if (AqiGaugeCanvas != null)
-        {
-            double width = AqiGaugeCanvas.ActualWidth;
-            if (width > 20)
+            // 3. Con trỏ thanh quang phổ AQI mượt mà
+            if (AqiGaugeCanvas != null)
             {
-                if (_aqiDot == null || !AqiGaugeCanvas.Children.Contains(_aqiDot))
+                double width = AqiGaugeCanvas.ActualWidth;
+                if (width > 20)
                 {
-                    AqiGaugeCanvas.Children.Clear();
-                    _aqiDotTransform = new TranslateTransform();
-                    _aqiDot = new Microsoft.UI.Xaml.Shapes.Ellipse
+                    if (_aqiDot == null || !AqiGaugeCanvas.Children.Contains(_aqiDot))
                     {
-                        Width = 8,
-                        Height = 8,
-                        Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
-                        Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 15, 23, 42)),
-                        StrokeThickness = 1.5,
-                        RenderTransform = _aqiDotTransform
-                    };
-                    Canvas.SetLeft(_aqiDot, 0);
-                    Canvas.SetTop(_aqiDot, 0);
-                    AqiGaugeCanvas.Children.Add(_aqiDot);
-                }
+                        AqiGaugeCanvas.Children.Clear();
+                        _aqiDotTransform = new TranslateTransform();
+                        _aqiDot = new Microsoft.UI.Xaml.Shapes.Ellipse
+                        {
+                            Width = 8,
+                            Height = 8,
+                            Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                            Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(220, 15, 23, 42)),
+                            StrokeThickness = 1.5,
+                            RenderTransform = _aqiDotTransform
+                        };
+                        Canvas.SetLeft(_aqiDot, 0);
+                        Canvas.SetTop(_aqiDot, 0);
+                        AqiGaugeCanvas.Children.Add(_aqiDot);
+                    }
 
-                double progress = Math.Clamp((double)cw.AqiValue / 300.0, 0.05, 0.95);
-                double targetX = (progress * width) - 4;
+                    double progress = Math.Clamp((double)cw.AqiValue / 300.0, 0.05, 0.95);
+                    double targetX = (progress * width) - 4;
 
-                bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
-                    !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true);
+                    bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
+                        !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true);
 
-                if (!shouldAnimate || _currentAqiX < -500)
-                {
-                    _aqiDotStoryboard?.Stop();
-                    _aqiDotStoryboard = null;
-                    _currentAqiX = targetX;
-                    if (_aqiDotTransform != null) _aqiDotTransform.X = targetX;
-                }
-                else if (Math.Abs(_currentAqiX - targetX) > 0.5)
-                {
-                    _aqiDotStoryboard?.Stop();
-                    var anim = new DoubleAnimation
+                    if (!shouldAnimate || _currentAqiX < -500)
                     {
-                        From = _currentAqiX,
-                        To = targetX,
-                        Duration = new Duration(TimeSpan.FromMilliseconds(550)),
-                        EasingFunction = new BackEase { Amplitude = 0.25, EasingMode = EasingMode.EaseOut }
-                    };
-                    Storyboard.SetTarget(anim, _aqiDotTransform);
-                    Storyboard.SetTargetProperty(anim, "X");
+                        _aqiDotStoryboard?.Stop();
+                        _aqiDotStoryboard = null;
+                        _currentAqiX = targetX;
+                        if (_aqiDotTransform != null) _aqiDotTransform.X = targetX;
+                    }
+                    else if (Math.Abs(_currentAqiX - targetX) > 0.5)
+                    {
+                        _aqiDotStoryboard?.Stop();
+                        var anim = new DoubleAnimation
+                        {
+                            From = _currentAqiX,
+                            To = targetX,
+                            Duration = new Duration(TimeSpan.FromMilliseconds(550)),
+                            EasingFunction = new BackEase { Amplitude = 0.25, EasingMode = EasingMode.EaseOut }
+                        };
+                        Storyboard.SetTarget(anim, _aqiDotTransform);
+                        Storyboard.SetTargetProperty(anim, "X");
 
-                    _aqiDotStoryboard = new Storyboard();
-                    _aqiDotStoryboard.Children.Add(anim);
-                    _aqiDotStoryboard.Begin();
-                    _currentAqiX = targetX;
+                        _aqiDotStoryboard = new Storyboard();
+                        _aqiDotStoryboard.Children.Add(anim);
+                        _aqiDotStoryboard.Begin();
+                        _currentAqiX = targetX;
+                    }
                 }
             }
-        }
 
-        // 4. Biểu đồ Sparkline áp suất vi mô 6 giờ (v3.1.0)
-        RenderPressureSparkline();
+            // 4. Biểu đồ Sparkline áp suất vi mô 6 giờ (v3.1.0)
+            RenderPressureSparkline();
+        }
+        catch { }
+        finally
+        {
+            _isRenderingVisualGauges = false;
+        }
     }
 
     private void AnimateWindNeedle(double targetAngle)

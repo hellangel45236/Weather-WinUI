@@ -12,7 +12,9 @@
     SizeChanged="Page_SizeChanged"
     mc:Ignorable="d">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="24,12,24,24">
+    <Grid>
+        <!-- NỘI DUNG CHÍNH CỦA ỨNG DỤNG -->
+        <Grid x:Name="MainContentGrid" RowDefinitions="Auto,Auto,Auto,*" Margin="24,12,24,24">
 
         <!-- ==================== HÀNG 0: THANH ĐIỀU KHIỂN & ĐỊA ĐIỂM DẠNG FLOATING ISLAND (VERSION 3.1.0) ==================== -->
         <Border Grid.Row="0"
@@ -2139,16 +2141,18 @@
                 </Grid>
             </Grid>
         </ContentDialog>
+        </Grid>
 
         <!-- =================================================================================== -->
         <!-- CHẾ ĐỘ THƯ GIÃN TOÀN CẢNH: ZEN IMMERSIVE VIEW (VERSION 3.1.0)                         -->
         <!-- =================================================================================== -->
         <Grid x:Name="ZenImmersiveOverlay"
-              Grid.Row="0" Grid.RowSpan="4"
               Visibility="{x:Bind ViewModel.IsZenModeOpen, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
               Canvas.ZIndex="9999"
               Background="#F2090D16"
-              Margin="-24,-12,-24,-24">
+              Margin="0"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch">
 
             <Border x:Name="ZenCityBackgroundBorder" Opacity="0.30">
                 <Border.Background>

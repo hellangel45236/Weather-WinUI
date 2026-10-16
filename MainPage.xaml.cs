@@ -130,10 +130,14 @@ public sealed partial class MainPage : Page
             LocationSearchBox.MaxWidth = width < 950 ? 280 : (width < 1140 ? 380 : 520);
         }
 
-        // 2. Tinh chỉnh lề ngoài (Root Margin) gọn gàng trên màn hình nhỏ
-        if (Content is Grid rootGrid)
+        // 2. Tinh chỉnh lề ngoài gọn gàng trên màn hình nhỏ (MainContentGrid)
+        if (MainContentGrid != null)
         {
-            rootGrid.Margin = width < 1250 ? new Thickness(14, 10, 14, 14) : new Thickness(24, 12, 24, 24);
+            var targetMargin = width < 1250 ? new Thickness(14, 10, 14, 14) : new Thickness(24, 12, 24, 24);
+            if (MainContentGrid.Margin != targetMargin)
+            {
+                MainContentGrid.Margin = targetMargin;
+            }
         }
     }
 

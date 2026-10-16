@@ -158,6 +158,13 @@ public partial class App : Application
 
         try
         {
+            DebugSettings.LayoutCycleTracingLevel = Microsoft.UI.Xaml.LayoutCycleTracingLevel.High;
+            DebugSettings.LayoutCycleDebugBreakLevel = Microsoft.UI.Xaml.LayoutCycleDebugBreakLevel.None;
+        }
+        catch { }
+
+        try
+        {
             const string fontDefinition = "Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, Font Awesome 6 Free Solid, ms-appx:///Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, Font Awesome 6 Free";
             Resources["FontAwesomeSolid"] = new Microsoft.UI.Xaml.Media.FontFamily(fontDefinition);
         }

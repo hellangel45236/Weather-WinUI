@@ -19,10 +19,14 @@
             <Grid Margin="0,0,0,16">
                 <!-- LỚP HÀO QUANG ÁNH SÁNG MÔI TRƯỜNG THÍCH ỨNG (ADAPTIVE AMBIENT BACKLIGHT GLOW v3.1.0) -->
                 <Border x:Name="HeroAmbientGlow"
-                        CornerRadius="24"
-                        Margin="-8,-6,-8,-6"
+                        CornerRadius="20"
+                        Margin="0"
                         Opacity="0.45"
-                        IsHitTestVisible="False">
+                        IsHitTestVisible="False"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform>
+                        <ScaleTransform ScaleX="1.018" ScaleY="1.035"/>
+                    </Border.RenderTransform>
                     <Border.Background>
                         <LinearGradientBrush x:Name="HeroAmbientBrush" StartPoint="0,0" EndPoint="1,1">
                             <GradientStop x:Name="HeroAmbientStop0" Color="#1E3A8A" Offset="0"/>
