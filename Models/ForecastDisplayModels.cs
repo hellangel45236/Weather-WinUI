@@ -117,6 +117,7 @@ public class HourlyForecastItem : CommunityToolkit.Mvvm.ComponentModel.Observabl
     public string PrecipitationText { get; set; } = "0.0 mm";
     public string WindDirectionText { get; set; } = string.Empty;
     public double WindDirectionDegrees { get; set; } = 0;
+    public double SurfacePressure { get; set; } = 1013.25;
     public bool IsNow { get; set; } = false;
 
     private bool _isSelected = false;

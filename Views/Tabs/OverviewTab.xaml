@@ -14,10 +14,25 @@
             <StackPanel Spacing="16" Padding="0,0,16,24">
 
             <!-- =================================================================================== -->
-            <!-- 1. THẺ HERO BENTO: 2 CỘT BẤT ĐỐI XỨNG HIỆN ĐẠI (ASUMMETRIC BENTO HERO)               -->
+            <!-- 1. THẺ HERO BENTO: 2 CỘT BẤT ĐỐI XỨNG HIỆN ĐẠI (ASYMMETRIC BENTO HERO)               -->
             <!-- =================================================================================== -->
-            <Border x:Name="HeroCardBorder" CornerRadius="16" Padding="0" BorderThickness="0" Background="#1E293B">
-                <Grid CornerRadius="16">
+            <Grid Margin="0,0,0,16">
+                <!-- LỚP HÀO QUANG ÁNH SÁNG MÔI TRƯỜNG THÍCH ỨNG (ADAPTIVE AMBIENT BACKLIGHT GLOW v3.1.0) -->
+                <Border x:Name="HeroAmbientGlow"
+                        CornerRadius="24"
+                        Margin="-8,-6,-8,-6"
+                        Opacity="0.45"
+                        IsHitTestVisible="False">
+                    <Border.Background>
+                        <LinearGradientBrush x:Name="HeroAmbientBrush" StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop x:Name="HeroAmbientStop0" Color="#1E3A8A" Offset="0"/>
+                            <GradientStop x:Name="HeroAmbientStop1" Color="#0EA5E9" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+
+                <Border x:Name="HeroCardBorder" CornerRadius="16" Padding="0" BorderThickness="1" BorderBrush="#33FFFFFF" Background="#1E293B">
+                    <Grid CornerRadius="16">
                     <!-- Ảnh nền thành phố theo thời gian thực -->
                     <Border x:Name="CityHeroBackgroundBorder" CornerRadius="16">
                         <Border.Background>
@@ -612,6 +627,7 @@
                     </StackPanel>
                 </Grid>
             </Border>
+            </Grid>
 
             <!-- =================================================================================== -->
             <!-- 2. LƯỚI 8 CHỈ SỐ KHÍ TƯỢNG TRỰC QUAN HOÁ (VISUAL GAUGES METRICS GRID)                 -->
@@ -847,6 +863,9 @@
                                     <TextBlock Text="{x:Bind ViewModel.CurrentWeather.PressureTrendText, Mode=OneWay}" FontSize="10" FontWeight="SemiBold" Foreground="#A78BFA"/>
                                 </Border>
 
+                                <!-- Sparkline xu hướng áp suất 6 giờ -->
+                                <Canvas x:Name="PressureSparklineCanvas" Height="20" HorizontalAlignment="Stretch" Margin="0,3,0,0" IsHitTestVisible="False"/>
+
                                 <TextBlock Text="{x:Bind ViewModel.Loc.SeaPressureDesc, Mode=OneWay}" FontSize="10" Opacity="0.6" Margin="0,2,0,0"/>
                             </StackPanel>
                         </Border>
@@ -1030,8 +1049,12 @@
                                   HorizontalScrollMode="Enabled"
                                   PointerWheelChanged="HourlyScrollViewer_PointerWheelChanged">
                         <StackPanel Orientation="Vertical" Spacing="4">
-                            <!-- Đường cong Spline 24h -->
-                            <Canvas x:Name="HourlyTrendlineCanvas" Height="80" HorizontalAlignment="Left"/>
+                            <!-- Đường cong Spline 24h kèm con trỏ từ tính Magnetic Hover Scrubber (v3.1.0) -->
+                            <Canvas x:Name="HourlyTrendlineCanvas" Height="80" HorizontalAlignment="Left"
+                                    Background="Transparent"
+                                    PointerMoved="HourlyTrendlineCanvas_PointerMoved"
+                                    PointerExited="HourlyTrendlineCanvas_PointerExited"
+                                    PointerPressed="HourlyTrendlineCanvas_PointerPressed"/>
 
                             <!-- Các thẻ giờ dự báo -->
                             <ItemsControl x:Name="HourlyItemsControl" ItemsSource="{x:Bind ViewModel.HourlyForecast, Mode=OneWay}">
@@ -1139,22 +1162,25 @@
                                         <!-- Nhiệt độ Thấp nhất -->
                                         <TextBlock Grid.Column="3" Text="{x:Bind TempMinDisplay}" FontSize="12.5" Opacity="0.7" FontWeight="Normal" VerticalAlignment="Center" HorizontalAlignment="Right"/>
 
-                                        <!-- Thanh Đo Nhiệt Độ Tuần (Weekly Range Bar) -->
-                                        <Grid Grid.Column="4" Width="96" Height="14" VerticalAlignment="Center" Margin="8,0">
-                                            <Border Height="5" CornerRadius="2.5" Background="#26888888" VerticalAlignment="Center"/>
-                                            <Border Height="5" CornerRadius="2.5" Width="{x:Bind BarWidth}" Margin="{x:Bind BarMarginThickness}" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <!-- Thanh Đo Nhiệt Độ Tuần (Apple Weather-Style Weekly Range Bar v3.1.0) -->
+                                        <Grid Grid.Column="4" Width="100" Height="16" VerticalAlignment="Center" Margin="8,0">
+                                            <Border Height="6" CornerRadius="3" Background="#22FFFFFF" VerticalAlignment="Center"/>
+                                            <Border Height="6" CornerRadius="3" Width="{x:Bind BarWidth}" Margin="{x:Bind BarMarginThickness}" HorizontalAlignment="Left" VerticalAlignment="Center">
                                                 <Border.Background>
                                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                                        <GradientStop Color="#38BDF8" Offset="0"/>
-                                                        <GradientStop Color="#F59E0B" Offset="0.6"/>
-                                                        <GradientStop Color="#EF4444" Offset="1"/>
+                                                        <GradientStop Color="#38BDF8" Offset="0.0"/>
+                                                        <GradientStop Color="#34D399" Offset="0.35"/>
+                                                        <GradientStop Color="#FBBF24" Offset="0.7"/>
+                                                        <GradientStop Color="#F87171" Offset="1.0"/>
                                                     </LinearGradientBrush>
                                                 </Border.Background>
                                             </Border>
-                                            <Ellipse Width="8" Height="8" Fill="White" Stroke="#1E293B" StrokeThickness="1.5"
-                                                     HorizontalAlignment="Left" VerticalAlignment="Center"
-                                                     Margin="{x:Bind CurrentTempDotMargin}"
-                                                     Visibility="{x:Bind ShowCurrentIndicator, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                            <!-- Chấm chỉ báo nhiệt độ hiện tại kèm quầng sáng Halo cho ngày hôm nay -->
+                                            <Grid HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{x:Bind CurrentTempDotMargin}"
+                                                  Visibility="{x:Bind ShowCurrentIndicator, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <Ellipse Width="12" Height="12" Fill="#45FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <Ellipse Width="7" Height="7" Fill="White" Stroke="#0F172A" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Grid>
                                         </Grid>
 
                                         <!-- Nhiệt độ Cao nhất -->

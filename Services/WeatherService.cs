@@ -362,6 +362,7 @@ public class WeatherService : IWeatherService
         var winds = data.Hourly.WindSpeed;
         var windDirections = data.Hourly.WindDirection;
         var uvs = data.Hourly.UvIndex;
+        var pressures = data.Hourly.SurfacePressure;
 
         DateTime now = DateTime.Now;
         int startIndex = 0;
@@ -455,6 +456,7 @@ public class WeatherService : IWeatherService
                 UvValue = Math.Round(rawUv, 1),
                 UvDisplay = uvDisplay,
                 UvLevelText = uvLevel,
+                SurfacePressure = (pressures != null && idx < pressures.Count) ? pressures[idx] : 1013.25,
                 IsNow = i == 0,
                 PrimaryMetricText = tempDisplay,
                 SecondaryMetricText = rainProb > 0 ? $"{rainProb}%" : (isVi ? "Tạnh ráo" : "Dry"),

@@ -42,6 +42,21 @@ public sealed partial class OverviewTab : UserControl
 
     private bool _hoverPhysicsInitialized = false;
 
+    // Hiệu ứng thở hào quang Ambient Backlight Glow (v3.1.0)
+    private Storyboard? _heroAmbientGlowStoryboard;
+
+    // Con trỏ từ tính Magnetic Hover Scrubber (v3.1.0)
+    private readonly List<Windows.Foundation.Point> _cachedHourlyPoints = new();
+    private readonly List<HourlyForecastItem> _cachedHourlyItems = new();
+    private Windows.UI.Color _cachedHourlyStrokeColor = Windows.UI.Color.FromArgb(230, 56, 189, 248);
+    private int _hoveredHourlyIndex = -1;
+    private Microsoft.UI.Xaml.Shapes.Line? _magneticGuideline;
+    private Microsoft.UI.Xaml.Shapes.Ellipse? _magneticHalo;
+    private Microsoft.UI.Xaml.Shapes.Ellipse? _magneticDot;
+    private Border? _magneticTooltip;
+    private TextBlock? _magneticTimeText;
+    private TextBlock? _magneticValText;
+
     private static void OnViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is OverviewTab tab)
@@ -164,6 +179,7 @@ public sealed partial class OverviewTab : UserControl
             UpdateWeatherVisuals();
             RedrawCanvases();
             StartHeroIconAnimation();
+            StartAmbientGlowAnimation();
         };
 
         this.Unloaded += (s, e) =>
@@ -173,6 +189,7 @@ public sealed partial class OverviewTab : UserControl
                 ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
             }
             StopHeroIconAnimation();
+            StopAmbientGlowAnimation();
             _windNeedleStoryboard?.Stop();
             _uvDotStoryboard?.Stop();
             _aqiDotStoryboard?.Stop();
@@ -199,6 +216,11 @@ public sealed partial class OverviewTab : UserControl
         {
             AqiGaugeCanvas.SizeChanged += (s, e) => RenderVisualGauges();
         }
+
+        if (PressureSparklineCanvas != null)
+        {
+            PressureSparklineCanvas.SizeChanged += (s, e) => RenderPressureSparkline();
+        }
     }
 
     public void RedrawCanvases()
@@ -219,6 +241,7 @@ public sealed partial class OverviewTab : UserControl
         {
             _weatherEffectRenderer?.Resume();
             StartHeroIconAnimation();
+            StartAmbientGlowAnimation();
         }
     }
 
@@ -226,11 +249,14 @@ public sealed partial class OverviewTab : UserControl
     {
         _weatherEffectRenderer?.Pause();
         StopHeroIconAnimation();
+        StopAmbientGlowAnimation();
     }
 
     public void UpdateWeatherVisuals()
     {
         if (ViewModel?.CurrentWeather == null) return;
+
+        UpdateAmbientGlowColor();
 
         // Cập nhật hiệu ứng thời tiết nền nếu người dùng bật và không bị tiết kiệm pin
         bool shouldRunEffects = ViewModel.Settings.EnableWeatherEffects &&
@@ -242,12 +268,14 @@ public sealed partial class OverviewTab : UserControl
             _weatherEffectRenderer?.SetWeatherEffect(ViewModel.CurrentWeather.WeatherEffect);
             _weatherEffectRenderer?.Resume();
             StartHeroIconAnimation();
+            StartAmbientGlowAnimation();
         }
         else
         {
             _weatherEffectRenderer?.Pause();
             WeatherEffectsCanvas.Children.Clear();
             StopHeroIconAnimation();
+            StopAmbientGlowAnimation();
         }
 
         // Cập nhật hình nền thành phố nếu được bật
@@ -539,6 +567,24 @@ public sealed partial class OverviewTab : UserControl
 
     public void RenderHourlyTemperatureTrendline() => RenderHourlyTrendline();
 
+    private double GetItemValue(HourlyForecastItem it) => _currentHourlyMetric switch
+    {
+        HourlyChartMetricMode.Temperature => it.TempValue,
+        HourlyChartMetricMode.RainProbability => (double)it.RainProbabilityValue,
+        HourlyChartMetricMode.WindSpeed => it.WindSpeedValue,
+        HourlyChartMetricMode.UvIndex => it.UvValue,
+        _ => it.TempValue
+    };
+
+    private string GetItemDisplay(HourlyForecastItem it) => _currentHourlyMetric switch
+    {
+        HourlyChartMetricMode.Temperature => it.TempDisplay,
+        HourlyChartMetricMode.RainProbability => it.RainProbabilityText,
+        HourlyChartMetricMode.WindSpeed => it.WindSpeedDisplay,
+        HourlyChartMetricMode.UvIndex => it.UvDisplay,
+        _ => it.TempDisplay
+    };
+
     public void RenderHourlyTrendline()
     {
         try
@@ -559,25 +605,6 @@ public sealed partial class OverviewTab : UserControl
 
             double canvasHeight = 80.0;
             HourlyTrendlineCanvas.Height = canvasHeight;
-
-            // 1. Trích xuất giá trị và nhãn tương ứng theo metric được chọn
-            double GetItemValue(HourlyForecastItem it) => _currentHourlyMetric switch
-            {
-                HourlyChartMetricMode.Temperature => it.TempValue,
-                HourlyChartMetricMode.RainProbability => (double)it.RainProbabilityValue,
-                HourlyChartMetricMode.WindSpeed => it.WindSpeedValue,
-                HourlyChartMetricMode.UvIndex => it.UvValue,
-                _ => it.TempValue
-            };
-
-            string GetItemDisplay(HourlyForecastItem it) => _currentHourlyMetric switch
-            {
-                HourlyChartMetricMode.Temperature => it.TempDisplay,
-                HourlyChartMetricMode.RainProbability => it.RainProbabilityText,
-                HourlyChartMetricMode.WindSpeed => it.WindSpeedDisplay,
-                HourlyChartMetricMode.UvIndex => it.UvDisplay,
-                _ => it.TempDisplay
-            };
 
             // Bảng màu stroke & fill tương ứng
             var (strokeColor, fillStartColor, fillEndColor) = _currentHourlyMetric switch
@@ -800,8 +827,373 @@ public sealed partial class OverviewTab : UserControl
                     HourlyTrendlineCanvas.Children.Add(halo);
                 }
             }
+
+            // Cập nhật bộ đệm cho con trỏ từ tính Magnetic Hover Scrubber (v3.1.0)
+            _cachedHourlyPoints.Clear();
+            _cachedHourlyPoints.AddRange(points);
+            _cachedHourlyItems.Clear();
+            _cachedHourlyItems.AddRange(items);
+            _cachedHourlyStrokeColor = strokeColor;
+
+            EnsureMagneticElementsCreated();
+            UpdateMagneticScrubberOverlay();
         }
         catch { }
+    }
+
+    private void EnsureMagneticElementsCreated()
+    {
+        if (HourlyTrendlineCanvas == null) return;
+
+        if (_magneticGuideline == null)
+        {
+            _magneticGuideline = new Microsoft.UI.Xaml.Shapes.Line
+            {
+                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(200, 56, 189, 248)),
+                StrokeThickness = 1.5,
+                StrokeDashArray = new DoubleCollection { 3, 2 },
+                Visibility = Visibility.Collapsed,
+                IsHitTestVisible = false
+            };
+        }
+
+        if (_magneticHalo == null)
+        {
+            _magneticHalo = new Microsoft.UI.Xaml.Shapes.Ellipse
+            {
+                Width = 22,
+                Height = 22,
+                Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(70, 56, 189, 248)),
+                Visibility = Visibility.Collapsed,
+                IsHitTestVisible = false
+            };
+        }
+
+        if (_magneticDot == null)
+        {
+            _magneticDot = new Microsoft.UI.Xaml.Shapes.Ellipse
+            {
+                Width = 8,
+                Height = 8,
+                Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248)),
+                StrokeThickness = 2,
+                Visibility = Visibility.Collapsed,
+                IsHitTestVisible = false
+            };
+        }
+
+        if (_magneticTooltip == null)
+        {
+            _magneticTimeText = new TextBlock
+            {
+                FontSize = 11,
+                FontWeight = Microsoft.UI.Text.FontWeights.Bold,
+                Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248))
+            };
+
+            var dotText = new TextBlock
+            {
+                Text = "•",
+                FontSize = 11,
+                Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(120, 255, 255, 255)),
+                Margin = new Thickness(4, 0, 4, 0)
+            };
+
+            _magneticValText = new TextBlock
+            {
+                FontSize = 11,
+                FontWeight = Microsoft.UI.Text.FontWeights.Bold,
+                Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255))
+            };
+
+            var panel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            panel.Children.Add(_magneticTimeText);
+            panel.Children.Add(dotText);
+            panel.Children.Add(_magneticValText);
+
+            _magneticTooltip = new Border
+            {
+                CornerRadius = new CornerRadius(7),
+                Background = new SolidColorBrush(Windows.UI.Color.FromArgb(230, 15, 23, 42)),
+                BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(140, 56, 189, 248)),
+                BorderThickness = new Thickness(1),
+                Padding = new Thickness(8, 3, 8, 3),
+                Visibility = Visibility.Collapsed,
+                IsHitTestVisible = false
+            };
+            _magneticTooltip.Child = panel;
+        }
+
+        if (!HourlyTrendlineCanvas.Children.Contains(_magneticGuideline))
+            HourlyTrendlineCanvas.Children.Add(_magneticGuideline);
+        if (!HourlyTrendlineCanvas.Children.Contains(_magneticHalo))
+            HourlyTrendlineCanvas.Children.Add(_magneticHalo);
+        if (!HourlyTrendlineCanvas.Children.Contains(_magneticDot))
+            HourlyTrendlineCanvas.Children.Add(_magneticDot);
+        if (!HourlyTrendlineCanvas.Children.Contains(_magneticTooltip))
+            HourlyTrendlineCanvas.Children.Add(_magneticTooltip);
+    }
+
+    private void UpdateMagneticScrubberOverlay()
+    {
+        if (HourlyTrendlineCanvas == null || _magneticGuideline == null || _magneticHalo == null ||
+            _magneticDot == null || _magneticTooltip == null) return;
+
+        if (_hoveredHourlyIndex >= 0 && _hoveredHourlyIndex < _cachedHourlyPoints.Count &&
+            _hoveredHourlyIndex < _cachedHourlyItems.Count)
+        {
+            var pt = _cachedHourlyPoints[_hoveredHourlyIndex];
+            var item = _cachedHourlyItems[_hoveredHourlyIndex];
+            double canvasH = HourlyTrendlineCanvas.ActualHeight > 0 ? HourlyTrendlineCanvas.ActualHeight : 80;
+
+            _magneticGuideline.X1 = pt.X;
+            _magneticGuideline.Y1 = 4;
+            _magneticGuideline.X2 = pt.X;
+            _magneticGuideline.Y2 = canvasH - 4;
+            _magneticGuideline.Stroke = new SolidColorBrush(_cachedHourlyStrokeColor);
+            _magneticGuideline.Visibility = Visibility.Visible;
+
+            _magneticHalo.Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(80, _cachedHourlyStrokeColor.R, _cachedHourlyStrokeColor.G, _cachedHourlyStrokeColor.B));
+            Canvas.SetLeft(_magneticHalo, pt.X - 11);
+            Canvas.SetTop(_magneticHalo, pt.Y - 11);
+            _magneticHalo.Visibility = Visibility.Visible;
+
+            _magneticDot.Stroke = new SolidColorBrush(_cachedHourlyStrokeColor);
+            Canvas.SetLeft(_magneticDot, pt.X - 4);
+            Canvas.SetTop(_magneticDot, pt.Y - 4);
+            _magneticDot.Visibility = Visibility.Visible;
+
+            if (_magneticTimeText != null) _magneticTimeText.Text = item.TimeDisplay;
+            if (_magneticValText != null) _magneticValText.Text = GetItemDisplay(item);
+
+            double tipTop = (pt.Y > 34) ? (pt.Y - 32) : (pt.Y + 12);
+            double tipLeft = Math.Max(2, pt.X - 35);
+            Canvas.SetLeft(_magneticTooltip, tipLeft);
+            Canvas.SetTop(_magneticTooltip, tipTop);
+            _magneticTooltip.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            _magneticGuideline.Visibility = Visibility.Collapsed;
+            _magneticHalo.Visibility = Visibility.Collapsed;
+            _magneticDot.Visibility = Visibility.Collapsed;
+            _magneticTooltip.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    private void HourlyTrendlineCanvas_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (_cachedHourlyPoints.Count == 0 || HourlyTrendlineCanvas == null) return;
+        var pos = e.GetCurrentPoint(HourlyTrendlineCanvas).Position;
+
+        int closestIdx = -1;
+        double minDistance = double.MaxValue;
+        for (int i = 0; i < _cachedHourlyPoints.Count; i++)
+        {
+            double d = Math.Abs(_cachedHourlyPoints[i].X - pos.X);
+            if (d < minDistance)
+            {
+                minDistance = d;
+                closestIdx = i;
+            }
+        }
+
+        if (closestIdx != _hoveredHourlyIndex)
+        {
+            _hoveredHourlyIndex = closestIdx;
+            UpdateMagneticScrubberOverlay();
+        }
+    }
+
+    private void HourlyTrendlineCanvas_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        _hoveredHourlyIndex = -1;
+        UpdateMagneticScrubberOverlay();
+    }
+
+    private void HourlyTrendlineCanvas_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (_hoveredHourlyIndex >= 0 && _hoveredHourlyIndex < _cachedHourlyItems.Count)
+        {
+            var item = _cachedHourlyItems[_hoveredHourlyIndex];
+            ViewModel?.ScrubToItem(item);
+        }
+    }
+
+    private void RenderPressureSparkline()
+    {
+        if (PressureSparklineCanvas == null || ViewModel?.HourlyForecast == null) return;
+        PressureSparklineCanvas.Children.Clear();
+
+        double width = PressureSparklineCanvas.ActualWidth;
+        double height = PressureSparklineCanvas.ActualHeight;
+        if (width <= 20 || height <= 6) return;
+
+        var items = ViewModel.HourlyForecast.Take(6).ToList();
+        if (items.Count < 2) return;
+
+        var vals = items.Select(x => x.SurfacePressure > 0 ? x.SurfacePressure : 1013.25).ToList();
+        double min = vals.Min();
+        double max = vals.Max();
+        double range = Math.Max(2.0, max - min);
+
+        double padTop = 3.0;
+        double padBottom = 3.0;
+        double usableH = height - padTop - padBottom;
+
+        var pts = new List<Windows.Foundation.Point>();
+        for (int i = 0; i < vals.Count; i++)
+        {
+            double x = i * (width - 12) / (vals.Count - 1) + 6;
+            double norm = (vals[i] - min) / range;
+            double y = padTop + (1.0 - norm) * usableH;
+            pts.Add(new Windows.Foundation.Point(x, y));
+        }
+
+        // Path diện tích gradient mờ dưới biểu đồ
+        var fillGeo = new PathGeometry();
+        var fillFig = new PathFigure { StartPoint = new Windows.Foundation.Point(pts[0].X, height), IsClosed = true };
+        fillFig.Segments.Add(new LineSegment { Point = pts[0] });
+        for (int i = 0; i < pts.Count - 1; i++)
+        {
+            var midX = (pts[i].X + pts[i + 1].X) / 2.0;
+            fillFig.Segments.Add(new BezierSegment
+            {
+                Point1 = new Windows.Foundation.Point(midX, pts[i].Y),
+                Point2 = new Windows.Foundation.Point(midX, pts[i + 1].Y),
+                Point3 = pts[i + 1]
+            });
+        }
+        fillFig.Segments.Add(new LineSegment { Point = new Windows.Foundation.Point(pts[^1].X, height) });
+        fillGeo.Figures.Add(fillFig);
+
+        var fillBrush = new LinearGradientBrush
+        {
+            StartPoint = new Windows.Foundation.Point(0, 0),
+            EndPoint = new Windows.Foundation.Point(0, 1)
+        };
+        fillBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(90, 167, 139, 250), Offset = 0 });
+        fillBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(5, 167, 139, 250), Offset = 1 });
+
+        var fillPath = new Microsoft.UI.Xaml.Shapes.Path { Data = fillGeo, Fill = fillBrush };
+        PressureSparklineCanvas.Children.Add(fillPath);
+
+        // Đường stroke vi mô mượt mà
+        var strokeGeo = new PathGeometry();
+        var strokeFig = new PathFigure { StartPoint = pts[0], IsClosed = false };
+        for (int i = 0; i < pts.Count - 1; i++)
+        {
+            var midX = (pts[i].X + pts[i + 1].X) / 2.0;
+            strokeFig.Segments.Add(new BezierSegment
+            {
+                Point1 = new Windows.Foundation.Point(midX, pts[i].Y),
+                Point2 = new Windows.Foundation.Point(midX, pts[i + 1].Y),
+                Point3 = pts[i + 1]
+            });
+        }
+        strokeGeo.Figures.Add(strokeFig);
+
+        var strokePath = new Microsoft.UI.Xaml.Shapes.Path
+        {
+            Data = strokeGeo,
+            Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(230, 192, 132, 252)),
+            StrokeThickness = 1.8
+        };
+        PressureSparklineCanvas.Children.Add(strokePath);
+
+        // Chấm tròn hiện tại (điểm đầu tiên)
+        var curDot = new Microsoft.UI.Xaml.Shapes.Ellipse
+        {
+            Width = 5,
+            Height = 5,
+            Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+            Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 167, 139, 250)),
+            StrokeThickness = 1.2
+        };
+        Canvas.SetLeft(curDot, pts[0].X - 2.5);
+        Canvas.SetTop(curDot, pts[0].Y - 2.5);
+        PressureSparklineCanvas.Children.Add(curDot);
+    }
+
+    private void UpdateAmbientGlowColor()
+    {
+        if (ViewModel?.CurrentWeather == null || HeroAmbientStop0 == null || HeroAmbientStop1 == null) return;
+        try
+        {
+            if (!string.IsNullOrEmpty(ViewModel.CurrentWeather.HeroGradientStart))
+            {
+                var hex = ViewModel.CurrentWeather.HeroGradientStart.TrimStart('#');
+                if (hex.Length == 6)
+                {
+                    HeroAmbientStop0.Color = Windows.UI.Color.FromArgb(255,
+                        Convert.ToByte(hex[..2], 16),
+                        Convert.ToByte(hex[2..4], 16),
+                        Convert.ToByte(hex[4..6], 16));
+                }
+            }
+            if (!string.IsNullOrEmpty(ViewModel.CurrentWeather.HeroGradientEnd))
+            {
+                var hex = ViewModel.CurrentWeather.HeroGradientEnd.TrimStart('#');
+                if (hex.Length == 6)
+                {
+                    HeroAmbientStop1.Color = Windows.UI.Color.FromArgb(255,
+                        Convert.ToByte(hex[..2], 16),
+                        Convert.ToByte(hex[2..4], 16),
+                        Convert.ToByte(hex[4..6], 16));
+                }
+            }
+        }
+        catch { }
+    }
+
+    private void StartAmbientGlowAnimation()
+    {
+        if (_heroAmbientGlowStoryboard != null || HeroAmbientGlow == null) return;
+
+        bool shouldAnimate = AnimationHelper.AreAnimationsEnabled &&
+            !(ViewModel?.Settings.EnableBatterySaverOptimization == true && ViewModel?.IsBatterySavingActive == true) &&
+            (ViewModel?.Settings.EnableWeatherEffects != false);
+
+        if (!shouldAnimate)
+        {
+            HeroAmbientGlow.Opacity = 0.45;
+            return;
+        }
+
+        var anim = new DoubleAnimation
+        {
+            From = 0.35,
+            To = 0.58,
+            Duration = new Duration(TimeSpan.FromMilliseconds(3500)),
+            AutoReverse = true,
+            RepeatBehavior = RepeatBehavior.Forever,
+            EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut }
+        };
+
+        Storyboard.SetTarget(anim, HeroAmbientGlow);
+        Storyboard.SetTargetProperty(anim, "Opacity");
+
+        _heroAmbientGlowStoryboard = new Storyboard();
+        _heroAmbientGlowStoryboard.Children.Add(anim);
+        _heroAmbientGlowStoryboard.Begin();
+    }
+
+    private void StopAmbientGlowAnimation()
+    {
+        if (_heroAmbientGlowStoryboard != null)
+        {
+            _heroAmbientGlowStoryboard.Stop();
+            _heroAmbientGlowStoryboard = null;
+        }
+        if (HeroAmbientGlow != null)
+        {
+            HeroAmbientGlow.Opacity = 0.45;
+        }
     }
 
     public void RenderSunArc()
@@ -1095,6 +1487,9 @@ public sealed partial class OverviewTab : UserControl
                 }
             }
         }
+
+        // 4. Biểu đồ Sparkline áp suất vi mô 6 giờ (v3.1.0)
+        RenderPressureSparkline();
     }
 
     private void AnimateWindNeedle(double targetAngle)
@@ -1292,6 +1687,32 @@ public sealed partial class OverviewTab : UserControl
                 var glowColor = GetMetricGlowColor(tag);
                 card.BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(190, glowColor.R, glowColor.G, glowColor.B));
                 card.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(20, glowColor.R, glowColor.G, glowColor.B));
+            }
+        };
+
+        // Fluent Reveal Glow: viền phát sáng bám theo vị trí con trỏ chuột (v3.1.0)
+        card.PointerMoved += (s, e) =>
+        {
+            if (isClickableMetric && card.Tag is string tag)
+            {
+                var glowColor = GetMetricGlowColor(tag);
+                var pos = e.GetCurrentPoint(card).Position;
+                double w = Math.Max(10, card.ActualWidth);
+                double h = Math.Max(10, card.ActualHeight);
+                double cx = Math.Clamp(pos.X / w, 0.0, 1.0);
+                double cy = Math.Clamp(pos.Y / h, 0.0, 1.0);
+
+                var revealBrush = new RadialGradientBrush
+                {
+                    Center = new Windows.Foundation.Point(cx, cy),
+                    GradientOrigin = new Windows.Foundation.Point(cx, cy),
+                    RadiusX = 0.85,
+                    RadiusY = 0.85
+                };
+                revealBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(230, glowColor.R, glowColor.G, glowColor.B), Offset = 0.0 });
+                revealBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(100, glowColor.R, glowColor.G, glowColor.B), Offset = 0.5 });
+                revealBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(40, 255, 255, 255), Offset = 1.0 });
+                card.BorderBrush = revealBrush;
             }
         };
 

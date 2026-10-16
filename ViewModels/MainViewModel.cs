@@ -272,6 +272,9 @@ public partial class MainViewModel : ObservableObject
     private bool _isComparisonOpen;
 
     [ObservableProperty]
+    private bool _isZenModeOpen;
+
+    [ObservableProperty]
     private ObservableCollection<QuickCompareCityItem> _presetCompareCities = new();
 
     [ObservableProperty]
@@ -2777,6 +2780,22 @@ public partial class MainViewModel : ObservableObject
         {
             PresetCompareCities.Add(item);
         }
+    }
+
+    #endregion
+
+    #region Zen Immersive View (v3.1.0)
+
+    [RelayCommand]
+    public void ToggleZenMode()
+    {
+        IsZenModeOpen = !IsZenModeOpen;
+    }
+
+    [RelayCommand]
+    public void CloseZenMode()
+    {
+        IsZenModeOpen = false;
     }
 
     #endregion

@@ -12,159 +12,184 @@
     SizeChanged="Page_SizeChanged"
     mc:Ignorable="d">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" Margin="24,12,24,24">
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="24,12,24,24">
 
-        <!-- ==================== HÀNG 0: THANH ĐIỀU KHIỂN TRÊN CÙNG ==================== -->
-        <Grid Grid.Row="0" Margin="0,0,0,16" ColumnDefinitions="Auto,*,Auto">
-            <!-- Logo & Tiêu đề -->
-            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                <Border Width="40" Height="40" CornerRadius="10">
-                    <Image Source="ms-appx:///Assets/Square44x44Logo.scale-200.png" Width="40" Height="40" Stretch="Uniform"/>
-                </Border>
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="{x:Bind ViewModel.WelcomeGreetingText, Mode=OneWay}" FontSize="18" FontWeight="Bold" TextTrimming="CharacterEllipsis" MaxWidth="260"/>
-                    <TextBlock x:Name="AppSubtitleText" Text="{x:Bind ViewModel.Loc.AppSubtitle, Mode=OneWay}" FontSize="12" Opacity="0.65" TextTrimming="CharacterEllipsis" MaxWidth="260"/>
-                </StackPanel>
-            </StackPanel>
-
-            <!-- Tìm kiếm địa điểm -->
-            <Grid Grid.Column="1" MaxWidth="520" Margin="12,0" HorizontalAlignment="Stretch">
-                <AutoSuggestBox x:Name="LocationSearchBox"
-                                PlaceholderText="{x:Bind ViewModel.Loc.SearchPlaceholder, Mode=OneWay}"
-                                QueryIcon="Find"
-                                TextMemberPath="DisplayText"
-                                TextChanged="LocationSearchBox_TextChanged"
-                                QuerySubmitted="LocationSearchBox_QuerySubmitted"
-                                SuggestionChosen="LocationSearchBox_SuggestionChosen"
-                                VerticalAlignment="Center">
-                    <AutoSuggestBox.ItemTemplate>
-                        <DataTemplate x:DataType="models:GeocodingItem">
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" Padding="4,6">
-                                <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="13" Foreground="#38BDF8" VerticalAlignment="Center"/>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="{x:Bind Name}" FontSize="13" FontWeight="SemiBold"/>
-                                    <TextBlock Text="{x:Bind DisplayText}" FontSize="11" Opacity="0.65"/>
-                                </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </AutoSuggestBox.ItemTemplate>
-                </AutoSuggestBox>
-            </Grid>
-
-            <!-- Các nút chức năng & Chế độ giao diện (Dark/Light) -->
-            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                <!-- Nút Làm mới -->
-                <Button Command="{x:Bind ViewModel.RefreshCommand}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.Loc.RefreshTooltip, Mode=OneWay}">
-                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="13"/>
-                </Button>
-
-                <!-- Chuyển đổi đơn vị °C / °F -->
-                <Button Command="{x:Bind ViewModel.ToggleUnitCommand}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.Loc.UnitTooltip, Mode=OneWay}">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2c9;" FontSize="13"/>
-                        <TextBlock Text="{x:Bind ViewModel.UnitButtonText, Mode=OneWay}" FontWeight="SemiBold"/>
-                    </StackPanel>
-                </Button>
-
-                <!-- Bộ chọn giao diện Sáng / Tối / Hệ thống -->
-                <ComboBox x:Name="ThemeComboBox"
-                          SelectedIndex="2"
-                          SelectionChanged="ThemeComboBox_SelectionChanged"
-                          Width="124"
-                          MinWidth="116"
-                          ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ThemeTooltip, Mode=OneWay}">
-                    <ComboBoxItem Content="☀️ Sáng" Tag="light"/>
-                    <ComboBoxItem Content="🌙 Tối" Tag="dark"/>
-                    <ComboBoxItem Content="💻 Hệ thống" Tag="system"/>
-                </ComboBox>
-
-                <!-- Nút Bật & Quản lý Desktop Widget Đa Năng (v2.0) -->
-                <DropDownButton x:Name="DesktopWidgetButton"
-                                Style="{ThemeResource DefaultButtonStyle}"
-                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.WidgetTooltip, Mode=OneWay}">
-                    <DropDownButton.Content>
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" FontSize="13" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                            <TextBlock x:Name="BtnTextWidget" Text="{x:Bind ViewModel.Loc.WidgetBtnText, Mode=OneWay}" FontWeight="SemiBold"/>
+        <!-- ==================== HÀNG 0: THANH ĐIỀU KHIỂN & ĐỊA ĐIỂM DẠNG FLOATING ISLAND (VERSION 3.1.0) ==================== -->
+        <Border Grid.Row="0"
+                x:Name="FloatingIslandHeader"
+                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="16"
+                Padding="14,10"
+                Margin="0,0,0,12">
+            <Grid RowDefinitions="Auto,Auto" RowSpacing="10">
+                <!-- TẦNG 1: Logo, Tiêu đề | Tìm kiếm thông minh | Nút chức năng & Zen Mode -->
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <!-- Logo & Tiêu đề -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <Border Width="38" Height="38" CornerRadius="10">
+                            <Image Source="ms-appx:///Assets/Square44x44Logo.scale-200.png" Width="38" Height="38" Stretch="Uniform"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{x:Bind ViewModel.WelcomeGreetingText, Mode=OneWay}" FontSize="16" FontWeight="Bold" TextTrimming="CharacterEllipsis" MaxWidth="240"/>
+                            <TextBlock x:Name="AppSubtitleText" Text="{x:Bind ViewModel.Loc.AppSubtitle, Mode=OneWay}" FontSize="11.5" Opacity="0.65" TextTrimming="CharacterEllipsis" MaxWidth="240"/>
                         </StackPanel>
-                    </DropDownButton.Content>
-                    <DropDownButton.Flyout>
-                        <MenuFlyout Placement="Bottom">
-                            <MenuFlyoutItem Text="{x:Bind ViewModel.Loc.WidgetOpenCurrent, Mode=OneWay}" Click="OpenCurrentCityWidget_Click">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;"/>
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-                            <MenuFlyoutItem Text="{x:Bind ViewModel.Loc.WidgetOpenCustom, Mode=OneWay}" Click="OpenCustomCityWidget_Click">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf067;"/>
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-                            <MenuFlyoutSeparator/>
-                            <MenuFlyoutItem Text="{x:Bind ViewModel.Loc.WidgetCloseAll, Mode=OneWay}" Click="CloseAllWidgets_Click">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00d;"/>
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-                        </MenuFlyout>
-                    </DropDownButton.Flyout>
-                </DropDownButton>
-
-            </StackPanel>
-        </Grid>
-
-        <!-- ==================== HÀNG 1: THANH ĐỊA ĐIỂM NHANH & YÊU THÍCH (THÔNG MINH, KHÔNG TRÙNG LẶP) ==================== -->
-        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" HorizontalScrollMode="Enabled" Margin="0,0,0,12">
-            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <!-- 1. Nút Vị trí GPS thực tế -->
-                <Button Command="{x:Bind ViewModel.LoadCurrentLocationWeatherCommand}"
-                        Background="{x:Bind ViewModel.GpsButtonBackground, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
-                        BorderBrush="{x:Bind ViewModel.GpsButtonBorderBrush, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
-                        BorderThickness="1"
-                        CornerRadius="14"
-                        Padding="12,5"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.Loc.GpsTooltip, Mode=OneWay}">
-                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="11" Foreground="#38BDF8"/>
-                        <TextBlock Text="{x:Bind ViewModel.Loc.GpsLocation, Mode=OneWay}" FontSize="12" FontWeight="{x:Bind ViewModel.GpsButtonFontWeight, Mode=OneWay}"/>
                     </StackPanel>
-                </Button>
 
-                <!-- Dải phân cách tinh tế -->
-                <Border Width="1" Height="16" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="2,0" Opacity="0.5"/>
+                    <!-- Tìm kiếm địa điểm trung tâm -->
+                    <Grid Grid.Column="1" MaxWidth="520" Margin="8,0" HorizontalAlignment="Stretch">
+                        <AutoSuggestBox x:Name="LocationSearchBox"
+                                        PlaceholderText="{x:Bind ViewModel.Loc.SearchPlaceholder, Mode=OneWay}"
+                                        QueryIcon="Find"
+                                        TextMemberPath="DisplayText"
+                                        TextChanged="LocationSearchBox_TextChanged"
+                                        QuerySubmitted="LocationSearchBox_QuerySubmitted"
+                                        SuggestionChosen="LocationSearchBox_SuggestionChosen"
+                                        VerticalAlignment="Center">
+                            <AutoSuggestBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:GeocodingItem">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" Padding="4,6">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="13" Foreground="#38BDF8" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{x:Bind Name}" FontSize="13" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{x:Bind DisplayText}" FontSize="11" Opacity="0.65"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </AutoSuggestBox.ItemTemplate>
+                        </AutoSuggestBox>
+                    </Grid>
 
-                <!-- 2. Danh sách chip địa điểm thông minh (Favorites + Thành phố phổ biến, không trùng lặp) -->
-                <ItemsControl ItemsSource="{x:Bind ViewModel.QuickChips, Mode=OneWay}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" Spacing="6"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="models:QuickLocationChipItem">
-                            <Button Click="QuickLocationChip_Click"
-                                    Tag="{x:Bind}"
-                                    Background="{x:Bind ChipBackgroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
-                                    BorderBrush="{x:Bind ChipBorderHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
-                                    BorderThickness="1"
-                                    CornerRadius="14"
-                                    Padding="11,5">
-                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}" FontSize="10.5" Foreground="{x:Bind IconColor, Mode=OneWay}"/>
-                                    <TextBlock Text="{x:Bind DisplayName}" FontSize="12" FontWeight="{x:Bind ChipFontWeight, Mode=OneWay}" Foreground="{x:Bind ChipForegroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
-                                    <Ellipse Width="5" Height="5" Fill="#38BDF8" Visibility="{x:Bind ActiveIndicatorVisibility, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center"/>
+                    <!-- Các nút chức năng, Zen Mode & Widget -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <!-- Nút Chế độ Thư Giãn Toàn Cảnh (Zen Immersive View - F11) -->
+                        <Button Command="{x:Bind ViewModel.ToggleZenModeCommand}"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ZenModeTooltip, Mode=OneWay}"
+                                Background="#208B5CF6"
+                                BorderBrush="#408B5CF6"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="9,5">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6c4;" FontSize="13" Foreground="#A78BFA"/>
+                                <TextBlock Text="Zen" FontWeight="SemiBold" FontSize="12" Foreground="#C4B5FD"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Nút Làm mới -->
+                        <Button Command="{x:Bind ViewModel.RefreshCommand}"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.RefreshTooltip, Mode=OneWay}">
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="13"/>
+                        </Button>
+
+                        <!-- Chuyển đổi đơn vị °C / °F -->
+                        <Button Command="{x:Bind ViewModel.ToggleUnitCommand}"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.UnitTooltip, Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2c9;" FontSize="13"/>
+                                <TextBlock Text="{x:Bind ViewModel.UnitButtonText, Mode=OneWay}" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Bộ chọn giao diện Sáng / Tối / Hệ thống -->
+                        <ComboBox x:Name="ThemeComboBox"
+                                  SelectedIndex="2"
+                                  SelectionChanged="ThemeComboBox_SelectionChanged"
+                                  Width="124"
+                                  MinWidth="116"
+                                  ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ThemeTooltip, Mode=OneWay}">
+                            <ComboBoxItem Content="☀️ Sáng" Tag="light"/>
+                            <ComboBoxItem Content="🌙 Tối" Tag="dark"/>
+                            <ComboBoxItem Content="💻 Hệ thống" Tag="system"/>
+                        </ComboBox>
+
+                        <!-- Nút Bật & Quản lý Desktop Widget Đa Năng (v2.0) -->
+                        <DropDownButton x:Name="DesktopWidgetButton"
+                                        Style="{ThemeResource DefaultButtonStyle}"
+                                        ToolTipService.ToolTip="{x:Bind ViewModel.Loc.WidgetTooltip, Mode=OneWay}">
+                            <DropDownButton.Content>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" FontSize="13" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                    <TextBlock x:Name="BtnTextWidget" Text="{x:Bind ViewModel.Loc.WidgetBtnText, Mode=OneWay}" FontWeight="SemiBold"/>
                                 </StackPanel>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </ScrollViewer>
+                            </DropDownButton.Content>
+                            <DropDownButton.Flyout>
+                                <MenuFlyout Placement="Bottom">
+                                    <MenuFlyoutItem Text="{x:Bind ViewModel.Loc.WidgetOpenCurrent, Mode=OneWay}" Click="OpenCurrentCityWidget_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="{x:Bind ViewModel.Loc.WidgetOpenCustom, Mode=OneWay}" Click="OpenCustomCityWidget_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf067;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutSeparator/>
+                                    <MenuFlyoutItem Text="{x:Bind ViewModel.Loc.WidgetCloseAll, Mode=OneWay}" Click="CloseAllWidgets_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00d;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                </MenuFlyout>
+                            </DropDownButton.Flyout>
+                        </DropDownButton>
+                    </StackPanel>
+                </Grid>
 
-        <!-- ==================== HÀNG 2: THÔNG BÁO HỆ THỐNG / CHIA SẺ ==================== -->
-        <StackPanel Grid.Row="2" Spacing="8" Margin="0,0,0,12">
+                <!-- TẦNG 2: Thanh địa điểm nhanh (GPS + Danh sách yêu thích) -->
+                <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" HorizontalScrollMode="Enabled">
+                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <!-- 1. Nút Vị trí GPS thực tế -->
+                        <Button Command="{x:Bind ViewModel.LoadCurrentLocationWeatherCommand}"
+                                Background="{x:Bind ViewModel.GpsButtonBackground, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                BorderBrush="{x:Bind ViewModel.GpsButtonBorderBrush, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="10,4"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.GpsTooltip, Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="11" Foreground="#38BDF8"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.GpsLocation, Mode=OneWay}" FontSize="11.5" FontWeight="{x:Bind ViewModel.GpsButtonFontWeight, Mode=OneWay}"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Dải phân cách tinh tế -->
+                        <Border Width="1" Height="14" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="1,0" Opacity="0.5"/>
+
+                        <!-- 2. Danh sách chip địa điểm thông minh -->
+                        <ItemsControl ItemsSource="{x:Bind ViewModel.QuickChips, Mode=OneWay}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="6"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:QuickLocationChipItem">
+                                    <Button Click="QuickLocationChip_Click"
+                                            Tag="{x:Bind}"
+                                            Background="{x:Bind ChipBackgroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                            BorderBrush="{x:Bind ChipBorderHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                            BorderThickness="1"
+                                            CornerRadius="12"
+                                            Padding="10,4">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}" FontSize="10" Foreground="{x:Bind IconColor, Mode=OneWay}"/>
+                                            <TextBlock Text="{x:Bind DisplayName}" FontSize="11.5" FontWeight="{x:Bind ChipFontWeight, Mode=OneWay}" Foreground="{x:Bind ChipForegroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
+                                            <Ellipse Width="4.5" Height="4.5" Fill="#38BDF8" Visibility="{x:Bind ActiveIndicatorVisibility, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <!-- ==================== HÀNG 1: THÔNG BÁO HỆ THỐNG / CHIA SẺ ==================== -->
+        <StackPanel Grid.Row="1" Spacing="6" Margin="0,0,0,8">
             <InfoBar x:Name="ShareSuccessInfoBar"
                      Severity="Success"
                      Title="{x:Bind ViewModel.Loc.ShareSuccessTitle, Mode=OneWay}"
@@ -179,15 +204,17 @@
                      IsClosable="True"/>
         </StackPanel>
 
-        <!-- ==================== HÀNG 3: THANH TIẾN TRÌNH TẢI ==================== -->
-        <ProgressBar Grid.Row="3"
+        <!-- ==================== HÀNG 2: THANH TIẾN TRÌNH TẢI ==================== -->
+        <ProgressBar Grid.Row="2"
                      IsIndeterminate="True"
+                     Height="2.5"
+                     CornerRadius="1.2"
                      Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                     Margin="0,0,0,12"/>
+                     Margin="0,0,0,8"/>
 
-        <!-- ==================== HÀNG 4: THANH ĐIỀU HƯỚNG FLUENT NAVIGATION VIEW (VERSION 3.0.0) ==================== -->
+        <!-- ==================== HÀNG 3: THANH ĐIỀU HƯỚNG FLUENT NAVIGATION VIEW (VERSION 3.1.0) ==================== -->
         <NavigationView x:Name="MainNavView"
-                        Grid.Row="4"
+                        Grid.Row="3"
                         PaneDisplayMode="Left"
                         OpenPaneLength="240"
                         CompactPaneLength="52"
@@ -2112,6 +2139,112 @@
                 </Grid>
             </Grid>
         </ContentDialog>
+
+        <!-- =================================================================================== -->
+        <!-- CHẾ ĐỘ THƯ GIÃN TOÀN CẢNH: ZEN IMMERSIVE VIEW (VERSION 3.1.0)                         -->
+        <!-- =================================================================================== -->
+        <Grid x:Name="ZenImmersiveOverlay"
+              Grid.Row="0" Grid.RowSpan="4"
+              Visibility="{x:Bind ViewModel.IsZenModeOpen, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+              Canvas.ZIndex="9999"
+              Background="#F2090D16"
+              Margin="-24,-12,-24,-24">
+
+            <Border x:Name="ZenCityBackgroundBorder" Opacity="0.30">
+                <Border.Background>
+                    <ImageBrush x:Name="ZenCityImageBrush" Stretch="UniformToFill"/>
+                </Border.Background>
+            </Border>
+
+            <Border x:Name="ZenGradientOverlay" Opacity="0.75">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#1E3A8A" Offset="0"/>
+                        <GradientStop Color="#090D16" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+
+            <Canvas x:Name="ZenWeatherCanvas" IsHitTestVisible="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+            <Border x:Name="ZenLightningOverlay" Background="#99EEF2FF" Opacity="0" IsHitTestVisible="False"/>
+
+            <Grid RowDefinitions="Auto,*,Auto" Padding="36,24">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <Border Background="#308B5CF6" BorderBrush="#508B5CF6" BorderThickness="1" CornerRadius="12" Padding="12,6">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6c4;" FontSize="13" Foreground="#C4B5FD"/>
+                                <TextBlock Text="ZEN IMMERSIVE VIEW" FontSize="11" FontWeight="Bold" Foreground="#DDD6FE"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <Button Grid.Column="2"
+                            Command="{x:Bind ViewModel.CloseZenModeCommand}"
+                            ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ZenExitTooltip, Mode=OneWay}"
+                            Background="#33FFFFFF"
+                            BorderThickness="1"
+                            BorderBrush="#40FFFFFF"
+                            CornerRadius="14"
+                            Padding="14,7">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00d;" FontSize="12" Foreground="White"/>
+                            <TextBlock Text="{x:Bind ViewModel.Loc.CompareClose, Mode=OneWay}" FontWeight="SemiBold" FontSize="12" Foreground="White"/>
+                            <Border Background="#33FFFFFF" CornerRadius="4" Padding="5,1">
+                                <TextBlock Text="ESC" FontSize="9" FontWeight="Bold" Foreground="#CBD5E1"/>
+                            </Border>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+                <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+                    <TextBlock Text="{x:Bind ViewModel.CurrentTimeDisplay, Mode=OneWay}"
+                               FontSize="88"
+                               FontWeight="Light"
+                               Foreground="White"
+                               HorizontalAlignment="Center"/>
+
+                    <TextBlock Text="{x:Bind ViewModel.CurrentDateDisplay, Mode=OneWay}"
+                               FontSize="17"
+                               FontWeight="SemiBold"
+                               Foreground="#CBD5E1"
+                               HorizontalAlignment="Center"/>
+
+                    <Border Width="140" Height="2" Background="#35FFFFFF" CornerRadius="1" HorizontalAlignment="Center" Margin="0,4"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="18" Foreground="#38BDF8" VerticalAlignment="Center"/>
+                        <TextBlock Text="{x:Bind ViewModel.LocationTitle, Mode=OneWay}" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="18" HorizontalAlignment="Center">
+                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="64" FontWeight="ExtraBold" Foreground="White"/>
+                        <StackPanel VerticalAlignment="Center" Spacing="4">
+                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.ConditionText, Mode=OneWay}" FontSize="20" FontWeight="SemiBold" Foreground="#F59E0B"/>
+                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.FeelsLikeText, Mode=OneWay}" FontSize="14" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Border Background="#25000000" BorderBrush="#25FFFFFF" BorderThickness="1" CornerRadius="14" Padding="20,10" MaxWidth="540" HorizontalAlignment="Center" Margin="0,8,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0eb;" FontSize="14" Foreground="#FBBF24" VerticalAlignment="Center"/>
+                            <TextBlock Text="{x:Bind ViewModel.Loc.ZenRelaxQuote, Mode=OneWay}" FontSize="12.5" Foreground="#E2E8F0" TextWrapping="Wrap" TextAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <Border Grid.Row="2" Background="#26FFFFFF" BorderBrush="#33FFFFFF" BorderThickness="1" CornerRadius="18" Padding="18,8" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf028;" FontSize="13" Foreground="#38BDF8" VerticalAlignment="Center"/>
+                        <TextBlock Text="{x:Bind ViewModel.Loc.AmbientSoundHeader, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center"/>
+                        <ToggleSwitch IsOn="{x:Bind ViewModel.IsAmbientSoundPlaying, Mode=OneWay}" Toggled="ZenAmbientToggle_Toggled" OnContent="" OffContent="" VerticalAlignment="Center"/>
+                        <Border Width="1" Height="16" Background="#33FFFFFF" Margin="2,0"/>
+                        <TextBlock Text="Nhấn F11 hoặc ESC để thoát" FontSize="11" Opacity="0.7" Foreground="White" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
 
     </Grid>
 </Page>

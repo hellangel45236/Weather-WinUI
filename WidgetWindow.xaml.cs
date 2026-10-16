@@ -360,11 +360,13 @@ public sealed partial class WidgetWindow : Window
     private void WidgetRoot_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         WidgetRoot.Opacity = 1.0;
+        WidgetRoot.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(140, 56, 189, 248));
     }
 
     private void WidgetRoot_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         WidgetRoot.Opacity = Math.Clamp(_settings.WidgetOpacity, 0.2, 1.0);
+        WidgetRoot.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(34, 255, 255, 255));
     }
 
     private void BryanCActionsOverlay_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)

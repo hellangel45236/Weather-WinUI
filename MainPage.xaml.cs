@@ -45,6 +45,20 @@ public sealed partial class MainPage : Page
 
         InitializeComponent();
 
+        this.KeyDown += (s, e) =>
+        {
+            if (e.Key == Windows.System.VirtualKey.F11)
+            {
+                ViewModel.ToggleZenModeCommand.Execute(null);
+                e.Handled = true;
+            }
+            else if (e.Key == Windows.System.VirtualKey.Escape && ViewModel.IsZenModeOpen)
+            {
+                ViewModel.CloseZenModeCommand.Execute(null);
+                e.Handled = true;
+            }
+        };
+
         ViewModel.PropertyChanged += ViewModel_PropertyChanged;
     }
 
@@ -125,6 +139,8 @@ public sealed partial class MainPage : Page
 
     private bool _isShareDialogOpen = false;
 
+    private WeatherEffectRenderer? _zenEffectRenderer;
+
     private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(ViewModel.CurrentWeather))
@@ -133,6 +149,72 @@ public sealed partial class MainPage : Page
             {
                 UpdateShareCardContent();
             }
+            if (ViewModel.IsZenModeOpen && _zenEffectRenderer != null && ViewModel.CurrentWeather != null)
+            {
+                _zenEffectRenderer.SetWind(ViewModel.CurrentWeather.WindSpeedValue);
+                _zenEffectRenderer.SetWeatherEffect(ViewModel.CurrentWeather.WeatherEffect);
+                UpdateZenGradientColor();
+            }
+        }
+        else if (e.PropertyName == nameof(MainViewModel.IsZenModeOpen))
+        {
+            if (ViewModel.IsZenModeOpen)
+            {
+                try
+                {
+                    App.MainWindow?.AppWindow.SetPresenter(Microsoft.UI.Windowing.AppWindowPresenterKind.FullScreen);
+                }
+                catch { }
+
+                UpdateZenGradientColor();
+                _zenEffectRenderer ??= new WeatherEffectRenderer(ZenWeatherCanvas, ZenLightningOverlay);
+                if (ViewModel.CurrentWeather != null)
+                {
+                    _zenEffectRenderer.SetWind(ViewModel.CurrentWeather.WindSpeedValue);
+                    _zenEffectRenderer.SetWeatherEffect(ViewModel.CurrentWeather.WeatherEffect);
+                    _zenEffectRenderer.Resume();
+                }
+            }
+            else
+            {
+                try
+                {
+                    App.MainWindow?.AppWindow.SetPresenter(Microsoft.UI.Windowing.AppWindowPresenterKind.Default);
+                }
+                catch { }
+                _zenEffectRenderer?.Pause();
+            }
+        }
+    }
+
+    private void ZenAmbientToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        ViewModel?.ToggleAmbientSoundCommand.Execute(null);
+    }
+
+    private void UpdateZenGradientColor()
+    {
+        if (ZenGradientOverlay != null && ViewModel?.CurrentWeather != null && !string.IsNullOrEmpty(ViewModel.CurrentWeather.HeroGradientStart))
+        {
+            try
+            {
+                string hex = ViewModel.CurrentWeather.HeroGradientStart.TrimStart('#');
+                if (hex.Length == 6)
+                {
+                    byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                    byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                    byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+                    var brush = new Microsoft.UI.Xaml.Media.LinearGradientBrush
+                    {
+                        StartPoint = new Windows.Foundation.Point(0, 0),
+                        EndPoint = new Windows.Foundation.Point(1, 1)
+                    };
+                    brush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(255, r, g, b), Offset = 0 });
+                    brush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(255, 9, 13, 22), Offset = 1 });
+                    ZenGradientOverlay.Background = brush;
+                }
+            }
+            catch { }
         }
     }
 
