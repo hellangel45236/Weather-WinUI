@@ -27,6 +27,8 @@ public static class ThemeHelper
         }
     }
 
+    public static event Action<ElementTheme>? ThemeChanged;
+
     public static void SetTheme(ElementTheme theme)
     {
         try
@@ -35,6 +37,7 @@ public static class ThemeHelper
             {
                 rootElement.RequestedTheme = theme;
             }
+            ThemeChanged?.Invoke(theme);
         }
         catch { }
     }

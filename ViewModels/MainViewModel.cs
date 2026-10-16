@@ -164,11 +164,24 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(GpsButtonBackground))]
     [NotifyPropertyChangedFor(nameof(GpsButtonBorderBrush))]
+    [NotifyPropertyChangedFor(nameof(GpsButtonForeground))]
+    [NotifyPropertyChangedFor(nameof(GpsIconForegroundHex))]
     [NotifyPropertyChangedFor(nameof(GpsButtonFontWeight))]
     private bool _isGpsLocationSelected = true;
 
-    public string GpsButtonBackground => IsGpsLocationSelected ? "#3538BDF8" : "#1AFFFFFF";
-    public string GpsButtonBorderBrush => IsGpsLocationSelected ? "#38BDF8" : "#3038BDF8";
+    public string GpsButtonBackground => IsGpsLocationSelected 
+        ? (ThemeHelper.IsDarkTheme() ? "#3538BDF8" : "#E0F2FE") 
+        : (ThemeHelper.IsDarkTheme() ? "#1AFFFFFF" : "#F1F5F9");
+
+    public string GpsButtonBorderBrush => IsGpsLocationSelected 
+        ? (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7") 
+        : (ThemeHelper.IsDarkTheme() ? "#3038BDF8" : "#CBD5E1");
+
+    public string GpsButtonForeground => IsGpsLocationSelected
+        ? (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0369A1")
+        : (ThemeHelper.IsDarkTheme() ? "#F1F5F9" : "#1E293B");
+
+    public string GpsIconForegroundHex => ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7";
     public string GpsButtonFontWeight => IsGpsLocationSelected ? "Bold" : "SemiBold";
 
     [ObservableProperty]
@@ -1412,6 +1425,12 @@ public partial class MainViewModel : ObservableObject
                 break;
         }
         _settingsService.SaveSettings(Settings);
+
+        OnPropertyChanged(nameof(GpsButtonBackground));
+        OnPropertyChanged(nameof(GpsButtonBorderBrush));
+        OnPropertyChanged(nameof(GpsButtonForeground));
+        OnPropertyChanged(nameof(GpsIconForegroundHex));
+        UpdateQuickChips();
     }
 
     [RelayCommand]

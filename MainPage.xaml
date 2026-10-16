@@ -19,7 +19,7 @@
         <!-- ==================== HÀNG 0: THANH ĐIỀU KHIỂN & ĐỊA ĐIỂM DẠNG FLOATING ISLAND (VERSION 3.1.0) ==================== -->
         <Border Grid.Row="0"
                 x:Name="FloatingIslandHeader"
-                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="16"
@@ -236,9 +236,9 @@
                                 Padding="10,4"
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.GpsTooltip, Mode=OneWay}">
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="11" Foreground="#38BDF8"/>
-                                <TextBlock Text="{x:Bind ViewModel.Loc.GpsLocation, Mode=OneWay}" FontSize="11.5" FontWeight="{x:Bind ViewModel.GpsButtonFontWeight, Mode=OneWay}"/>
-                                <Ellipse Width="5" Height="5" Fill="#38BDF8" VerticalAlignment="Center"/>
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="11" Foreground="{x:Bind ViewModel.GpsIconForegroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.GpsLocation, Mode=OneWay}" FontSize="11.5" FontWeight="{x:Bind ViewModel.GpsButtonFontWeight, Mode=OneWay}" Foreground="{x:Bind ViewModel.GpsButtonForeground, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
+                                <Ellipse Width="5" Height="5" Fill="{x:Bind ViewModel.GpsIconForegroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
@@ -264,7 +264,7 @@
                                         <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                             <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}" FontSize="10" Foreground="{x:Bind IconColor, Mode=OneWay}"/>
                                             <TextBlock Text="{x:Bind DisplayName}" FontSize="11.5" FontWeight="{x:Bind ChipFontWeight, Mode=OneWay}" Foreground="{x:Bind ChipForegroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
-                                            <Ellipse Width="4.5" Height="4.5" Fill="#38BDF8" Visibility="{x:Bind ActiveIndicatorVisibility, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center"/>
+                                            <Ellipse Width="4.5" Height="4.5" Fill="{x:Bind IconColor, Mode=OneWay}" Visibility="{x:Bind ActiveIndicatorVisibility, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                 </DataTemplate>
@@ -320,8 +320,8 @@
                     <NavigationViewItem.Content>
                         <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
                             <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.NavOverview, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
-                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="#20F59E0B" CornerRadius="6" Padding="6,1.5">
-                                <TextBlock Text="{x:Bind ViewModel.NavOverviewTempText, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="#F59E0B"/>
+                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="{ThemeResource NavTempBadgeBackgroundBrush}" CornerRadius="6" Padding="6,1.5">
+                                <TextBlock Text="{x:Bind ViewModel.NavOverviewTempText, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="{ThemeResource NavTempBadgeForegroundBrush}"/>
                             </Border>
                         </Grid>
                     </NavigationViewItem.Content>
@@ -337,8 +337,8 @@
                     <NavigationViewItem.Content>
                         <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
                             <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.NavFlood, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
-                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="#200284C7" CornerRadius="6" Padding="6,1.5">
-                                <TextBlock Text="{x:Bind ViewModel.NavFloodTideText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#38BDF8"/>
+                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="{ThemeResource NavFloodBadgeBackgroundBrush}" CornerRadius="6" Padding="6,1.5">
+                                <TextBlock Text="{x:Bind ViewModel.NavFloodTideText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="{ThemeResource NavFloodBadgeForegroundBrush}"/>
                             </Border>
                         </Grid>
                     </NavigationViewItem.Content>
@@ -350,8 +350,8 @@
                     <NavigationViewItem.Content>
                         <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
                             <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.NavRadar, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
-                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="#2010B981" CornerRadius="6" Padding="6,1.5">
-                                <TextBlock Text="{x:Bind ViewModel.NavRadarStatusText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#10B981"/>
+                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="{ThemeResource NavRadarBadgeBackgroundBrush}" CornerRadius="6" Padding="6,1.5">
+                                <TextBlock Text="{x:Bind ViewModel.NavRadarStatusText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="{ThemeResource NavRadarBadgeForegroundBrush}"/>
                             </Border>
                         </Grid>
                     </NavigationViewItem.Content>
@@ -363,8 +363,8 @@
                     <NavigationViewItem.Content>
                         <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
                             <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.NavLifestyle, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
-                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="#20EC4899" CornerRadius="6" Padding="6,1.5">
-                                <TextBlock Text="{x:Bind ViewModel.NavLifestyleOotdText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#EC4899" TextTrimming="CharacterEllipsis" MaxWidth="82"/>
+                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="{ThemeResource NavLifestyleBadgeBackgroundBrush}" CornerRadius="6" Padding="6,1.5">
+                                <TextBlock Text="{x:Bind ViewModel.NavLifestyleOotdText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="{ThemeResource NavLifestyleBadgeForegroundBrush}" TextTrimming="CharacterEllipsis" MaxWidth="82"/>
                             </Border>
                         </Grid>
                     </NavigationViewItem.Content>
@@ -376,8 +376,8 @@
                     <NavigationViewItem.Content>
                         <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
                             <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.NavCalendar, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
-                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="#208B5CF6" CornerRadius="6" Padding="6,1.5">
-                                <TextBlock Text="{x:Bind ViewModel.NavLunarDateText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#A78BFA"/>
+                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="{ThemeResource NavCalendarBadgeBackgroundBrush}" CornerRadius="6" Padding="6,1.5">
+                                <TextBlock Text="{x:Bind ViewModel.NavLunarDateText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="{ThemeResource NavCalendarBadgeForegroundBrush}"/>
                             </Border>
                         </Grid>
                     </NavigationViewItem.Content>
@@ -391,8 +391,8 @@
                     <NavigationViewItem.Content>
                         <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
                             <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.NavWidget, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
-                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="#2038BDF8" CornerRadius="6" Padding="6,1.5">
-                                <TextBlock Text="{x:Bind ViewModel.NavWidgetStudioText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#38BDF8"/>
+                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="{ThemeResource NavWidgetBadgeBackgroundBrush}" CornerRadius="6" Padding="6,1.5">
+                                <TextBlock Text="{x:Bind ViewModel.NavWidgetStudioText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="{ThemeResource NavWidgetBadgeForegroundBrush}"/>
                             </Border>
                         </Grid>
                     </NavigationViewItem.Content>

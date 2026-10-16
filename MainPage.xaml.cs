@@ -139,6 +139,7 @@ public sealed partial class MainPage : Page
                         {
                             ThemeComboBox.SelectedIndex = targetTheme == "light" ? 0 : (targetTheme == "dark" ? 1 : 2);
                         }
+                        UpdateSeasonalThemeButtonStyle();
                     }
                 }
                 catch { }
@@ -629,6 +630,7 @@ public sealed partial class MainPage : Page
         if (ThemeComboBox.SelectedItem is ComboBoxItem item && item.Tag is string tag)
         {
             ViewModel.ChangeTheme(tag);
+            UpdateSeasonalThemeButtonStyle();
             DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
             {
                 TabOverview?.UpdateWeatherVisuals();

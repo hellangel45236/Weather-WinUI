@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
+using WeatherApp.Helpers;
 
 namespace WeatherApp.Models;
 
@@ -185,11 +186,22 @@ public partial class QuickLocationChipItem : ObservableObject
     private bool _isSelected;
 
     public string IconGlyph => IsFavorite ? "\uf004" : "\uf3c5";
-    public string IconColor => IsSelected ? "#38BDF8" : (IsFavorite ? "#F43F5E" : "#38BDF8");
+    public string IconColor => IsSelected
+        ? (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7")
+        : (IsFavorite ? "#F43F5E" : (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7"));
 
-    public string ChipBackgroundHex => IsSelected ? "#3538BDF8" : "#1AFFFFFF";
-    public string ChipBorderHex => IsSelected ? "#38BDF8" : "#2EFFFFFF";
-    public string ChipForegroundHex => IsSelected ? "#38BDF8" : "#F1F5F9";
+    public string ChipBackgroundHex => IsSelected
+        ? (ThemeHelper.IsDarkTheme() ? "#3538BDF8" : "#E0F2FE")
+        : (ThemeHelper.IsDarkTheme() ? "#1AFFFFFF" : "#F1F5F9");
+
+    public string ChipBorderHex => IsSelected
+        ? (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7")
+        : (ThemeHelper.IsDarkTheme() ? "#2EFFFFFF" : "#CBD5E1");
+
+    public string ChipForegroundHex => IsSelected
+        ? (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0369A1")
+        : (ThemeHelper.IsDarkTheme() ? "#F1F5F9" : "#1E293B");
+
     public string ChipFontWeight => IsSelected ? "Bold" : "SemiBold";
     public bool ActiveIndicatorVisibility => IsSelected;
 }

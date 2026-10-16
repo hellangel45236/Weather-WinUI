@@ -6,6 +6,8 @@ namespace WeatherApp;
 
 public sealed partial class MainWindow : Window
 {
+    private readonly bool _forceWin10Mode = false;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -27,41 +29,37 @@ public sealed partial class MainWindow : Window
         // Kích thước cửa sổ mặc định
         AppWindow.Resize(new SizeInt32(1260, 880));
 
+        _forceWin10Mode = Environment.GetCommandLineArgs().Any(a =>
+            a.Equals("--win10", StringComparison.OrdinalIgnoreCase) ||
+            a.Equals("--force-win10", StringComparison.OrdinalIgnoreCase));
+
         // Khởi tạo ThemeHelper
         ThemeHelper.Initialize(this);
 
-        // Tương thích đa nền tảng Windows 10 & 11:
-        // - Windows 11: Áp dụng MicaAlt cao cấp tự nhiên
-        // - Windows 10: Áp dụng DesktopAcrylic với lớp nền bổ trợ Slate Dark chống lóa/chống trong suốt quá mức
-        try
-        {
-            bool isWindows11 = Environment.OSVersion.Version.Build >= 22000;
-            if (isWindows11 && Microsoft.UI.Composition.SystemBackdrops.MicaController.IsSupported())
-            {
-                SystemBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop
-                {
-                    Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
-                };
-            }
-            else if (Microsoft.UI.Composition.SystemBackdrops.DesktopAcrylicController.IsSupported())
-            {
-                SystemBackdrop = new Microsoft.UI.Xaml.Media.DesktopAcrylicBackdrop();
-                // Bổ trợ lớp nền slate tối đầm chắc cho Windows 10 để các thẻ card nổi bật, không bị lóa
-                RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
-                    Windows.UI.Color.FromArgb(248, 15, 23, 42));
-            }
-            else
-            {
-                // Fallback vững chắc cho Windows 10 cũ không hỗ trợ Acrylic Controller
-                RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
-                    Windows.UI.Color.FromArgb(255, 15, 23, 42));
-            }
-        }
-        catch { }
-
-        // Kiểm tra khởi động lần đầu
+        // Kiểm tra khởi động lần đầu & nạp theme ban đầu
         var settingsService = new Services.SettingsService();
         var settings = settingsService.LoadSettings();
+
+        ElementTheme initialTheme = ElementTheme.Default;
+        if (string.Equals(settings.ThemeMode, "light", StringComparison.OrdinalIgnoreCase))
+            initialTheme = ElementTheme.Light;
+        else if (string.Equals(settings.ThemeMode, "dark", StringComparison.OrdinalIgnoreCase))
+            initialTheme = ElementTheme.Dark;
+
+        RootWindowGrid.RequestedTheme = initialTheme;
+
+        // Lắng nghe sự kiện đổi theme để cập nhật nền cửa sổ và titlebar tức thời
+        ThemeHelper.ThemeChanged += (theme) =>
+        {
+            DispatcherQueue.TryEnqueue(UpdateWindowTheme);
+        };
+        RootWindowGrid.ActualThemeChanged += (s, e) =>
+        {
+            UpdateWindowTheme();
+        };
+
+        // Áp dụng theme và backdrop ngay lúc khởi tạo
+        UpdateWindowTheme();
 
         // Xử lý thu nhỏ hoặc đóng về khay hệ thống (System Tray)
         AppWindow.Closing += (sender, args) =>
@@ -97,5 +95,102 @@ public sealed partial class MainWindow : Window
         {
             RootFrame.Navigate(typeof(MainPage));
         }
+    }
+
+    public void UpdateWindowTheme()
+    {
+        try
+        {
+            bool isDark = ThemeHelper.IsDarkTheme(RootWindowGrid);
+            bool isWindows11 = Environment.OSVersion.Version.Build >= 22000 && !_forceWin10Mode;
+
+            if (isWindows11 && Microsoft.UI.Composition.SystemBackdrops.MicaController.IsSupported())
+            {
+                if (SystemBackdrop is not Microsoft.UI.Xaml.Media.MicaBackdrop)
+                {
+                    SystemBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop
+                    {
+                        Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
+                    };
+                }
+                RootWindowGrid.Background = null;
+            }
+            else
+            {
+                // Windows 10 (Build < 22000) hoặc máy không hỗ trợ Mica:
+                if (Microsoft.UI.Composition.SystemBackdrops.DesktopAcrylicController.IsSupported())
+                {
+                    if (SystemBackdrop is not Microsoft.UI.Xaml.Media.DesktopAcrylicBackdrop)
+                    {
+                        SystemBackdrop = new Microsoft.UI.Xaml.Media.DesktopAcrylicBackdrop();
+                    }
+
+                    if (isDark)
+                    {
+                        // Nền tối Slate đầm chắc chống lóa trên Windows 10
+                        RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                            Windows.UI.Color.FromArgb(246, 15, 23, 42)); // #0F172A
+                    }
+                    else
+                    {
+                        // Nền sáng Slate tinh khiết, sạch sẽ, chuẩn Fluent trên Windows 10
+                        RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                            Windows.UI.Color.FromArgb(246, 241, 245, 249)); // #F1F5F9
+                    }
+                }
+                else
+                {
+                    // Fallback vững chắc cho Windows 10 cũ không có Acrylic Controller
+                    SystemBackdrop = null;
+                    if (isDark)
+                    {
+                        RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                            Windows.UI.Color.FromArgb(255, 15, 23, 42));
+                    }
+                    else
+                    {
+                        RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                            Windows.UI.Color.FromArgb(255, 241, 245, 249));
+                    }
+                }
+            }
+
+            // Cập nhật màu các nút điều khiển cửa sổ (Minimize, Maximize, Close) trên thanh tiêu đề
+            UpdateTitleBarColors(isDark);
+        }
+        catch { }
+    }
+
+    private void UpdateTitleBarColors(bool isDark)
+    {
+        try
+        {
+            if (Microsoft.UI.Windowing.AppWindowTitleBar.IsCustomizationSupported() && AppWindow.TitleBar != null)
+            {
+                var titleBar = AppWindow.TitleBar;
+                titleBar.ButtonBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
+                titleBar.ButtonInactiveBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
+
+                if (isDark)
+                {
+                    titleBar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 241, 245, 249);
+                    titleBar.ButtonHoverForegroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
+                    titleBar.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(25, 255, 255, 255);
+                    titleBar.ButtonPressedForegroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
+                    titleBar.ButtonPressedBackgroundColor = Windows.UI.Color.FromArgb(40, 255, 255, 255);
+                    titleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(140, 148, 163, 184);
+                }
+                else
+                {
+                    titleBar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 15, 23, 42);
+                    titleBar.ButtonHoverForegroundColor = Windows.UI.Color.FromArgb(255, 15, 23, 42);
+                    titleBar.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(25, 0, 0, 0);
+                    titleBar.ButtonPressedForegroundColor = Windows.UI.Color.FromArgb(255, 15, 23, 42);
+                    titleBar.ButtonPressedBackgroundColor = Windows.UI.Color.FromArgb(40, 0, 0, 0);
+                    titleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(140, 100, 116, 139);
+                }
+            }
+        }
+        catch { }
     }
 }

@@ -35,16 +35,58 @@
                     <SolidColorBrush x:Key="ZenButtonBackgroundBrush" Color="#157C3AED" />
                     <SolidColorBrush x:Key="ZenButtonBorderBrush" Color="#407C3AED" />
                     <SolidColorBrush x:Key="ZenButtonForegroundBrush" Color="#6D28D9" />
+
+                    <!-- Nav Badges for Light Mode (Tương phản cao WCAG AAA) -->
+                    <SolidColorBrush x:Key="NavTempBadgeBackgroundBrush" Color="#25F59E0B" />
+                    <SolidColorBrush x:Key="NavTempBadgeForegroundBrush" Color="#B45309" />
+                    <SolidColorBrush x:Key="NavFloodBadgeBackgroundBrush" Color="#250284C7" />
+                    <SolidColorBrush x:Key="NavFloodBadgeForegroundBrush" Color="#0284C7" />
+                    <SolidColorBrush x:Key="NavRadarBadgeBackgroundBrush" Color="#25059669" />
+                    <SolidColorBrush x:Key="NavRadarBadgeForegroundBrush" Color="#047857" />
+                    <SolidColorBrush x:Key="NavLifestyleBadgeBackgroundBrush" Color="#25DB2777" />
+                    <SolidColorBrush x:Key="NavLifestyleBadgeForegroundBrush" Color="#BE185D" />
+                    <SolidColorBrush x:Key="NavCalendarBadgeBackgroundBrush" Color="#257C3AED" />
+                    <SolidColorBrush x:Key="NavCalendarBadgeForegroundBrush" Color="#6D28D9" />
+                    <SolidColorBrush x:Key="NavWidgetBadgeBackgroundBrush" Color="#250284C7" />
+                    <SolidColorBrush x:Key="NavWidgetBadgeForegroundBrush" Color="#0284C7" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <SolidColorBrush x:Key="ZenButtonBackgroundBrush" Color="#208B5CF6" />
                     <SolidColorBrush x:Key="ZenButtonBorderBrush" Color="#408B5CF6" />
                     <SolidColorBrush x:Key="ZenButtonForegroundBrush" Color="#C4B5FD" />
+
+                    <!-- Nav Badges for Dark Mode -->
+                    <SolidColorBrush x:Key="NavTempBadgeBackgroundBrush" Color="#20F59E0B" />
+                    <SolidColorBrush x:Key="NavTempBadgeForegroundBrush" Color="#F59E0B" />
+                    <SolidColorBrush x:Key="NavFloodBadgeBackgroundBrush" Color="#200284C7" />
+                    <SolidColorBrush x:Key="NavFloodBadgeForegroundBrush" Color="#38BDF8" />
+                    <SolidColorBrush x:Key="NavRadarBadgeBackgroundBrush" Color="#2010B981" />
+                    <SolidColorBrush x:Key="NavRadarBadgeForegroundBrush" Color="#10B981" />
+                    <SolidColorBrush x:Key="NavLifestyleBadgeBackgroundBrush" Color="#20EC4899" />
+                    <SolidColorBrush x:Key="NavLifestyleBadgeForegroundBrush" Color="#EC4899" />
+                    <SolidColorBrush x:Key="NavCalendarBadgeBackgroundBrush" Color="#208B5CF6" />
+                    <SolidColorBrush x:Key="NavCalendarBadgeForegroundBrush" Color="#A78BFA" />
+                    <SolidColorBrush x:Key="NavWidgetBadgeBackgroundBrush" Color="#2038BDF8" />
+                    <SolidColorBrush x:Key="NavWidgetBadgeForegroundBrush" Color="#38BDF8" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Default">
                     <SolidColorBrush x:Key="ZenButtonBackgroundBrush" Color="#208B5CF6" />
                     <SolidColorBrush x:Key="ZenButtonBorderBrush" Color="#408B5CF6" />
                     <SolidColorBrush x:Key="ZenButtonForegroundBrush" Color="#C4B5FD" />
+
+                    <!-- Nav Badges for Default Mode -->
+                    <SolidColorBrush x:Key="NavTempBadgeBackgroundBrush" Color="#20F59E0B" />
+                    <SolidColorBrush x:Key="NavTempBadgeForegroundBrush" Color="#F59E0B" />
+                    <SolidColorBrush x:Key="NavFloodBadgeBackgroundBrush" Color="#200284C7" />
+                    <SolidColorBrush x:Key="NavFloodBadgeForegroundBrush" Color="#38BDF8" />
+                    <SolidColorBrush x:Key="NavRadarBadgeBackgroundBrush" Color="#2010B981" />
+                    <SolidColorBrush x:Key="NavRadarBadgeForegroundBrush" Color="#10B981" />
+                    <SolidColorBrush x:Key="NavLifestyleBadgeBackgroundBrush" Color="#20EC4899" />
+                    <SolidColorBrush x:Key="NavLifestyleBadgeForegroundBrush" Color="#EC4899" />
+                    <SolidColorBrush x:Key="NavCalendarBadgeBackgroundBrush" Color="#208B5CF6" />
+                    <SolidColorBrush x:Key="NavCalendarBadgeForegroundBrush" Color="#A78BFA" />
+                    <SolidColorBrush x:Key="NavWidgetBadgeBackgroundBrush" Color="#2038BDF8" />
+                    <SolidColorBrush x:Key="NavWidgetBadgeForegroundBrush" Color="#38BDF8" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
