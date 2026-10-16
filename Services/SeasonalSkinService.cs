@@ -51,7 +51,16 @@ public class SeasonalSkinService
             WidgetTag = "Tết Cát Tường",
             WidgetBorderHex = "#F59E0B",
             WidgetTitleColorHex = "#FDA4AF",
-            WidgetSeasonalGreeting = "Chúc Mừng Năm Mới • Vạn Sự Như Ý"
+            WidgetSeasonalGreeting = "Chúc Mừng Năm Mới • Vạn Sự Như Ý",
+            WidgetGradientStartHex = "#E6881337",
+            WidgetGradientEndHex = "#E678350F",
+            HourlyCurveStrokeHex = "#F43F5E",
+            HourlyGradientTopHex = "#55F43F5E",
+            HourlyGradientBottomHex = "#05F43F5E",
+            SunArcStrokeHex = "#F59E0B",
+            BentoCardBorderAccentHex = "#35F59E0B",
+            LifestyleOotdTip = "Áo dài truyền thống hoặc trang phục mang sắc đỏ/vàng đón may mắn, kèm khăn choàng nhẹ du xuân.",
+            LifestyleOotdBadge = "🧧 Du Xuân Đón Lộc"
         };
 
         // 2. TẾT TRUNG THU (MID-AUTUMN MOON)
@@ -81,7 +90,16 @@ public class SeasonalSkinService
             WidgetTag = "Nguyệt Dạ",
             WidgetBorderHex = "#FDE047",
             WidgetTitleColorHex = "#C7D2FE",
-            WidgetSeasonalGreeting = "Đêm Hội Trăng Rằm • Đoàn Viên Cát Lành"
+            WidgetSeasonalGreeting = "Đêm Hội Trăng Rằm • Đoàn Viên Cát Lành",
+            WidgetGradientStartHex = "#E6312E81",
+            WidgetGradientEndHex = "#E64C1D95",
+            HourlyCurveStrokeHex = "#818CF8",
+            HourlyGradientTopHex = "#55818CF8",
+            HourlyGradientBottomHex = "#05818CF8",
+            SunArcStrokeHex = "#FDE047",
+            BentoCardBorderAccentHex = "#35FDE047",
+            LifestyleOotdTip = "Trang phục dạo phố lãng mạn tone pastel hoặc ấm áp ngắm trăng, thêm áo khoác nhẹ đón gió đêm rằm.",
+            LifestyleOotdBadge = "🥮 Ngắm Trăng Rằm"
         };
 
         // 3. GIÁNG SINH & NĂM MỚI (NOEL WONDER)
@@ -111,7 +129,16 @@ public class SeasonalSkinService
             WidgetTag = "Giáng Sinh",
             WidgetBorderHex = "#22C55E",
             WidgetTitleColorHex = "#FCA5A5",
-            WidgetSeasonalGreeting = "Merry Christmas • Giáng Sinh Ấm Áp"
+            WidgetSeasonalGreeting = "Merry Christmas • Giáng Sinh Ấm Áp",
+            WidgetGradientStartHex = "#E6991B1B",
+            WidgetGradientEndHex = "#E6064E3B",
+            HourlyCurveStrokeHex = "#22C55E",
+            HourlyGradientTopHex = "#5522C55E",
+            HourlyGradientBottomHex = "#0522C55E",
+            SunArcStrokeHex = "#F87171",
+            BentoCardBorderAccentHex = "#3522C55E",
+            LifestyleOotdTip = "Áo len cổ lọ hoặc trench coat dày dặn kết hợp khăn len tartan đỏ-xanh, giữ ấm tuyệt đối khi đi lễ hội.",
+            LifestyleOotdBadge = "🎄 Lễ Hội Noel"
         };
 
         // 4. HALLOWEEN (MIDNIGHT PHANTOM)
@@ -141,7 +168,16 @@ public class SeasonalSkinService
             WidgetTag = "Halloween",
             WidgetBorderHex = "#F97316",
             WidgetTitleColorHex = "#E9D5FF",
-            WidgetSeasonalGreeting = "Spooky Season • Trick or Treat"
+            WidgetSeasonalGreeting = "Spooky Season • Trick or Treat",
+            WidgetGradientStartHex = "#E64C1D95",
+            WidgetGradientEndHex = "#E67C2D12",
+            HourlyCurveStrokeHex = "#F97316",
+            HourlyGradientTopHex = "#55F97316",
+            HourlyGradientBottomHex = "#05F97316",
+            SunArcStrokeHex = "#C084FC",
+            BentoCardBorderAccentHex = "#35F97316",
+            LifestyleOotdTip = "Phối đồ phong cách Gothic hoặc tone đen - cam bí ngô cá tính, áo bomber/hoodie cho đêm dạo chơi huyền bí.",
+            LifestyleOotdBadge = "🎃 Đêm Huyền Bí"
         };
 
         // 5. MÙA XUÂN (SPRING BLOOM)
@@ -171,7 +207,16 @@ public class SeasonalSkinService
             WidgetTag = "Xuân Mới",
             WidgetBorderHex = "#EC4899",
             WidgetTitleColorHex = "#FBCFE8",
-            WidgetSeasonalGreeting = "Xuân Tươi Mới • Vạn Vật Hồi Sinh"
+            WidgetSeasonalGreeting = "Xuân Tươi Mới • Vạn Vật Hồi Sinh",
+            WidgetGradientStartHex = "#E6831843",
+            WidgetGradientEndHex = "#E6064E3B",
+            HourlyCurveStrokeHex = "#EC4899",
+            HourlyGradientTopHex = "#55EC4899",
+            HourlyGradientBottomHex = "#05EC4899",
+            SunArcStrokeHex = "#34D399",
+            BentoCardBorderAccentHex = "#35EC4899",
+            LifestyleOotdTip = "Trang phục màu sắc tươi sáng, chất liệu linen hoặc cotton thoáng mát đón tiết trời nồm ẩm và nắng xuân dịu.",
+            LifestyleOotdBadge = "🌸 Mùa Đơm Chồi"
         };
 
         // 6. MÙA HẠ (TROPICAL OASIS)
@@ -201,7 +246,16 @@ public class SeasonalSkinService
             WidgetTag = "Hạ Nắng",
             WidgetBorderHex = "#0EA5E9",
             WidgetTitleColorHex = "#FDE68A",
-            WidgetSeasonalGreeting = "Nắng Hạ Rực Rỡ • Năng Lượng Đầy Tràn"
+            WidgetSeasonalGreeting = "Nắng Hạ Rực Rỡ • Năng Lượng Đầy Tràn",
+            WidgetGradientStartHex = "#E60E7490",
+            WidgetGradientEndHex = "#E6B45309",
+            HourlyCurveStrokeHex = "#0EA5E9",
+            HourlyGradientTopHex = "#550EA5E9",
+            HourlyGradientBottomHex = "#050EA5E9",
+            SunArcStrokeHex = "#F59E0B",
+            BentoCardBorderAccentHex = "#350EA5E9",
+            LifestyleOotdTip = "Áo phông/polo thoáng khí, kính râm chống UV và kem chống nắng khi ra đường; ưu tiên màu sáng tản nhiệt.",
+            LifestyleOotdBadge = "☀️ Nắng Hè Rực Rỡ"
         };
 
         // 7. MÙA THU (AMBER ROMANCE)
@@ -231,7 +285,16 @@ public class SeasonalSkinService
             WidgetTag = "Thu Vàng",
             WidgetBorderHex = "#D97706",
             WidgetTitleColorHex = "#FED7AA",
-            WidgetSeasonalGreeting = "Mùa Thu Êm Ả • Gió Mát Trong Lành"
+            WidgetSeasonalGreeting = "Mùa Thu Êm Ả • Gió Mát Trong Lành",
+            WidgetGradientStartHex = "#E678350F",
+            WidgetGradientEndHex = "#E6991B1B",
+            HourlyCurveStrokeHex = "#D97706",
+            HourlyGradientTopHex = "#55D97706",
+            HourlyGradientBottomHex = "#05D97706",
+            SunArcStrokeHex = "#EA580C",
+            BentoCardBorderAccentHex = "#35D97706",
+            LifestyleOotdTip = "Cardigan len mỏng hoặc blazer thanh lịch tone be/nâu đất, kết hợp khăn choàng nhẹ đón những đợt gió heo may.",
+            LifestyleOotdBadge = "🍁 Thu Vàng Heo May"
         };
 
         // 8. MÙA ĐÔNG (NORDIC AURORA)
@@ -261,7 +324,16 @@ public class SeasonalSkinService
             WidgetTag = "Đông Lạnh",
             WidgetBorderHex = "#38BDF8",
             WidgetTitleColorHex = "#C7D2FE",
-            WidgetSeasonalGreeting = "Mùa Đông An Yên • Không Khí Trong Lành"
+            WidgetSeasonalGreeting = "Mùa Đông An Yên • Không Khí Trong Lành",
+            WidgetGradientStartHex = "#E60C4A6E",
+            WidgetGradientEndHex = "#E61E1B4B",
+            HourlyCurveStrokeHex = "#38BDF8",
+            HourlyGradientTopHex = "#5538BDF8",
+            HourlyGradientBottomHex = "#0538BDF8",
+            SunArcStrokeHex = "#818CF8",
+            BentoCardBorderAccentHex = "#3538BDF8",
+            LifestyleOotdTip = "Phối đồ nhiều lớp (layering) với áo phao lông vũ hoặc dạ dày dặn, găng tay và khăn quàng giữ ấm cổ ngực.",
+            LifestyleOotdBadge = "❄️ Đông Lạnh Tinh Khôi"
         };
     }
 

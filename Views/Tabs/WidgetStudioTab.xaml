@@ -8,7 +8,7 @@
     xmlns:models="using:WeatherApp.Models"
     mc:Ignorable="d">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <ScrollViewer x:Name="WidgetScrollViewer" VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="18" Padding="0,0,16,24">
             <!-- ==================== HEADER TIÊU ĐỀ STUDIO ==================== -->
             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -235,16 +235,30 @@
                             </StackPanel>
                             <TextBlock Text="Các kiểu dáng widget chuyên đề độc bản đồng bộ với chủ đề khí quyển và lễ hội truyền thống" FontSize="11.5" Opacity="0.7"/>
                         </StackPanel>
-                        <Border Grid.Column="1" Background="#20F59E0B" BorderBrush="#40F59E0B" BorderThickness="1" CornerRadius="8" Padding="10,4" VerticalAlignment="Center">
-                            <TextBlock Text="{x:Bind ViewModel.CurrentSeasonalSkin.DisplayName, Mode=OneWay}" FontSize="11" FontWeight="Bold" Foreground="#F59E0B"/>
-                        </Border>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Border Background="#20F59E0B" BorderBrush="#40F59E0B" BorderThickness="1" CornerRadius="8" Padding="10,4" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.CurrentSeasonalSkin.DisplayName, Mode=OneWay}" FontSize="11" FontWeight="Bold" Foreground="#F59E0B"/>
+                            </Border>
+                            <Button Click="PinCurrentSeasonalWidget_Click"
+                                    Background="#2538BDF8" BorderBrush="#6038BDF8" BorderThickness="1"
+                                    CornerRadius="8" Padding="10,5"
+                                    ToolTipService.ToolTip="Ghim ngay Widget mang chủ đề thời vụ / lễ hội đang chọn ra màn hình Desktop">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08d;" FontSize="11" Foreground="#38BDF8"/>
+                                    <TextBlock Text="Ghim Mùa Này" FontSize="11" FontWeight="Bold" Foreground="#38BDF8"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                     </Grid>
 
                     <!-- Lưới 8 Thẻ Widget Mùa & Lễ Hội (2 Cột x 4 Hàng) -->
-                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="16">
+                    <Grid x:Name="SeasonalGalleryGrid" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="16">
                         
                         <!-- 1. WIDGET TẾT CỔ TRUYỀN (HOÀNG KIM CÁT TƯỜNG) -->
-                        <Border Grid.Row="0" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        <Border x:Name="CardSeasonalTet" Grid.Row="0" Grid.Column="0"
+                                Tag="Tet" PointerPressed="SeasonalWidgetCard_PointerPressed"
+                                PointerEntered="Card_PointerEntered" PointerExited="Card_PointerExited"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="#50F59E0B" BorderThickness="1.5" CornerRadius="16" Padding="14">
                             <StackPanel Spacing="10">
                                 <Grid ColumnDefinitions="*,Auto">
@@ -252,9 +266,14 @@
                                         <TextBlock Text="🧧" FontSize="13"/>
                                         <TextBlock Text="Tết Cổ Truyền" FontWeight="Bold" FontSize="13.5" Foreground="#FDA4AF"/>
                                     </StackPanel>
-                                    <Border Grid.Column="1" Background="#25E11D48" BorderBrush="#50E11D48" BorderThickness="1" CornerRadius="8" Padding="7,2">
-                                        <TextBlock Text="Hoàng Kim" FontSize="10" FontWeight="Bold" Foreground="#FDA4AF"/>
-                                    </Border>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                        <Border x:Name="BadgeSeasonalTet" Background="#3510B981" BorderBrush="#6010B981" BorderThickness="1" CornerRadius="8" Padding="6,2" Visibility="Collapsed">
+                                            <TextBlock Text="ĐANG CHỌN" FontSize="9" FontWeight="Bold" Foreground="#10B981"/>
+                                        </Border>
+                                        <Border Background="#25E11D48" BorderBrush="#50E11D48" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                            <TextBlock Text="Hoàng Kim" FontSize="10" FontWeight="Bold" Foreground="#FDA4AF"/>
+                                        </Border>
+                                    </StackPanel>
                                 </Grid>
                                 <!-- Mockup Tết -->
                                 <Border Height="105" CornerRadius="12" BorderBrush="#60F59E0B" BorderThickness="1">
@@ -275,11 +294,21 @@
                                         </Grid>
                                     </Grid>
                                 </Border>
+                                <!-- Nút Ghim Thẻ Mùa -->
+                                <Button Tag="Tet" Click="PinSeasonalWidget_Click" HorizontalAlignment="Stretch" Padding="8,4" CornerRadius="8" Background="#20F59E0B" BorderBrush="#50F59E0B" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08d;" FontSize="10" Foreground="#F59E0B"/>
+                                        <TextBlock Text="📌 Ghim Widget Tết Ra Desktop" FontSize="11" FontWeight="SemiBold" Foreground="#F59E0B"/>
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
                         </Border>
 
                         <!-- 2. WIDGET TẾT TRUNG THU (DẠ NGUYỆT ĐOÀN VIÊN) -->
-                        <Border Grid.Row="0" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        <Border x:Name="CardSeasonalMidAutumn" Grid.Row="0" Grid.Column="1"
+                                Tag="MidAutumn" PointerPressed="SeasonalWidgetCard_PointerPressed"
+                                PointerEntered="Card_PointerEntered" PointerExited="Card_PointerExited"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="#50FDE047" BorderThickness="1.5" CornerRadius="16" Padding="14">
                             <StackPanel Spacing="10">
                                 <Grid ColumnDefinitions="*,Auto">
@@ -287,9 +316,14 @@
                                         <TextBlock Text="🥮" FontSize="13"/>
                                         <TextBlock Text="Tết Trung Thu" FontWeight="Bold" FontSize="13.5" Foreground="#FDE047"/>
                                     </StackPanel>
-                                    <Border Grid.Column="1" Background="#256366F1" BorderBrush="#506366F1" BorderThickness="1" CornerRadius="8" Padding="7,2">
-                                        <TextBlock Text="Dạ Nguyệt" FontSize="10" FontWeight="Bold" Foreground="#C7D2FE"/>
-                                    </Border>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                        <Border x:Name="BadgeSeasonalMidAutumn" Background="#3510B981" BorderBrush="#6010B981" BorderThickness="1" CornerRadius="8" Padding="6,2" Visibility="Collapsed">
+                                            <TextBlock Text="ĐANG CHỌN" FontSize="9" FontWeight="Bold" Foreground="#10B981"/>
+                                        </Border>
+                                        <Border Background="#256366F1" BorderBrush="#506366F1" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                            <TextBlock Text="Dạ Nguyệt" FontSize="10" FontWeight="Bold" Foreground="#C7D2FE"/>
+                                        </Border>
+                                    </StackPanel>
                                 </Grid>
                                 <!-- Mockup Trung Thu -->
                                 <Border Height="105" CornerRadius="12" BorderBrush="#60FDE047" BorderThickness="1">
@@ -310,11 +344,21 @@
                                         </Grid>
                                     </Grid>
                                 </Border>
+                                <!-- Nút Ghim Thẻ Mùa -->
+                                <Button Tag="MidAutumn" Click="PinSeasonalWidget_Click" HorizontalAlignment="Stretch" Padding="8,4" CornerRadius="8" Background="#20FDE047" BorderBrush="#50FDE047" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08d;" FontSize="10" Foreground="#FDE047"/>
+                                        <TextBlock Text="📌 Ghim Widget Trung Thu Ra Desktop" FontSize="11" FontWeight="SemiBold" Foreground="#FDE047"/>
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
                         </Border>
 
                         <!-- 3. WIDGET GIÁNG SINH & NĂM MỚI (NOEL WONDER) -->
-                        <Border Grid.Row="1" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        <Border x:Name="CardSeasonalChristmas" Grid.Row="1" Grid.Column="0"
+                                Tag="Christmas" PointerPressed="SeasonalWidgetCard_PointerPressed"
+                                PointerEntered="Card_PointerEntered" PointerExited="Card_PointerExited"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="#5022C55E" BorderThickness="1.5" CornerRadius="16" Padding="14">
                             <StackPanel Spacing="10">
                                 <Grid ColumnDefinitions="*,Auto">
@@ -322,9 +366,14 @@
                                         <TextBlock Text="🎄" FontSize="13"/>
                                         <TextBlock Text="Giáng Sinh &amp; Năm Mới" FontWeight="Bold" FontSize="13.5" Foreground="#86EFAC"/>
                                     </StackPanel>
-                                    <Border Grid.Column="1" Background="#25DC2626" BorderBrush="#50DC2626" BorderThickness="1" CornerRadius="8" Padding="7,2">
-                                        <TextBlock Text="Noel Frozen" FontSize="10" FontWeight="Bold" Foreground="#FCA5A5"/>
-                                    </Border>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                        <Border x:Name="BadgeSeasonalChristmas" Background="#3510B981" BorderBrush="#6010B981" BorderThickness="1" CornerRadius="8" Padding="6,2" Visibility="Collapsed">
+                                            <TextBlock Text="ĐANG CHỌN" FontSize="9" FontWeight="Bold" Foreground="#10B981"/>
+                                        </Border>
+                                        <Border Background="#25DC2626" BorderBrush="#50DC2626" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                            <TextBlock Text="Noel Frozen" FontSize="10" FontWeight="Bold" Foreground="#FCA5A5"/>
+                                        </Border>
+                                    </StackPanel>
                                 </Grid>
                                 <!-- Mockup Giáng Sinh -->
                                 <Border Height="105" CornerRadius="12" BorderBrush="#6038BDF8" BorderThickness="1">
@@ -345,11 +394,21 @@
                                         </Grid>
                                     </Grid>
                                 </Border>
+                                <!-- Nút Ghim Thẻ Mùa -->
+                                <Button Tag="Christmas" Click="PinSeasonalWidget_Click" HorizontalAlignment="Stretch" Padding="8,4" CornerRadius="8" Background="#2022C55E" BorderBrush="#5022C55E" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08d;" FontSize="10" Foreground="#22C55E"/>
+                                        <TextBlock Text="📌 Ghim Widget Giáng Sinh Ra Desktop" FontSize="11" FontWeight="SemiBold" Foreground="#22C55E"/>
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
                         </Border>
 
                         <!-- 4. WIDGET HALLOWEEN (MIDNIGHT PHANTOM) -->
-                        <Border Grid.Row="1" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        <Border x:Name="CardSeasonalHalloween" Grid.Row="1" Grid.Column="1"
+                                Tag="Halloween" PointerPressed="SeasonalWidgetCard_PointerPressed"
+                                PointerEntered="Card_PointerEntered" PointerExited="Card_PointerExited"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="#50F97316" BorderThickness="1.5" CornerRadius="16" Padding="14">
                             <StackPanel Spacing="10">
                                 <Grid ColumnDefinitions="*,Auto">
@@ -357,9 +416,14 @@
                                         <TextBlock Text="🎃" FontSize="13"/>
                                         <TextBlock Text="Lễ Hội Halloween" FontWeight="Bold" FontSize="13.5" Foreground="#FDBA74"/>
                                     </StackPanel>
-                                    <Border Grid.Column="1" Background="#25F97316" BorderBrush="#50F97316" BorderThickness="1" CornerRadius="8" Padding="7,2">
-                                        <TextBlock Text="Midnight" FontSize="10" FontWeight="Bold" Foreground="#FDBA74"/>
-                                    </Border>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                        <Border x:Name="BadgeSeasonalHalloween" Background="#3510B981" BorderBrush="#6010B981" BorderThickness="1" CornerRadius="8" Padding="6,2" Visibility="Collapsed">
+                                            <TextBlock Text="ĐANG CHỌN" FontSize="9" FontWeight="Bold" Foreground="#10B981"/>
+                                        </Border>
+                                        <Border Background="#25F97316" BorderBrush="#50F97316" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                            <TextBlock Text="Midnight" FontSize="10" FontWeight="Bold" Foreground="#FDBA74"/>
+                                        </Border>
+                                    </StackPanel>
                                 </Grid>
                                 <!-- Mockup Halloween -->
                                 <Border Height="105" CornerRadius="12" BorderBrush="#60F97316" BorderThickness="1">
@@ -380,11 +444,21 @@
                                         </Grid>
                                     </Grid>
                                 </Border>
+                                <!-- Nút Ghim Thẻ Mùa -->
+                                <Button Tag="Halloween" Click="PinSeasonalWidget_Click" HorizontalAlignment="Stretch" Padding="8,4" CornerRadius="8" Background="#20F97316" BorderBrush="#50F97316" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08d;" FontSize="10" Foreground="#F97316"/>
+                                        <TextBlock Text="📌 Ghim Widget Halloween Ra Desktop" FontSize="11" FontWeight="SemiBold" Foreground="#F97316"/>
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
                         </Border>
 
                         <!-- 5. WIDGET MÙA XUÂN (SPRING BLOOM) -->
-                        <Border Grid.Row="2" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        <Border x:Name="CardSeasonalSpring" Grid.Row="2" Grid.Column="0"
+                                Tag="Spring" PointerPressed="SeasonalWidgetCard_PointerPressed"
+                                PointerEntered="Card_PointerEntered" PointerExited="Card_PointerExited"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="#50EC4899" BorderThickness="1.5" CornerRadius="16" Padding="14">
                             <StackPanel Spacing="10">
                                 <Grid ColumnDefinitions="*,Auto">
@@ -392,9 +466,14 @@
                                         <TextBlock Text="🌸" FontSize="13"/>
                                         <TextBlock Text="Mùa Xuân (Spring)" FontWeight="Bold" FontSize="13.5" Foreground="#FBCFE8"/>
                                     </StackPanel>
-                                    <Border Grid.Column="1" Background="#25EC4899" BorderBrush="#50EC4899" BorderThickness="1" CornerRadius="8" Padding="7,2">
-                                        <TextBlock Text="Chồi Non" FontSize="10" FontWeight="Bold" Foreground="#FBCFE8"/>
-                                    </Border>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                        <Border x:Name="BadgeSeasonalSpring" Background="#3510B981" BorderBrush="#6010B981" BorderThickness="1" CornerRadius="8" Padding="6,2" Visibility="Collapsed">
+                                            <TextBlock Text="ĐANG CHỌN" FontSize="9" FontWeight="Bold" Foreground="#10B981"/>
+                                        </Border>
+                                        <Border Background="#25EC4899" BorderBrush="#50EC4899" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                            <TextBlock Text="Chồi Non" FontSize="10" FontWeight="Bold" Foreground="#FBCFE8"/>
+                                        </Border>
+                                    </StackPanel>
                                 </Grid>
                                 <Border Height="105" CornerRadius="12" BorderBrush="#60EC4899" BorderThickness="1">
                                     <Border.Background>
@@ -414,11 +493,21 @@
                                         </Grid>
                                     </Grid>
                                 </Border>
+                                <!-- Nút Ghim Thẻ Mùa -->
+                                <Button Tag="Spring" Click="PinSeasonalWidget_Click" HorizontalAlignment="Stretch" Padding="8,4" CornerRadius="8" Background="#20EC4899" BorderBrush="#50EC4899" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08d;" FontSize="10" Foreground="#EC4899"/>
+                                        <TextBlock Text="📌 Ghim Widget Mùa Xuân Ra Desktop" FontSize="11" FontWeight="SemiBold" Foreground="#EC4899"/>
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
                         </Border>
 
                         <!-- 6. WIDGET MÙA HẠ (TROPICAL OASIS) -->
-                        <Border Grid.Row="2" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        <Border x:Name="CardSeasonalSummer" Grid.Row="2" Grid.Column="1"
+                                Tag="Summer" PointerPressed="SeasonalWidgetCard_PointerPressed"
+                                PointerEntered="Card_PointerEntered" PointerExited="Card_PointerExited"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="#500EA5E9" BorderThickness="1.5" CornerRadius="16" Padding="14">
                             <StackPanel Spacing="10">
                                 <Grid ColumnDefinitions="*,Auto">
@@ -426,9 +515,14 @@
                                         <TextBlock Text="☀️" FontSize="13"/>
                                         <TextBlock Text="Mùa Hạ (Summer)" FontWeight="Bold" FontSize="13.5" Foreground="#7DD3FC"/>
                                     </StackPanel>
-                                    <Border Grid.Column="1" Background="#250EA5E9" BorderBrush="#500EA5E9" BorderThickness="1" CornerRadius="8" Padding="7,2">
-                                        <TextBlock Text="Biển Ngọc" FontSize="10" FontWeight="Bold" Foreground="#7DD3FC"/>
-                                    </Border>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                        <Border x:Name="BadgeSeasonalSummer" Background="#3510B981" BorderBrush="#6010B981" BorderThickness="1" CornerRadius="8" Padding="6,2" Visibility="Collapsed">
+                                            <TextBlock Text="ĐANG CHỌN" FontSize="9" FontWeight="Bold" Foreground="#10B981"/>
+                                        </Border>
+                                        <Border Background="#250EA5E9" BorderBrush="#500EA5E9" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                            <TextBlock Text="Biển Ngọc" FontSize="10" FontWeight="Bold" Foreground="#7DD3FC"/>
+                                        </Border>
+                                    </StackPanel>
                                 </Grid>
                                 <Border Height="105" CornerRadius="12" BorderBrush="#600EA5E9" BorderThickness="1">
                                     <Border.Background>
@@ -448,11 +542,21 @@
                                         </Grid>
                                     </Grid>
                                 </Border>
+                                <!-- Nút Ghim Thẻ Mùa -->
+                                <Button Tag="Summer" Click="PinSeasonalWidget_Click" HorizontalAlignment="Stretch" Padding="8,4" CornerRadius="8" Background="#200EA5E9" BorderBrush="#500EA5E9" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08d;" FontSize="10" Foreground="#0EA5E9"/>
+                                        <TextBlock Text="📌 Ghim Widget Mùa Hạ Ra Desktop" FontSize="11" FontWeight="SemiBold" Foreground="#0EA5E9"/>
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
                         </Border>
 
                         <!-- 7. WIDGET MÙA THU (AMBER ROMANCE) -->
-                        <Border Grid.Row="3" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        <Border x:Name="CardSeasonalAutumn" Grid.Row="3" Grid.Column="0"
+                                Tag="Autumn" PointerPressed="SeasonalWidgetCard_PointerPressed"
+                                PointerEntered="Card_PointerEntered" PointerExited="Card_PointerExited"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="#50D97706" BorderThickness="1.5" CornerRadius="16" Padding="14">
                             <StackPanel Spacing="10">
                                 <Grid ColumnDefinitions="*,Auto">
@@ -460,9 +564,14 @@
                                         <TextBlock Text="🍁" FontSize="13"/>
                                         <TextBlock Text="Mùa Thu (Autumn)" FontWeight="Bold" FontSize="13.5" Foreground="#FDE68A"/>
                                     </StackPanel>
-                                    <Border Grid.Column="1" Background="#25D97706" BorderBrush="#50D97706" BorderThickness="1" CornerRadius="8" Padding="7,2">
-                                        <TextBlock Text="Hổ Phách" FontSize="10" FontWeight="Bold" Foreground="#FDE68A"/>
-                                    </Border>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                        <Border x:Name="BadgeSeasonalAutumn" Background="#3510B981" BorderBrush="#6010B981" BorderThickness="1" CornerRadius="8" Padding="6,2" Visibility="Collapsed">
+                                            <TextBlock Text="ĐANG CHỌN" FontSize="9" FontWeight="Bold" Foreground="#10B981"/>
+                                        </Border>
+                                        <Border Background="#25D97706" BorderBrush="#50D97706" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                            <TextBlock Text="Hổ Phách" FontSize="10" FontWeight="Bold" Foreground="#FDE68A"/>
+                                        </Border>
+                                    </StackPanel>
                                 </Grid>
                                 <Border Height="105" CornerRadius="12" BorderBrush="#60D97706" BorderThickness="1">
                                     <Border.Background>
@@ -482,11 +591,21 @@
                                         </Grid>
                                     </Grid>
                                 </Border>
+                                <!-- Nút Ghim Thẻ Mùa -->
+                                <Button Tag="Autumn" Click="PinSeasonalWidget_Click" HorizontalAlignment="Stretch" Padding="8,4" CornerRadius="8" Background="#20D97706" BorderBrush="#50D97706" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08d;" FontSize="10" Foreground="#D97706"/>
+                                        <TextBlock Text="📌 Ghim Widget Mùa Thu Ra Desktop" FontSize="11" FontWeight="SemiBold" Foreground="#D97706"/>
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
                         </Border>
 
                         <!-- 8. WIDGET MÙA ĐÔNG (NORDIC AURORA) -->
-                        <Border Grid.Row="3" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        <Border x:Name="CardSeasonalWinter" Grid.Row="3" Grid.Column="1"
+                                Tag="Winter" PointerPressed="SeasonalWidgetCard_PointerPressed"
+                                PointerEntered="Card_PointerEntered" PointerExited="Card_PointerExited"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="#50818CF8" BorderThickness="1.5" CornerRadius="16" Padding="14">
                             <StackPanel Spacing="10">
                                 <Grid ColumnDefinitions="*,Auto">
@@ -494,9 +613,14 @@
                                         <TextBlock Text="❄️" FontSize="13"/>
                                         <TextBlock Text="Mùa Đông (Winter)" FontWeight="Bold" FontSize="13.5" Foreground="#BAE6FD"/>
                                     </StackPanel>
-                                    <Border Grid.Column="1" Background="#25818CF8" BorderBrush="#50818CF8" BorderThickness="1" CornerRadius="8" Padding="7,2">
-                                        <TextBlock Text="Bắc Cực" FontSize="10" FontWeight="Bold" Foreground="#C7D2FE"/>
-                                    </Border>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                        <Border x:Name="BadgeSeasonalWinter" Background="#3510B981" BorderBrush="#6010B981" BorderThickness="1" CornerRadius="8" Padding="6,2" Visibility="Collapsed">
+                                            <TextBlock Text="ĐANG CHỌN" FontSize="9" FontWeight="Bold" Foreground="#10B981"/>
+                                        </Border>
+                                        <Border Background="#25818CF8" BorderBrush="#50818CF8" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                            <TextBlock Text="Bắc Cực" FontSize="10" FontWeight="Bold" Foreground="#C7D2FE"/>
+                                        </Border>
+                                    </StackPanel>
                                 </Grid>
                                 <Border Height="105" CornerRadius="12" BorderBrush="#60818CF8" BorderThickness="1">
                                     <Border.Background>
@@ -516,6 +640,13 @@
                                         </Grid>
                                     </Grid>
                                 </Border>
+                                <!-- Nút Ghim Thẻ Mùa -->
+                                <Button Tag="Winter" Click="PinSeasonalWidget_Click" HorizontalAlignment="Stretch" Padding="8,4" CornerRadius="8" Background="#20818CF8" BorderBrush="#50818CF8" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08d;" FontSize="10" Foreground="#818CF8"/>
+                                        <TextBlock Text="📌 Ghim Widget Mùa Đông Ra Desktop" FontSize="11" FontWeight="SemiBold" Foreground="#818CF8"/>
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
                         </Border>
 

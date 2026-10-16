@@ -718,43 +718,58 @@ public sealed partial class OverviewTab : UserControl
             }
 
             bool isDark = ActualTheme != ElementTheme.Light;
+            var skin = ViewModel?.CurrentSeasonalSkin;
 
-            // Bảng màu stroke & fill tương ứng thích ứng Dark / Light Mode
-            var (strokeColor, fillStartColor, fillEndColor) = _currentHourlyMetric switch
+            // Bảng màu stroke & fill tương ứng thích ứng Dark / Light Mode & Theme mùa/lễ hội
+            Windows.UI.Color strokeColor, fillStartColor, fillEndColor;
+
+            if (_currentHourlyMetric == HourlyChartMetricMode.Temperature && skin != null)
             {
-                HourlyChartMetricMode.Temperature => isDark
-                    ? (Windows.UI.Color.FromArgb(230, 56, 189, 248),
-                       Windows.UI.Color.FromArgb(90, 56, 189, 248),
-                       Windows.UI.Color.FromArgb(10, 56, 189, 248))
-                    : (Windows.UI.Color.FromArgb(255, 2, 132, 199),  // Sky-600
-                       Windows.UI.Color.FromArgb(50, 2, 132, 199),
-                       Windows.UI.Color.FromArgb(5, 2, 132, 199)),
-                HourlyChartMetricMode.RainProbability => isDark
-                    ? (Windows.UI.Color.FromArgb(240, 14, 165, 233),
-                       Windows.UI.Color.FromArgb(100, 14, 165, 233),
-                       Windows.UI.Color.FromArgb(12, 14, 165, 233))
-                    : (Windows.UI.Color.FromArgb(255, 14, 165, 233),
-                       Windows.UI.Color.FromArgb(50, 14, 165, 233),
-                       Windows.UI.Color.FromArgb(5, 14, 165, 233)),
-                HourlyChartMetricMode.WindSpeed => isDark
-                    ? (Windows.UI.Color.FromArgb(240, 16, 185, 129),
-                       Windows.UI.Color.FromArgb(100, 16, 185, 129),
-                       Windows.UI.Color.FromArgb(12, 16, 185, 129))
-                    : (Windows.UI.Color.FromArgb(255, 5, 150, 105),  // Emerald-600
-                       Windows.UI.Color.FromArgb(50, 5, 150, 105),
-                       Windows.UI.Color.FromArgb(5, 5, 150, 105)),
-                HourlyChartMetricMode.UvIndex => isDark
-                    ? (Windows.UI.Color.FromArgb(240, 245, 158, 11),
-                       Windows.UI.Color.FromArgb(100, 245, 158, 11),
-                       Windows.UI.Color.FromArgb(12, 245, 158, 11))
-                    : (Windows.UI.Color.FromArgb(255, 217, 119, 6),  // Amber-600
-                       Windows.UI.Color.FromArgb(50, 217, 119, 6),
-                       Windows.UI.Color.FromArgb(5, 217, 119, 6)),
-                _ => (
-                    Windows.UI.Color.FromArgb(230, 56, 189, 248),
-                    Windows.UI.Color.FromArgb(90, 56, 189, 248),
-                    Windows.UI.Color.FromArgb(10, 56, 189, 248))
-            };
+                var baseStroke = ParseHexColor(skin.HourlyCurveStrokeHex);
+                strokeColor = isDark
+                    ? Windows.UI.Color.FromArgb(240, baseStroke.R, baseStroke.G, baseStroke.B)
+                    : Windows.UI.Color.FromArgb(255, (byte)Math.Max(0, baseStroke.R - 25), (byte)Math.Max(0, baseStroke.G - 25), (byte)Math.Max(0, baseStroke.B - 25));
+                fillStartColor = ParseHexColor(skin.HourlyGradientTopHex);
+                fillEndColor = ParseHexColor(skin.HourlyGradientBottomHex);
+            }
+            else
+            {
+                (strokeColor, fillStartColor, fillEndColor) = _currentHourlyMetric switch
+                {
+                    HourlyChartMetricMode.Temperature => isDark
+                        ? (Windows.UI.Color.FromArgb(230, 56, 189, 248),
+                           Windows.UI.Color.FromArgb(90, 56, 189, 248),
+                           Windows.UI.Color.FromArgb(10, 56, 189, 248))
+                        : (Windows.UI.Color.FromArgb(255, 2, 132, 199),  // Sky-600
+                           Windows.UI.Color.FromArgb(50, 2, 132, 199),
+                           Windows.UI.Color.FromArgb(5, 2, 132, 199)),
+                    HourlyChartMetricMode.RainProbability => isDark
+                        ? (Windows.UI.Color.FromArgb(240, 14, 165, 233),
+                           Windows.UI.Color.FromArgb(100, 14, 165, 233),
+                           Windows.UI.Color.FromArgb(12, 14, 165, 233))
+                        : (Windows.UI.Color.FromArgb(255, 14, 165, 233),
+                           Windows.UI.Color.FromArgb(50, 14, 165, 233),
+                           Windows.UI.Color.FromArgb(5, 14, 165, 233)),
+                    HourlyChartMetricMode.WindSpeed => isDark
+                        ? (Windows.UI.Color.FromArgb(240, 16, 185, 129),
+                           Windows.UI.Color.FromArgb(100, 16, 185, 129),
+                           Windows.UI.Color.FromArgb(12, 16, 185, 129))
+                        : (Windows.UI.Color.FromArgb(255, 5, 150, 105),  // Emerald-600
+                           Windows.UI.Color.FromArgb(50, 5, 150, 105),
+                           Windows.UI.Color.FromArgb(5, 5, 150, 105)),
+                    HourlyChartMetricMode.UvIndex => isDark
+                        ? (Windows.UI.Color.FromArgb(240, 245, 158, 11),
+                           Windows.UI.Color.FromArgb(100, 245, 158, 11),
+                           Windows.UI.Color.FromArgb(12, 245, 158, 11))
+                        : (Windows.UI.Color.FromArgb(255, 217, 119, 6),  // Amber-600
+                           Windows.UI.Color.FromArgb(50, 217, 119, 6),
+                           Windows.UI.Color.FromArgb(5, 217, 119, 6)),
+                    _ => (
+                        Windows.UI.Color.FromArgb(230, 56, 189, 248),
+                        Windows.UI.Color.FromArgb(90, 56, 189, 248),
+                        Windows.UI.Color.FromArgb(10, 56, 189, 248))
+                };
+            }
 
             double minVal = items.Min(GetItemValue);
             double maxVal = items.Max(GetItemValue);
@@ -1370,6 +1385,21 @@ public sealed partial class OverviewTab : UserControl
                         Convert.ToByte(h[4..6], 16));
                 }
             }
+
+            // 5. Cập nhật viền Bento Grid Cards theo Theme Mùa / Đại Lễ Hội
+            if (skin != null && !string.IsNullOrEmpty(skin.BentoCardBorderAccentHex))
+            {
+                var bentoBrush = new SolidColorBrush(ParseHexColor(skin.BentoCardBorderAccentHex));
+                Border?[] bentoCards = { CardUv, CardAqi, CardWind, CardHumidity, CardRain, CardPressure, CardSunMoon, CardPollutants };
+                foreach (var card in bentoCards)
+                {
+                    if (card != null) card.BorderBrush = bentoBrush;
+                }
+            }
+
+            // 6. Vẽ lại biểu đồ nhiệt độ 24h & cung mặt trời theo theme mùa
+            RenderHourlyTrendline();
+            RenderSunArc();
         }
         catch { }
     }
@@ -1487,10 +1517,8 @@ public sealed partial class OverviewTab : UserControl
             var arcPath = new Microsoft.UI.Xaml.Shapes.Path
             {
                 Data = pathGeometry,
-                Stroke = new SolidColorBrush(isDark 
-                    ? Windows.UI.Color.FromArgb(90, 255, 255, 255) 
-                    : Windows.UI.Color.FromArgb(170, 180, 83, 9)),
-                StrokeThickness = isDark ? 1.6 : 2.0,
+                Stroke = new SolidColorBrush(GetSunArcStrokeColor(isDark)),
+                StrokeThickness = isDark ? 1.8 : 2.2,
                 StrokeDashArray = new DoubleCollection { 3, 2.5 }
             };
             SunArcCanvas.Children.Add(arcPath);
@@ -1538,6 +1566,48 @@ public sealed partial class OverviewTab : UserControl
         {
             _isRenderingSunArc = false;
         }
+    }
+
+    private Windows.UI.Color GetSunArcStrokeColor(bool isDark)
+    {
+        var skin = ViewModel?.CurrentSeasonalSkin;
+        if (skin != null && !string.IsNullOrEmpty(skin.SunArcStrokeHex))
+        {
+            var parsed = ParseHexColor(skin.SunArcStrokeHex);
+            return isDark
+                ? Windows.UI.Color.FromArgb(170, parsed.R, parsed.G, parsed.B)
+                : Windows.UI.Color.FromArgb(220, (byte)Math.Max(0, parsed.R - 20), (byte)Math.Max(0, parsed.G - 20), (byte)Math.Max(0, parsed.B - 20));
+        }
+
+        return isDark
+            ? Windows.UI.Color.FromArgb(90, 255, 255, 255)
+            : Windows.UI.Color.FromArgb(170, 180, 83, 9);
+    }
+
+    private static Windows.UI.Color ParseHexColor(string hex)
+    {
+        if (string.IsNullOrWhiteSpace(hex)) return Windows.UI.Color.FromArgb(255, 56, 189, 248);
+        try
+        {
+            hex = hex.TrimStart('#');
+            if (hex.Length == 6)
+            {
+                byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+                return Windows.UI.Color.FromArgb(255, r, g, b);
+            }
+            if (hex.Length == 8)
+            {
+                byte a = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                byte r = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                byte g = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+                byte b = byte.Parse(hex.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
+                return Windows.UI.Color.FromArgb(a, r, g, b);
+            }
+        }
+        catch { }
+        return Windows.UI.Color.FromArgb(255, 56, 189, 248);
     }
 
     private void HourlyCard_Click(object sender, RoutedEventArgs e)

@@ -151,11 +151,19 @@ public sealed partial class MainPage : Page
                     if (scrollArg != null)
                     {
                         string targetScroll = scrollArg.Substring(9).Trim().ToLowerInvariant();
-                        if (targetScroll == "hourly" || targetScroll == "bottom")
+                        if (targetScroll == "hourly")
                         {
                             DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
                             {
                                 TabOverview?.ScrollToHourlySection();
+                            });
+                        }
+                        else if (targetScroll == "seasonal" || targetScroll == "bottom")
+                        {
+                            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+                            {
+                                TabOverview?.ScrollToHourlySection();
+                                (FindName(nameof(TabWidgetStudio)) as WidgetStudioTab)?.ScrollToSeasonalSection();
                             });
                         }
                     }
@@ -216,6 +224,24 @@ public sealed partial class MainPage : Page
                                     break;
                             }
                         }
+                    }
+
+                    if (Environment.GetCommandLineArgs().Any(a => a.Equals("--openwidget", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+                        {
+                            var skinArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--skin=", StringComparison.OrdinalIgnoreCase));
+                            string skinMode = skinArg != null ? skinArg.Substring(7).Trim() : "Auto";
+                            var skin = Services.SeasonalSkinService.Instance.GetActiveSkin(skinMode);
+                            
+                            if (_widgetWindow == null)
+                            {
+                                _widgetWindow = new WidgetWindow(ViewModel);
+                                _widgetWindow.Closed += (s, args) => _widgetWindow = null;
+                            }
+                            _widgetWindow.ApplySeasonalTheme(skin);
+                            _widgetWindow.Activate();
+                        });
                     }
                 }
                 catch { }

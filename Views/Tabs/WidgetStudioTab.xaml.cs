@@ -78,6 +78,13 @@ public sealed partial class WidgetStudioTab : UserControl
             {
                 AlwaysOnTopSwitch.IsOn = ViewModel.Settings.WidgetAlwaysOnTop;
             }
+
+            string seasonalMode = ViewModel.SelectedSeasonalSkinMode;
+            if (string.Equals(seasonalMode, "Auto", StringComparison.OrdinalIgnoreCase))
+            {
+                seasonalMode = ViewModel.CurrentSeasonalSkin?.Id.ToString() ?? "Tet";
+            }
+            UpdateSeasonalCardsVisuals(seasonalMode);
         }
         finally
         {
@@ -122,6 +129,41 @@ public sealed partial class WidgetStudioTab : UserControl
                 if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 1); Grid.SetRow(CardWidgetGlassCard, 0); }
                 if (CardWidgetCompact != null) { Grid.SetColumn(CardWidgetCompact, 0); Grid.SetRow(CardWidgetCompact, 1); }
                 if (CardWidgetMiniIsland != null) { Grid.SetColumn(CardWidgetMiniIsland, 1); Grid.SetRow(CardWidgetMiniIsland, 1); }
+            }
+        }
+
+        // 1b. Seasonal Gallery Grid (Chuyển giữa 2x4 trên màn rộng và 1x8 trên màn hẹp)
+        if (SeasonalGalleryGrid != null)
+        {
+            var sCards = new[] { CardSeasonalTet, CardSeasonalMidAutumn, CardSeasonalChristmas, CardSeasonalHalloween, CardSeasonalSpring, CardSeasonalSummer, CardSeasonalAutumn, CardSeasonalWinter };
+            if (isNarrow)
+            {
+                SeasonalGalleryGrid.ColumnDefinitions.Clear();
+                SeasonalGalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                SeasonalGalleryGrid.RowDefinitions.Clear();
+                for (int i = 0; i < 8; i++) SeasonalGalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+                for (int i = 0; i < sCards.Length; i++)
+                {
+                    if (sCards[i] != null) { Grid.SetColumn(sCards[i], 0); Grid.SetRow(sCards[i], i); }
+                }
+            }
+            else
+            {
+                SeasonalGalleryGrid.ColumnDefinitions.Clear();
+                SeasonalGalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                SeasonalGalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                SeasonalGalleryGrid.RowDefinitions.Clear();
+                for (int i = 0; i < 4; i++) SeasonalGalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+                for (int i = 0; i < sCards.Length; i++)
+                {
+                    if (sCards[i] != null)
+                    {
+                        Grid.SetColumn(sCards[i], i % 2);
+                        Grid.SetRow(sCards[i], i / 2);
+                    }
+                }
             }
         }
 
@@ -377,5 +419,111 @@ public sealed partial class WidgetStudioTab : UserControl
     private void CloseAllWidgets_Click(object sender, RoutedEventArgs e)
     {
         WidgetWindow.CloseAllWidgets();
+    }
+
+    private void SeasonalWidgetCard_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (sender is FrameworkElement elem && elem.Tag is string tag)
+        {
+            PinSeasonalWidgetToDesktop(tag);
+        }
+    }
+
+    private void PinSeasonalWidget_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement elem && elem.Tag is string tag)
+        {
+            PinSeasonalWidgetToDesktop(tag);
+        }
+    }
+
+    private void PinCurrentSeasonalWidget_Click(object sender, RoutedEventArgs e)
+    {
+        string currentTag = ViewModel?.CurrentSeasonalSkin?.Id.ToString() ?? "Tet";
+        PinSeasonalWidgetToDesktop(currentTag);
+    }
+
+    private void PinSeasonalWidgetToDesktop(string skinTag)
+    {
+        if (ViewModel == null) return;
+
+        // 1. Đồng bộ skin theo mùa trên toàn app
+        ViewModel.ApplySeasonalSkin(skinTag, save: true);
+
+        // 2. Cập nhật phong cách widget sang SeasonalCard
+        ViewModel.Settings.WidgetStyle = "SeasonalCard";
+        ViewModel.ApplySettings();
+
+        UpdateSeasonalCardsVisuals(skinTag);
+
+        // 3. Khởi tạo hoặc cập nhật WidgetWindow trên Desktop
+        var targetSkin = SeasonalSkinService.Instance.GetActiveSkin(skinTag);
+        double chosenOpacity = ViewModel.Settings.WidgetOpacity;
+        if (chosenOpacity <= 0.05) chosenOpacity = 1.0;
+        bool alwaysOnTop = ViewModel.Settings.WidgetAlwaysOnTop;
+
+        // Nếu đã có Widget đang mở, áp dụng skin mùa ngay lập tức
+        if (WidgetWindow.ActiveWidgets.Count > 0)
+        {
+            foreach (var w in WidgetWindow.ActiveWidgets)
+            {
+                try
+                {
+                    w.ApplySeasonalTheme(targetSkin);
+                    w.Activate();
+                }
+                catch { }
+            }
+        }
+        else
+        {
+            // Nếu chưa mở Widget nào, ghim một Widget mới ra Desktop
+            var widgetWindow = new WidgetWindow(ViewModel);
+            widgetWindow.ApplySeasonalTheme(targetSkin);
+            widgetWindow.SetOpacity(chosenOpacity);
+            widgetWindow.SetAlwaysOnTop(alwaysOnTop);
+            widgetWindow.Activate();
+        }
+    }
+
+    private void UpdateSeasonalCardsVisuals(string currentSkinTag)
+    {
+        var cards = new (Border? card, Border? badge, string tag)[]
+        {
+            (CardSeasonalTet, BadgeSeasonalTet, "Tet"),
+            (CardSeasonalMidAutumn, BadgeSeasonalMidAutumn, "MidAutumn"),
+            (CardSeasonalChristmas, BadgeSeasonalChristmas, "Christmas"),
+            (CardSeasonalHalloween, BadgeSeasonalHalloween, "Halloween"),
+            (CardSeasonalSpring, BadgeSeasonalSpring, "Spring"),
+            (CardSeasonalSummer, BadgeSeasonalSummer, "Summer"),
+            (CardSeasonalAutumn, BadgeSeasonalAutumn, "Autumn"),
+            (CardSeasonalWinter, BadgeSeasonalWinter, "Winter")
+        };
+
+        foreach (var (card, badge, tag) in cards)
+        {
+            if (card == null) continue;
+            bool isSelected = string.Equals(tag, currentSkinTag, StringComparison.OrdinalIgnoreCase);
+
+            if (isSelected)
+            {
+                card.BorderThickness = new Thickness(2.5);
+                if (badge != null) badge.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                card.BorderThickness = new Thickness(1.5);
+                if (badge != null) badge.Visibility = Visibility.Collapsed;
+            }
+        }
+    }
+
+    public void ScrollToSeasonalSection()
+    {
+        try
+        {
+            WidgetScrollViewer?.ChangeView(null, WidgetScrollViewer.ScrollableHeight, null, false);
+        }
+        catch { }
     }
 }

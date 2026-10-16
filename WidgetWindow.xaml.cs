@@ -41,6 +41,7 @@ public sealed partial class WidgetWindow : Window
     private AppWindow? _appWindow;
     private bool _isAlwaysOnTop = true;
     private string _currentStyle = "GlassCard";
+    private SeasonalSkinDefinition? _seasonalSkin;
 
     public string LocationName { get; private set; } = "Hà Nội";
     public double Latitude { get; private set; } = 21.0285;
@@ -272,6 +273,36 @@ public sealed partial class WidgetWindow : Window
         }
     }
 
+    public void ApplySeasonalTheme(SeasonalSkinDefinition skin)
+    {
+        _seasonalSkin = skin;
+        _currentStyle = "SeasonalCard";
+        ApplyWidgetStyle("SeasonalCard");
+        ApplySeasonalSkinVisuals(skin);
+    }
+
+    private void ApplySeasonalSkinVisuals(SeasonalSkinDefinition skin)
+    {
+        try
+        {
+            var brush = new Microsoft.UI.Xaml.Media.LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
+            brush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = ParseHexColor(skin.WidgetGradientStartHex), Offset = 0 });
+            brush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = ParseHexColor(skin.WidgetGradientEndHex), Offset = 1 });
+            WidgetRoot.Background = brush;
+
+            WidgetRoot.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(ParseHexColor(skin.WidgetBorderHex));
+
+            if (SeasonalEmojiText != null) SeasonalEmojiText.Text = skin.BadgeEmoji;
+            if (SeasonalTagText != null)
+            {
+                SeasonalTagText.Text = skin.DisplayName;
+                try { SeasonalTagText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(ParseHexColor(skin.WidgetTitleColorHex)); } catch { }
+            }
+            if (SeasonalGreetingText != null) SeasonalGreetingText.Text = skin.WidgetSeasonalGreeting;
+        }
+        catch { }
+    }
+
     public void ApplyWidgetStyle(string style)
     {
         _currentStyle = style;
@@ -279,8 +310,9 @@ public sealed partial class WidgetWindow : Window
         bool isIsland = style == "MiniIsland";
         bool isCompact = style == "Compact";
         bool isGlass = style == "GlassCard";
+        bool isSeasonal = style == "SeasonalCard" || style.StartsWith("Seasonal");
 
-        if (!isBryanC && !isIsland && !isCompact && !isGlass)
+        if (!isBryanC && !isIsland && !isCompact && !isGlass && !isSeasonal)
         {
             isBryanC = true;
             _currentStyle = "BryanCDynamic";
@@ -290,8 +322,9 @@ public sealed partial class WidgetWindow : Window
         if (GlassCardView != null) GlassCardView.Visibility = isGlass ? Visibility.Visible : Visibility.Collapsed;
         if (CompactBarView != null) CompactBarView.Visibility = isCompact ? Visibility.Visible : Visibility.Collapsed;
         if (MiniIslandView != null) MiniIslandView.Visibility = isIsland ? Visibility.Visible : Visibility.Collapsed;
+        if (SeasonalFestivalView != null) SeasonalFestivalView.Visibility = isSeasonal ? Visibility.Visible : Visibility.Collapsed;
 
-        int cornerRadiusDip = (isBryanC || isIsland) ? 20 : 14;
+        int cornerRadiusDip = (isBryanC || isIsland || isSeasonal) ? 20 : 14;
         WidgetRoot.CornerRadius = new CornerRadius(cornerRadiusDip);
 
         IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
@@ -299,25 +332,35 @@ public sealed partial class WidgetWindow : Window
         if (dpi == 0) dpi = 96;
         double scale = dpi / 96.0;
 
-        int widthDip = isBryanC ? 340 : (isIsland ? 290 : (isCompact ? 300 : 385));
-        int heightDip = isBryanC ? 200 : (isIsland ? 40 : (isCompact ? 54 : 230));
+        int widthDip = isSeasonal ? 385 : (isBryanC ? 340 : (isIsland ? 290 : (isCompact ? 300 : 385)));
+        int heightDip = isSeasonal ? 215 : (isBryanC ? 200 : (isIsland ? 40 : (isCompact ? 54 : 230)));
 
         int physicalWidth = (int)Math.Round(widthDip * scale);
         int physicalHeight = (int)Math.Round(heightDip * scale);
 
         _appWindow?.Resize(new Windows.Graphics.SizeInt32(physicalWidth, physicalHeight));
 
-        if (isBryanC && _currentWeather != null)
+        if (isSeasonal)
+        {
+            if (_seasonalSkin == null)
+            {
+                _seasonalSkin = SeasonalSkinService.Instance.GetActiveSkin(_settings.SeasonalSkinMode);
+            }
+            ApplySeasonalSkinVisuals(_seasonalSkin);
+            UpdateWidgetData();
+        }
+        else if (isBryanC && _currentWeather != null)
         {
             ApplyBryanCWeatherTheme(_currentWeather.WeatherEffect, _currentWeather.IsDay);
         }
-        else if (!isBryanC)
+        else if (!isBryanC && !isSeasonal)
         {
             // Khôi phục background kính tối chuẩn cho GlassCard/Compact
             var brush = new Microsoft.UI.Xaml.Media.LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
             brush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(0xF2, 0x0F, 0x17, 0x2A), Offset = 0 });
             brush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(0xF2, 0x1E, 0x29, 0x3B), Offset = 1 });
             WidgetRoot.Background = brush;
+            WidgetRoot.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(34, 255, 255, 255));
         }
 
         // Đảm bảo không có viền DWM trắng hay khung viền Win32 xuất hiện
@@ -331,6 +374,7 @@ public sealed partial class WidgetWindow : Window
             "BryanCDynamic" => "GlassCard",
             "GlassCard" => "Compact",
             "Compact" => "MiniIsland",
+            "MiniIsland" => "SeasonalCard",
             _ => "BryanCDynamic"
         };
 
@@ -385,6 +429,7 @@ public sealed partial class WidgetWindow : Window
         WidgetClockText.Text = clock;
         CompactClockText.Text = clock;
         if (BryanCClockText != null) BryanCClockText.Text = clock;
+        if (SeasonalClockText != null) SeasonalClockText.Text = clock;
 
         if (BryanCDateText != null)
         {
@@ -646,6 +691,57 @@ public sealed partial class WidgetWindow : Window
 
         // Cập nhật dock 4 ngày dự báo tiếp theo
         UpdateBryanCForecastDock();
+
+        // Cập nhật SeasonalFestivalView (Festive Seasonal Card)
+        if (SeasonalCityText != null) SeasonalCityText.Text = displayCity;
+        if (SeasonalTempText != null) SeasonalTempText.Text = tempOnly;
+        if (SeasonalConditionText != null) SeasonalConditionText.Text = _currentWeather.ConditionText;
+        if (SeasonalDateText != null) SeasonalDateText.Text = DateTime.Now.ToString("dd/MM");
+        if (SeasonalLunarText != null) SeasonalLunarText.Text = _currentWeather.LunarDateText;
+        if (SeasonalRangeText != null)
+        {
+            if (_dailyForecast != null && _dailyForecast.Count > 0)
+            {
+                var today = _dailyForecast[0];
+                string max = today.TempMaxDisplay.Replace("°C", "°").Replace("°F", "°");
+                string min = today.TempMinDisplay.Replace("°C", "°").Replace("°F", "°");
+                SeasonalRangeText.Text = $"{max} / {min}";
+            }
+            else
+            {
+                SeasonalRangeText.Text = $"{tempOnly} / --°";
+            }
+        }
+        if (SeasonalAqiText != null) SeasonalAqiText.Text = _currentWeather.HasAqi ? $"AQI {_currentWeather.AqiValue}" : "AQI --";
+        if (SeasonalWindText != null) SeasonalWindText.Text = _currentWeather.WindText;
+        if (SeasonalHumidityText != null) SeasonalHumidityText.Text = _currentWeather.HumidityText;
+
+        if (svgLoaded && SeasonalWeatherIcon != null)
+        {
+            SeasonalWeatherIcon.Source = WidgetWeatherIcon.Source;
+            SeasonalWeatherIcon.Visibility = Visibility.Visible;
+            if (SeasonalFallbackIcon != null) SeasonalFallbackIcon.Visibility = Visibility.Collapsed;
+        }
+        else if (SeasonalWeatherIcon != null)
+        {
+            SeasonalWeatherIcon.Visibility = Visibility.Collapsed;
+            if (SeasonalFallbackIcon != null)
+            {
+                SeasonalFallbackIcon.Glyph = WidgetFallbackIcon.Glyph;
+                SeasonalFallbackIcon.Visibility = Visibility.Visible;
+            }
+        }
+
+        if (_seasonalSkin != null)
+        {
+            if (SeasonalEmojiText != null) SeasonalEmojiText.Text = _seasonalSkin.BadgeEmoji;
+            if (SeasonalTagText != null)
+            {
+                SeasonalTagText.Text = _seasonalSkin.DisplayName;
+                try { SeasonalTagText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(ParseHexColor(_seasonalSkin.WidgetTitleColorHex)); } catch { }
+            }
+            if (SeasonalGreetingText != null) SeasonalGreetingText.Text = _seasonalSkin.WidgetSeasonalGreeting;
+        }
 
         // Áp dụng màu sắc & hiệu ứng đồ họa động theo thời tiết cho phong cách BryanC
         if (_currentStyle == "BryanCDynamic")

@@ -65,9 +65,24 @@ public class SeasonalSkinDefinition
     // Hiệu ứng hạt không gian
     public SeasonalParticleType ParticleType { get; set; } = SeasonalParticleType.None;
 
-    // Định dạng Widget Studio
+    // Định dạng Widget Studio & Desktop Widget
     public string WidgetTag { get; set; } = "Standard";
     public string WidgetBorderHex { get; set; } = "#38BDF8";
     public string WidgetTitleColorHex { get; set; } = "#38BDF8";
     public string WidgetSeasonalGreeting { get; set; } = string.Empty;
+    public string WidgetGradientStartHex { get; set; } = "#F20F172A";
+    public string WidgetGradientEndHex { get; set; } = "#F21E293B";
+
+    // Đồng Bộ Matching Biểu Đồ 24h & Cung Mặt Trời
+    public string HourlyCurveStrokeHex { get; set; } = "#38BDF8";
+    public string HourlyGradientTopHex { get; set; } = "#5038BDF8";
+    public string HourlyGradientBottomHex { get; set; } = "#0538BDF8";
+    public string SunArcStrokeHex { get; set; } = "#F59E0B";
+
+    // Viền Thẻ Bento Grid
+    public string BentoCardBorderAccentHex { get; set; } = "#2538BDF8";
+
+    // Gợi Ý Trang Phục & Phong Cách Sống Theo Mùa (Lifestyle OOTD)
+    public string LifestyleOotdTip { get; set; } = "Mặc trang phục thoải mái, chú ý giữ ấm hoặc che chắn tùy theo diễn biến thời tiết.";
+    public string LifestyleOotdBadge { get; set; } = "🌤️ Đời Sống";
 }

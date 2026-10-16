@@ -66,13 +66,14 @@
                     <!-- Các nút chức năng, Zen Mode & Widget -->
                     <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                         <!-- Nút Chế độ Thư Giãn Toàn Cảnh (Zen Immersive View - F11) -->
-                        <Button Command="{x:Bind ViewModel.ToggleZenModeCommand}"
+                        <Button x:Name="ZenButton"
+                                Command="{x:Bind ViewModel.ToggleZenModeCommand}"
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ZenModeTooltip, Mode=OneWay}"
                                 Background="{ThemeResource ZenButtonBackgroundBrush}"
                                 BorderBrush="{ThemeResource ZenButtonBorderBrush}"
                                 BorderThickness="1"
-                                CornerRadius="12"
-                                Padding="9,5">
+                                CornerRadius="18"
+                                Padding="12,5">
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6c4;" FontSize="13" Foreground="{ThemeResource ZenButtonForegroundBrush}"/>
                                 <TextBlock Text="Zen" FontWeight="SemiBold" FontSize="12" Foreground="{ThemeResource ZenButtonForegroundBrush}"/>
@@ -81,12 +82,16 @@
 
                         <!-- Nút Làm mới -->
                         <Button Command="{x:Bind ViewModel.RefreshCommand}"
+                                CornerRadius="14"
+                                Padding="10,6"
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.RefreshTooltip, Mode=OneWay}">
                             <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="13"/>
                         </Button>
 
                         <!-- Chuyển đổi đơn vị °C / °F -->
                         <Button Command="{x:Bind ViewModel.ToggleUnitCommand}"
+                                CornerRadius="14"
+                                Padding="10,6"
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.UnitTooltip, Mode=OneWay}">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2c9;" FontSize="13"/>
@@ -100,6 +105,7 @@
                                   SelectionChanged="ThemeComboBox_SelectionChanged"
                                   Width="124"
                                   MinWidth="116"
+                                  CornerRadius="14"
                                   ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ThemeTooltip, Mode=OneWay}">
                             <ComboBoxItem Content="☀️ Sáng" Tag="light"/>
                             <ComboBoxItem Content="🌙 Tối" Tag="dark"/>
@@ -112,8 +118,8 @@
                                 Background="{x:Bind ViewModel.CurrentSeasonalSkin, Mode=OneWay, Converter={StaticResource SeasonalSkinToAdaptiveBackgroundConverter}}"
                                 BorderBrush="{x:Bind ViewModel.CurrentSeasonalSkin.BorderStrokeHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
                                 BorderThickness="1"
-                                CornerRadius="12"
-                                Padding="9,5">
+                                CornerRadius="18"
+                                Padding="12,5">
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                 <TextBlock Text="{x:Bind ViewModel.CurrentSeasonalSkin.BadgeEmoji, Mode=OneWay}" FontSize="12" VerticalAlignment="Center"/>
                                 <TextBlock x:Name="SeasonalThemeBtnText" Text="{x:Bind ViewModel.CurrentSeasonalSkin.DisplayName, Mode=OneWay}" FontWeight="SemiBold" FontSize="11.5"
