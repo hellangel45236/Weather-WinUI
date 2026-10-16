@@ -91,11 +91,15 @@ public sealed partial class OverviewTab : UserControl
             e.PropertyName == nameof(MainViewModel.IsBatterySavingActive) ||
             e.PropertyName == nameof(MainViewModel.IsTimeScrubbingActive) ||
             e.PropertyName == nameof(MainViewModel.ScrubbedSliderValue) ||
-            e.PropertyName == nameof(MainViewModel.HourlyForecast))
+            e.PropertyName == nameof(MainViewModel.HourlyForecast) ||
+            e.PropertyName == nameof(MainViewModel.CurrentSeasonalSkin) ||
+            e.PropertyName == nameof(MainViewModel.EnableSeasonalParticles) ||
+            e.PropertyName == nameof(MainViewModel.SeasonalGreetingText))
         {
             DispatcherQueue.TryEnqueue(() =>
             {
                 UpdateHourlyItemsForCurrentMetric();
+                UpdateHourlyMetricButtonsStyle();
                 UpdateWeatherVisuals();
                 RedrawCanvases();
             });
@@ -208,6 +212,16 @@ public sealed partial class OverviewTab : UserControl
             RenderVisualGauges();
         };
 
+        this.ActualThemeChanged += (s, e) =>
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                UpdateHourlyMetricButtonsStyle();
+                UpdateWeatherVisuals();
+                RedrawCanvases();
+            });
+        };
+
         if (SunArcCanvas != null)
         {
             SunArcCanvas.SizeChanged += (s, e) =>
@@ -259,6 +273,7 @@ public sealed partial class OverviewTab : UserControl
         {
             RenderHourlyTemperatureTrendline();
             RenderSunArc();
+            RenderPressureSparkline();
             RenderVisualGauges();
         });
     }
@@ -286,7 +301,7 @@ public sealed partial class OverviewTab : UserControl
     {
         if (ViewModel?.CurrentWeather == null) return;
 
-        UpdateAmbientGlowColor();
+        UpdateHeroCardSeasonalColors();
 
         // Cập nhật hiệu ứng thời tiết nền nếu người dùng bật và không bị tiết kiệm pin
         bool shouldRunEffects = ViewModel.Settings.EnableWeatherEffects &&
@@ -296,6 +311,15 @@ public sealed partial class OverviewTab : UserControl
         {
             _weatherEffectRenderer?.SetWind(ViewModel.CurrentWeather.WindSpeedValue);
             _weatherEffectRenderer?.SetWeatherEffect(ViewModel.CurrentWeather.WeatherEffect);
+
+            // Đồng bộ hiệu ứng hạt Mùa & Lễ hội (mai đào, tuyết rơi, đom đóm, lá phong...)
+            if (ViewModel.CurrentSeasonalSkin != null)
+            {
+                _weatherEffectRenderer?.SetSeasonalParticleType(
+                    ViewModel.CurrentSeasonalSkin.ParticleType, 
+                    ViewModel.Settings.EnableSeasonalParticles);
+            }
+
             _weatherEffectRenderer?.Resume();
             StartHeroIconAnimation();
             StartAmbientGlowAnimation();
@@ -413,6 +437,11 @@ public sealed partial class OverviewTab : UserControl
             RenderHourlyTrendline();
         }
         catch { }
+    }
+
+    public void ScrollToHourlySection()
+    {
+        OverviewScrollViewer?.ChangeView(null, 650, null, false);
     }
 
     private void HourlyScrollViewer_PointerWheelChanged(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -567,6 +596,7 @@ public sealed partial class OverviewTab : UserControl
     {
         Button[] buttons = { BtnHourlyTemp, BtnHourlyRain, BtnHourlyWind, BtnHourlyUv };
         HourlyChartMetricMode[] modes = { HourlyChartMetricMode.Temperature, HourlyChartMetricMode.RainProbability, HourlyChartMetricMode.WindSpeed, HourlyChartMetricMode.UvIndex };
+        bool isDark = ActualTheme != ElementTheme.Light;
 
         for (int i = 0; i < buttons.Length; i++)
         {
@@ -576,9 +606,19 @@ public sealed partial class OverviewTab : UserControl
 
             if (isActive)
             {
-                btn.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(45, 56, 189, 248));
-                btn.BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(140, 56, 189, 248));
-                btn.BorderThickness = new Thickness(1);
+                if (isDark)
+                {
+                    btn.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(50, 56, 189, 248));
+                    btn.BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(160, 56, 189, 248));
+                    btn.BorderThickness = new Thickness(1.5);
+                }
+                else
+                {
+                    // Light mode: Bold Sky-600 with white text for maximum readability
+                    btn.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 2, 132, 199));
+                    btn.BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 3, 105, 161));
+                    btn.BorderThickness = new Thickness(1.5);
+                }
             }
             else
             {
@@ -587,10 +627,43 @@ public sealed partial class OverviewTab : UserControl
                 btn.BorderThickness = new Thickness(1);
             }
 
-            if (btn.Content is StackPanel sp && sp.Children.Count > 1 && sp.Children[1] is TextBlock tb)
+            if (btn.Content is StackPanel sp && sp.Children.Count > 1)
             {
-                tb.FontWeight = isActive ? Microsoft.UI.Text.FontWeights.Bold : Microsoft.UI.Text.FontWeights.Normal;
-                tb.Opacity = isActive ? 1.0 : 0.75;
+                if (sp.Children[0] is FontIcon fi)
+                {
+                    if (isActive && !isDark)
+                    {
+                        fi.Foreground = new SolidColorBrush(Microsoft.UI.Colors.White);
+                    }
+                    else
+                    {
+                        fi.Foreground = modes[i] switch
+                        {
+                            HourlyChartMetricMode.Temperature => new SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248)),
+                            HourlyChartMetricMode.RainProbability => new SolidColorBrush(Windows.UI.Color.FromArgb(255, 14, 165, 233)),
+                            HourlyChartMetricMode.WindSpeed => new SolidColorBrush(Windows.UI.Color.FromArgb(255, 16, 185, 129)),
+                            HourlyChartMetricMode.UvIndex => new SolidColorBrush(Windows.UI.Color.FromArgb(255, 245, 158, 11)),
+                            _ => new SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248))
+                        };
+                    }
+                }
+
+                if (sp.Children[1] is TextBlock tb)
+                {
+                    tb.FontWeight = isActive ? Microsoft.UI.Text.FontWeights.Bold : Microsoft.UI.Text.FontWeights.Medium;
+                    tb.Opacity = 1.0;
+
+                    if (isActive)
+                    {
+                        tb.Foreground = new SolidColorBrush(Microsoft.UI.Colors.White);
+                    }
+                    else
+                    {
+                        tb.Foreground = isDark
+                            ? new SolidColorBrush(Windows.UI.Color.FromArgb(200, 148, 163, 184))
+                            : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 51, 65, 85));
+                    }
+                }
             }
         }
     }
@@ -644,25 +717,39 @@ public sealed partial class OverviewTab : UserControl
                 HourlyTrendlineCanvas.Height = canvasHeight;
             }
 
-            // Bảng màu stroke & fill tương ứng
+            bool isDark = ActualTheme != ElementTheme.Light;
+
+            // Bảng màu stroke & fill tương ứng thích ứng Dark / Light Mode
             var (strokeColor, fillStartColor, fillEndColor) = _currentHourlyMetric switch
             {
-                HourlyChartMetricMode.Temperature => (
-                    Windows.UI.Color.FromArgb(230, 56, 189, 248),
-                    Windows.UI.Color.FromArgb(90, 56, 189, 248),
-                    Windows.UI.Color.FromArgb(10, 56, 189, 248)),
-                HourlyChartMetricMode.RainProbability => (
-                    Windows.UI.Color.FromArgb(240, 14, 165, 233),
-                    Windows.UI.Color.FromArgb(100, 14, 165, 233),
-                    Windows.UI.Color.FromArgb(12, 14, 165, 233)),
-                HourlyChartMetricMode.WindSpeed => (
-                    Windows.UI.Color.FromArgb(240, 16, 185, 129),
-                    Windows.UI.Color.FromArgb(100, 16, 185, 129),
-                    Windows.UI.Color.FromArgb(12, 16, 185, 129)),
-                HourlyChartMetricMode.UvIndex => (
-                    Windows.UI.Color.FromArgb(240, 245, 158, 11),
-                    Windows.UI.Color.FromArgb(100, 245, 158, 11),
-                    Windows.UI.Color.FromArgb(12, 245, 158, 11)),
+                HourlyChartMetricMode.Temperature => isDark
+                    ? (Windows.UI.Color.FromArgb(230, 56, 189, 248),
+                       Windows.UI.Color.FromArgb(90, 56, 189, 248),
+                       Windows.UI.Color.FromArgb(10, 56, 189, 248))
+                    : (Windows.UI.Color.FromArgb(255, 2, 132, 199),  // Sky-600
+                       Windows.UI.Color.FromArgb(50, 2, 132, 199),
+                       Windows.UI.Color.FromArgb(5, 2, 132, 199)),
+                HourlyChartMetricMode.RainProbability => isDark
+                    ? (Windows.UI.Color.FromArgb(240, 14, 165, 233),
+                       Windows.UI.Color.FromArgb(100, 14, 165, 233),
+                       Windows.UI.Color.FromArgb(12, 14, 165, 233))
+                    : (Windows.UI.Color.FromArgb(255, 14, 165, 233),
+                       Windows.UI.Color.FromArgb(50, 14, 165, 233),
+                       Windows.UI.Color.FromArgb(5, 14, 165, 233)),
+                HourlyChartMetricMode.WindSpeed => isDark
+                    ? (Windows.UI.Color.FromArgb(240, 16, 185, 129),
+                       Windows.UI.Color.FromArgb(100, 16, 185, 129),
+                       Windows.UI.Color.FromArgb(12, 16, 185, 129))
+                    : (Windows.UI.Color.FromArgb(255, 5, 150, 105),  // Emerald-600
+                       Windows.UI.Color.FromArgb(50, 5, 150, 105),
+                       Windows.UI.Color.FromArgb(5, 5, 150, 105)),
+                HourlyChartMetricMode.UvIndex => isDark
+                    ? (Windows.UI.Color.FromArgb(240, 245, 158, 11),
+                       Windows.UI.Color.FromArgb(100, 245, 158, 11),
+                       Windows.UI.Color.FromArgb(12, 245, 158, 11))
+                    : (Windows.UI.Color.FromArgb(255, 217, 119, 6),  // Amber-600
+                       Windows.UI.Color.FromArgb(50, 217, 119, 6),
+                       Windows.UI.Color.FromArgb(5, 217, 119, 6)),
                 _ => (
                     Windows.UI.Color.FromArgb(230, 56, 189, 248),
                     Windows.UI.Color.FromArgb(90, 56, 189, 248),
@@ -763,7 +850,7 @@ public sealed partial class OverviewTab : UserControl
             {
                 Data = strokeGeo,
                 Stroke = new SolidColorBrush(strokeColor),
-                StrokeThickness = 2.5
+                StrokeThickness = isDark ? 2.5 : 2.8
             };
             HourlyTrendlineCanvas.Children.Add(strokePath);
 
@@ -783,8 +870,8 @@ public sealed partial class OverviewTab : UserControl
                         RadiusX = 2.5,
                         RadiusY = 2.5,
                         Fill = new SolidColorBrush(_currentHourlyMetric == HourlyChartMetricMode.RainProbability 
-                            ? Windows.UI.Color.FromArgb(120, 14, 165, 233) 
-                            : Windows.UI.Color.FromArgb(65, 0, 153, 188))
+                            ? (isDark ? Windows.UI.Color.FromArgb(120, 14, 165, 233) : Windows.UI.Color.FromArgb(160, 2, 132, 199))
+                            : (isDark ? Windows.UI.Color.FromArgb(65, 0, 153, 188) : Windows.UI.Color.FromArgb(100, 2, 132, 199)))
                     };
                     Canvas.SetLeft(rainBar, pt.X - 6);
                     Canvas.SetTop(rainBar, canvasHeight - barH);
@@ -799,12 +886,12 @@ public sealed partial class OverviewTab : UserControl
                     Width = isItemSel ? 10 : (isNow ? 8 : 6),
                     Height = isItemSel ? 10 : (isNow ? 8 : 6),
                     Fill = isItemSel
-                        ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248))
+                        ? new SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 56, 189, 248) : Windows.UI.Color.FromArgb(255, 2, 132, 199))
                         : (isNow
-                            ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 245, 158, 11))
+                            ? new SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 245, 158, 11) : Windows.UI.Color.FromArgb(255, 180, 83, 9))
                             : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255))),
                     Stroke = new SolidColorBrush(strokeColor),
-                    StrokeThickness = isItemSel ? 2.5 : 2
+                    StrokeThickness = isItemSel ? 2.5 : (isDark ? 2.0 : 2.2)
                 };
                 double dotOffset = (isItemSel ? 10 : (isNow ? 8 : 6)) / 2.0;
                 Canvas.SetLeft(dot, pt.X - dotOffset);
@@ -817,10 +904,10 @@ public sealed partial class OverviewTab : UserControl
                     FontSize = isItemSel ? 11.5 : (isNow ? 11.0 : 10.0),
                     FontWeight = (isItemSel || isNow) ? Microsoft.UI.Text.FontWeights.Bold : Microsoft.UI.Text.FontWeights.SemiBold,
                     Foreground = isItemSel
-                        ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248))
+                        ? new SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 56, 189, 248) : Windows.UI.Color.FromArgb(255, 2, 132, 199))
                         : (isNow
-                            ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 245, 158, 11))
-                            : new SolidColorBrush(Windows.UI.Color.FromArgb(235, 255, 255, 255))),
+                            ? new SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 245, 158, 11) : Windows.UI.Color.FromArgb(255, 180, 83, 9))
+                            : new SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(235, 255, 255, 255) : Windows.UI.Color.FromArgb(255, 15, 23, 42))),
                     TextAlignment = TextAlignment.Center,
                     Width = 60
                 };
@@ -1119,13 +1206,19 @@ public sealed partial class OverviewTab : UserControl
             fillFig.Segments.Add(new LineSegment { Point = new Windows.Foundation.Point(pts[^1].X, height) });
             fillGeo.Figures.Add(fillFig);
 
+            bool isDark = ActualTheme != ElementTheme.Light;
+            var fillStartColor = isDark ? Windows.UI.Color.FromArgb(90, 167, 139, 250) : Windows.UI.Color.FromArgb(50, 124, 58, 237);
+            var fillEndColor = isDark ? Windows.UI.Color.FromArgb(5, 167, 139, 250) : Windows.UI.Color.FromArgb(5, 124, 58, 237);
+            var strokeColor = isDark ? Windows.UI.Color.FromArgb(230, 192, 132, 252) : Windows.UI.Color.FromArgb(255, 124, 58, 237);
+            var dotStroke = isDark ? Windows.UI.Color.FromArgb(255, 167, 139, 250) : Windows.UI.Color.FromArgb(255, 124, 58, 237);
+
             var fillBrush = new LinearGradientBrush
             {
                 StartPoint = new Windows.Foundation.Point(0, 0),
                 EndPoint = new Windows.Foundation.Point(0, 1)
             };
-            fillBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(90, 167, 139, 250), Offset = 0 });
-            fillBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(5, 167, 139, 250), Offset = 1 });
+            fillBrush.GradientStops.Add(new GradientStop { Color = fillStartColor, Offset = 0 });
+            fillBrush.GradientStops.Add(new GradientStop { Color = fillEndColor, Offset = 1 });
 
             var fillPath = new Microsoft.UI.Xaml.Shapes.Path { Data = fillGeo, Fill = fillBrush };
             PressureSparklineCanvas.Children.Add(fillPath);
@@ -1148,8 +1241,8 @@ public sealed partial class OverviewTab : UserControl
             var strokePath = new Microsoft.UI.Xaml.Shapes.Path
             {
                 Data = strokeGeo,
-                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(230, 192, 132, 252)),
-                StrokeThickness = 1.8
+                Stroke = new SolidColorBrush(strokeColor),
+                StrokeThickness = isDark ? 1.8 : 2.0
             };
             PressureSparklineCanvas.Children.Add(strokePath);
 
@@ -1159,7 +1252,7 @@ public sealed partial class OverviewTab : UserControl
                 Width = 5,
                 Height = 5,
                 Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
-                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 167, 139, 250)),
+                Stroke = new SolidColorBrush(dotStroke),
                 StrokeThickness = 1.2
             };
             Canvas.SetLeft(curDot, pts[0].X - 2.5);
@@ -1173,35 +1266,126 @@ public sealed partial class OverviewTab : UserControl
         }
     }
 
-    private void UpdateAmbientGlowColor()
+    private void UpdateHeroCardSeasonalColors()
     {
-        if (ViewModel?.CurrentWeather == null || HeroAmbientStop0 == null || HeroAmbientStop1 == null) return;
+        if (ViewModel == null) return;
         try
         {
-            if (!string.IsNullOrEmpty(ViewModel.CurrentWeather.HeroGradientStart))
+            var skin = ViewModel.CurrentSeasonalSkin;
+            string startHex = skin?.HeroGradientStartHex ?? ViewModel.CurrentWeather?.HeroGradientStart ?? "#0284C7";
+            string endHex = skin?.HeroGradientEndHex ?? ViewModel.CurrentWeather?.HeroGradientEnd ?? "#0F172A";
+            string glow0Hex = skin?.PrimaryAccentHex ?? ViewModel.CurrentWeather?.HeroGradientStart ?? "#1E3A8A";
+            string glow1Hex = skin?.SecondaryAccentHex ?? ViewModel.CurrentWeather?.HeroGradientEnd ?? "#0EA5E9";
+            string borderHex = skin?.BorderStrokeHex ?? "#33FFFFFF";
+
+            // 1. Cập nhật Gradient Thẻ Hero
+            if (HeroGradStop0 != null && !string.IsNullOrEmpty(startHex))
             {
-                var hex = ViewModel.CurrentWeather.HeroGradientStart.TrimStart('#');
-                if (hex.Length == 6)
+                var h = startHex.TrimStart('#');
+                if (h.Length == 6)
                 {
-                    HeroAmbientStop0.Color = Windows.UI.Color.FromArgb(255,
-                        Convert.ToByte(hex[..2], 16),
-                        Convert.ToByte(hex[2..4], 16),
-                        Convert.ToByte(hex[4..6], 16));
+                    HeroGradStop0.Color = Windows.UI.Color.FromArgb(255,
+                        Convert.ToByte(h[..2], 16),
+                        Convert.ToByte(h[2..4], 16),
+                        Convert.ToByte(h[4..6], 16));
                 }
             }
-            if (!string.IsNullOrEmpty(ViewModel.CurrentWeather.HeroGradientEnd))
+            if (HeroGradStop1 != null && !string.IsNullOrEmpty(endHex))
             {
-                var hex = ViewModel.CurrentWeather.HeroGradientEnd.TrimStart('#');
-                if (hex.Length == 6)
+                var h = endHex.TrimStart('#');
+                if (h.Length == 6)
+                {
+                    HeroGradStop1.Color = Windows.UI.Color.FromArgb(255,
+                        Convert.ToByte(h[..2], 16),
+                        Convert.ToByte(h[2..4], 16),
+                        Convert.ToByte(h[4..6], 16));
+                }
+            }
+
+            // 2. Cập nhật Hào quang Backlight Glow
+            if (HeroAmbientStop0 != null && !string.IsNullOrEmpty(glow0Hex))
+            {
+                var h = glow0Hex.TrimStart('#');
+                if (h.Length == 6)
+                {
+                    HeroAmbientStop0.Color = Windows.UI.Color.FromArgb(255,
+                        Convert.ToByte(h[..2], 16),
+                        Convert.ToByte(h[2..4], 16),
+                        Convert.ToByte(h[4..6], 16));
+                }
+            }
+            if (HeroAmbientStop1 != null && !string.IsNullOrEmpty(glow1Hex))
+            {
+                var h = glow1Hex.TrimStart('#');
+                if (h.Length == 6)
                 {
                     HeroAmbientStop1.Color = Windows.UI.Color.FromArgb(255,
-                        Convert.ToByte(hex[..2], 16),
-                        Convert.ToByte(hex[2..4], 16),
-                        Convert.ToByte(hex[4..6], 16));
+                        Convert.ToByte(h[..2], 16),
+                        Convert.ToByte(h[2..4], 16),
+                        Convert.ToByte(h[4..6], 16));
+                }
+            }
+
+            // 3. Cập nhật Viền Thẻ Hero
+            if (HeroCardBorder != null && !string.IsNullOrEmpty(borderHex))
+            {
+                var h = borderHex.TrimStart('#');
+                if (h.Length == 6)
+                {
+                    HeroCardBorder.BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(180,
+                        Convert.ToByte(h[..2], 16),
+                        Convert.ToByte(h[2..4], 16),
+                        Convert.ToByte(h[4..6], 16)));
+                }
+                else if (h.Length == 8)
+                {
+                    HeroCardBorder.BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(
+                        Convert.ToByte(h[..2], 16),
+                        Convert.ToByte(h[2..4], 16),
+                        Convert.ToByte(h[4..6], 16),
+                        Convert.ToByte(h[6..8], 16)));
+                }
+            }
+
+            // 4. Cập nhật Banner Mùa & Lễ hội
+            if (HeroBannerStop0 != null && skin != null && !string.IsNullOrEmpty(skin.PrimaryAccentHex))
+            {
+                var h = skin.PrimaryAccentHex.TrimStart('#');
+                if (h.Length == 6)
+                {
+                    HeroBannerStop0.Color = Windows.UI.Color.FromArgb(100,
+                        Convert.ToByte(h[..2], 16),
+                        Convert.ToByte(h[2..4], 16),
+                        Convert.ToByte(h[4..6], 16));
+                }
+            }
+            if (HeroBannerStop1 != null && skin != null && !string.IsNullOrEmpty(skin.SecondaryAccentHex))
+            {
+                var h = skin.SecondaryAccentHex.TrimStart('#');
+                if (h.Length == 6)
+                {
+                    HeroBannerStop1.Color = Windows.UI.Color.FromArgb(60,
+                        Convert.ToByte(h[..2], 16),
+                        Convert.ToByte(h[2..4], 16),
+                        Convert.ToByte(h[4..6], 16));
                 }
             }
         }
         catch { }
+    }
+
+    private void HeroSeasonalItem_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is string skinMode && ViewModel != null)
+        {
+            ViewModel.ChangeSeasonalSkin(skinMode);
+            if (HeroSeasonalSwitchButton?.Flyout != null)
+            {
+                HeroSeasonalSwitchButton.Flyout.Hide();
+            }
+            UpdateWeatherVisuals();
+            RedrawCanvases();
+        }
     }
 
     private void StartAmbientGlowAnimation()
@@ -1268,6 +1452,8 @@ public sealed partial class OverviewTab : UserControl
             double rightX = width - 10;
             double peakY = 5;
 
+            bool isDark = ActualTheme != ElementTheme.Light;
+
             // 1. Đường chân trời chấm nét đứt
             var horizonLine = new Microsoft.UI.Xaml.Shapes.Line
             {
@@ -1275,8 +1461,8 @@ public sealed partial class OverviewTab : UserControl
                 Y1 = horizonY,
                 X2 = width - 4,
                 Y2 = horizonY,
-                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(40, 255, 255, 255)),
-                StrokeThickness = 1,
+                Stroke = new SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(40, 255, 255, 255) : Windows.UI.Color.FromArgb(90, 100, 116, 139)),
+                StrokeThickness = isDark ? 1 : 1.2,
                 StrokeDashArray = new DoubleCollection { 2, 2 }
             };
             SunArcCanvas.Children.Add(horizonLine);
@@ -1301,8 +1487,10 @@ public sealed partial class OverviewTab : UserControl
             var arcPath = new Microsoft.UI.Xaml.Shapes.Path
             {
                 Data = pathGeometry,
-                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(90, 255, 255, 255)),
-                StrokeThickness = 1.6,
+                Stroke = new SolidColorBrush(isDark 
+                    ? Windows.UI.Color.FromArgb(90, 255, 255, 255) 
+                    : Windows.UI.Color.FromArgb(170, 180, 83, 9)),
+                StrokeThickness = isDark ? 1.6 : 2.0,
                 StrokeDashArray = new DoubleCollection { 3, 2.5 }
             };
             SunArcCanvas.Children.Add(arcPath);
@@ -1323,8 +1511,8 @@ public sealed partial class OverviewTab : UserControl
                 Width = 18,
                 Height = 18,
                 Fill = new SolidColorBrush(isSun
-                    ? Windows.UI.Color.FromArgb(70, 251, 191, 36)
-                    : Windows.UI.Color.FromArgb(60, 96, 165, 250))
+                    ? (isDark ? Windows.UI.Color.FromArgb(70, 251, 191, 36) : Windows.UI.Color.FromArgb(90, 245, 158, 11))
+                    : (isDark ? Windows.UI.Color.FromArgb(60, 96, 165, 250) : Windows.UI.Color.FromArgb(80, 2, 132, 199)))
             };
             Canvas.SetLeft(glow, currentX - 9);
             Canvas.SetTop(glow, currentY - 9);
@@ -1336,9 +1524,9 @@ public sealed partial class OverviewTab : UserControl
                 Width = 10,
                 Height = 10,
                 Fill = new SolidColorBrush(isSun
-                    ? Windows.UI.Color.FromArgb(255, 245, 158, 11)
-                    : Windows.UI.Color.FromArgb(255, 147, 197, 253)),
-                Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                    ? (isDark ? Windows.UI.Color.FromArgb(255, 245, 158, 11) : Windows.UI.Color.FromArgb(255, 217, 119, 6))
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 147, 197, 253) : Windows.UI.Color.FromArgb(255, 2, 132, 199))),
+                Stroke = new SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 255, 255, 255) : Windows.UI.Color.FromArgb(255, 15, 23, 42)),
                 StrokeThickness = 1.5
             };
             Canvas.SetLeft(celestialDot, currentX - 5);

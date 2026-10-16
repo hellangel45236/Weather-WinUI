@@ -341,32 +341,41 @@
                         </StackPanel>
                     </Grid>
 
-                    <!-- ==================== BENTO POD 1: CAN CHI BA TRỤ (YEAR, MONTH, DAY) ==================== -->
-                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                    <!-- ==================== BENTO POD 1: TỨ TRỤ BÁT TỰ (YEAR, MONTH, DAY, HOUR) ==================== -->
+                    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
                         <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                                CornerRadius="10" Padding="12,8">
+                                CornerRadius="10" Padding="10,8">
                             <StackPanel Spacing="2">
-                                <TextBlock Text="NĂM (YEAR)" FontSize="9.5" FontWeight="Bold" Opacity="0.6"/>
-                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiYear, Mode=OneWay}" FontSize="13" FontWeight="Bold" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                <TextBlock Text="NĂM (YEAR)" FontSize="9" FontWeight="Bold" Opacity="0.6"/>
+                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiYear, Mode=OneWay}" FontSize="12.5" FontWeight="Bold" Foreground="{ThemeResource AccentFillColorDefaultBrush}" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
                         </Border>
 
                         <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                                CornerRadius="10" Padding="12,8">
+                                CornerRadius="10" Padding="10,8">
                             <StackPanel Spacing="2">
-                                <TextBlock Text="THÁNG (MONTH)" FontSize="9.5" FontWeight="Bold" Opacity="0.6"/>
-                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiMonth, Mode=OneWay}" FontSize="13" FontWeight="Bold" Foreground="#38BDF8"/>
+                                <TextBlock Text="THÁNG (MONTH)" FontSize="9" FontWeight="Bold" Opacity="0.6"/>
+                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiMonth, Mode=OneWay}" FontSize="12.5" FontWeight="Bold" Foreground="#38BDF8" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
                         </Border>
 
                         <Border Grid.Column="2" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                                CornerRadius="10" Padding="12,8">
+                                CornerRadius="10" Padding="10,8">
                             <StackPanel Spacing="2">
-                                <TextBlock Text="NGÀY (DAY)" FontSize="9.5" FontWeight="Bold" Opacity="0.6"/>
-                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiDay, Mode=OneWay}" FontSize="13" FontWeight="Bold" Foreground="#10B981"/>
+                                <TextBlock Text="NGÀY (DAY)" FontSize="9" FontWeight="Bold" Opacity="0.6"/>
+                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiDay, Mode=OneWay}" FontSize="12.5" FontWeight="Bold" Foreground="#10B981" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="3" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                CornerRadius="10" Padding="10,8">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="GIỜ (HOUR)" FontSize="9" FontWeight="Bold" Opacity="0.6"/>
+                                <TextBlock Text="{x:Bind ViewModel.SelectedCalendarDay.CanChiHour, Mode=OneWay}" FontSize="12.5" FontWeight="Bold" Foreground="#F59E0B" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
                         </Border>
                     </Grid>

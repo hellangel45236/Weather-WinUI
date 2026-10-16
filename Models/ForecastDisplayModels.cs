@@ -62,6 +62,7 @@ public class CurrentWeatherDisplay
     public double UvProgressPercent => Math.Clamp(UvIndexValue / 11.0, 0.05, 1.0);
     public double HumidityProgressPercent => Math.Clamp(HumidityValue / 100.0, 0.05, 1.0);
     public double RainProgressPercent => Math.Clamp(RainProbabilityValue / 100.0, 0.0, 1.0);
+    public bool HasRainChance => RainProbabilityValue > 0;
 
     // Báo cáo Chất lượng không khí & Bụi mịn chuyên sâu (Air Quality Tracker)
     public int AqiValue { get; set; } = 0;
@@ -206,6 +207,14 @@ public class LifestyleIndexItem
     public string IconGlyph { get; set; } = "\uf44b";
     public double ScoreProgress { get; set; } = 80;
     public string MetricBadge { get; set; } = string.Empty;
+    public string StarsDisplay => (ScoreProgress / 20.0) switch
+    {
+        >= 4.5 => "★★★★★",
+        >= 3.5 => "★★★★☆",
+        >= 2.5 => "★★★☆☆",
+        >= 1.5 => "★★☆☆☆",
+        _ => "★☆☆☆☆"
+    };
 }
 
 public class WorkoutWindowItem

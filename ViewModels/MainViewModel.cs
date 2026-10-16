@@ -40,6 +40,7 @@ public partial class MainViewModel : ObservableObject
 
     public string AdviceExpandButtonText => IsAdviceExpanded ? Loc.AdviceCollapse : Loc.AdviceDetails;
     public string AdviceExpandIconGlyph => IsAdviceExpanded ? "\uf077" : "\uf078";
+    public IEnumerable<WeatherAdvice> QuickAdvicePills => AdviceList.Take(3);
 
     [RelayCommand]
     private void ToggleAdviceExpanded()
@@ -203,6 +204,62 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private UrbanFloodWarning _urbanFloodWarning = new();
 
+    public bool HasFloodAlert => UrbanFloodWarning != null && UrbanFloodWarning.RiskLevel >= 2;
+
+    public string NavOverviewTempText => !string.IsNullOrEmpty(CurrentWeather?.TemperatureText) ? CurrentWeather.TemperatureText : "--";
+
+    public string NavFloodTideText => UrbanFloodWarning != null && UrbanFloodWarning.HasTideData && !string.IsNullOrEmpty(UrbanFloodWarning.CurrentTideMetersText)
+        ? $"{UrbanFloodWarning.CurrentTideMetersText}m" 
+        : (HasFloodAlert ? "Cảnh báo" : "Ổn định");
+
+    public string NavRadarStatusText => "LIVE";
+
+    public string NavLifestyleOotdText
+    {
+        get
+        {
+            if (CurrentOutfitAdvice != null && !string.IsNullOrEmpty(CurrentOutfitAdvice.FashionStyleTag))
+            {
+                var tag = CurrentOutfitAdvice.FashionStyleTag;
+                if (tag.Contains("Office", StringComparison.OrdinalIgnoreCase)) return "Office";
+                if (tag.Contains("Campus", StringComparison.OrdinalIgnoreCase) || tag.Contains("Preppy", StringComparison.OrdinalIgnoreCase)) return "Preppy";
+                if (tag.Contains("Street", StringComparison.OrdinalIgnoreCase)) return "Street";
+                if (tag.Contains("Active", StringComparison.OrdinalIgnoreCase) || tag.Contains("Athleisure", StringComparison.OrdinalIgnoreCase)) return "Active";
+                if (tag.Contains("Outdoor", StringComparison.OrdinalIgnoreCase)) return "Outdoor";
+                return "Style";
+            }
+            return CurrentWeather != null ? $"UV {CurrentWeather.UvIndexValue:F0}" : "OOTD";
+        }
+    }
+
+    public string NavLunarDateText => SelectedCalendarDay != null && SelectedCalendarDay.LunarDay > 0
+        ? $"{SelectedCalendarDay.LunarDay}/{SelectedCalendarDay.LunarMonth} ÂL"
+        : $"{DateTime.Now.Day}/{DateTime.Now.Month}";
+
+    public string NavWidgetStudioText => "1:1";
+
+    partial void OnCurrentWeatherChanged(CurrentWeatherDisplay value)
+    {
+        OnPropertyChanged(nameof(NavOverviewTempText));
+        OnPropertyChanged(nameof(NavLifestyleOotdText));
+    }
+
+    partial void OnUrbanFloodWarningChanged(UrbanFloodWarning value)
+    {
+        OnPropertyChanged(nameof(HasFloodAlert));
+        OnPropertyChanged(nameof(NavFloodTideText));
+    }
+
+    partial void OnCurrentOutfitAdviceChanged(OutfitAdvice? value)
+    {
+        OnPropertyChanged(nameof(NavLifestyleOotdText));
+    }
+
+    partial void OnSelectedCalendarDayChanged(CalendarDayItem? value)
+    {
+        OnPropertyChanged(nameof(NavLunarDateText));
+    }
+
     [ObservableProperty]
     private ObservableCollection<FloodHotspotRoad> _displayedFloodRoads = new();
 
@@ -359,6 +416,7 @@ public partial class MainViewModel : ObservableObject
         SetupAutoRefreshTimer();
         StartRamMonitor();
         InitializeCalendar();
+        InitializeSeasonalThemes();
 
         try
         {
@@ -1297,7 +1355,7 @@ public partial class MainViewModel : ObservableObject
     public string AmbientSoundIconGlyph => IsAmbientSoundPlaying ? "\uf028" : "\uf025";
     public string AmbientSoundButtonText => IsAmbientSoundPlaying 
         ? (Loc.IsVietnamese ? "Đang phát" : "Playing") 
-        : (Loc.IsVietnamese ? "Thư giãn" : "Ambient");
+        : (Loc.IsVietnamese ? "Âm thanh" : "Ambient");
 
     public string AmbientSoundButtonToolTip => IsAmbientSoundPlaying
         ? (Loc.IsVietnamese 
@@ -1728,6 +1786,7 @@ public partial class MainViewModel : ObservableObject
 
     private void UpdateTopAdviceSummary()
     {
+        OnPropertyChanged(nameof(QuickAdvicePills));
         if (AdviceList.Count == 0)
         {
             TopAdviceSummary = Loc.AdviceEmpty;
@@ -2400,6 +2459,7 @@ public partial class MainViewModel : ObservableObject
                 CanChiYear = lunar.CanChiYear,
                 CanChiMonth = lunar.CanChiMonth,
                 CanChiDay = lunar.CanChiDay,
+                CanChiHour = lunar.CanChiHour,
                 SolarTerm = lunar.SolarTerm,
                 IsAuspiciousDay = lunar.IsAuspiciousDay,
                 AuspiciousDayName = lunar.AuspiciousDayName,
@@ -2951,6 +3011,115 @@ public partial class MainViewModel : ObservableObject
             }
         }
     }
+
+    #endregion
+
+    #region Seasonal & Festival Skins (4 Mùa & 4 Đại Lễ Hội v3.3.0)
+
+    private readonly SeasonalSkinService _seasonalSkinService = SeasonalSkinService.Instance;
+
+    [ObservableProperty]
+    private SeasonalSkinDefinition _currentSeasonalSkin = null!;
+
+    [ObservableProperty]
+    private string _selectedSeasonalSkinMode = "Auto";
+
+    [ObservableProperty]
+    private bool _enableSeasonalParticles = true;
+
+    [ObservableProperty]
+    private string _selectedSeasonalWidgetTheme = "Auto";
+
+    [ObservableProperty]
+    private bool _showSeasonalHeaderBadge = true;
+
+    [ObservableProperty]
+    private ObservableCollection<SeasonalSkinDefinition> _availableSeasonalSkins = new();
+
+    public string SeasonalHeaderBadgeText => CurrentSeasonalSkin != null
+        ? $"{CurrentSeasonalSkin.BadgeEmoji} {CurrentSeasonalSkin.DisplayName}"
+        : "🌸 Bốn Mùa";
+
+    public string SeasonalZenQuote => CurrentSeasonalSkin != null && !string.IsNullOrEmpty(CurrentSeasonalSkin.ZenQuote)
+        ? CurrentSeasonalSkin.ZenQuote
+        : "Dành một khoảng lặng ngắm nhìn thời tiết và lắng nghe âm thanh cuộc sống.";
+
+    public string SeasonalGreetingText => CurrentSeasonalSkin != null
+        ? (!string.IsNullOrEmpty(CurrentSeasonalSkin.WidgetSeasonalGreeting)
+            ? CurrentSeasonalSkin.WidgetSeasonalGreeting
+            : CurrentSeasonalSkin.ZenQuote)
+        : "Chúc một ngày an lành và tràn đầy năng lượng!";
+
+    public void InitializeSeasonalThemes()
+    {
+        AvailableSeasonalSkins.Clear();
+        foreach (var skin in _seasonalSkinService.GetAllSkins())
+        {
+            AvailableSeasonalSkins.Add(skin);
+        }
+
+        SelectedSeasonalSkinMode = Settings.SeasonalSkinMode ?? "Auto";
+        EnableSeasonalParticles = Settings.EnableSeasonalParticles;
+        SelectedSeasonalWidgetTheme = Settings.SeasonalWidgetTheme ?? "Auto";
+        ShowSeasonalHeaderBadge = Settings.ShowSeasonalHeaderBadge;
+
+        ApplySeasonalSkin(SelectedSeasonalSkinMode, save: false);
+    }
+
+    [RelayCommand]
+    public void ChangeSeasonalSkin(string skinMode)
+    {
+        ApplySeasonalSkin(skinMode, save: true);
+    }
+
+    public void ApplySeasonalSkin(string skinMode, bool save = true)
+    {
+        SelectedSeasonalSkinMode = skinMode;
+        CurrentSeasonalSkin = _seasonalSkinService.GetActiveSkin(skinMode);
+
+        if (save)
+        {
+            Settings.SeasonalSkinMode = skinMode;
+            _settingsService.SaveSettings(Settings);
+        }
+
+        OnPropertyChanged(nameof(CurrentSeasonalSkin));
+        OnPropertyChanged(nameof(SeasonalHeaderBadgeText));
+        OnPropertyChanged(nameof(SeasonalZenQuote));
+        OnPropertyChanged(nameof(SeasonalGreetingText));
+
+        SeasonalSkinChanged?.Invoke(this, CurrentSeasonalSkin);
+    }
+
+    [RelayCommand]
+    public void ToggleSeasonalParticles(bool enabled)
+    {
+        EnableSeasonalParticles = enabled;
+        Settings.EnableSeasonalParticles = enabled;
+        _settingsService.SaveSettings(Settings);
+        OnPropertyChanged(nameof(EnableSeasonalParticles));
+        SeasonalSkinChanged?.Invoke(this, CurrentSeasonalSkin);
+    }
+
+    [RelayCommand]
+    public void ChangeSeasonalWidget(string widgetSkinMode)
+    {
+        SelectedSeasonalWidgetTheme = widgetSkinMode;
+        Settings.SeasonalWidgetTheme = widgetSkinMode;
+        _settingsService.SaveSettings(Settings);
+        OnPropertyChanged(nameof(SelectedSeasonalWidgetTheme));
+    }
+
+    [RelayCommand]
+    public void ToggleSeasonalHeaderBadge(bool enabled)
+    {
+        ShowSeasonalHeaderBadge = enabled;
+        Settings.ShowSeasonalHeaderBadge = enabled;
+        _settingsService.SaveSettings(Settings);
+        OnPropertyChanged(nameof(ShowSeasonalHeaderBadge));
+    }
+
+    public event EventHandler<SeasonalSkinDefinition>? SeasonalSkinChanged;
 
     #endregion
 }

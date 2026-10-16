@@ -175,9 +175,19 @@ public class BoolToSunColorConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        return (value is bool b && b) 
-            ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 245, 158, 11)) 
-            : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248));
+        bool isDark = ThemeHelper.IsDarkTheme();
+        if (value is bool b && b)
+        {
+            return isDark
+                ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 245, 158, 11))
+                : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 83, 9));
+        }
+        else
+        {
+            return isDark
+                ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248))
+                : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 3, 105, 161));
+        }
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotImplementedException();
@@ -209,9 +219,19 @@ public class BoolToHourlyCardBorderBrushConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        return (value is bool b && b)
-            ? new SolidColorBrush(Windows.UI.Color.FromArgb(230, 56, 189, 248))
-            : new SolidColorBrush(Windows.UI.Color.FromArgb(30, 255, 255, 255));
+        bool isDark = ThemeHelper.IsDarkTheme();
+        if (value is bool b && b)
+        {
+            return isDark
+                ? new SolidColorBrush(Windows.UI.Color.FromArgb(230, 56, 189, 248))
+                : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 2, 132, 199));
+        }
+        else
+        {
+            return isDark
+                ? new SolidColorBrush(Windows.UI.Color.FromArgb(30, 255, 255, 255))
+                : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 226, 232, 240));
+        }
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotImplementedException();
@@ -221,9 +241,105 @@ public class BoolToHourlyCardBackgroundConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        return (value is bool b && b)
-            ? new SolidColorBrush(Windows.UI.Color.FromArgb(55, 56, 189, 248))
-            : new SolidColorBrush(Windows.UI.Color.FromArgb(16, 255, 255, 255));
+        bool isDark = ThemeHelper.IsDarkTheme();
+        if (value is bool b && b)
+        {
+            return isDark
+                ? new SolidColorBrush(Windows.UI.Color.FromArgb(55, 56, 189, 248))
+                : new SolidColorBrush(Windows.UI.Color.FromArgb(35, 2, 132, 199));
+        }
+        else
+        {
+            return isDark
+                ? new SolidColorBrush(Windows.UI.Color.FromArgb(16, 255, 255, 255))
+                : new SolidColorBrush(Windows.UI.Color.FromArgb(180, 248, 250, 252));
+        }
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotImplementedException();
+}
+
+public class SeasonalSkinToAdaptiveForegroundConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        if (value is Models.SeasonalSkinDefinition skin)
+        {
+            bool isDark = ThemeHelper.IsDarkTheme();
+            string hex = (!isDark && !string.IsNullOrEmpty(skin.LightBadgeForegroundHex))
+                ? skin.LightBadgeForegroundHex
+                : skin.BadgeForegroundHex;
+            return ParseHex(hex, Windows.UI.Color.FromArgb(255, 56, 189, 248));
+        }
+        return new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+    }
+
+    private static SolidColorBrush ParseHex(string hex, Windows.UI.Color fallback)
+    {
+        try
+        {
+            hex = hex.TrimStart('#');
+            if (hex.Length == 6)
+            {
+                byte r = byte.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
+                byte g = byte.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
+                byte b = byte.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
+                return new SolidColorBrush(Windows.UI.Color.FromArgb(255, r, g, b));
+            }
+            if (hex.Length == 8)
+            {
+                byte a = byte.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
+                byte r = byte.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
+                byte g = byte.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
+                byte b = byte.Parse(hex.Substring(6, 2), NumberStyles.HexNumber);
+                return new SolidColorBrush(Windows.UI.Color.FromArgb(a, r, g, b));
+            }
+        }
+        catch { }
+        return new SolidColorBrush(fallback);
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotImplementedException();
+}
+
+public class SeasonalSkinToAdaptiveBackgroundConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        if (value is Models.SeasonalSkinDefinition skin)
+        {
+            bool isDark = ThemeHelper.IsDarkTheme();
+            string hex = (!isDark && !string.IsNullOrEmpty(skin.LightBadgeBackgroundHex))
+                ? skin.LightBadgeBackgroundHex
+                : skin.BadgeBackgroundHex;
+            return ParseHex(hex, Windows.UI.Color.FromArgb(40, 56, 189, 248));
+        }
+        return new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+    }
+
+    private static SolidColorBrush ParseHex(string hex, Windows.UI.Color fallback)
+    {
+        try
+        {
+            hex = hex.TrimStart('#');
+            if (hex.Length == 6)
+            {
+                byte r = byte.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
+                byte g = byte.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
+                byte b = byte.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
+                return new SolidColorBrush(Windows.UI.Color.FromArgb(255, r, g, b));
+            }
+            if (hex.Length == 8)
+            {
+                byte a = byte.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
+                byte r = byte.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
+                byte g = byte.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
+                byte b = byte.Parse(hex.Substring(6, 2), NumberStyles.HexNumber);
+                return new SolidColorBrush(Windows.UI.Color.FromArgb(a, r, g, b));
+            }
+        }
+        catch { }
+        return new SolidColorBrush(fallback);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotImplementedException();

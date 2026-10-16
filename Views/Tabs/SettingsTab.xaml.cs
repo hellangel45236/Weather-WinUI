@@ -164,6 +164,12 @@ public sealed partial class SettingsTab : UserControl
             if (CloseToTrayToggle != null) CloseToTrayToggle.IsOn = s.CloseToTray;
             if (AppearanceEffectsToggle != null) AppearanceEffectsToggle.IsOn = s.EnableWeatherEffects;
             if (EffectsToggle != null) EffectsToggle.IsOn = s.EnableWeatherEffects;
+
+            // Seasonal Skins & Effects
+            SelectComboByTag(SeasonalSkinComboBox, s.SeasonalSkinMode.ToString());
+            if (SeasonalParticlesToggle != null) SeasonalParticlesToggle.IsOn = s.EnableSeasonalParticles;
+            if (SeasonalHeaderBadgeToggle != null) SeasonalHeaderBadgeToggle.IsOn = s.ShowSeasonalHeaderBadge;
+
             // Update dynamic bilingual labels for static ComboBoxes
             UpdateAllComboBoxLabels();
         }
@@ -311,6 +317,27 @@ public sealed partial class SettingsTab : UserControl
             }
             _isSyncing = false;
         }
+    }
+
+    private void SeasonalSkinComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null) return;
+        if (SeasonalSkinComboBox?.SelectedItem is ComboBoxItem item && item.Tag is string tagStr)
+        {
+            ViewModel.ChangeSeasonalSkin(tagStr);
+        }
+    }
+
+    private void SeasonalParticlesToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null || SeasonalParticlesToggle == null) return;
+        ViewModel.ToggleSeasonalParticles(SeasonalParticlesToggle.IsOn);
+    }
+
+    private void SeasonalHeaderBadgeToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null || SeasonalHeaderBadgeToggle == null) return;
+        ViewModel.ToggleSeasonalHeaderBadge(SeasonalHeaderBadgeToggle.IsOn);
     }
 
     private void CardIconPackFontAwesome_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)

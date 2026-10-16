@@ -220,6 +220,309 @@
                 </Border>
             </Grid>
 
+            <!-- ==================== BỘ SƯU TẬP WIDGET THEO MÙA & ĐẠI LỄ HỘI (v3.3.0) ==================== -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="16">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf005;" Foreground="#F59E0B" FontSize="14" VerticalAlignment="Center"/>
+                                <TextBlock Text="BỘ SƯU TẬP WIDGET 4 MÙA &amp; 4 ĐẠI LỄ HỘI" FontSize="15" FontWeight="Bold"/>
+                            </StackPanel>
+                            <TextBlock Text="Các kiểu dáng widget chuyên đề độc bản đồng bộ với chủ đề khí quyển và lễ hội truyền thống" FontSize="11.5" Opacity="0.7"/>
+                        </StackPanel>
+                        <Border Grid.Column="1" Background="#20F59E0B" BorderBrush="#40F59E0B" BorderThickness="1" CornerRadius="8" Padding="10,4" VerticalAlignment="Center">
+                            <TextBlock Text="{x:Bind ViewModel.CurrentSeasonalSkin.DisplayName, Mode=OneWay}" FontSize="11" FontWeight="Bold" Foreground="#F59E0B"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- Lưới 8 Thẻ Widget Mùa & Lễ Hội (2 Cột x 4 Hàng) -->
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="16">
+                        
+                        <!-- 1. WIDGET TẾT CỔ TRUYỀN (HOÀNG KIM CÁT TƯỜNG) -->
+                        <Border Grid.Row="0" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="#50F59E0B" BorderThickness="1.5" CornerRadius="16" Padding="14">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="🧧" FontSize="13"/>
+                                        <TextBlock Text="Tết Cổ Truyền" FontWeight="Bold" FontSize="13.5" Foreground="#FDA4AF"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="#25E11D48" BorderBrush="#50E11D48" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                        <TextBlock Text="Hoàng Kim" FontSize="10" FontWeight="Bold" Foreground="#FDA4AF"/>
+                                    </Border>
+                                </Grid>
+                                <!-- Mockup Tết -->
+                                <Border Height="105" CornerRadius="12" BorderBrush="#60F59E0B" BorderThickness="1">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#F02A0914" Offset="0"/>
+                                            <GradientStop Color="#F03F0E1E" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Grid Padding="14,10">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Spacing="1">
+                                                <TextBlock Text="Chúc Mừng Năm Mới • Vạn Sự Như Ý" FontSize="10" FontWeight="SemiBold" Foreground="#FDE047"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}" FontSize="10.5" Opacity="0.8" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <FontIcon Grid.Column="1" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf06b;" Foreground="#F59E0B" FontSize="26" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 2. WIDGET TẾT TRUNG THU (DẠ NGUYỆT ĐOÀN VIÊN) -->
+                        <Border Grid.Row="0" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="#50FDE047" BorderThickness="1.5" CornerRadius="16" Padding="14">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="🥮" FontSize="13"/>
+                                        <TextBlock Text="Tết Trung Thu" FontWeight="Bold" FontSize="13.5" Foreground="#FDE047"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="#256366F1" BorderBrush="#506366F1" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                        <TextBlock Text="Dạ Nguyệt" FontSize="10" FontWeight="Bold" Foreground="#C7D2FE"/>
+                                    </Border>
+                                </Grid>
+                                <!-- Mockup Trung Thu -->
+                                <Border Height="105" CornerRadius="12" BorderBrush="#60FDE047" BorderThickness="1">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#F0110E2A" Offset="0"/>
+                                            <GradientStop Color="#F01E174A" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Grid Padding="14,10">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Spacing="1">
+                                                <TextBlock Text="Đêm Hội Trăng Rằm • Đoàn Viên Cát Lành" FontSize="10" FontWeight="SemiBold" Foreground="#FDE047"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}" FontSize="10.5" Opacity="0.8" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <FontIcon Grid.Column="1" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf186;" Foreground="#FDE047" FontSize="26" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 3. WIDGET GIÁNG SINH & NĂM MỚI (NOEL WONDER) -->
+                        <Border Grid.Row="1" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="#5022C55E" BorderThickness="1.5" CornerRadius="16" Padding="14">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="🎄" FontSize="13"/>
+                                        <TextBlock Text="Giáng Sinh &amp; Năm Mới" FontWeight="Bold" FontSize="13.5" Foreground="#86EFAC"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="#25DC2626" BorderBrush="#50DC2626" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                        <TextBlock Text="Noel Frozen" FontSize="10" FontWeight="Bold" Foreground="#FCA5A5"/>
+                                    </Border>
+                                </Grid>
+                                <!-- Mockup Giáng Sinh -->
+                                <Border Height="105" CornerRadius="12" BorderBrush="#6038BDF8" BorderThickness="1">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#F0091E14" Offset="0"/>
+                                            <GradientStop Color="#F0133221" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Grid Padding="14,10">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Spacing="1">
+                                                <TextBlock Text="Merry Christmas • Giáng Sinh An Lành" FontSize="10" FontWeight="SemiBold" Foreground="#86EFAC"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}" FontSize="10.5" Opacity="0.8" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <FontIcon Grid.Column="1" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf7d9;" Foreground="#22C55E" FontSize="26" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 4. WIDGET HALLOWEEN (MIDNIGHT PHANTOM) -->
+                        <Border Grid.Row="1" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="#50F97316" BorderThickness="1.5" CornerRadius="16" Padding="14">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="🎃" FontSize="13"/>
+                                        <TextBlock Text="Lễ Hội Halloween" FontWeight="Bold" FontSize="13.5" Foreground="#FDBA74"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="#25F97316" BorderBrush="#50F97316" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                        <TextBlock Text="Midnight" FontSize="10" FontWeight="Bold" Foreground="#FDBA74"/>
+                                    </Border>
+                                </Grid>
+                                <!-- Mockup Halloween -->
+                                <Border Height="105" CornerRadius="12" BorderBrush="#60F97316" BorderThickness="1">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#F0180B26" Offset="0"/>
+                                            <GradientStop Color="#F02B1242" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Grid Padding="14,10">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Spacing="1">
+                                                <TextBlock Text="Spooky Season • Trick or Treat" FontSize="10" FontWeight="SemiBold" Foreground="#FB923C"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}" FontSize="10.5" Opacity="0.8" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <FontIcon Grid.Column="1" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6e2;" Foreground="#F97316" FontSize="26" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 5. WIDGET MÙA XUÂN (SPRING BLOOM) -->
+                        <Border Grid.Row="2" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="#50EC4899" BorderThickness="1.5" CornerRadius="16" Padding="14">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="🌸" FontSize="13"/>
+                                        <TextBlock Text="Mùa Xuân (Spring)" FontWeight="Bold" FontSize="13.5" Foreground="#FBCFE8"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="#25EC4899" BorderBrush="#50EC4899" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                        <TextBlock Text="Chồi Non" FontSize="10" FontWeight="Bold" Foreground="#FBCFE8"/>
+                                    </Border>
+                                </Grid>
+                                <Border Height="105" CornerRadius="12" BorderBrush="#60EC4899" BorderThickness="1">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#F0210A1A" Offset="0"/>
+                                            <GradientStop Color="#F0331028" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Grid Padding="14,10">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Spacing="1">
+                                                <TextBlock Text="Xuân Tươi Mới • Vạn Vật Hồi Sinh" FontSize="10" FontWeight="SemiBold" Foreground="#F472B6"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}" FontSize="10.5" Opacity="0.8" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <FontIcon Grid.Column="1" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf06c;" Foreground="#EC4899" FontSize="26" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 6. WIDGET MÙA HẠ (TROPICAL OASIS) -->
+                        <Border Grid.Row="2" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="#500EA5E9" BorderThickness="1.5" CornerRadius="16" Padding="14">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="☀️" FontSize="13"/>
+                                        <TextBlock Text="Mùa Hạ (Summer)" FontWeight="Bold" FontSize="13.5" Foreground="#7DD3FC"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="#250EA5E9" BorderBrush="#500EA5E9" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                        <TextBlock Text="Biển Ngọc" FontSize="10" FontWeight="Bold" Foreground="#7DD3FC"/>
+                                    </Border>
+                                </Grid>
+                                <Border Height="105" CornerRadius="12" BorderBrush="#600EA5E9" BorderThickness="1">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#F0091825" Offset="0"/>
+                                            <GradientStop Color="#F00F293F" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Grid Padding="14,10">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Spacing="1">
+                                                <TextBlock Text="Nắng Hạ Rực Rỡ • Năng Lượng Đầy Tràn" FontSize="10" FontWeight="SemiBold" Foreground="#38BDF8"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}" FontSize="10.5" Opacity="0.8" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <FontIcon Grid.Column="1" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#F59E0B" FontSize="26" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 7. WIDGET MÙA THU (AMBER ROMANCE) -->
+                        <Border Grid.Row="3" Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="#50D97706" BorderThickness="1.5" CornerRadius="16" Padding="14">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="🍁" FontSize="13"/>
+                                        <TextBlock Text="Mùa Thu (Autumn)" FontWeight="Bold" FontSize="13.5" Foreground="#FDE68A"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="#25D97706" BorderBrush="#50D97706" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                        <TextBlock Text="Hổ Phách" FontSize="10" FontWeight="Bold" Foreground="#FDE68A"/>
+                                    </Border>
+                                </Grid>
+                                <Border Height="105" CornerRadius="12" BorderBrush="#60D97706" BorderThickness="1">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#F0241407" Offset="0"/>
+                                            <GradientStop Color="#F0381E0A" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Grid Padding="14,10">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Spacing="1">
+                                                <TextBlock Text="Mùa Thu Êm Ả • Gió Mát Trong Lành" FontSize="10" FontWeight="SemiBold" Foreground="#FBBF24"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}" FontSize="10.5" Opacity="0.8" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <FontIcon Grid.Column="1" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf06c;" Foreground="#D97706" FontSize="26" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 8. WIDGET MÙA ĐÔNG (NORDIC AURORA) -->
+                        <Border Grid.Row="3" Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                BorderBrush="#50818CF8" BorderThickness="1.5" CornerRadius="16" Padding="14">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="❄️" FontSize="13"/>
+                                        <TextBlock Text="Mùa Đông (Winter)" FontWeight="Bold" FontSize="13.5" Foreground="#BAE6FD"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="#25818CF8" BorderBrush="#50818CF8" BorderThickness="1" CornerRadius="8" Padding="7,2">
+                                        <TextBlock Text="Bắc Cực" FontSize="10" FontWeight="Bold" Foreground="#C7D2FE"/>
+                                    </Border>
+                                </Grid>
+                                <Border Height="105" CornerRadius="12" BorderBrush="#60818CF8" BorderThickness="1">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#F00A1328" Offset="0"/>
+                                            <GradientStop Color="#F0132247" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Grid Padding="14,10">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Spacing="1">
+                                                <TextBlock Text="Mùa Đông An Yên • Không Khí Trong Lành" FontSize="10" FontWeight="SemiBold" Foreground="#38BDF8"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}" FontSize="10.5" Opacity="0.8" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <FontIcon Grid.Column="1" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2dc;" Foreground="#818CF8" FontSize="26" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                    </Grid>
+                </StackPanel>
+            </Border>
+
             <!-- ==================== ĐIỀU KHIỂN & TÙY BIẾN WIDGET ==================== -->
             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"

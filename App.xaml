@@ -25,8 +25,28 @@
             <helpers:BoolToHourlyCardBorderBrushConverter x:Key="BoolToHourlyCardBorderBrushConverter" />
             <helpers:BoolToHourlyCardBackgroundConverter x:Key="BoolToHourlyCardBackgroundConverter" />
             <helpers:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+            <helpers:SeasonalSkinToAdaptiveForegroundConverter x:Key="SeasonalSkinToAdaptiveForegroundConverter" />
+            <helpers:SeasonalSkinToAdaptiveBackgroundConverter x:Key="SeasonalSkinToAdaptiveBackgroundConverter" />
             <FontFamily x:Key="SymbolThemeFontFamily">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
             <FontFamily x:Key="FontAwesomeSolid">Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, Font Awesome 6 Free Solid, ms-appx:///Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, Font Awesome 6 Free</FontFamily>
+
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="ZenButtonBackgroundBrush" Color="#157C3AED" />
+                    <SolidColorBrush x:Key="ZenButtonBorderBrush" Color="#407C3AED" />
+                    <SolidColorBrush x:Key="ZenButtonForegroundBrush" Color="#6D28D9" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="ZenButtonBackgroundBrush" Color="#208B5CF6" />
+                    <SolidColorBrush x:Key="ZenButtonBorderBrush" Color="#408B5CF6" />
+                    <SolidColorBrush x:Key="ZenButtonForegroundBrush" Color="#C4B5FD" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="ZenButtonBackgroundBrush" Color="#208B5CF6" />
+                    <SolidColorBrush x:Key="ZenButtonBorderBrush" Color="#408B5CF6" />
+                    <SolidColorBrush x:Key="ZenButtonForegroundBrush" Color="#C4B5FD" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -94,6 +94,130 @@ public sealed partial class MainPage : Page
 
                 // Tự động hiển thị Changelog nếu vừa cập nhật phiên bản mới
                 CheckAndShowChangelog();
+
+                // Lắng nghe sự kiện đổi chủ đề Mùa/Lễ hội để đồng bộ hạt và ánh sáng Zen Mode
+                ViewModel.SeasonalSkinChanged += (s, skin) =>
+                {
+                    UpdateZenGradientColor();
+                    UpdateSeasonalThemeButtonStyle();
+                    TabOverview?.UpdateWeatherVisuals();
+                    TabOverview?.RedrawCanvases();
+                    if (_zenEffectRenderer != null && skin != null)
+                    {
+                        _zenEffectRenderer.SetSeasonalParticleType(skin.ParticleType, ViewModel.EnableSeasonalParticles);
+                    }
+                };
+
+                ActualThemeChanged += (s, e) =>
+                {
+                    UpdateSeasonalThemeButtonStyle();
+                    TabOverview?.UpdateWeatherVisuals();
+                    TabOverview?.RedrawCanvases();
+                };
+
+                // Hỗ trợ kiểm thử skin qua command-line (--skin=tet, midautumn, christmas, halloween, spring, summer, autumn, winter, auto)
+                try
+                {
+                    var skinArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--skin=", StringComparison.OrdinalIgnoreCase));
+                    if (skinArg != null)
+                    {
+                        string targetSkin = skinArg.Substring(7).Trim();
+                        ViewModel.ChangeSeasonalSkin(targetSkin);
+                    }
+                }
+                catch { }
+
+                // Hỗ trợ kiểm thử Theme qua command-line (--theme=light, dark, system)
+                try
+                {
+                    var themeArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--theme=", StringComparison.OrdinalIgnoreCase));
+                    if (themeArg != null)
+                    {
+                        string targetTheme = themeArg.Substring(8).Trim().ToLowerInvariant();
+                        ViewModel.ChangeTheme(targetTheme);
+                        if (ThemeComboBox != null)
+                        {
+                            ThemeComboBox.SelectedIndex = targetTheme == "light" ? 0 : (targetTheme == "dark" ? 1 : 2);
+                        }
+                    }
+                }
+                catch { }
+
+                // Hỗ trợ cuộn trang qua command-line (--scroll=hourly, bottom)
+                try
+                {
+                    var scrollArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--scroll=", StringComparison.OrdinalIgnoreCase));
+                    if (scrollArg != null)
+                    {
+                        string targetScroll = scrollArg.Substring(9).Trim().ToLowerInvariant();
+                        if (targetScroll == "hourly" || targetScroll == "bottom")
+                        {
+                            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+                            {
+                                TabOverview?.ScrollToHourlySection();
+                            });
+                        }
+                    }
+                }
+                catch { }
+
+                // Hỗ trợ điều hướng Tab qua command-line (--tab=overview, flood, radar, lifestyle, calendar, widget, zen)
+                try
+                {
+                    var tabArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--tab=", StringComparison.OrdinalIgnoreCase));
+                    if (tabArg != null)
+                    {
+                        string targetTab = tabArg.Substring(6).Trim().ToLowerInvariant();
+                        if (targetTab == "zen")
+                        {
+                            ViewModel.ToggleZenModeCommand.Execute(null);
+                        }
+                        else
+                        {
+                            ViewModel.SwitchNav(targetTab);
+                            if (MainNavView != null)
+                            {
+                                var allItems = MainNavView.MenuItems.OfType<NavigationViewItem>().Concat(MainNavView.FooterMenuItems.OfType<NavigationViewItem>());
+                                foreach (var item in allItems)
+                                {
+                                    if (item.Tag is string t && t.Equals(targetTab, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        MainNavView.SelectedItem = item;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            switch (targetTab)
+                            {
+                                case "flood":
+                                    var floodTab = FindName(nameof(TabFlood)) as UrbanFloodTab;
+                                    floodTab?.RenderTidalSineWave();
+                                    break;
+                                case "radar":
+                                    var radarTab = FindName(nameof(TabRadar)) as RadarTab;
+                                    radarTab?.StartRadarSweep();
+                                    break;
+                                case "lifestyle":
+                                    var lifestyleTab = FindName(nameof(TabLifestyle)) as LifestyleTab;
+                                    lifestyleTab?.UpdateOccasionButtonsVisual();
+                                    lifestyleTab?.UpdateGenderButtonsVisual();
+                                    break;
+                                case "calendar":
+                                    _ = FindName(nameof(TabCalendar)) as CalendarTab;
+                                    break;
+                                case "widget":
+                                    _ = FindName(nameof(TabWidgetStudio)) as WidgetStudioTab;
+                                    break;
+                                case "settings":
+                                    var settingsTab = FindName(nameof(TabSettings)) as SettingsTab;
+                                    settingsTab?.SyncAllSettings();
+                                    break;
+                            }
+                        }
+                    }
+                }
+                catch { }
             }
         }
         catch { }
@@ -107,10 +231,12 @@ public sealed partial class MainPage : Page
         if (width < 1220)
         {
             if (BtnTextWidget != null) BtnTextWidget.Visibility = Visibility.Collapsed;
+            if (SeasonalThemeBtnText != null) SeasonalThemeBtnText.Visibility = Visibility.Collapsed;
         }
         else
         {
             if (BtnTextWidget != null) BtnTextWidget.Visibility = Visibility.Visible;
+            if (SeasonalThemeBtnText != null) SeasonalThemeBtnText.Visibility = Visibility.Visible;
         }
 
         if (width < 1140)
@@ -157,6 +283,10 @@ public sealed partial class MainPage : Page
             {
                 _zenEffectRenderer.SetWind(ViewModel.CurrentWeather.WindSpeedValue);
                 _zenEffectRenderer.SetWeatherEffect(ViewModel.CurrentWeather.WeatherEffect);
+                if (ViewModel.CurrentSeasonalSkin != null)
+                {
+                    _zenEffectRenderer.SetSeasonalParticleType(ViewModel.CurrentSeasonalSkin.ParticleType, ViewModel.EnableSeasonalParticles);
+                }
                 UpdateZenGradientColor();
             }
         }
@@ -177,6 +307,10 @@ public sealed partial class MainPage : Page
                 {
                     _zenEffectRenderer.SetWind(ViewModel.CurrentWeather.WindSpeedValue);
                     _zenEffectRenderer.SetWeatherEffect(ViewModel.CurrentWeather.WeatherEffect);
+                    if (ViewModel.CurrentSeasonalSkin != null)
+                    {
+                        _zenEffectRenderer.SetSeasonalParticleType(ViewModel.CurrentSeasonalSkin.ParticleType, ViewModel.EnableSeasonalParticles);
+                    }
                     _zenEffectRenderer.Resume();
                 }
             }
@@ -188,6 +322,18 @@ public sealed partial class MainPage : Page
                 }
                 catch { }
                 _zenEffectRenderer?.Pause();
+            }
+        }
+        else if (e.PropertyName == nameof(MainViewModel.CurrentSeasonalSkin) ||
+                 e.PropertyName == nameof(MainViewModel.EnableSeasonalParticles) ||
+                 e.PropertyName == nameof(MainViewModel.SeasonalGreetingText))
+        {
+            TabOverview?.UpdateWeatherVisuals();
+            TabOverview?.RedrawCanvases();
+            if (ViewModel.IsZenModeOpen && _zenEffectRenderer != null && ViewModel.CurrentSeasonalSkin != null)
+            {
+                _zenEffectRenderer.SetSeasonalParticleType(ViewModel.CurrentSeasonalSkin.ParticleType, ViewModel.EnableSeasonalParticles);
+                UpdateZenGradientColor();
             }
         }
     }
@@ -235,12 +381,15 @@ public sealed partial class MainPage : Page
 
     private void UpdateZenGradientColor()
     {
-        if (ZenGradientOverlay != null && ViewModel?.CurrentWeather != null && !string.IsNullOrEmpty(ViewModel.CurrentWeather.HeroGradientStart))
+        if (ZenGradientOverlay != null && ViewModel != null)
         {
             try
             {
-                string hex = ViewModel.CurrentWeather.HeroGradientStart.TrimStart('#');
-                if (hex.Length == 6)
+                string hex = ViewModel.CurrentSeasonalSkin?.PrimaryAccentHex?.TrimStart('#')
+                    ?? ViewModel.CurrentWeather?.HeroGradientStart?.TrimStart('#')
+                    ?? "38BDF8";
+
+                if (hex.Length >= 6)
                 {
                     byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
                     byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
@@ -250,12 +399,74 @@ public sealed partial class MainPage : Page
                         StartPoint = new Windows.Foundation.Point(0, 0),
                         EndPoint = new Windows.Foundation.Point(1, 1)
                     };
-                    brush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(255, r, g, b), Offset = 0 });
+                    brush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(170, r, g, b), Offset = 0 });
                     brush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(255, 9, 13, 22), Offset = 1 });
                     ZenGradientOverlay.Background = brush;
                 }
             }
             catch { }
+        }
+    }
+
+    private void UpdateSeasonalThemeButtonStyle()
+    {
+        if (SeasonalThemeButton == null || ViewModel?.CurrentSeasonalSkin == null) return;
+        var skin = ViewModel.CurrentSeasonalSkin;
+        bool isDark = ThemeHelper.IsDarkTheme(this);
+
+        string bgHex = (!isDark && !string.IsNullOrEmpty(skin.LightBadgeBackgroundHex))
+            ? skin.LightBadgeBackgroundHex
+            : skin.BadgeBackgroundHex;
+        string fgHex = (!isDark && !string.IsNullOrEmpty(skin.LightBadgeForegroundHex))
+            ? skin.LightBadgeForegroundHex
+            : skin.BadgeForegroundHex;
+        string borderHex = skin.BorderStrokeHex ?? "#33FFFFFF";
+
+        SeasonalThemeButton.Background = HexToBrush(bgHex, Windows.UI.Color.FromArgb(40, 225, 29, 72));
+        SeasonalThemeButton.BorderBrush = HexToBrush(borderHex, Windows.UI.Color.FromArgb(90, 225, 29, 72));
+        if (SeasonalThemeBtnText != null)
+        {
+            SeasonalThemeBtnText.Foreground = HexToBrush(fgHex, Windows.UI.Color.FromArgb(255, 159, 18, 57));
+        }
+    }
+
+    private static Microsoft.UI.Xaml.Media.SolidColorBrush HexToBrush(string hex, Windows.UI.Color fallback)
+    {
+        try
+        {
+            hex = hex.TrimStart('#');
+            if (hex.Length == 6)
+            {
+                byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+                return new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, r, g, b));
+            }
+            if (hex.Length == 8)
+            {
+                byte a = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                byte r = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                byte g = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+                byte b = byte.Parse(hex.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
+                return new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(a, r, g, b));
+            }
+        }
+        catch { }
+        return new Microsoft.UI.Xaml.Media.SolidColorBrush(fallback);
+    }
+
+    private void SeasonalSkinItem_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is string skinMode && ViewModel != null)
+        {
+            ViewModel.ChangeSeasonalSkin(skinMode);
+            if (SeasonalThemeButton?.Flyout != null)
+            {
+                SeasonalThemeButton.Flyout.Hide();
+            }
+            UpdateSeasonalThemeButtonStyle();
+            TabOverview?.UpdateWeatherVisuals();
+            TabOverview?.RedrawCanvases();
         }
     }
 
@@ -418,6 +629,11 @@ public sealed partial class MainPage : Page
         if (ThemeComboBox.SelectedItem is ComboBoxItem item && item.Tag is string tag)
         {
             ViewModel.ChangeTheme(tag);
+            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+            {
+                TabOverview?.UpdateWeatherVisuals();
+                TabOverview?.RedrawCanvases();
+            });
         }
     }
 

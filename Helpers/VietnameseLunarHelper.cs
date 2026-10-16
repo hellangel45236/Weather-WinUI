@@ -61,6 +61,7 @@ public static class VietnameseLunarHelper
         public string CanChiYear { get; set; } = string.Empty;
         public string CanChiMonth { get; set; } = string.Empty;
         public string CanChiDay { get; set; } = string.Empty;
+        public string CanChiHour { get; set; } = string.Empty;
         public string SolarTerm { get; set; } = string.Empty;
         public string HolidayName { get; set; } = string.Empty;
         public string FullDisplay { get; set; } = string.Empty;
@@ -158,6 +159,12 @@ public static class VietnameseLunarHelper
         int dayChiIndex = (jd + 1) % 12;
         string canChiDay = $"{Can[dayCanIndex]} {Chi[dayChiIndex]}";
 
+        // 3b. Can Chi Giờ Hiện Tại (Ngũ Thử Độn)
+        int currentHour = DateTime.Now.Hour;
+        int hourChiIndex = ((currentHour + 1) / 2) % 12;
+        int hourCanIndex = (dayCanIndex * 2 + hourChiIndex) % 10;
+        string canChiHour = $"{Can[hourCanIndex]} {Chi[hourChiIndex]}";
+
         // 4. Tiết khí
         string solarTerm = GetSolarTerm(jd, isVietnamese);
 
@@ -182,6 +189,7 @@ public static class VietnameseLunarHelper
             CanChiYear = canChiYear,
             CanChiMonth = canChiMonth,
             CanChiDay = canChiDay,
+            CanChiHour = canChiHour,
             SolarTerm = solarTerm,
             HolidayName = holiday,
             IsAuspiciousDay = isAuspicious,

@@ -294,6 +294,125 @@
                 </StackPanel>
             </Border>
 
+            <!-- ==================== 2C. MÔ PHỎNG MẶT CẮT THỦY LỰC ĐÔ THỊ 2D (2D URBAN CROSS-SECTION) ==================== -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="18"
+                    Padding="22"
+                    Visibility="{x:Bind ViewModel.UrbanFloodWarning.HasTideData, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Spacing="16">
+                    <!-- Header: Tiêu Đề & Huy Hiệu Báo Động -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                            <Border Width="38" Height="38" CornerRadius="12" Background="#2038BDF8" BorderBrush="#4038BDF8" BorderThickness="1">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf018;" Foreground="#38BDF8" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="MÔ PHỎNG MẶT CẮT THỦY LỰC ĐÔ THỊ 2D" FontSize="15" FontWeight="Bold"/>
+                                <TextBlock Text="Mô phỏng mực nước ngập dâng theo thời gian thực so với cốt nền vỉa hè và lòng đường" FontSize="11" Opacity="0.65"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Border Grid.Column="1" Background="{x:Bind ViewModel.UrbanFloodWarning.TideAlertColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                CornerRadius="10" Padding="12,5">
+                            <TextBlock Text="{x:Bind ViewModel.UrbanFloodWarning.TideAlertBadge, Mode=OneWay}" FontSize="11" FontWeight="Bold" Foreground="White"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- Khung Đồ Họa Mặt Cắt 2D (Cross-Section Viewport) -->
+                    <Border Height="140" Background="#0B132B" CornerRadius="14" BorderBrush="#25FFFFFF" BorderThickness="1">
+                        <Grid>
+                            <!-- Vạch Mốc Báo Động 3 & Báo Động 1 -->
+                            <Grid VerticalAlignment="Top" Margin="16,14,16,0" RowDefinitions="Auto,Auto" RowSpacing="18">
+                                <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
+                                    <TextBlock Grid.Column="0" Text="BĐ3 (1.60m) - Ngập sâu vỉa hè" FontSize="9" FontWeight="Bold" Foreground="#EF4444" Margin="0,0,8,0"/>
+                                    <Border Grid.Column="1" Height="1" Background="#EF4444" Opacity="0.5"/>
+                                </Grid>
+                                <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
+                                    <TextBlock Grid.Column="0" Text="BĐ1 (1.40m) - Bắt đầu ngập lòng đường" FontSize="9" FontWeight="Bold" Foreground="#F59E0B" Margin="0,0,8,0"/>
+                                    <Border Grid.Column="1" Height="1" Background="#F59E0B" Opacity="0.5"/>
+                                </Grid>
+                            </Grid>
+
+                            <!-- Cấu Trúc Mặt Cắt: Vỉa Hè (Trái) & Lòng Đường (Phải) -->
+                            <Grid VerticalAlignment="Bottom" Height="70">
+                                <!-- Vỉa hè bên trái (Sidewalk Curb) -->
+                                <Border Width="160" Height="55" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                        Background="#334155" CornerRadius="8,8,0,0" BorderBrush="#475569" BorderThickness="1,1,1,0">
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="3">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf183;" FontSize="13" Foreground="#94A3B8"/>
+                                        <TextBlock Text="Vỉa Hè (+20cm)" FontSize="9" FontWeight="SemiBold" Foreground="#E2E8F0"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Lòng đường xe chạy bên phải (Asphalt Road) -->
+                                <Border Margin="160,0,0,0" Height="32" VerticalAlignment="Bottom"
+                                        Background="#1E293B" BorderBrush="#334155" BorderThickness="0,1,0,0">
+                                    <Grid>
+                                        <Border Height="2" Width="40" Background="#FACC15" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.6"/>
+                                        <Border Width="24" Height="10" Background="#334155" BorderBrush="#475569" BorderThickness="1"
+                                                HorizontalAlignment="Right" Margin="0,0,24,0" VerticalAlignment="Top"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Xe máy trên lòng đường (Motorcycle in Water Cross-section) -->
+                                <StackPanel Orientation="Horizontal" Margin="230,0,0,28" VerticalAlignment="Bottom">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf21c;" FontSize="22" Foreground="#E2E8F0"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Lớp Nước Triều Dâng Biểu Thị Trực Quan (Water Fill Layer) -->
+                            <Border Height="40" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" CornerRadius="0,0,13,13">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="#8038BDF8" Offset="0"/>
+                                        <GradientStop Color="#CC0284C7" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border Height="1" VerticalAlignment="Top" Background="#FFFFFF" Opacity="0.6"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Lưới 3 Pod Thông Số Viễn Thám Bento -->
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                        <!-- Pod 1: Mực Nước Triều -->
+                        <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,10">
+                            <StackPanel Spacing="3">
+                                <TextBlock Text="MỰC NƯỚC HIỆN TẠI" FontSize="10" FontWeight="Bold" Opacity="0.6"/>
+                                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Bottom">
+                                    <TextBlock Text="{x:Bind ViewModel.UrbanFloodWarning.CurrentTideMetersText, Mode=OneWay}" FontSize="20" FontWeight="Bold" Foreground="#38BDF8"/>
+                                    <TextBlock Text="m" FontSize="11" Opacity="0.7" FontWeight="SemiBold"/>
+                                </StackPanel>
+                                <TextBlock Text="{x:Bind ViewModel.UrbanFloodWarning.TideTrendText, Mode=OneWay}" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{x:Bind ViewModel.UrbanFloodWarning.TideTrendColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Pod 2: Tình Trạng Xe Máy -->
+                        <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,10">
+                            <StackPanel Spacing="3">
+                                <TextBlock Text="ĐỘ SÂU NGẬP LÒNG ĐƯỜNG" FontSize="10" FontWeight="Bold" Opacity="0.6"/>
+                                <TextBlock Text="{x:Bind ViewModel.UrbanFloodWarning.MotorbikeRiskStatus, Mode=OneWay}"
+                                           FontSize="13" FontWeight="Bold"
+                                           Foreground="{x:Bind ViewModel.UrbanFloodWarning.MotorbikeRiskColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
+                                <TextBlock Text="{x:Bind ViewModel.UrbanFloodWarning.TidePhaseText, Mode=OneWay}" FontSize="10" FontWeight="SemiBold" Foreground="#A78BFA"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Pod 3: Đếm Ngược Đỉnh Triều -->
+                        <Border Grid.Column="2" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,10">
+                            <StackPanel Spacing="3">
+                                <TextBlock Text="ĐỈNH TRIỀU KẾ TIẾP" FontSize="10" FontWeight="Bold" Opacity="0.6"/>
+                                <TextBlock Text="{x:Bind ViewModel.UrbanFloodWarning.NextPeakCountdown, Mode=OneWay}" FontSize="12" FontWeight="Bold" TextWrapping="Wrap"/>
+                                <TextBlock Text="Chu kỳ tiêu nước tự nhiên" FontSize="10" Opacity="0.65"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
             <!-- ==================== 2B. THẺ THAY THẾ CHO HÀ NỘI & ĐÔ THỊ NỘI ĐỊA ==================== -->
             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"

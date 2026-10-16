@@ -58,7 +58,7 @@ public class LocalizationService : INotifyPropertyChanged
     #region Navigation Bar Strings
 
     public string NavOverview => IsVietnamese ? "Tổng Quan" : "Overview";
-    public string NavFlood => IsVietnamese ? "Triều Cường & Ngập Lụt" : "Tide & Flood Alert";
+    public string NavFlood => IsVietnamese ? "Triều Cường & Ngập" : "Tide & Flood Alert";
     public string NavRadar => IsVietnamese ? "Bản Đồ & Radar" : "Map & Radar";
     public string NavLifestyle => IsVietnamese ? "Đời Sống & OOTD" : "Lifestyle & OOTD";
     public string NavCalendar => IsVietnamese ? "Lịch Âm Dương" : "Lunar Calendar";
@@ -203,13 +203,13 @@ public class LocalizationService : INotifyPropertyChanged
 
     #region Settings Tab Strings
 
-    public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.1.0)" : "Settings & Personalization Center (Version 3.1.0)";
+    public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.3.0)" : "Settings & Personalization Center (Version 3.3.0)";
     public string SettingsSubtitle => IsVietnamese ? "Quản lý giao diện, ngôn ngữ, biểu tượng, đơn vị, hình nền và hiệu năng hệ thống" : "Manage appearance, language, icons, units, wallpapers and system performance";
     public string SettingsHeaderTitle => SettingsTitle;
     public string SettingsHeaderSubtitle => SettingsSubtitle;
     public string SaveAndApply => IsVietnamese ? "Lưu & Áp Dụng" : "Save & Apply";
     public string SaveApplyButton => SaveAndApply;
-    public string VersionOfficial => IsVietnamese ? "Version 3.1.0 (Chính Thức)" : "Version 3.1.0 (Official)";
+    public string VersionOfficial => IsVietnamese ? "Version 3.3.0 (Chính Thức)" : "Version 3.3.0 (Official)";
     public string VersionBadge => VersionOfficial;
     public string AppDescription => IsVietnamese ? "Ứng dụng thời tiết hiện đại, siêu nhẹ, tương thích hoàn hảo Windows 10 & 11" : "Modern, lightweight weather application, perfectly compatible with Windows 10 & 11";
 
@@ -688,6 +688,6 @@ public class LocalizationService : INotifyPropertyChanged
     public string ZenShowAmbientSoundLabel => IsVietnamese ? "Thanh điều khiển âm thanh" : "Ambient Sound Bar";
     public string ZenForecastNow => IsVietnamese ? "Hiện tại" : "Now";
     public string ZenHeroButtonTooltip => IsVietnamese ? "Mở Chế Độ Thư Giãn Toàn Cảnh (Zen Mode - F11)" : "Open Zen Immersive Mode (F11)";
-    public string ZenHeroButtonText => IsVietnamese ? "Thư giãn" : "Zen Mode";
+    public string ZenHeroButtonText => IsVietnamese ? "Toàn cảnh Zen" : "Zen Mode";
     #endregion
 }

@@ -49,7 +49,11 @@ public sealed partial class RadarTab : UserControl
             UpdateTelemetryIndicators();
             StartRadarSweep();
         };
-        this.Unloaded += (s, e) => StopRadarSweep();
+        this.Unloaded += (s, e) =>
+        {
+            StopRadarSweep();
+            _timeLoopTimer?.Stop();
+        };
 
         Services.LocalizationService.Instance.LanguageChanged += (s, e) =>
         {
@@ -203,6 +207,91 @@ public sealed partial class RadarTab : UserControl
             }
 
             RenderRadarSimulation();
+        }
+    }
+
+    private int _selectedTimeStep = 4; // 0: -120m, 1: -90m, 2: -60m, 3: -30m, 4: Live
+    private DispatcherTimer? _timeLoopTimer;
+    private bool _isTimeLoopRunning = false;
+
+    private void RadarTimeSlider_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        _selectedTimeStep = (int)Math.Round(e.NewValue);
+        UpdateTimeScrubberVisuals();
+        RenderRadarSimulation();
+    }
+
+    private void BtnTimeLoop_Click(object sender, RoutedEventArgs e)
+    {
+        _isTimeLoopRunning = !_isTimeLoopRunning;
+        if (_isTimeLoopRunning)
+        {
+            if (_timeLoopTimer == null)
+            {
+                _timeLoopTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(750) };
+                _timeLoopTimer.Tick += (s, ev) =>
+                {
+                    _selectedTimeStep = (_selectedTimeStep + 1) % 5;
+                    if (RadarTimeSlider != null)
+                    {
+                        RadarTimeSlider.Value = _selectedTimeStep;
+                    }
+                };
+            }
+            _timeLoopTimer.Start();
+            if (IconTimeLoop != null) IconTimeLoop.Glyph = "\uf04c";
+            if (TextTimeLoop != null) TextTimeLoop.Text = "Tạm dừng";
+        }
+        else
+        {
+            _timeLoopTimer?.Stop();
+            if (IconTimeLoop != null) IconTimeLoop.Glyph = "\uf04b";
+            if (TextTimeLoop != null) TextTimeLoop.Text = "Tua mây";
+        }
+    }
+
+    private void UpdateTimeScrubberVisuals()
+    {
+        if (TimeScrubberLabel == null || TimeScrubberDot == null || TimeScrubberBadge == null) return;
+        bool isVi = Services.LocalizationService.Instance.IsVietnamese;
+
+        switch (_selectedTimeStep)
+        {
+            case 0:
+                TimeScrubberLabel.Text = isVi ? "⏱️ -120 PHÚT TRƯỚC" : "⏱️ -120 MINS AGO";
+                TimeScrubberLabel.Foreground = new SolidColorBrush(Color.FromArgb(255, 148, 163, 184));
+                TimeScrubberDot.Fill = new SolidColorBrush(Color.FromArgb(255, 148, 163, 184));
+                TimeScrubberBadge.Background = new SolidColorBrush(Color.FromArgb(40, 148, 163, 184));
+                TimeScrubberBadge.BorderBrush = new SolidColorBrush(Color.FromArgb(80, 148, 163, 184));
+                break;
+            case 1:
+                TimeScrubberLabel.Text = isVi ? "⏱️ -90 PHÚT TRƯỚC" : "⏱️ -90 MINS AGO";
+                TimeScrubberLabel.Foreground = new SolidColorBrush(Color.FromArgb(255, 56, 189, 248));
+                TimeScrubberDot.Fill = new SolidColorBrush(Color.FromArgb(255, 56, 189, 248));
+                TimeScrubberBadge.Background = new SolidColorBrush(Color.FromArgb(40, 56, 189, 248));
+                TimeScrubberBadge.BorderBrush = new SolidColorBrush(Color.FromArgb(80, 56, 189, 248));
+                break;
+            case 2:
+                TimeScrubberLabel.Text = isVi ? "⏱️ -60 PHÚT TRƯỚC" : "⏱️ -60 MINS AGO";
+                TimeScrubberLabel.Foreground = new SolidColorBrush(Color.FromArgb(255, 56, 189, 248));
+                TimeScrubberDot.Fill = new SolidColorBrush(Color.FromArgb(255, 56, 189, 248));
+                TimeScrubberBadge.Background = new SolidColorBrush(Color.FromArgb(40, 56, 189, 248));
+                TimeScrubberBadge.BorderBrush = new SolidColorBrush(Color.FromArgb(80, 56, 189, 248));
+                break;
+            case 3:
+                TimeScrubberLabel.Text = isVi ? "⏱️ -30 PHÚT TRƯỚC" : "⏱️ -30 MINS AGO";
+                TimeScrubberLabel.Foreground = new SolidColorBrush(Color.FromArgb(255, 245, 158, 11));
+                TimeScrubberDot.Fill = new SolidColorBrush(Color.FromArgb(255, 245, 158, 11));
+                TimeScrubberBadge.Background = new SolidColorBrush(Color.FromArgb(40, 245, 158, 11));
+                TimeScrubberBadge.BorderBrush = new SolidColorBrush(Color.FromArgb(80, 245, 158, 11));
+                break;
+            default:
+                TimeScrubberLabel.Text = isVi ? "🔴 TRỰC TIẾP (LIVE)" : "🔴 LIVE STREAM";
+                TimeScrubberLabel.Foreground = new SolidColorBrush(Color.FromArgb(255, 16, 185, 129));
+                TimeScrubberDot.Fill = new SolidColorBrush(Color.FromArgb(255, 16, 185, 129));
+                TimeScrubberBadge.Background = new SolidColorBrush(Color.FromArgb(40, 16, 185, 129));
+                TimeScrubberBadge.BorderBrush = new SolidColorBrush(Color.FromArgb(80, 16, 185, 129));
+                break;
         }
     }
 

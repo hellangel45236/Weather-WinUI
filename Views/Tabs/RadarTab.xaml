@@ -131,6 +131,38 @@
                         <Canvas x:Name="RadarSimulationCanvas" Height="460" HorizontalAlignment="Stretch" SizeChanged="RadarSimulationCanvas_SizeChanged"/>
                     </Border>
 
+                    <!-- THANH ĐIỀU KHIỂN DÒNG THỜI GIAN TUA NGƯỢC (RADAR TIME-SCRUBBER 2 GIỜ) -->
+                    <Border Background="#150F172A" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="14,10">
+                        <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+                            <!-- Hàng 1: Nút Play Loop & Nhãn mốc thời gian -->
+                            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <Button x:Name="BtnTimeLoop" Click="BtnTimeLoop_Click"
+                                            Background="#2038BDF8" BorderBrush="#4038BDF8" BorderThickness="1" CornerRadius="8" Padding="10,4">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon x:Name="IconTimeLoop" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf04b;" FontSize="11" Foreground="#38BDF8"/>
+                                            <TextBlock x:Name="TextTimeLoop" Text="Tua mây" FontSize="11" FontWeight="Bold" Foreground="#38BDF8"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <TextBlock Text="DÒNG THỜI GIAN TUA LẠI (2 GIỜ)" FontSize="10.5" FontWeight="Bold" Opacity="0.7" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <Border Grid.Column="2" x:Name="TimeScrubberBadge" Background="#2010B981" BorderBrush="#4010B981" BorderThickness="1" CornerRadius="6" Padding="8,3">
+                                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                        <Ellipse x:Name="TimeScrubberDot" Width="6" Height="6" Fill="#10B981"/>
+                                        <TextBlock x:Name="TimeScrubberLabel" Text="🔴 TRỰC TIẾP (LIVE)" FontSize="10.5" FontWeight="Bold" Foreground="#10B981"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- Hàng 2: Thanh trượt Slider 5 mốc thời gian -->
+                            <Grid Grid.Row="1">
+                                <Slider x:Name="RadarTimeSlider" Minimum="0" Maximum="4" StepFrequency="1" Value="4"
+                                        ValueChanged="RadarTimeSlider_ValueChanged" HorizontalAlignment="Stretch" Margin="4,0"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
                     <!-- THƯỚC ĐO CƯỜNG ĐỘ PHẢN HỒI DBZ & CHÚ THÍCH CÁC TẦNG MÂY -->
                     <Grid ColumnDefinitions="Auto,*,Auto">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">

@@ -957,6 +957,74 @@
                                     </Grid>
                                 </Border>
 
+                                <!-- MỤC 2.5: CHỦ ĐỀ 4 MÙA & 4 ĐẠI LỄ HỘI (SEASONAL & FESTIVAL ENGINE) -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="16,14">
+                                    <StackPanel Spacing="14">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf005;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Chủ đề 4 Mùa &amp; Đại Lễ Hội" FontWeight="Bold" FontSize="13.5" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="2" Background="#20F59E0B" BorderBrush="#50F59E0B" BorderThickness="1" CornerRadius="8" Padding="10,3">
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentSeasonalSkin.DisplayName, Mode=OneWay}" FontSize="11" FontWeight="Bold" Foreground="#F59E0B"/>
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- Thẻ Live Preview thông điệp & Quote của Skin hiện hành -->
+                                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="12,10">
+                                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                                <Border Width="38" Height="38" CornerRadius="10" Background="#2038BDF8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <TextBlock Text="{x:Bind ViewModel.CurrentSeasonalSkin.Emoji, Mode=OneWay}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                                    <TextBlock Text="{x:Bind ViewModel.CurrentSeasonalSkin.Description, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                                    <TextBlock Text="{x:Bind ViewModel.CurrentSeasonalSkin.ZenQuote, Mode=OneWay}" FontSize="11" Opacity="0.7" FontStyle="Italic" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Chọn chế độ Skin -->
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                            <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf53f;" FontSize="15" Foreground="#EC4899" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Giao diện Mùa &amp; Lễ Hội" FontWeight="SemiBold" FontSize="13"/>
+                                                <TextBlock Text="Tự động nhận diện theo Lịch Dương/Âm hoặc chọn thủ công" FontSize="11" Opacity="0.7"/>
+                                            </StackPanel>
+                                            <ComboBox Grid.Column="2" x:Name="SeasonalSkinComboBox" Width="200" VerticalAlignment="Center" SelectionChanged="SeasonalSkinComboBox_SelectionChanged">
+                                                <ComboBoxItem Content="🌐 Tự động (Theo Lịch)" Tag="Auto"/>
+                                                <ComboBoxItem Content="🌸 Mùa Xuân (Spring Bloom)" Tag="Spring"/>
+                                                <ComboBoxItem Content="🌴 Mùa Hạ (Tropical Oasis)" Tag="Summer"/>
+                                                <ComboBoxItem Content="🍁 Mùa Thu (Amber Romance)" Tag="Autumn"/>
+                                                <ComboBoxItem Content="❄️ Mùa Đông (Nordic Aurora)" Tag="Winter"/>
+                                                <ComboBoxItem Content="🏮 Tết Cổ Truyền (Hoàng Kim)" Tag="Tet"/>
+                                                <ComboBoxItem Content="🥮 Tết Trung Thu (Dạ Nguyệt)" Tag="MidAutumn"/>
+                                                <ComboBoxItem Content="🎄 Giáng Sinh &amp; Năm Mới" Tag="Christmas"/>
+                                                <ComboBoxItem Content="🎃 Lễ Hội Ma Halloween" Tag="Halloween"/>
+                                            </ComboBox>
+                                        </Grid>
+
+                                        <!-- Bật/tắt hiệu ứng hạt vật lý rơi theo mùa & lễ hội -->
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                            <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf06d;" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Hiệu ứng hạt khí quyển mùa &amp; lễ hội" FontWeight="SemiBold" FontSize="13"/>
+                                                <TextBlock Text="Hoa đào/mai ngày Tết, đom đóm rằm Trung Thu, tuyết rơi Noel..." FontSize="11" Opacity="0.7"/>
+                                            </StackPanel>
+                                            <ToggleSwitch Grid.Column="2" x:Name="SeasonalParticlesToggle" IsOn="{x:Bind ViewModel.EnableSeasonalParticles, Mode=TwoWay}" Toggled="SeasonalParticlesToggle_Toggled" VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <!-- Bật/tắt huy hiệu thanh tiêu đề -->
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                            <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf02b;" FontSize="15" Foreground="#10B981" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Huy hiệu mùa trên thanh tiêu đề" FontWeight="SemiBold" FontSize="13"/>
+                                                <TextBlock Text="Hiển thị nút chuyển đổi nhanh mùa/lễ hội ở góc trên bên phải" FontSize="11" Opacity="0.7"/>
+                                            </StackPanel>
+                                            <ToggleSwitch Grid.Column="2" x:Name="SeasonalHeaderBadgeToggle" IsOn="{x:Bind ViewModel.Settings.ShowSeasonalHeaderBadge, Mode=TwoWay}" Toggled="SeasonalHeaderBadgeToggle_Toggled" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- MỤC 3: HIỆU ỨNG KHÍ QUYỂN ĐỘNG -->
                                 <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">

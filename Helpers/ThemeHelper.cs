@@ -38,4 +38,26 @@ public static class ThemeHelper
         }
         catch { }
     }
+
+    public static bool IsDarkTheme(FrameworkElement? element = null)
+    {
+        try
+        {
+            if (element != null)
+            {
+                if (element.RequestedTheme == ElementTheme.Light) return false;
+                if (element.RequestedTheme == ElementTheme.Dark) return true;
+                return element.ActualTheme != ElementTheme.Light;
+            }
+            if (_window?.Content is FrameworkElement root)
+            {
+                if (root.RequestedTheme == ElementTheme.Light) return false;
+                if (root.RequestedTheme == ElementTheme.Dark) return true;
+                return root.ActualTheme != ElementTheme.Light;
+            }
+            if (Application.Current?.RequestedTheme == ApplicationTheme.Light) return false;
+        }
+        catch { }
+        return true;
+    }
 }

@@ -5,8 +5,12 @@ namespace WeatherApp.Models;
 
 public class AppSettings
 {
-    // 1. Giao diện (Theme)
+    // 1. Giao diện (Theme) & Chủ đề Mùa/Lễ hội (Seasonal & Festival Skins)
     public string ThemeMode { get; set; } = "System"; // "System", "Light", "Dark"
+    public string SeasonalSkinMode { get; set; } = "Auto"; // "Auto", "Spring", "Summer", "Autumn", "Winter", "Tet", "MidAutumn", "Christmas", "Halloween"
+    public bool EnableSeasonalParticles { get; set; } = true;
+    public string SeasonalWidgetTheme { get; set; } = "Auto";
+    public bool ShowSeasonalHeaderBadge { get; set; } = true;
 
     // 2. Thời gian & Múi giờ
     public string TimezoneMode { get; set; } = "Auto"; // "Auto", "GMT+7", "GMT+8", "GMT+9", "GMT+0", "GMT-5"

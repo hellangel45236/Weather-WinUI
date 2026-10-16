@@ -35,10 +35,11 @@ public partial class CalendarDayItem : ObservableObject
     public string HolidayDescription { get; set; } = string.Empty;
     public bool IsOfficialDayOff { get; set; }
 
-    // Can Chi Ba Trụ & Tiết khí
+    // Can Chi Tứ Trụ & Tiết khí
     public string CanChiYear { get; set; } = string.Empty;
     public string CanChiMonth { get; set; } = string.Empty;
     public string CanChiDay { get; set; } = string.Empty;
+    public string CanChiHour { get; set; } = string.Empty;
     public string SolarTerm { get; set; } = string.Empty;
 
     // Hoàng Đạo / Hắc Đạo & Giờ Hoàng Đạo

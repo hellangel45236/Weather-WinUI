@@ -68,14 +68,14 @@
                         <!-- Nút Chế độ Thư Giãn Toàn Cảnh (Zen Immersive View - F11) -->
                         <Button Command="{x:Bind ViewModel.ToggleZenModeCommand}"
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ZenModeTooltip, Mode=OneWay}"
-                                Background="#208B5CF6"
-                                BorderBrush="#408B5CF6"
+                                Background="{ThemeResource ZenButtonBackgroundBrush}"
+                                BorderBrush="{ThemeResource ZenButtonBorderBrush}"
                                 BorderThickness="1"
                                 CornerRadius="12"
                                 Padding="9,5">
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6c4;" FontSize="13" Foreground="#A78BFA"/>
-                                <TextBlock Text="Zen" FontWeight="SemiBold" FontSize="12" Foreground="#C4B5FD"/>
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6c4;" FontSize="13" Foreground="{ThemeResource ZenButtonForegroundBrush}"/>
+                                <TextBlock Text="Zen" FontWeight="SemiBold" FontSize="12" Foreground="{ThemeResource ZenButtonForegroundBrush}"/>
                             </StackPanel>
                         </Button>
 
@@ -105,6 +105,90 @@
                             <ComboBoxItem Content="🌙 Tối" Tag="dark"/>
                             <ComboBoxItem Content="💻 Hệ thống" Tag="system"/>
                         </ComboBox>
+
+                        <!-- Bộ Chọn Giao Diện Theo Mùa & Đại Lễ Hội (v3.3.0) -->
+                        <Button x:Name="SeasonalThemeButton"
+                                ToolTipService.ToolTip="Thay áo giao diện theo 4 Mùa &amp; 4 Đại Lễ Hội"
+                                Background="{x:Bind ViewModel.CurrentSeasonalSkin, Mode=OneWay, Converter={StaticResource SeasonalSkinToAdaptiveBackgroundConverter}}"
+                                BorderBrush="{x:Bind ViewModel.CurrentSeasonalSkin.BorderStrokeHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="9,5">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.CurrentSeasonalSkin.BadgeEmoji, Mode=OneWay}" FontSize="12" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="SeasonalThemeBtnText" Text="{x:Bind ViewModel.CurrentSeasonalSkin.DisplayName, Mode=OneWay}" FontWeight="SemiBold" FontSize="11.5"
+                                           Foreground="{x:Bind ViewModel.CurrentSeasonalSkin, Mode=OneWay, Converter={StaticResource SeasonalSkinToAdaptiveForegroundConverter}}"/>
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf107;" FontSize="9"
+                                          Foreground="{x:Bind ViewModel.CurrentSeasonalSkin, Mode=OneWay, Converter={StaticResource SeasonalSkinToAdaptiveForegroundConverter}}"/>
+                            </StackPanel>
+                            <Button.Flyout>
+                                <Flyout Placement="BottomEdgeAlignedRight">
+                                    <Border Width="280" Padding="4">
+                                        <StackPanel Spacing="5">
+                                            <TextBlock Text="CHỦ ĐỀ 4 MÙA &amp; ĐẠI LỄ HỘI" FontSize="11.5" FontWeight="Bold" Foreground="{ThemeResource AccentFillColorDefaultBrush}" Margin="6,2,6,4"/>
+                                            <Button Click="SeasonalSkinItem_Click" Tag="Auto" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                                    <TextBlock Text="📅" FontSize="13"/>
+                                                    <TextBlock Text="Tự Động Theo Lịch &amp; Tiết Khí" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" Opacity="0.4" Margin="4,2"/>
+                                            <TextBlock Text="4 ĐẠI LỄ HỘI LỚN" FontSize="10.5" FontWeight="Bold" Opacity="0.7" Margin="6,2,6,2"/>
+                                            <Button Click="SeasonalSkinItem_Click" Tag="Tet" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                                    <TextBlock Text="🧧" FontSize="13"/>
+                                                    <TextBlock Text="Tết Cổ Truyền (Hoàng Kim)" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Click="SeasonalSkinItem_Click" Tag="MidAutumn" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                                    <TextBlock Text="🥮" FontSize="13"/>
+                                                    <TextBlock Text="Tết Trung Thu (Dạ Nguyệt)" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Click="SeasonalSkinItem_Click" Tag="Christmas" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                                    <TextBlock Text="🎄" FontSize="13"/>
+                                                    <TextBlock Text="Giáng Sinh &amp; Năm Mới" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Click="SeasonalSkinItem_Click" Tag="Halloween" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                                    <TextBlock Text="🎃" FontSize="13"/>
+                                                    <TextBlock Text="Lễ Hội Halloween" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" Opacity="0.4" Margin="4,2"/>
+                                            <TextBlock Text="4 MÙA TRONG NĂM" FontSize="10.5" FontWeight="Bold" Opacity="0.7" Margin="6,2,6,2"/>
+                                            <Button Click="SeasonalSkinItem_Click" Tag="Spring" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                                    <TextBlock Text="🌸" FontSize="13"/>
+                                                    <TextBlock Text="Mùa Xuân (Spring Bloom)" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Click="SeasonalSkinItem_Click" Tag="Summer" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                                    <TextBlock Text="☀️" FontSize="13"/>
+                                                    <TextBlock Text="Mùa Hạ (Tropical Oasis)" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Click="SeasonalSkinItem_Click" Tag="Autumn" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                                    <TextBlock Text="🍁" FontSize="13"/>
+                                                    <TextBlock Text="Mùa Thu (Amber Romance)" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Click="SeasonalSkinItem_Click" Tag="Winter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                                    <TextBlock Text="❄️" FontSize="13"/>
+                                                    <TextBlock Text="Mùa Đông (Nordic Aurora)" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </Border>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
 
                         <!-- Nút Bật & Quản lý Desktop Widget Đa Năng (v2.0) -->
                         <DropDownButton x:Name="DesktopWidgetButton"
@@ -154,6 +238,7 @@
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="11" Foreground="#38BDF8"/>
                                 <TextBlock Text="{x:Bind ViewModel.Loc.GpsLocation, Mode=OneWay}" FontSize="11.5" FontWeight="{x:Bind ViewModel.GpsButtonFontWeight, Mode=OneWay}"/>
+                                <Ellipse Width="5" Height="5" Fill="#38BDF8" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
@@ -218,43 +303,99 @@
         <NavigationView x:Name="MainNavView"
                         Grid.Row="3"
                         PaneDisplayMode="Left"
-                        OpenPaneLength="240"
+                        OpenPaneLength="280"
                         CompactPaneLength="52"
                         IsBackButtonVisible="Collapsed"
                         IsSettingsVisible="False"
                         SelectionChanged="MainNavView_SelectionChanged">
+            <NavigationView.Resources>
+                <CornerRadius x:Key="ControlCornerRadius">10</CornerRadius>
+                <CornerRadius x:Key="NavigationViewItemCornerRadius">10</CornerRadius>
+            </NavigationView.Resources>
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavOverview, Mode=OneWay}" Tag="overview" IsSelected="True">
+                <NavigationViewItem Tag="overview" IsSelected="True">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#F59E0B"/>
                     </NavigationViewItem.Icon>
+                    <NavigationViewItem.Content>
+                        <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
+                            <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.NavOverview, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
+                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="#20F59E0B" CornerRadius="6" Padding="6,1.5">
+                                <TextBlock Text="{x:Bind ViewModel.NavOverviewTempText, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="#F59E0B"/>
+                            </Border>
+                        </Grid>
+                    </NavigationViewItem.Content>
                 </NavigationViewItem>
-                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavFlood, Mode=OneWay}" Tag="flood">
+                <NavigationViewItem Tag="flood">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf773;" Foreground="#0284C7"/>
                     </NavigationViewItem.Icon>
+                    <NavigationViewItem.InfoBadge>
+                        <InfoBadge Visibility="{x:Bind ViewModel.HasFloodAlert, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                   Style="{ThemeResource AttentionDotInfoBadgeStyle}"/>
+                    </NavigationViewItem.InfoBadge>
+                    <NavigationViewItem.Content>
+                        <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
+                            <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.NavFlood, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
+                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="#200284C7" CornerRadius="6" Padding="6,1.5">
+                                <TextBlock Text="{x:Bind ViewModel.NavFloodTideText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#38BDF8"/>
+                            </Border>
+                        </Grid>
+                    </NavigationViewItem.Content>
                 </NavigationViewItem>
-                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavRadar, Mode=OneWay}" Tag="radar">
+                <NavigationViewItem Tag="radar">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" Foreground="#10B981"/>
                     </NavigationViewItem.Icon>
+                    <NavigationViewItem.Content>
+                        <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
+                            <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.NavRadar, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
+                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="#2010B981" CornerRadius="6" Padding="6,1.5">
+                                <TextBlock Text="{x:Bind ViewModel.NavRadarStatusText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#10B981"/>
+                            </Border>
+                        </Grid>
+                    </NavigationViewItem.Content>
                 </NavigationViewItem>
-                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavLifestyle, Mode=OneWay}" Tag="lifestyle">
+                <NavigationViewItem Tag="lifestyle">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf553;" Foreground="#EC4899"/>
                     </NavigationViewItem.Icon>
+                    <NavigationViewItem.Content>
+                        <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
+                            <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.NavLifestyle, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
+                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="#20EC4899" CornerRadius="6" Padding="6,1.5">
+                                <TextBlock Text="{x:Bind ViewModel.NavLifestyleOotdText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#EC4899" TextTrimming="CharacterEllipsis" MaxWidth="82"/>
+                            </Border>
+                        </Grid>
+                    </NavigationViewItem.Content>
                 </NavigationViewItem>
-                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavCalendar, Mode=OneWay}" Tag="calendar">
+                <NavigationViewItem Tag="calendar">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" Foreground="#8B5CF6"/>
                     </NavigationViewItem.Icon>
+                    <NavigationViewItem.Content>
+                        <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
+                            <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.NavCalendar, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
+                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="#208B5CF6" CornerRadius="6" Padding="6,1.5">
+                                <TextBlock Text="{x:Bind ViewModel.NavLunarDateText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#A78BFA"/>
+                            </Border>
+                        </Grid>
+                    </NavigationViewItem.Content>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavWidget, Mode=OneWay}" Tag="widget">
+                <NavigationViewItem Tag="widget">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" Foreground="#38BDF8"/>
                     </NavigationViewItem.Icon>
+                    <NavigationViewItem.Content>
+                        <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
+                            <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.NavWidget, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
+                            <Border Grid.Column="1" HorizontalAlignment="Right" Background="#2038BDF8" CornerRadius="6" Padding="6,1.5">
+                                <TextBlock Text="{x:Bind ViewModel.NavWidgetStudioText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#38BDF8"/>
+                            </Border>
+                        </Grid>
+                    </NavigationViewItem.Content>
                 </NavigationViewItem>
                 <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavSettings, Mode=OneWay}" Tag="settings">
                     <NavigationViewItem.Icon>
@@ -2181,12 +2322,21 @@
             <Grid RowDefinitions="Auto,*,Auto" Padding="36,24">
                 <!-- ==================== HÀNG 0: THANH ĐIỀU KHIỂN NỔI (ZEN TOOLBAR) ==================== -->
                 <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-                    <!-- Huy hiệu Zen Mode -->
+                    <!-- Huy hiệu Zen Mode & Chủ đề Mùa/Lễ hội -->
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                         <Border Background="#308B5CF6" BorderBrush="#508B5CF6" BorderThickness="1" CornerRadius="12" Padding="12,6">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6c4;" FontSize="13" Foreground="#C4B5FD"/>
                                 <TextBlock Text="ZEN IMMERSIVE VIEW" FontSize="11" FontWeight="Bold" Foreground="#DDD6FE"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="{x:Bind ViewModel.CurrentSeasonalSkin.BadgeBackgroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                BorderBrush="{x:Bind ViewModel.CurrentSeasonalSkin.BorderStrokeHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
+                                BorderThickness="1" CornerRadius="12" Padding="12,6">
+                            <StackPanel Orientation="Horizontal" Spacing="7">
+                                <TextBlock Text="{x:Bind ViewModel.CurrentSeasonalSkin.BadgeEmoji, Mode=OneWay}" FontSize="12" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentSeasonalSkin.DisplayName, Mode=OneWay}" FontSize="11" FontWeight="Bold"
+                                           Foreground="{x:Bind ViewModel.CurrentSeasonalSkin.BadgeForegroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -2432,7 +2582,7 @@
                                 <Grid.RenderTransform>
                                     <RotateTransform Angle="{x:Bind ViewModel.ZenAnalogMinuteAngle, Mode=OneWay}"/>
                                 </Grid.RenderTransform>
-                                <Border Width="3.5" Height="78" CornerRadius="2" Background="#93C5FD"
+                                <Border Width="3.5" Height="78" CornerRadius="2" Background="{x:Bind ViewModel.CurrentSeasonalSkin.ZenClockHandHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
                                         HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,37,0,0"/>
                             </Grid>
 
@@ -2442,13 +2592,13 @@
                                 <Grid.RenderTransform>
                                     <RotateTransform Angle="{x:Bind ViewModel.ZenAnalogSecondAngle, Mode=OneWay}"/>
                                 </Grid.RenderTransform>
-                                <Border Width="1.5" Height="92" CornerRadius="1" Background="#38BDF8"
+                                <Border Width="1.5" Height="92" CornerRadius="1" Background="{x:Bind ViewModel.CurrentSeasonalSkin.ZenAccentHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
                                         HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,23,0,0"/>
-                                <Border Width="2.5" Height="20" CornerRadius="1" Background="#38BDF8"
+                                <Border Width="2.5" Height="20" CornerRadius="1" Background="{x:Bind ViewModel.CurrentSeasonalSkin.ZenAccentHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
                                         HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,95"/>
                             </Grid>
 
-                            <Ellipse Width="12" Height="12" Fill="#38BDF8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Ellipse Width="12" Height="12" Fill="{x:Bind ViewModel.CurrentSeasonalSkin.ZenAccentHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             <Ellipse Width="4" Height="4" Fill="#0F172A" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
 
@@ -2534,12 +2684,13 @@
                             </ItemsControl>
                         </Border>
 
-                        <!-- DANH NGÔN THƯ GIÃN (Tùy chọn bật/tắt) -->
+                        <!-- DANH NGÔN THƯ GIÃN (Tùy chọn bật/tắt & Đồng bộ Mùa/Lễ hội) -->
                         <Border Visibility="{x:Bind ViewModel.ZenShowRelaxQuote, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                 Background="#25000000" BorderBrush="#25FFFFFF" BorderThickness="1" CornerRadius="14" Padding="20,10" MaxWidth="540" HorizontalAlignment="Center" Margin="0,4,0,0">
                             <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0eb;" FontSize="14" Foreground="#FBBF24" VerticalAlignment="Center"/>
-                                <TextBlock Text="{x:Bind ViewModel.Loc.ZenRelaxQuote, Mode=OneWay}" FontSize="12.5" Foreground="#E2E8F0" TextWrapping="Wrap" TextAlignment="Center"/>
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind ViewModel.CurrentSeasonalSkin.IconGlyph, Mode=OneWay}" FontSize="14"
+                                          Foreground="{x:Bind ViewModel.CurrentSeasonalSkin.ZenAccentHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind ViewModel.SeasonalZenQuote, Mode=OneWay}" FontSize="12.5" Foreground="#E2E8F0" TextWrapping="Wrap" TextAlignment="Center"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>

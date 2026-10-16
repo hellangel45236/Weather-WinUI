@@ -534,7 +534,7 @@ public sealed partial class UrbanFloodTab : UserControl
             {
                 double curLevel = ViewModel.UrbanFloodWarning.CurrentTideLevel;
                 double ratio = Math.Max(0.08, Math.Min(1.0, (curLevel - minLevel) / range));
-                WaterLevelBar.Height = Math.Max(14, ratio * 130);
+                WaterLevelBar.Height = Math.Max(12, ratio * 70);
 
                 var barBrush = new LinearGradientBrush
                 {
