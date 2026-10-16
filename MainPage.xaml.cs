@@ -171,8 +171,9 @@ public sealed partial class MainPage : Page
                 catch { }
 
                 UpdateZenGradientColor();
+                ViewModel?.UpdateZenHourlyForecast();
                 _zenEffectRenderer ??= new WeatherEffectRenderer(ZenWeatherCanvas, ZenLightningOverlay);
-                if (ViewModel.CurrentWeather != null)
+                if (ViewModel?.CurrentWeather != null && _zenEffectRenderer != null)
                 {
                     _zenEffectRenderer.SetWind(ViewModel.CurrentWeather.WindSpeedValue);
                     _zenEffectRenderer.SetWeatherEffect(ViewModel.CurrentWeather.WeatherEffect);
@@ -194,6 +195,42 @@ public sealed partial class MainPage : Page
     private void ZenAmbientToggle_Toggled(object sender, RoutedEventArgs e)
     {
         ViewModel?.ToggleAmbientSoundCommand.Execute(null);
+    }
+
+    private void ZenToggleSeconds_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleSwitch ts && ViewModel != null && ts.IsOn != ViewModel.ZenShowSeconds)
+            ViewModel.ToggleZenShowSecondsCommand.Execute(null);
+    }
+
+    private void ZenToggleWeatherInfo_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleSwitch ts && ViewModel != null && ts.IsOn != ViewModel.ZenShowWeatherInfo)
+            ViewModel.ToggleZenShowWeatherInfoCommand.Execute(null);
+    }
+
+    private void ZenToggleHourly_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleSwitch ts && ViewModel != null && ts.IsOn != ViewModel.ZenShowHourlyForecast)
+            ViewModel.ToggleZenShowHourlyForecastCommand.Execute(null);
+    }
+
+    private void ZenToggleAirQuality_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleSwitch ts && ViewModel != null && ts.IsOn != ViewModel.ZenShowAirQuality)
+            ViewModel.ToggleZenShowAirQualityCommand.Execute(null);
+    }
+
+    private void ZenToggleQuote_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleSwitch ts && ViewModel != null && ts.IsOn != ViewModel.ZenShowRelaxQuote)
+            ViewModel.ToggleZenShowRelaxQuoteCommand.Execute(null);
+    }
+
+    private void ZenToggleAmbient_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleSwitch ts && ViewModel != null && ts.IsOn != ViewModel.ZenShowAmbientSound)
+            ViewModel.ToggleZenShowAmbientSoundCommand.Execute(null);
     }
 
     private void UpdateZenGradientColor()

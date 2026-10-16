@@ -246,6 +246,20 @@
                                     </StackPanel>
                                 </Button>
 
+                                <!-- Nút Chế Độ Thư Giãn Toàn Cảnh (Zen Immersive View F11) -->
+                                <Button Command="{x:Bind ViewModel.ToggleZenModeCommand}"
+                                        Background="#288B5CF6"
+                                        BorderBrush="#458B5CF6"
+                                        BorderThickness="1"
+                                        CornerRadius="12"
+                                        Padding="8,4"
+                                        ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ZenHeroButtonTooltip, Mode=OneWay}">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6c4;" FontSize="11" Foreground="#DDD6FE"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.ZenHeroButtonText, Mode=OneWay}" FontSize="11.5" Foreground="#DDD6FE" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
                                 <!-- Nút Chia sẻ ảnh -->
                                 <Button Click="ShareWeatherCardButton_Click"
                                         Background="#26FFFFFF"
@@ -485,100 +499,103 @@
 
                             <!-- CỘT TRÁI (HERO BENTO LEFT): TRỌNG TÂM THỜI TIẾT HIỆN TẠI -->
                             <Border x:Name="HeroBentoLeftCard" Grid.Column="0" Grid.Row="0"
-                                    Background="#250F172A" BorderBrush="#33FFFFFF" BorderThickness="1" CornerRadius="14" Padding="18,14">
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" VerticalAlignment="Center">
+                                    Background="#260F172A" BorderBrush="#40FFFFFF" BorderThickness="1" CornerRadius="16" Padding="20,16">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14" VerticalAlignment="Center">
                                     <!-- Nhiệt độ, Tình trạng & Cảm giác -->
-                                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="3">
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="4">
                                         <!-- Nhiệt độ lớn (Click đổi °C / °F) -->
                                         <Button Command="{x:Bind ViewModel.ToggleUnitCommand}"
                                                 Background="Transparent" BorderThickness="0" Padding="0" VerticalAlignment="Center"
                                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.UnitTooltip, Mode=OneWay}">
                                             <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}"
-                                                       FontSize="58" FontWeight="SemiBold" Foreground="White"/>
+                                                       FontSize="62" FontWeight="Bold" Foreground="White"/>
                                         </Button>
 
                                         <!-- Mô tả trạng thái thời tiết -->
                                         <TextBlock Text="{x:Bind ViewModel.CurrentWeather.ConditionText, Mode=OneWay}"
-                                                   FontSize="20" FontWeight="SemiBold" Foreground="White" TextWrapping="Wrap"/>
+                                                   FontSize="21" FontWeight="SemiBold" Foreground="White" TextWrapping="Wrap"/>
 
                                         <!-- Cảm giác như & Thấp / Cao -->
-                                        <StackPanel Orientation="Horizontal" Spacing="6" Opacity="0.92">
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.FeelsLikeText, Mode=OneWay}" FontSize="12.5" Foreground="White"/>
-                                            <TextBlock Text="•" Foreground="White" Opacity="0.5"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="8" Opacity="0.95" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2c9;" FontSize="10.5" Foreground="#38BDF8"/>
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.FeelsLikeText, Mode=OneWay}" FontSize="12.5" Foreground="White"/>
+                                            </StackPanel>
+                                            <TextBlock Text="•" Foreground="White" Opacity="0.4"/>
                                             <TextBlock Text="{x:Bind ViewModel.CurrentWeather.MinMaxText, Mode=OneWay}" FontSize="12.5" Foreground="White" TextWrapping="Wrap"/>
                                         </StackPanel>
 
                                         <!-- Badges hàng ngang -->
-                                        <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,4,0,0">
+                                        <StackPanel Orientation="Horizontal" Spacing="7" Margin="0,4,0,0">
                                             <!-- Alert badge -->
                                             <Border Visibility="{x:Bind ViewModel.CurrentWeather.HasWeatherAlertBadge, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                                     Background="{x:Bind ViewModel.CurrentWeather.WeatherAlertBadgeColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
-                                                    CornerRadius="7" Padding="7,2">
-                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WeatherAlertBadgeText, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                                    CornerRadius="8" Padding="8,3">
+                                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WeatherAlertBadgeText, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
                                             </Border>
 
                                             <!-- AQI badge -->
                                             <Border Visibility="{x:Bind ViewModel.CurrentWeather.HasAqi, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                                     Background="{x:Bind ViewModel.CurrentWeather.AqiColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"
-                                                    CornerRadius="7" Padding="7,2"
+                                                    CornerRadius="8" Padding="8,3"
                                                     ToolTipService.ToolTip="{x:Bind ViewModel.Loc.AirQualityTooltip, Mode=OneWay}">
-                                                <StackPanel Orientation="Horizontal" Spacing="4">
-                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75f;" FontSize="9" Foreground="White"/>
-                                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiValue, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="White"/>
-                                                    <TextBlock Text="AQI" FontSize="9" FontWeight="Bold" Foreground="White" Opacity="0.9"/>
+                                                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75f;" FontSize="10" Foreground="White"/>
+                                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiValue, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                                                    <TextBlock Text="AQI" FontSize="9.5" FontWeight="Bold" Foreground="White" Opacity="0.9"/>
                                                 </StackPanel>
                                             </Border>
                                         </StackPanel>
                                     </StackPanel>
 
                                     <!-- Biểu tượng thời tiết SVG Vector động lơ lửng -->
-                                    <Grid Grid.Column="1" Width="96" Height="96" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Grid Grid.Column="1" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <Grid.RenderTransform>
                                             <TranslateTransform x:Name="WeatherIconFloatTransform" Y="0"/>
                                         </Grid.RenderTransform>
-                                        <Image x:Name="WeatherSvgImage" Width="92" Height="92" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        <Image x:Name="WeatherSvgImage" Width="96" Height="96" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         <FontIcon x:Name="FallbackWeatherIcon" FontFamily="{StaticResource FontAwesomeSolid}"
                                                   Glyph="{x:Bind ViewModel.CurrentWeather.IconGlyph, Mode=OneWay}"
-                                                  FontSize="50" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+                                                  FontSize="54" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
                                     </Grid>
                                 </Grid>
                             </Border>
 
                             <!-- CỘT PHẢI (HERO BENTO RIGHT): AI BRIEFING & LỜI KHUYÊN NỔI BẬT HÔM NAY -->
                             <Border x:Name="HeroBentoRightCard" Grid.Column="1" Grid.Row="0"
-                                    Background="#250F172A" BorderBrush="#3538BDF8" BorderThickness="1" CornerRadius="14" Padding="16,14">
-                                <StackPanel Spacing="9" VerticalAlignment="Center">
+                                    Background="#260F172A" BorderBrush="#4038BDF8" BorderThickness="1" CornerRadius="16" Padding="18,16">
+                                <StackPanel Spacing="10" VerticalAlignment="Center">
                                     <!-- AI Briefing -->
-                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
-                                        <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#2A38BDF8" BorderBrush="#5038BDF8" BorderThickness="1" VerticalAlignment="Top">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0eb;" FontSize="13" Foreground="#FBBF24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" VerticalAlignment="Center">
+                                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="10" Background="#2A38BDF8" BorderBrush="#6038BDF8" BorderThickness="1.5" VerticalAlignment="Top">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0eb;" FontSize="15" Foreground="#FBBF24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
-                                        <StackPanel Grid.Column="1" Spacing="2">
-                                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                                <Border Background="#FBBF24" CornerRadius="4" Padding="5,1">
-                                                    <TextBlock Text="AI BRIEFING" FontSize="8.5" FontWeight="Bold" Foreground="#0F172A"/>
+                                        <StackPanel Grid.Column="1" Spacing="3">
+                                            <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                                                <Border Background="#FBBF24" CornerRadius="5" Padding="6,1.5">
+                                                    <TextBlock Text="AI BRIEFING" FontSize="9" FontWeight="Bold" Foreground="#0F172A"/>
                                                 </Border>
-                                                <TextBlock Text="{x:Bind ViewModel.Loc.AiBriefingHeader, Mode=OneWay}" FontSize="11" FontWeight="SemiBold" Foreground="#38BDF8" TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Text="{x:Bind ViewModel.Loc.AiBriefingHeader, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold" Foreground="#38BDF8" TextTrimming="CharacterEllipsis"/>
                                             </StackPanel>
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.SmartSummaryText, Mode=OneWay}" FontSize="12" Foreground="White" TextWrapping="Wrap" MaxLines="3" TextTrimming="CharacterEllipsis" LineHeight="17"/>
+                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.SmartSummaryText, Mode=OneWay}" FontSize="12.5" Foreground="White" TextWrapping="Wrap" MaxLines="3" TextTrimming="CharacterEllipsis" LineHeight="18"/>
                                         </StackPanel>
                                     </Grid>
 
-                                    <Border Height="1" Background="#20FFFFFF"/>
+                                    <Border Height="1" Background="#25FFFFFF"/>
 
                                     <!-- Lời khuyên nổi bật hôm nay & Nút mở rộng -->
-                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalAlignment="Center">
-                                        <Border Grid.Column="0" Width="28" Height="28" CornerRadius="14" Background="#FFF59E0B" VerticalAlignment="Center">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf553;" Foreground="White" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" VerticalAlignment="Center">
+                                        <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#30F59E0B" BorderBrush="#50F59E0B" BorderThickness="1" VerticalAlignment="Center">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf553;" Foreground="#FBBF24" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
                                             <TextBlock Text="{x:Bind ViewModel.Loc.AdviceHeader, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="#FDE047"/>
-                                            <TextBlock Text="{x:Bind ViewModel.TopAdviceSummary, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="{x:Bind ViewModel.TopAdviceSummary, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="White" TextTrimming="CharacterEllipsis"/>
                                         </StackPanel>
                                         <Button Grid.Column="2" Command="{x:Bind ViewModel.ToggleAdviceExpandedCommand}"
-                                                Background="#35FFFFFF" Foreground="White" CornerRadius="8" Padding="9,4"
+                                                Background="#35FFFFFF" Foreground="White" CornerRadius="9" Padding="10,5"
                                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ExpandAdviceTooltip, Mode=OneWay}">
-                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <StackPanel Orientation="Horizontal" Spacing="5">
                                                 <TextBlock Text="{x:Bind ViewModel.AdviceExpandButtonText, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"/>
                                                 <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind ViewModel.AdviceExpandIconGlyph, Mode=OneWay}" FontSize="9"/>
                                             </StackPanel>
@@ -672,19 +689,19 @@
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1" CornerRadius="14" Padding="14,12">
-                            <StackPanel Spacing="6">
-                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
-                                    <Border Grid.Column="0" Width="28" Height="28" CornerRadius="7" Background="#20D97706" BorderBrush="#40D97706" BorderThickness="1">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#F59E0B" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                BorderThickness="1" CornerRadius="16" Padding="16,14">
+                            <StackPanel Spacing="7">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="9" VerticalAlignment="Center">
+                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#25D97706" BorderBrush="#45D97706" BorderThickness="1">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#F59E0B" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.UvIndex, Mode=OneWay}" FontSize="12" Opacity="0.85" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                    <Border Grid.Column="2" Background="#1FD97706" BorderBrush="#35D97706" BorderThickness="1" CornerRadius="6" Padding="6,1">
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.UvIndexDescription, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="#F59E0B"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.UvIndex, Mode=OneWay}" FontSize="12.5" Opacity="0.9" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <Border Grid.Column="2" Background="#20D97706" BorderBrush="#40D97706" BorderThickness="1" CornerRadius="6" Padding="7,2">
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.UvIndexDescription, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="#F59E0B"/>
                                     </Border>
                                 </Grid>
 
-                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.UvIndexText, Mode=OneWay}" FontSize="24" FontWeight="Bold"/>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.UvIndexText, Mode=OneWay}" FontSize="26" FontWeight="Bold"/>
 
                                 <!-- Thanh quang phổ UV trực quan -->
                                 <Border Height="6" CornerRadius="3" Margin="0,2,0,0">
@@ -702,10 +719,10 @@
                                 <!-- Canvas con trỏ vị trí UV -->
                                 <Canvas x:Name="UvGaugeCanvas" IsHitTestVisible="False" Height="8" HorizontalAlignment="Stretch" Margin="0,-2,0,0"/>
 
-                                <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,-4,0,0" Opacity="0.6">
-                                    <TextBlock Grid.Column="0" Text="0" FontSize="9.5"/>
-                                    <TextBlock Grid.Column="1" Text="5" FontSize="9.5" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Column="2" Text="11+" FontSize="9.5"/>
+                                <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,-4,0,0" Opacity="0.65">
+                                    <TextBlock Grid.Column="0" Text="0" FontSize="10"/>
+                                    <TextBlock Grid.Column="1" Text="5" FontSize="10" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" Text="11+" FontSize="10"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -716,21 +733,21 @@
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1" CornerRadius="14" Padding="14,12">
-                            <StackPanel Spacing="6">
-                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
-                                    <Border Grid.Column="0" Width="28" Height="28" CornerRadius="7" Background="#2010B981" BorderBrush="#4010B981" BorderThickness="1">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75f;" Foreground="#10B981" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                BorderThickness="1" CornerRadius="16" Padding="16,14">
+                            <StackPanel Spacing="7">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="9" VerticalAlignment="Center">
+                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#2510B981" BorderBrush="#4510B981" BorderThickness="1">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf75f;" Foreground="#10B981" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.AirQuality, Mode=OneWay}" FontSize="12" Opacity="0.85" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                    <Border Grid.Column="2" Background="{x:Bind ViewModel.CurrentWeather.AqiColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}" CornerRadius="6" Padding="6,1">
-                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiDescription, Mode=OneWay}" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.AirQuality, Mode=OneWay}" FontSize="12.5" Opacity="0.9" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <Border Grid.Column="2" Background="{x:Bind ViewModel.CurrentWeather.AqiColor, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}" CornerRadius="6" Padding="7,2">
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiDescription, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
                                     </Border>
                                 </Grid>
 
-                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiValue, Mode=OneWay}" FontSize="24" FontWeight="Bold"/>
-                                    <TextBlock Text="US-AQI" FontSize="11" Opacity="0.6" FontWeight="SemiBold" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
+                                <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.AqiValue, Mode=OneWay}" FontSize="26" FontWeight="Bold"/>
+                                    <TextBlock Text="US-AQI" FontSize="11.5" Opacity="0.65" FontWeight="SemiBold" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
                                 </StackPanel>
 
                                 <!-- Thanh quang phổ AQI trực quan -->
@@ -750,8 +767,8 @@
                                 <Canvas x:Name="AqiGaugeCanvas" IsHitTestVisible="False" Height="8" HorizontalAlignment="Stretch" Margin="0,-2,0,0"/>
 
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" Margin="0,-4,0,0">
-                                    <TextBlock Grid.Column="0" Text="PM2.5:" FontSize="10" Opacity="0.7" FontWeight="SemiBold"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.Pm25Text, Mode=OneWay}" FontSize="10" Opacity="0.9" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="0" Text="PM2.5:" FontSize="10.5" Opacity="0.7" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.Pm25Text, Mode=OneWay}" FontSize="10.5" Opacity="0.95" FontWeight="SemiBold"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -762,33 +779,33 @@
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1" CornerRadius="14" Padding="14,12">
+                                BorderThickness="1" CornerRadius="16" Padding="16,14">
                             <Grid ColumnDefinitions="*,Auto">
-                                <StackPanel Grid.Column="0" Spacing="6" VerticalAlignment="Center">
-                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" VerticalAlignment="Center">
-                                        <Border Grid.Column="0" Width="28" Height="28" CornerRadius="7" Background="#20059669" BorderBrush="#40059669" BorderThickness="1">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" Foreground="#10B981" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="0" Spacing="7" VerticalAlignment="Center">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="9" VerticalAlignment="Center">
+                                        <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#25059669" BorderBrush="#45059669" BorderThickness="1">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" Foreground="#10B981" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
-                                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.WindAndDirection, Mode=OneWay}" FontSize="12" Opacity="0.85" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.WindAndDirection, Mode=OneWay}" FontSize="12.5" Opacity="0.9" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                     </Grid>
 
-                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WindText, Mode=OneWay}" FontSize="22" FontWeight="Bold"/>
-                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WindDirectionText, Mode=OneWay}" FontSize="11.5" Opacity="0.8" FontWeight="Medium" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WindText, Mode=OneWay}" FontSize="24" FontWeight="Bold"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.WindDirectionText, Mode=OneWay}" FontSize="11.5" Opacity="0.85" FontWeight="Medium" TextWrapping="Wrap"/>
                                 </StackPanel>
 
                                 <!-- La bàn mini chỉ hướng gió xoay theo độ thực tế -->
-                                <Grid Grid.Column="1" Width="52" Height="52" VerticalAlignment="Center" Margin="6,0,0,0">
-                                    <Ellipse Width="50" Height="50" Stroke="{ThemeResource DividerStrokeColorDefaultBrush}" StrokeThickness="1" Fill="{ThemeResource SubtleFillColorTertiaryBrush}"/>
-                                    <TextBlock Text="N" FontSize="7.5" FontWeight="Bold" Opacity="0.7" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,2,0,0"/>
-                                    <TextBlock Text="S" FontSize="7.5" FontWeight="Bold" Opacity="0.7" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,2"/>
-                                    <TextBlock Text="E" FontSize="7.5" FontWeight="Bold" Opacity="0.7" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,3,0"/>
-                                    <TextBlock Text="W" FontSize="7.5" FontWeight="Bold" Opacity="0.7" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3,0,0,0"/>
+                                <Grid Grid.Column="1" Width="56" Height="56" VerticalAlignment="Center" Margin="6,0,0,0">
+                                    <Ellipse Width="54" Height="54" Stroke="{ThemeResource DividerStrokeColorDefaultBrush}" StrokeThickness="1.5" Fill="{ThemeResource SubtleFillColorTertiaryBrush}"/>
+                                    <TextBlock Text="N" FontSize="8" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,3,0,0"/>
+                                    <TextBlock Text="S" FontSize="7.5" FontWeight="Bold" Opacity="0.7" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,3"/>
+                                    <TextBlock Text="E" FontSize="7.5" FontWeight="Bold" Opacity="0.7" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <TextBlock Text="W" FontSize="7.5" FontWeight="Bold" Opacity="0.7" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0"/>
 
-                                    <Grid Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                                    <Grid Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
                                         <Grid.RenderTransform>
                                             <RotateTransform x:Name="WindNeedleRotate" Angle="0"/>
                                         </Grid.RenderTransform>
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf062;" FontSize="13" Foreground="#10B981" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf062;" FontSize="14" Foreground="#10B981" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -800,22 +817,22 @@
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1" CornerRadius="14" Padding="14,12">
-                            <StackPanel Spacing="6">
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" VerticalAlignment="Center">
-                                    <Border Grid.Column="0" Width="28" Height="28" CornerRadius="7" Background="#200284C7" BorderBrush="#400284C7" BorderThickness="1">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf043;" Foreground="#38BDF8" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                BorderThickness="1" CornerRadius="16" Padding="16,14">
+                            <StackPanel Spacing="7">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="9" VerticalAlignment="Center">
+                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#250284C7" BorderBrush="#450284C7" BorderThickness="1">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf043;" Foreground="#38BDF8" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.Humidity, Mode=OneWay}" FontSize="12" Opacity="0.85" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.Humidity, Mode=OneWay}" FontSize="12.5" Opacity="0.9" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                 </Grid>
 
-                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.HumidityText, Mode=OneWay}" FontSize="24" FontWeight="Bold"/>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.HumidityText, Mode=OneWay}" FontSize="26" FontWeight="Bold"/>
 
                                 <ProgressBar Value="{x:Bind ViewModel.CurrentWeather.HumidityValue, Mode=OneWay}" Maximum="100" Height="6" CornerRadius="3" Foreground="#0284C7" Margin="0,2,0,0"/>
 
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" Margin="0,2,0,0">
-                                    <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.DewPoint, Mode=OneWay}" FontSize="10" Opacity="0.7" FontWeight="SemiBold"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.DewPointText, Mode=OneWay}" FontSize="10" Opacity="0.9" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.DewPoint, Mode=OneWay}" FontSize="10.5" Opacity="0.7" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.DewPointText, Mode=OneWay}" FontSize="10.5" Opacity="0.95" FontWeight="SemiBold"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -826,22 +843,22 @@
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1" CornerRadius="14" Padding="14,12">
-                            <StackPanel Spacing="6">
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" VerticalAlignment="Center">
-                                    <Border Grid.Column="0" Width="28" Height="28" CornerRadius="7" Background="#200284C7" BorderBrush="#400284C7" BorderThickness="1">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" Foreground="#0EA5E9" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                BorderThickness="1" CornerRadius="16" Padding="16,14">
+                            <StackPanel Spacing="7">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="9" VerticalAlignment="Center">
+                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#250EA5E9" BorderBrush="#450EA5E9" BorderThickness="1">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" Foreground="#0EA5E9" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.RainChance, Mode=OneWay}" FontSize="12" Opacity="0.85" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.RainChance, Mode=OneWay}" FontSize="12.5" Opacity="0.9" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                 </Grid>
 
-                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.RainProbabilityText, Mode=OneWay}" FontSize="24" FontWeight="Bold"/>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.RainProbabilityText, Mode=OneWay}" FontSize="26" FontWeight="Bold"/>
 
                                 <ProgressBar Value="{x:Bind ViewModel.CurrentWeather.RainProbabilityValue, Mode=OneWay}" Maximum="100" Height="6" CornerRadius="3" Foreground="#0EA5E9" Margin="0,2,0,0"/>
 
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" Margin="0,2,0,0">
-                                    <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.Precipitation, Mode=OneWay}" FontSize="10" Opacity="0.7" FontWeight="SemiBold"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.PrecipitationText, Mode=OneWay}" FontSize="10" Opacity="0.9" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.Loc.Precipitation, Mode=OneWay}" FontSize="10.5" Opacity="0.7" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.PrecipitationText, Mode=OneWay}" FontSize="10.5" Opacity="0.95" FontWeight="SemiBold"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -852,25 +869,25 @@
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1" CornerRadius="14" Padding="14,12">
-                            <StackPanel Spacing="6">
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" VerticalAlignment="Center">
-                                    <Border Grid.Column="0" Width="28" Height="28" CornerRadius="7" Background="#207C3AED" BorderBrush="#407C3AED" BorderThickness="1">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf14e;" Foreground="#A78BFA" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                BorderThickness="1" CornerRadius="16" Padding="16,14">
+                            <StackPanel Spacing="7">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="9" VerticalAlignment="Center">
+                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#257C3AED" BorderBrush="#457C3AED" BorderThickness="1">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf14e;" Foreground="#A78BFA" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.Pressure, Mode=OneWay}" FontSize="12" Opacity="0.85" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.Pressure, Mode=OneWay}" FontSize="12.5" Opacity="0.9" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                 </Grid>
 
-                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.PressureText, Mode=OneWay}" FontSize="22" FontWeight="Bold"/>
+                                <TextBlock Text="{x:Bind ViewModel.CurrentWeather.PressureText, Mode=OneWay}" FontSize="24" FontWeight="Bold"/>
 
-                                <Border Background="#187C3AED" BorderBrush="#307C3AED" BorderThickness="1" CornerRadius="6" Padding="6,2" Margin="0,2,0,0">
-                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.PressureTrendText, Mode=OneWay}" FontSize="10" FontWeight="SemiBold" Foreground="#A78BFA"/>
+                                <Border Background="#187C3AED" BorderBrush="#357C3AED" BorderThickness="1" CornerRadius="6" Padding="7,2" Margin="0,1,0,0">
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.PressureTrendText, Mode=OneWay}" FontSize="10.5" FontWeight="SemiBold" Foreground="#A78BFA"/>
                                 </Border>
 
                                 <!-- Sparkline xu hướng áp suất 6 giờ -->
-                                <Canvas x:Name="PressureSparklineCanvas" Height="20" HorizontalAlignment="Stretch" Margin="0,3,0,0" IsHitTestVisible="False"/>
+                                <Canvas x:Name="PressureSparklineCanvas" Height="20" HorizontalAlignment="Stretch" Margin="0,2,0,0" IsHitTestVisible="False"/>
 
-                                <TextBlock Text="{x:Bind ViewModel.Loc.SeaPressureDesc, Mode=OneWay}" FontSize="10" Opacity="0.6" Margin="0,2,0,0"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.SeaPressureDesc, Mode=OneWay}" FontSize="10" Opacity="0.65" Margin="0,1,0,0"/>
                             </StackPanel>
                         </Border>
 
@@ -880,23 +897,29 @@
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1" CornerRadius="14" Padding="14,10">
-                            <StackPanel Spacing="4">
+                                BorderThickness="1" CornerRadius="16" Padding="16,12">
+                            <StackPanel Spacing="5">
                                 <Grid ColumnDefinitions="*,Auto">
-                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
-                                        <Border Width="26" Height="26" CornerRadius="6" Background="#20EAB308" BorderBrush="#40EAB308" BorderThickness="1">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#FACC15" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <Border Width="30" Height="30" CornerRadius="8" Background="#25EAB308" BorderBrush="#45EAB308" BorderThickness="1">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#FACC15" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
-                                        <TextBlock Text="{x:Bind ViewModel.Loc.SunAndMoon, Mode=OneWay}" FontSize="12" Opacity="0.85" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind ViewModel.Loc.SunAndMoon, Mode=OneWay}" FontSize="12.5" Opacity="0.9" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                     </StackPanel>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.SunStatusText, Mode=OneWay}" FontSize="10" Foreground="#38BDF8" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.SunStatusText, Mode=OneWay}" FontSize="10.5" Foreground="#38BDF8" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                 </Grid>
 
                                 <Canvas x:Name="SunArcCanvas" IsHitTestVisible="False" Height="36" Margin="2,2" HorizontalAlignment="Stretch"/>
 
                                 <Grid ColumnDefinitions="Auto,*,Auto">
-                                    <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.CurrentWeather.SunriseText, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Opacity="0.85"/>
-                                    <TextBlock Grid.Column="2" Text="{x:Bind ViewModel.CurrentWeather.SunsetText, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Opacity="0.85"/>
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="9" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.SunriseText, Mode=OneWay}" FontSize="11" FontWeight="Bold" Opacity="0.9"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf186;" FontSize="9" Foreground="#818CF8" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.SunsetText, Mode=OneWay}" FontSize="11" FontWeight="Bold" Opacity="0.9"/>
+                                    </StackPanel>
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -907,33 +930,33 @@
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.MetricPopupClickHint, Mode=OneWay}"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1" CornerRadius="14" Padding="14,12">
-                            <StackPanel Spacing="6">
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" VerticalAlignment="Center">
-                                    <Border Grid.Column="0" Width="28" Height="28" CornerRadius="7" Background="#2010B981" BorderBrush="#4010B981" BorderThickness="1">
-                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf132;" Foreground="#10B981" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                BorderThickness="1" CornerRadius="16" Padding="16,14">
+                            <StackPanel Spacing="7">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="9" VerticalAlignment="Center">
+                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#2510B981" BorderBrush="#4510B981" BorderThickness="1">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf132;" Foreground="#10B981" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.AirQualitySub, Mode=OneWay}" FontSize="11" Opacity="0.85" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.AirQualitySub, Mode=OneWay}" FontSize="11.5" Opacity="0.9" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
                                 </Grid>
 
                                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,2,0,0">
-                                    <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="7,4">
-                                        <StackPanel Spacing="1">
-                                            <TextBlock Text="PM10" FontSize="9.5" Opacity="0.7" FontWeight="Bold"/>
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.Pm10Text, Mode=OneWay}" FontSize="11" FontWeight="Bold"/>
+                                    <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="8,5">
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="PM10" FontSize="10" Opacity="0.7" FontWeight="Bold"/>
+                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.Pm10Text, Mode=OneWay}" FontSize="11.5" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
-                                    <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="7,4">
-                                        <StackPanel Spacing="1">
-                                            <TextBlock Text="Ozone (O₃)" FontSize="9.5" Opacity="0.7" FontWeight="Bold"/>
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.OzoneText, Mode=OneWay}" FontSize="11" FontWeight="Bold"/>
+                                    <Border Grid.Column="1" Background="{ThemeResource SubtleFillColorTertiaryBrush}" CornerRadius="8" Padding="8,5">
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="Ozone (O₃)" FontSize="10" Opacity="0.7" FontWeight="Bold"/>
+                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.OzoneText, Mode=OneWay}" FontSize="11.5" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
                                 </Grid>
 
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" Margin="0,2,0,0">
-                                    <TextBlock Grid.Column="0" Text="NO₂:" FontSize="10" Opacity="0.7" FontWeight="SemiBold"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.No2Text, Mode=OneWay}" FontSize="10" Opacity="0.9" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="0" Text="NO₂:" FontSize="10.5" Opacity="0.7" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CurrentWeather.No2Text, Mode=OneWay}" FontSize="10.5" Opacity="0.95" FontWeight="SemiBold"/>
                                 </Grid>
                             </StackPanel>
                         </Border>

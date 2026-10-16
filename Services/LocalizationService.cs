@@ -674,5 +674,20 @@ public class LocalizationService : INotifyPropertyChanged
     public string ZenAudioPause => IsVietnamese ? "Tạm dừng" : "Pause Sound";
     public string ZenAudioSelect => IsVietnamese ? "Âm thanh:" : "Soundscape:";
     public string AmbientSoundHeader => IsVietnamese ? "Âm thanh thiên nhiên" : "Nature Soundscape";
+    public string ZenClockStyleLabel => IsVietnamese ? "Kiểu đồng hồ:" : "Clock Style:";
+    public string ZenClockModern => IsVietnamese ? "Phát Sáng Hiện Đại" : "Modern Glow";
+    public string ZenClockFlip => IsVietnamese ? "Thẻ Lật Cổ Điển" : "Retro Flip";
+    public string ZenClockStacked => IsVietnamese ? "Nghệ Thuật Chữ Số" : "Stacked Typography";
+    public string ZenClockAnalog => IsVietnamese ? "Kim Quét Chuẩn Xác" : "Precision Analog";
+    public string ZenSettingsTitle => IsVietnamese ? "Tùy Biến Chế Độ Zen" : "Zen Customization";
+    public string ZenShowSecondsLabel => IsVietnamese ? "Hiện kim / số giây" : "Show Seconds";
+    public string ZenShowWeatherInfoLabel => IsVietnamese ? "Nhiệt độ & Trạng thái" : "Weather Info & Condition";
+    public string ZenShowHourlyForecastLabel => IsVietnamese ? "Dải dự báo 6 giờ tới" : "6-Hour Forecast Strip";
+    public string ZenShowAirQualityLabel => IsVietnamese ? "Chất lượng không khí AQI & Chỉ số" : "Air Quality & Metrics";
+    public string ZenShowRelaxQuoteLabel => IsVietnamese ? "Danh ngôn thư giãn" : "Relaxation Quote";
+    public string ZenShowAmbientSoundLabel => IsVietnamese ? "Thanh điều khiển âm thanh" : "Ambient Sound Bar";
+    public string ZenForecastNow => IsVietnamese ? "Hiện tại" : "Now";
+    public string ZenHeroButtonTooltip => IsVietnamese ? "Mở Chế Độ Thư Giãn Toàn Cảnh (Zen Mode - F11)" : "Open Zen Immersive Mode (F11)";
+    public string ZenHeroButtonText => IsVietnamese ? "Thư giãn" : "Zen Mode";
     #endregion
 }

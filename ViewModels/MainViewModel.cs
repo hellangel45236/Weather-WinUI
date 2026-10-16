@@ -408,6 +408,18 @@ public partial class MainViewModel : ObservableObject
         {
             SelectedOutfitGender = Settings.SelectedOutfitGender;
         }
+
+        ZenClockStyle = Settings.ZenClockStyle;
+        ZenShowSeconds = Settings.ZenShowSeconds;
+        ZenShowWeatherInfo = Settings.ZenShowWeatherInfo;
+        ZenShowHourlyForecast = Settings.ZenShowHourlyForecast;
+        ZenShowAirQuality = Settings.ZenShowAirQuality;
+        ZenShowRelaxQuote = Settings.ZenShowRelaxQuote;
+        ZenShowAmbientSound = Settings.ZenShowAmbientSound;
+        OnPropertyChanged(nameof(IsZenClockModern));
+        OnPropertyChanged(nameof(IsZenClockFlip));
+        OnPropertyChanged(nameof(IsZenClockStacked));
+        OnPropertyChanged(nameof(IsZenClockAnalog));
     }
 
     public void UpdateOutfitAdvice()
@@ -808,6 +820,16 @@ public partial class MainViewModel : ObservableObject
         };
 
         CurrentDateDisplay = $"{dayOfWeekStr}, {formattedDate}";
+
+        // Zen Clock calculations
+        ZenHourDisplay = Settings.Is24HourFormat ? now.ToString("HH") : now.ToString("hh");
+        ZenMinuteDisplay = now.ToString("mm");
+        ZenSecondDisplay = now.ToString("ss");
+        ZenPeriodDisplay = Settings.Is24HourFormat ? string.Empty : now.ToString("tt", System.Globalization.CultureInfo.InvariantCulture);
+
+        ZenAnalogHourAngle = ((now.Hour % 12) + (now.Minute / 60.0) + (now.Second / 3600.0)) * 30.0;
+        ZenAnalogMinuteAngle = (now.Minute + (now.Second / 60.0)) * 6.0;
+        ZenAnalogSecondAngle = now.Second * 6.0;
 
         if (now.Second == 0)
         {
@@ -1847,6 +1869,7 @@ public partial class MainViewModel : ObservableObject
             }
             OnPropertyChanged(nameof(HourlyForecast));
             HourlyForecastUpdated?.Invoke();
+            UpdateZenHourlyForecast();
 
             // Dự báo 7 ngày
             var daily = _weatherService.CreateDailyForecast(data, Settings);
@@ -2786,16 +2809,147 @@ public partial class MainViewModel : ObservableObject
 
     #region Zen Immersive View (v3.1.0)
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsZenClockModern))]
+    [NotifyPropertyChangedFor(nameof(IsZenClockFlip))]
+    [NotifyPropertyChangedFor(nameof(IsZenClockStacked))]
+    [NotifyPropertyChangedFor(nameof(IsZenClockAnalog))]
+    private string _zenClockStyle = "Modern"; // "Modern", "Flip", "Stacked", "Analog"
+
+    [ObservableProperty]
+    private string _zenHourDisplay = "--";
+
+    [ObservableProperty]
+    private string _zenMinuteDisplay = "--";
+
+    [ObservableProperty]
+    private string _zenSecondDisplay = "--";
+
+    [ObservableProperty]
+    private string _zenPeriodDisplay = string.Empty;
+
+    [ObservableProperty]
+    private double _zenAnalogHourAngle = 0;
+
+    [ObservableProperty]
+    private double _zenAnalogMinuteAngle = 0;
+
+    [ObservableProperty]
+    private double _zenAnalogSecondAngle = 0;
+
+    [ObservableProperty]
+    private bool _zenShowSeconds = true;
+
+    [ObservableProperty]
+    private bool _zenShowWeatherInfo = true;
+
+    [ObservableProperty]
+    private bool _zenShowHourlyForecast = true;
+
+    [ObservableProperty]
+    private bool _zenShowAirQuality = true;
+
+    [ObservableProperty]
+    private bool _zenShowRelaxQuote = true;
+
+    [ObservableProperty]
+    private bool _zenShowAmbientSound = true;
+
+    [ObservableProperty]
+    private ObservableCollection<HourlyForecastItem> _zenHourlyForecast = new();
+
+    public bool IsZenClockModern => ZenClockStyle == "Modern";
+    public bool IsZenClockFlip => ZenClockStyle == "Flip";
+    public bool IsZenClockStacked => ZenClockStyle == "Stacked";
+    public bool IsZenClockAnalog => ZenClockStyle == "Analog";
+
     [RelayCommand]
     public void ToggleZenMode()
     {
         IsZenModeOpen = !IsZenModeOpen;
+        if (IsZenModeOpen)
+        {
+            UpdateZenHourlyForecast();
+        }
     }
 
     [RelayCommand]
     public void CloseZenMode()
     {
         IsZenModeOpen = false;
+    }
+
+    [RelayCommand]
+    public void SetZenClockStyle(string style)
+    {
+        if (string.IsNullOrWhiteSpace(style)) return;
+        ZenClockStyle = style;
+        Settings.ZenClockStyle = style;
+        _settingsService.SaveSettings(Settings);
+        OnPropertyChanged(nameof(IsZenClockModern));
+        OnPropertyChanged(nameof(IsZenClockFlip));
+        OnPropertyChanged(nameof(IsZenClockStacked));
+        OnPropertyChanged(nameof(IsZenClockAnalog));
+    }
+
+    [RelayCommand]
+    public void ToggleZenShowSeconds()
+    {
+        ZenShowSeconds = !ZenShowSeconds;
+        Settings.ZenShowSeconds = ZenShowSeconds;
+        _settingsService.SaveSettings(Settings);
+    }
+
+    [RelayCommand]
+    public void ToggleZenShowWeatherInfo()
+    {
+        ZenShowWeatherInfo = !ZenShowWeatherInfo;
+        Settings.ZenShowWeatherInfo = ZenShowWeatherInfo;
+        _settingsService.SaveSettings(Settings);
+    }
+
+    [RelayCommand]
+    public void ToggleZenShowHourlyForecast()
+    {
+        ZenShowHourlyForecast = !ZenShowHourlyForecast;
+        Settings.ZenShowHourlyForecast = ZenShowHourlyForecast;
+        _settingsService.SaveSettings(Settings);
+    }
+
+    [RelayCommand]
+    public void ToggleZenShowAirQuality()
+    {
+        ZenShowAirQuality = !ZenShowAirQuality;
+        Settings.ZenShowAirQuality = ZenShowAirQuality;
+        _settingsService.SaveSettings(Settings);
+    }
+
+    [RelayCommand]
+    public void ToggleZenShowRelaxQuote()
+    {
+        ZenShowRelaxQuote = !ZenShowRelaxQuote;
+        Settings.ZenShowRelaxQuote = ZenShowRelaxQuote;
+        _settingsService.SaveSettings(Settings);
+    }
+
+    [RelayCommand]
+    public void ToggleZenShowAmbientSound()
+    {
+        ZenShowAmbientSound = !ZenShowAmbientSound;
+        Settings.ZenShowAmbientSound = ZenShowAmbientSound;
+        _settingsService.SaveSettings(Settings);
+    }
+
+    public void UpdateZenHourlyForecast()
+    {
+        ZenHourlyForecast.Clear();
+        if (HourlyForecast != null && HourlyForecast.Count > 0)
+        {
+            foreach (var h in HourlyForecast.Take(6))
+            {
+                ZenHourlyForecast.Add(h);
+            }
+        }
     }
 
     #endregion

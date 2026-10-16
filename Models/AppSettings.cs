@@ -105,6 +105,15 @@ public class AppSettings
     // 16. Bộ biểu tượng thời tiết (Icon Pack)
     public string SelectedIconPack { get; set; } = "Meteocons"; // "Meteocons", "Fluent3D", "FontAwesome"
 
+    // 17. Chế độ Thư Giãn Toàn Cảnh (Zen Immersive Mode v3.1.0)
+    public string ZenClockStyle { get; set; } = "Modern"; // "Modern", "Flip", "Stacked", "Analog"
+    public bool ZenShowSeconds { get; set; } = true;
+    public bool ZenShowWeatherInfo { get; set; } = true;
+    public bool ZenShowHourlyForecast { get; set; } = true;
+    public bool ZenShowAirQuality { get; set; } = true;
+    public bool ZenShowRelaxQuote { get; set; } = true;
+    public bool ZenShowAmbientSound { get; set; } = true;
+
     // Vị trí lưu lại lần trước
     public string LastLocationName { get; set; } = string.Empty;
     public double LastLatitude { get; set; } = 10.823;
