@@ -196,12 +196,13 @@ public sealed partial class SettingsTab : UserControl
         }
 
         // Widget style
-        if (WidgetStyleComboBox != null && WidgetStyleComboBox.Items.Count >= 4)
+        if (WidgetStyleComboBox != null && WidgetStyleComboBox.Items.Count >= 5)
         {
             ((ComboBoxItem)WidgetStyleComboBox.Items[0]).Content = isVi ? "✨ Dribbble Dynamic (Đổi màu)" : "✨ Dribbble Dynamic (Color shift)";
             ((ComboBoxItem)WidgetStyleComboBox.Items[1]).Content = isVi ? "🪟 Fluent Glass (Kính mờ)" : "🪟 Fluent Glass (Frosted)";
             ((ComboBoxItem)WidgetStyleComboBox.Items[2]).Content = isVi ? "📱 Minimalist Compact" : "📱 Minimalist Compact";
             ((ComboBoxItem)WidgetStyleComboBox.Items[3]).Content = isVi ? "🏝️ Dynamic Island Bar" : "🏝️ Dynamic Island Bar";
+            ((ComboBoxItem)WidgetStyleComboBox.Items[4]).Content = isVi ? "🎆 Seasonal Festival (Mùa & Lễ hội)" : "🎆 Seasonal Festival Card";
         }
 
         // Commute lead time

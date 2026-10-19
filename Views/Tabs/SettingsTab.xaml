@@ -416,6 +416,7 @@
                                                 <ComboBoxItem Content="🪟 Fluent Glass (Kính mờ)" Tag="GlassCard"/>
                                                 <ComboBoxItem Content="📱 Minimalist Compact" Tag="Compact"/>
                                                 <ComboBoxItem Content="🏝️ Dynamic Island Bar" Tag="MiniIsland"/>
+                                                <ComboBoxItem Content="🎆 Seasonal Festival (Mùa &amp; Lễ hội)" Tag="SeasonalCard"/>
                                             </ComboBox>
                                         </Grid>
 

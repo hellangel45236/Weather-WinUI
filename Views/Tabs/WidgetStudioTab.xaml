@@ -672,6 +672,7 @@
                                 <ComboBoxItem Content="🪟 Fluent Glass Card" Tag="GlassCard"/>
                                 <ComboBoxItem Content="➖ Compact Bar" Tag="Compact"/>
                                 <ComboBoxItem Content="💊 Dynamic Island Pill" Tag="MiniIsland"/>
+                                <ComboBoxItem Content="🎆 Seasonal Festival Card" Tag="SeasonalCard"/>
                             </ComboBox>
                         </StackPanel>
 

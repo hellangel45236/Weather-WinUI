@@ -277,6 +277,14 @@ public sealed partial class WidgetWindow : Window
     {
         _seasonalSkin = skin;
         _currentStyle = "SeasonalCard";
+        _settings.SeasonalWidgetTheme = skin.Id.ToString();
+        _settings.WidgetStyle = "SeasonalCard";
+        _settingsService.SaveSettings(_settings);
+        if (_viewModel != null)
+        {
+            _viewModel.Settings.SeasonalWidgetTheme = skin.Id.ToString();
+            _viewModel.Settings.WidgetStyle = "SeasonalCard";
+        }
         ApplyWidgetStyle("SeasonalCard");
         ApplySeasonalSkinVisuals(skin);
     }
@@ -299,8 +307,54 @@ public sealed partial class WidgetWindow : Window
                 try { SeasonalTagText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(ParseHexColor(skin.WidgetTitleColorHex)); } catch { }
             }
             if (SeasonalGreetingText != null) SeasonalGreetingText.Text = skin.WidgetSeasonalGreeting;
+
+            UpdateSeasonalArtLayer(skin.Id);
         }
         catch { }
+    }
+
+    private void UpdateSeasonalArtLayer(SeasonalSkinId skinId)
+    {
+        if (SeasonalTetArt == null) return;
+        SeasonalTetArt.Visibility = Visibility.Collapsed;
+        SeasonalChristmasArt.Visibility = Visibility.Collapsed;
+        SeasonalHalloweenArt.Visibility = Visibility.Collapsed;
+        SeasonalMidAutumnArt.Visibility = Visibility.Collapsed;
+        SeasonalAutumnArt.Visibility = Visibility.Collapsed;
+        SeasonalSpringArt.Visibility = Visibility.Collapsed;
+        SeasonalSummerArt.Visibility = Visibility.Collapsed;
+        SeasonalWinterArt.Visibility = Visibility.Collapsed;
+
+        switch (skinId)
+        {
+            case SeasonalSkinId.Tet:
+                SeasonalTetArt.Visibility = Visibility.Visible;
+                break;
+            case SeasonalSkinId.Christmas:
+                SeasonalChristmasArt.Visibility = Visibility.Visible;
+                break;
+            case SeasonalSkinId.Halloween:
+                SeasonalHalloweenArt.Visibility = Visibility.Visible;
+                break;
+            case SeasonalSkinId.MidAutumn:
+                SeasonalMidAutumnArt.Visibility = Visibility.Visible;
+                break;
+            case SeasonalSkinId.Autumn:
+                SeasonalAutumnArt.Visibility = Visibility.Visible;
+                break;
+            case SeasonalSkinId.Spring:
+                SeasonalSpringArt.Visibility = Visibility.Visible;
+                break;
+            case SeasonalSkinId.Summer:
+                SeasonalSummerArt.Visibility = Visibility.Visible;
+                break;
+            case SeasonalSkinId.Winter:
+                SeasonalWinterArt.Visibility = Visibility.Visible;
+                break;
+            default:
+                SeasonalTetArt.Visibility = Visibility.Visible;
+                break;
+        }
     }
 
     public void ApplyWidgetStyle(string style)
@@ -344,7 +398,12 @@ public sealed partial class WidgetWindow : Window
         {
             if (_seasonalSkin == null)
             {
-                _seasonalSkin = SeasonalSkinService.Instance.GetActiveSkin(_settings.SeasonalSkinMode);
+                string theme = _settings.SeasonalWidgetTheme;
+                if (string.IsNullOrEmpty(theme) || theme == "Auto")
+                {
+                    theme = _settings.SeasonalSkinMode;
+                }
+                _seasonalSkin = SeasonalSkinService.Instance.GetActiveSkin(theme);
             }
             ApplySeasonalSkinVisuals(_seasonalSkin);
             UpdateWidgetData();
@@ -1015,6 +1074,63 @@ public sealed partial class WidgetWindow : Window
     private void CityPickerButton_Click(object sender, RoutedEventArgs e)
     {
         ShowCityPickerFlyout(sender as FrameworkElement ?? WidgetRoot);
+    }
+
+    private void SeasonalThemePickerButton_Click(object sender, RoutedEventArgs e)
+    {
+        ShowSeasonalThemePickerFlyout(sender as FrameworkElement ?? WidgetRoot);
+    }
+
+    private void ShowSeasonalThemePickerFlyout(FrameworkElement target)
+    {
+        var flyout = new Flyout();
+        var panel = new StackPanel { Width = 230, Spacing = 5, Padding = new Thickness(4) };
+
+        panel.Children.Add(new TextBlock
+        {
+            Text = "🎆 Chọn Chủ Đề Mùa & Lễ Hội",
+            FontWeight = Microsoft.UI.Text.FontWeights.Bold,
+            FontSize = 13,
+            Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.White),
+            Margin = new Thickness(0, 0, 0, 4)
+        });
+
+        var themes = new (string tag, string label)[]
+        {
+            ("Tet", "🧧 Tết Cổ Truyền"),
+            ("MidAutumn", "🥮 Tết Trung Thu"),
+            ("Christmas", "🎄 Giáng Sinh (Noel)"),
+            ("Halloween", "🎃 Lễ Hội Halloween"),
+            ("Spring", "🌸 Mùa Xuân"),
+            ("Summer", "☀️ Mùa Hè"),
+            ("Autumn", "🍂 Mùa Thu"),
+            ("Winter", "❄️ Mùa Đông")
+        };
+
+        foreach (var (tag, label) in themes)
+        {
+            var btn = new Button
+            {
+                Content = label,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+                FontSize = 11.5,
+                Padding = new Thickness(8, 5, 8, 5),
+                Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0x20, 0xFF, 0xFF, 0xFF)),
+                BorderThickness = new Thickness(0),
+                CornerRadius = new CornerRadius(6)
+            };
+            btn.Click += (s, e) =>
+            {
+                var skin = SeasonalSkinService.Instance.GetActiveSkin(tag);
+                ApplySeasonalTheme(skin);
+                flyout.Hide();
+            };
+            panel.Children.Add(btn);
+        }
+
+        flyout.Content = panel;
+        flyout.ShowAt(target);
     }
 
     #region City Picker & Multi-Widget Spawning

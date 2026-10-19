@@ -79,12 +79,19 @@ public sealed partial class WidgetStudioTab : UserControl
                 AlwaysOnTopSwitch.IsOn = ViewModel.Settings.WidgetAlwaysOnTop;
             }
 
-            string seasonalMode = ViewModel.SelectedSeasonalSkinMode;
-            if (string.Equals(seasonalMode, "Auto", StringComparison.OrdinalIgnoreCase))
+            if (style == "SeasonalCard")
             {
-                seasonalMode = ViewModel.CurrentSeasonalSkin?.Id.ToString() ?? "Tet";
+                string seasonalMode = ViewModel.Settings.SeasonalWidgetTheme;
+                if (string.IsNullOrEmpty(seasonalMode) || string.Equals(seasonalMode, "Auto", StringComparison.OrdinalIgnoreCase))
+                {
+                    seasonalMode = ViewModel.CurrentSeasonalSkin?.Id.ToString() ?? "Tet";
+                }
+                UpdateSeasonalCardsVisuals(seasonalMode);
             }
-            UpdateSeasonalCardsVisuals(seasonalMode);
+            else
+            {
+                UpdateSeasonalCardsVisuals(string.Empty);
+            }
         }
         finally
         {
@@ -261,6 +268,20 @@ public sealed partial class WidgetStudioTab : UserControl
         _isSyncing = false;
 
         UpdateWidgetCardsVisuals(styleTag);
+        if (styleTag == "SeasonalCard")
+        {
+            string seasonalMode = ViewModel.Settings.SeasonalWidgetTheme;
+            if (string.IsNullOrEmpty(seasonalMode) || string.Equals(seasonalMode, "Auto", StringComparison.OrdinalIgnoreCase))
+            {
+                seasonalMode = ViewModel.CurrentSeasonalSkin?.Id.ToString() ?? "Tet";
+            }
+            UpdateSeasonalCardsVisuals(seasonalMode);
+        }
+        else
+        {
+            UpdateSeasonalCardsVisuals(string.Empty);
+        }
+
         foreach (var w in WidgetWindow.ActiveWidgets)
         {
             try { w.ApplyWidgetStyle(styleTag); } catch { }
@@ -450,10 +471,26 @@ public sealed partial class WidgetStudioTab : UserControl
         // 1. Đồng bộ skin theo mùa trên toàn app
         ViewModel.ApplySeasonalSkin(skinTag, save: true);
 
-        // 2. Cập nhật phong cách widget sang SeasonalCard
+        // 2. Cập nhật phong cách widget sang SeasonalCard & lưu theme mùa
         ViewModel.Settings.WidgetStyle = "SeasonalCard";
+        ViewModel.Settings.SeasonalWidgetTheme = skinTag;
         ViewModel.ApplySettings();
 
+        _isSyncing = true;
+        if (StudioWidgetStyleComboBox != null)
+        {
+            for (int i = 0; i < StudioWidgetStyleComboBox.Items.Count; i++)
+            {
+                if (StudioWidgetStyleComboBox.Items[i] is ComboBoxItem item && item.Tag?.ToString() == "SeasonalCard")
+                {
+                    StudioWidgetStyleComboBox.SelectedIndex = i;
+                    break;
+                }
+            }
+        }
+        _isSyncing = false;
+
+        UpdateWidgetCardsVisuals("SeasonalCard");
         UpdateSeasonalCardsVisuals(skinTag);
 
         // 3. Khởi tạo hoặc cập nhật WidgetWindow trên Desktop

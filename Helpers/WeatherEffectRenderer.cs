@@ -6,6 +6,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
+using Microsoft.UI.Xaml.Markup;
+using Path = Microsoft.UI.Xaml.Shapes.Path;
 using WeatherApp.Models;
 
 namespace WeatherApp.Helpers;
@@ -158,14 +160,20 @@ public class WeatherEffectRenderer
         public double X { get; set; }
         public double Y { get; set; }
         public double SpeedY { get; set; }
+        public double SpeedX { get; set; }
         public double DriftOffset { get; set; }
         public double SwayFreq { get; set; }
+        public double SwayAmplitude { get; set; } = 1.6;
         public double BaseOpacity { get; set; }
         public double Size { get; set; }
         public bool FloatsUp { get; set; }
-        public RotateTransform? RotationTransform { get; set; }
+        public CompositeTransform? Transform { get; set; }
         public double CurrentAngle { get; set; }
         public double RotSpeed { get; set; }
+        public double FlutterFreq { get; set; } = 2.0;
+        public bool IsFluttering { get; set; }
+        public bool IsFlapping { get; set; }
+        public bool IsPulsing { get; set; }
     }
 
     #endregion
@@ -988,88 +996,363 @@ public class WeatherEffectRenderer
         _seasonalParticles.Clear();
     }
 
-    private void CreateSeasonalParticles(SeasonalParticleType type, int count = 35)
+    private const string BlossomFlowerPath = "M 25,12 C 29,3 37,3 41,10 C 45,17 41,24 34,26 C 42,22 50,26 51,35 C 52,44 45,49 37,46 C 42,53 38,61 30,61 C 22,61 21,52 23,45 C 22,52 21,61 13,61 C 5,61 1,53 6,46 C -2,49 -5,44 -4,35 C -3,26 5,22 13,26 C 6,24 2,17 6,10 C 10,3 18,3 22,12 Z";
+    private const string BlossomPetalPath = "M 20,40 C 10,35 2,24 4,12 C 6,2 14,0 20,4 C 26,0 34,2 36,12 C 38,24 30,35 20,40 Z";
+    private const string MapleLeafPath = "M 25,2 L 28,12 L 34,9 L 32,17 L 43,14 L 37,24 L 48,27 L 40,33 L 46,39 L 36,39 L 33,47 L 27,41 L 27,55 L 23,55 L 23,41 L 17,47 L 14,39 L 4,39 L 10,33 L 2,27 L 13,24 L 7,14 L 18,17 L 16,9 L 22,12 Z";
+    private const string HalloweenBatPath = "M 25,12 C 26,10 27,8 28,5 C 28.5,8 29.5,10 30.5,12 C 37,9 45,9 52,14 C 47,19 44,24 46,30 C 40,28 35,30 31,34 C 30,28 27,24 25,27 C 23,24 20,28 19,34 C 15,30 10,28 4,30 C 6,24 3,19 -2,14 C 5,9 13,9 19.5,12 C 20.5,10 21.5,8 22,5 C 23,8 24,10 25,12 Z";
+    private const string HalloweenGhostPath = "M 20,5 C 28,5 34,12 34,22 C 34,34 32,42 34,48 C 30,45 26,48 23,44 C 20,47 17,44 14,48 C 11,44 7,46 4,48 C 6,42 4,34 4,22 C 4,12 10,5 20,5 Z";
+    private const string SnowflakeCrystalPath = "M 25,2 L 25,48 M 5,13.5 L 45,36.5 M 5,36.5 L 45,13.5 M 25,10 L 21,6 M 25,10 L 29,6 M 25,40 L 21,44 M 25,40 L 29,44 M 15,19 L 10,16 M 15,19 L 17,13 M 35,31 L 40,34 M 35,31 L 33,37 M 15,31 L 10,34 M 15,31 L 17,37 M 35,19 L 40,16 M 35,19 L 33,13";
+    private const string LanternPath = "M 14,4 L 26,4 L 28,9 L 30,24 L 26,36 L 14,36 L 10,24 L 12,9 Z";
+    private const string StarFlarePath = "M 25,0 Q 25,25 50,25 Q 25,25 25,50 Q 25,25 0,25 Q 25,25 25,0 Z";
+
+    private static Path CreateVectorPath(string pathData, double size, Brush fill, Brush? stroke = null, double strokeThickness = 0, double opacity = 1.0, double heightScale = 1.0)
+    {
+        try
+        {
+            string xaml = $"<Path xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Data=\"{pathData}\" Stretch=\"Uniform\" />";
+            var p = (Path)XamlReader.Load(xaml);
+            p.Width = size;
+            p.Height = size * heightScale;
+            p.Fill = fill;
+            if (stroke != null) p.Stroke = stroke;
+            if (strokeThickness > 0) p.StrokeThickness = strokeThickness;
+            p.Opacity = opacity;
+            return p;
+        }
+        catch
+        {
+            return new Path
+            {
+                Data = new EllipseGeometry { RadiusX = size / 2, RadiusY = (size * heightScale) / 2 },
+                Fill = fill,
+                Width = size,
+                Height = size * heightScale,
+                Opacity = opacity,
+                Stretch = Stretch.Uniform
+            };
+        }
+    }
+
+    private void CreateSeasonalParticles(SeasonalParticleType type, int count = 65)
     {
         var (width, height) = GetCanvasDimensions();
+        if (width <= 0) width = 800;
+        if (height <= 0) height = 400;
 
-        for (int i = 0; i < count; i++)
+        // Tự động phân bổ mật độ hạt tối ưu theo độ rộng màn hình (50 - 85 hạt)
+        int optimalCount = Math.Clamp((int)(width / 18.0), 50, 85);
+
+        for (int i = 0; i < optimalCount; i++)
         {
             FrameworkElement el;
-            double size = 8;
+            double size = 20;
             bool floatsUp = false;
-            RotateTransform? rot = null;
             double rotSpeed = 0;
-            double speedY = 1.0;
-            double baseOpacity = 0.7;
+            double speedY = 1.2;
+            double speedX = 0;
+            double baseOpacity = 0.85;
+            double swayAmplitude = 1.8;
+            double flutterFreq = _random.NextDouble() * 1.5 + 1.8;
+            bool isFluttering = false;
+            bool isFlapping = false;
+            bool isPulsing = false;
 
             switch (type)
             {
                 case SeasonalParticleType.TetBlossom:
-                    size = _random.Next(9, 16);
-                    bool isMai = _random.NextDouble() > 0.45; // 55% mai vàng, 45% đào hồng
-                    var tetBrush = new RadialGradientBrush
-                    {
-                        Center = new Windows.Foundation.Point(0.5, 0.5),
-                        RadiusX = 0.5,
-                        RadiusY = 0.5
-                    };
+                    bool isFullBlossom = _random.NextDouble() > 0.65;
+                    bool isMai = _random.NextDouble() > 0.45; // 55% Mai Vàng, 45% Đào Hồng
+                    size = isFullBlossom ? _random.Next(20, 30) : _random.Next(15, 24);
+
+                    Brush tetBrush;
                     if (isMai)
                     {
-                        tetBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 253, 224, 71), Offset = 0 });
-                        tetBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(220, 245, 158, 11), Offset = 1 });
+                        var grad = new LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 254, 240, 138), Offset = 0 });
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 234, 179, 8), Offset = 0.7 });
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 202, 138, 4), Offset = 1 });
+                        tetBrush = grad;
                     }
                     else
                     {
-                        tetBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 244, 114, 182), Offset = 0 });
-                        tetBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(220, 236, 72, 153), Offset = 1 });
+                        var grad = new LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 252, 231, 243), Offset = 0 });
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 244, 114, 182), Offset = 0.6 });
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 225, 29, 72), Offset = 1 });
+                        tetBrush = grad;
                     }
-                    var petal = new Ellipse
-                    {
-                        Width = size,
-                        Height = size * 0.65,
-                        Fill = tetBrush,
-                        Opacity = _random.NextDouble() * 0.4 + 0.55
-                    };
-                    rot = new RotateTransform { CenterX = size / 2, CenterY = (size * 0.65) / 2 };
-                    petal.RenderTransform = rot;
-                    rotSpeed = _random.NextDouble() * 2.4 - 1.2;
-                    speedY = _random.NextDouble() * 1.5 + 0.9;
-                    baseOpacity = petal.Opacity;
-                    el = petal;
+
+                    var petalPath = CreateVectorPath(
+                        isFullBlossom ? BlossomFlowerPath : BlossomPetalPath,
+                        size,
+                        tetBrush,
+                        opacity: _random.NextDouble() * 0.35 + 0.65);
+
+                    rotSpeed = _random.NextDouble() * 2.8 - 1.4;
+                    speedY = _random.NextDouble() * 1.4 + 1.0;
+                    swayAmplitude = _random.NextDouble() * 2.0 + 1.4;
+                    isFluttering = true;
+                    baseOpacity = petalPath.Opacity;
+                    el = petalPath;
                     break;
 
-                case SeasonalParticleType.MidAutumnMoonlit:
-                    size = _random.Next(5, 11);
-                    floatsUp = true;
-                    var moonlit = new Ellipse
+                case SeasonalParticleType.AutumnLeaves:
+                    size = _random.Next(22, 36);
+                    double colorRoll = _random.NextDouble();
+                    Brush leafBrush;
+                    if (colorRoll < 0.35)
                     {
-                        Width = size,
-                        Height = size,
-                        Fill = new RadialGradientBrush
+                        // Đỏ phong rực lửa (Flame Crimson)
+                        var grad = new LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 248, 113, 113), Offset = 0 });
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 220, 38, 38), Offset = 0.7 });
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 153, 27, 27), Offset = 1 });
+                        leafBrush = grad;
+                    }
+                    else if (colorRoll < 0.70)
+                    {
+                        // Cam hổ phách (Sunset Amber)
+                        var grad = new LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 253, 186, 116), Offset = 0 });
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 234, 88, 12), Offset = 0.8 });
+                        leafBrush = grad;
+                    }
+                    else
+                    {
+                        // Vàng mật ong (Honey Gold)
+                        var grad = new LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 254, 240, 138), Offset = 0 });
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 245, 158, 11), Offset = 0.7 });
+                        grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 180, 83, 9), Offset = 1 });
+                        leafBrush = grad;
+                    }
+
+                    var leafPath = CreateVectorPath(
+                        MapleLeafPath,
+                        size,
+                        leafBrush,
+                        opacity: _random.NextDouble() * 0.35 + 0.65);
+
+                    rotSpeed = _random.NextDouble() * 3.0 - 1.5;
+                    speedY = _random.NextDouble() * 1.5 + 1.1;
+                    swayAmplitude = _random.NextDouble() * 2.4 + 1.6;
+                    isFluttering = true;
+                    baseOpacity = leafPath.Opacity;
+                    el = leafPath;
+                    break;
+
+                case SeasonalParticleType.HalloweenSparks:
+                    bool isBat = _random.NextDouble() > 0.45;
+                    if (isBat)
+                    {
+                        size = _random.Next(24, 38);
+                        var batBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(235, 30, 27, 75));
+                        var batPath = CreateVectorPath(
+                            HalloweenBatPath,
+                            size,
+                            batBrush,
+                            opacity: _random.NextDouble() * 0.3 + 0.7,
+                            heightScale: 0.6);
+                        isFlapping = true;
+                        flutterFreq = _random.NextDouble() * 3.0 + 4.5; // Tốc độ đập cánh nhanh
+                        rotSpeed = _random.NextDouble() * 1.0 - 0.5;
+                        speedY = _random.NextDouble() * 0.9 + 0.6;
+                        speedX = (_random.NextDouble() * 2.0 - 1.0) * 1.5;
+                        baseOpacity = batPath.Opacity;
+                        el = batPath;
+                    }
+                    else
+                    {
+                        // Linh hồn ma trơi / Tia sáng bí ngô
+                        size = _random.Next(16, 26);
+                        floatsUp = true;
+                        bool isGhost = _random.NextDouble() > 0.5;
+                        Brush spiritBrush;
+                        if (isGhost)
                         {
-                            Center = new Windows.Foundation.Point(0.5, 0.5),
-                            RadiusX = 0.5,
-                            RadiusY = 0.5,
-                            GradientStops =
-                            {
-                                new GradientStop { Color = Windows.UI.Color.FromArgb(255, 254, 240, 138), Offset = 0 },
-                                new GradientStop { Color = Windows.UI.Color.FromArgb(60, 250, 204, 21), Offset = 1 }
-                            }
-                        },
-                        Opacity = _random.NextDouble() * 0.45 + 0.45
-                    };
-                    speedY = -(_random.NextDouble() * 0.75 + 0.35);
-                    baseOpacity = moonlit.Opacity;
-                    el = moonlit;
+                            var grad = new RadialGradientBrush { Center = new Windows.Foundation.Point(0.5, 0.4), RadiusX = 0.5, RadiusY = 0.5 };
+                            grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(230, 233, 213, 255), Offset = 0 });
+                            grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(140, 168, 85, 247), Offset = 0.8 });
+                            grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(0, 126, 34, 206), Offset = 1 });
+                            spiritBrush = grad;
+                        }
+                        else
+                        {
+                            var grad = new RadialGradientBrush { Center = new Windows.Foundation.Point(0.5, 0.5), RadiusX = 0.5, RadiusY = 0.5 };
+                            grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 254, 215, 170), Offset = 0 });
+                            grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(200, 249, 115, 22), Offset = 0.7 });
+                            grad.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(0, 194, 65, 12), Offset = 1 });
+                            spiritBrush = grad;
+                        }
+
+                        var ghostPath = CreateVectorPath(
+                            HalloweenGhostPath,
+                            size,
+                            spiritBrush,
+                            opacity: _random.NextDouble() * 0.35 + 0.65);
+                        speedY = -(_random.NextDouble() * 1.1 + 0.6);
+                        isPulsing = true;
+                        isFluttering = true;
+                        baseOpacity = ghostPath.Opacity;
+                        el = ghostPath;
+                    }
                     break;
 
                 case SeasonalParticleType.ChristmasSnow:
-                    size = _random.Next(4, 9);
-                    var snow = new Ellipse
+                    bool isCrystal = _random.NextDouble() > 0.45;
+                    size = isCrystal ? _random.Next(14, 26) : _random.Next(8, 16);
+
+                    if (isCrystal)
                     {
-                        Width = size,
-                        Height = size,
-                        Fill = new RadialGradientBrush
+                        var crystalPath = CreateVectorPath(
+                            SnowflakeCrystalPath,
+                            size,
+                            new SolidColorBrush(Windows.UI.Color.FromArgb(20, 255, 255, 255)),
+                            stroke: new SolidColorBrush(Windows.UI.Color.FromArgb(240, 255, 255, 255)),
+                            strokeThickness: 1.4,
+                            opacity: _random.NextDouble() * 0.4 + 0.6);
+                        rotSpeed = _random.NextDouble() * 1.8 - 0.9;
+                        speedY = _random.NextDouble() * 1.3 + 0.9;
+                        swayAmplitude = _random.NextDouble() * 1.8 + 1.0;
+                        baseOpacity = crystalPath.Opacity;
+                        el = crystalPath;
+                    }
+                    else
+                    {
+                        var snowCircle = new Ellipse
+                        {
+                            Width = size,
+                            Height = size,
+                            Fill = new RadialGradientBrush
+                            {
+                                Center = new Windows.Foundation.Point(0.5, 0.5),
+                                RadiusX = 0.5,
+                                RadiusY = 0.5,
+                                GradientStops =
+                                {
+                                    new GradientStop { Color = Windows.UI.Color.FromArgb(255, 255, 255, 255), Offset = 0 },
+                                    new GradientStop { Color = Windows.UI.Color.FromArgb(140, 186, 230, 253), Offset = 0.8 },
+                                    new GradientStop { Color = Windows.UI.Color.FromArgb(0, 186, 230, 253), Offset = 1 }
+                                }
+                            },
+                            Opacity = _random.NextDouble() * 0.4 + 0.55
+                        };
+                        speedY = _random.NextDouble() * 1.6 + 1.1;
+                        swayAmplitude = _random.NextDouble() * 2.0 + 1.2;
+                        baseOpacity = snowCircle.Opacity;
+                        el = snowCircle;
+                    }
+                    break;
+
+                case SeasonalParticleType.MidAutumnMoonlit:
+                    bool isLantern = _random.NextDouble() > 0.45;
+                    if (isLantern)
+                    {
+                        size = _random.Next(20, 32);
+                        floatsUp = true;
+                        var lanternBrush = new LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(0, 1) };
+                        lanternBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 254, 240, 138), Offset = 0 });
+                        lanternBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(240, 245, 158, 11), Offset = 0.5 });
+                        lanternBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 220, 38, 38), Offset = 1 });
+
+                        var lanternPath = CreateVectorPath(
+                            LanternPath,
+                            size * 0.75,
+                            lanternBrush,
+                            stroke: new SolidColorBrush(Windows.UI.Color.FromArgb(200, 251, 191, 36)),
+                            strokeThickness: 1.0,
+                            opacity: _random.NextDouble() * 0.35 + 0.65,
+                            heightScale: 1.33);
+                        speedY = -(_random.NextDouble() * 0.9 + 0.5);
+                        swayAmplitude = _random.NextDouble() * 1.5 + 1.0;
+                        isPulsing = true;
+                        baseOpacity = lanternPath.Opacity;
+                        el = lanternPath;
+                    }
+                    else
+                    {
+                        // Đom đóm & bụi sao trăng rằm
+                        size = _random.Next(8, 16);
+                        floatsUp = true;
+                        var firefly = new Ellipse
+                        {
+                            Width = size,
+                            Height = size,
+                            Fill = new RadialGradientBrush
+                            {
+                                Center = new Windows.Foundation.Point(0.5, 0.5),
+                                RadiusX = 0.5,
+                                RadiusY = 0.5,
+                                GradientStops =
+                                {
+                                    new GradientStop { Color = Windows.UI.Color.FromArgb(255, 254, 240, 138), Offset = 0 },
+                                    new GradientStop { Color = Windows.UI.Color.FromArgb(160, 250, 204, 21), Offset = 0.5 },
+                                    new GradientStop { Color = Windows.UI.Color.FromArgb(0, 234, 179, 8), Offset = 1 }
+                                }
+                            },
+                            Opacity = _random.NextDouble() * 0.45 + 0.55
+                        };
+                        speedY = -(_random.NextDouble() * 0.7 + 0.3);
+                        swayAmplitude = _random.NextDouble() * 2.2 + 1.2;
+                        isPulsing = true;
+                        baseOpacity = firefly.Opacity;
+                        el = firefly;
+                    }
+                    break;
+
+                case SeasonalParticleType.SpringPetals:
+                    size = _random.Next(16, 26);
+                    var springBrush = new LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
+                    springBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 253, 242, 248), Offset = 0 });
+                    springBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(240, 244, 114, 182), Offset = 0.7 });
+                    springBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 236, 72, 153), Offset = 1 });
+
+                    var springPetal = CreateVectorPath(
+                        BlossomPetalPath,
+                        size,
+                        springBrush,
+                        opacity: _random.NextDouble() * 0.35 + 0.65,
+                        heightScale: 0.8);
+                    rotSpeed = _random.NextDouble() * 2.6 - 1.3;
+                    speedY = _random.NextDouble() * 1.3 + 0.9;
+                    swayAmplitude = _random.NextDouble() * 2.2 + 1.4;
+                    isFluttering = true;
+                    baseOpacity = springPetal.Opacity;
+                    el = springPetal;
+                    break;
+
+                case SeasonalParticleType.SummerSparkles:
+                    size = _random.Next(14, 24);
+                    floatsUp = true;
+                    var starFlare = CreateVectorPath(
+                        StarFlarePath,
+                        size,
+                        new LinearGradientBrush
+                        {
+                            StartPoint = new Windows.Foundation.Point(0, 0),
+                            EndPoint = new Windows.Foundation.Point(1, 1),
+                            GradientStops =
+                            {
+                                new GradientStop { Color = Windows.UI.Color.FromArgb(255, 254, 240, 138), Offset = 0 },
+                                new GradientStop { Color = Windows.UI.Color.FromArgb(240, 245, 158, 11), Offset = 0.7 },
+                                new GradientStop { Color = Windows.UI.Color.FromArgb(180, 14, 165, 233), Offset = 1 }
+                            }
+                        },
+                        opacity: _random.NextDouble() * 0.4 + 0.6);
+                    rotSpeed = _random.NextDouble() * 2.0 - 1.0;
+                    speedY = -(_random.NextDouble() * 0.8 + 0.4);
+                    isPulsing = true;
+                    baseOpacity = starFlare.Opacity;
+                    el = starFlare;
+                    break;
+
+                case SeasonalParticleType.WinterFrost:
+                default:
+                    size = _random.Next(12, 22);
+                    var frostStar = CreateVectorPath(
+                        StarFlarePath,
+                        size,
+                        new RadialGradientBrush
                         {
                             Center = new Windows.Foundation.Point(0.5, 0.5),
                             RadiusX = 0.5,
@@ -1077,162 +1360,27 @@ public class WeatherEffectRenderer
                             GradientStops =
                             {
                                 new GradientStop { Color = Windows.UI.Color.FromArgb(255, 255, 255, 255), Offset = 0 },
-                                new GradientStop { Color = Windows.UI.Color.FromArgb(100, 186, 230, 253), Offset = 1 }
+                                new GradientStop { Color = Windows.UI.Color.FromArgb(180, 186, 230, 253), Offset = 0.6 },
+                                new GradientStop { Color = Windows.UI.Color.FromArgb(0, 56, 189, 248), Offset = 1 }
                             }
                         },
-                        Opacity = _random.NextDouble() * 0.4 + 0.5
-                    };
-                    speedY = _random.NextDouble() * 1.6 + 1.1;
-                    baseOpacity = snow.Opacity;
-                    el = snow;
-                    break;
-
-                case SeasonalParticleType.HalloweenSparks:
-                    size = _random.Next(4, 9);
-                    floatsUp = true;
-                    bool isPumpkin = _random.NextDouble() > 0.4;
-                    var sparkBrush = new RadialGradientBrush
-                    {
-                        Center = new Windows.Foundation.Point(0.5, 0.5),
-                        RadiusX = 0.5,
-                        RadiusY = 0.5
-                    };
-                    if (isPumpkin)
-                    {
-                        sparkBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 251, 146, 60), Offset = 0 });
-                        sparkBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(80, 234, 88, 12), Offset = 1 });
-                    }
-                    else
-                    {
-                        sparkBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 192, 132, 252), Offset = 0 });
-                        sparkBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(80, 168, 85, 247), Offset = 1 });
-                    }
-                    var spark = new Ellipse
-                    {
-                        Width = size,
-                        Height = size,
-                        Fill = sparkBrush,
-                        Opacity = _random.NextDouble() * 0.4 + 0.5
-                    };
-                    speedY = -(_random.NextDouble() * 0.8 + 0.4);
-                    baseOpacity = spark.Opacity;
-                    el = spark;
-                    break;
-
-                case SeasonalParticleType.SpringPetals:
-                    size = _random.Next(8, 14);
-                    var springPetal = new Ellipse
-                    {
-                        Width = size,
-                        Height = size * 0.65,
-                        Fill = new RadialGradientBrush
-                        {
-                            Center = new Windows.Foundation.Point(0.5, 0.5),
-                            RadiusX = 0.5,
-                            RadiusY = 0.5,
-                            GradientStops =
-                            {
-                                new GradientStop { Color = Windows.UI.Color.FromArgb(255, 251, 207, 232), Offset = 0 },
-                                new GradientStop { Color = Windows.UI.Color.FromArgb(200, 244, 114, 182), Offset = 1 }
-                            }
-                        },
-                        Opacity = _random.NextDouble() * 0.4 + 0.5
-                    };
-                    rot = new RotateTransform { CenterX = size / 2, CenterY = (size * 0.65) / 2 };
-                    springPetal.RenderTransform = rot;
-                    rotSpeed = _random.NextDouble() * 2.0 - 1.0;
-                    speedY = _random.NextDouble() * 1.4 + 0.8;
-                    baseOpacity = springPetal.Opacity;
-                    el = springPetal;
-                    break;
-
-                case SeasonalParticleType.SummerSparkles:
-                    size = _random.Next(4, 9);
-                    floatsUp = true;
-                    var sparkle = new Ellipse
-                    {
-                        Width = size,
-                        Height = size,
-                        Fill = new RadialGradientBrush
-                        {
-                            Center = new Windows.Foundation.Point(0.5, 0.5),
-                            RadiusX = 0.5,
-                            RadiusY = 0.5,
-                            GradientStops =
-                            {
-                                new GradientStop { Color = Windows.UI.Color.FromArgb(255, 254, 243, 199), Offset = 0 },
-                                new GradientStop { Color = Windows.UI.Color.FromArgb(60, 251, 191, 36), Offset = 1 }
-                            }
-                        },
-                        Opacity = _random.NextDouble() * 0.4 + 0.45
-                    };
-                    speedY = -(_random.NextDouble() * 0.6 + 0.3);
-                    baseOpacity = sparkle.Opacity;
-                    el = sparkle;
-                    break;
-
-                case SeasonalParticleType.AutumnLeaves:
-                    size = _random.Next(10, 16);
-                    bool isAmber = _random.NextDouble() > 0.5;
-                    var leafBrush = new RadialGradientBrush
-                    {
-                        Center = new Windows.Foundation.Point(0.5, 0.5),
-                        RadiusX = 0.5,
-                        RadiusY = 0.5
-                    };
-                    if (isAmber)
-                    {
-                        leafBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 251, 191, 36), Offset = 0 });
-                        leafBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(220, 217, 119, 6), Offset = 1 });
-                    }
-                    else
-                    {
-                        leafBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(255, 239, 68, 68), Offset = 0 });
-                        leafBrush.GradientStops.Add(new GradientStop { Color = Windows.UI.Color.FromArgb(220, 185, 28, 28), Offset = 1 });
-                    }
-                    var leaf = new Ellipse
-                    {
-                        Width = size,
-                        Height = size * 0.6,
-                        Fill = leafBrush,
-                        Opacity = _random.NextDouble() * 0.35 + 0.55
-                    };
-                    rot = new RotateTransform { CenterX = size / 2, CenterY = (size * 0.6) / 2 };
-                    leaf.RenderTransform = rot;
-                    rotSpeed = _random.NextDouble() * 2.6 - 1.3;
-                    speedY = _random.NextDouble() * 1.5 + 0.9;
-                    baseOpacity = leaf.Opacity;
-                    el = leaf;
-                    break;
-
-                case SeasonalParticleType.WinterFrost:
-                default:
-                    size = _random.Next(4, 8);
-                    var frost = new Ellipse
-                    {
-                        Width = size,
-                        Height = size,
-                        Fill = new RadialGradientBrush
-                        {
-                            Center = new Windows.Foundation.Point(0.5, 0.5),
-                            RadiusX = 0.5,
-                            RadiusY = 0.5,
-                            GradientStops =
-                            {
-                                new GradientStop { Color = Windows.UI.Color.FromArgb(255, 224, 242, 254), Offset = 0 },
-                                new GradientStop { Color = Windows.UI.Color.FromArgb(80, 56, 189, 248), Offset = 1 }
-                            }
-                        },
-                        Opacity = _random.NextDouble() * 0.35 + 0.45
-                    };
-                    speedY = _random.NextDouble() * 1.4 + 1.0;
-                    baseOpacity = frost.Opacity;
-                    el = frost;
+                        opacity: _random.NextDouble() * 0.4 + 0.55);
+                    rotSpeed = _random.NextDouble() * 1.5 - 0.75;
+                    speedY = _random.NextDouble() * 1.3 + 0.8;
+                    baseOpacity = frostStar.Opacity;
+                    el = frostStar;
                     break;
             }
 
             double startX = _random.NextDouble() * width;
             double startY = _random.NextDouble() * height;
+
+            var transform = new CompositeTransform
+            {
+                CenterX = size / 2.0,
+                CenterY = size / 2.0
+            };
+            el.RenderTransform = transform;
 
             Canvas.SetLeft(el, startX);
             Canvas.SetTop(el, startY);
@@ -1244,13 +1392,19 @@ public class WeatherEffectRenderer
                 X = startX,
                 Y = startY,
                 SpeedY = speedY,
-                DriftOffset = _random.NextDouble() * 12,
+                SpeedX = speedX,
+                DriftOffset = _random.NextDouble() * 14,
                 SwayFreq = _random.NextDouble() * 1.2 + 1.2,
+                SwayAmplitude = swayAmplitude,
                 BaseOpacity = baseOpacity,
                 Size = size,
                 FloatsUp = floatsUp,
-                RotationTransform = rot,
-                RotSpeed = rotSpeed
+                Transform = transform,
+                RotSpeed = rotSpeed,
+                FlutterFreq = flutterFreq,
+                IsFluttering = isFluttering,
+                IsFlapping = isFlapping,
+                IsPulsing = isPulsing
             });
         }
     }
@@ -1481,33 +1635,67 @@ public class WeatherEffectRenderer
                 if (p.FloatsUp)
                 {
                     p.Y += p.SpeedY;
-                    p.X += Math.Sin(_animationTime * p.SwayFreq + p.DriftOffset) * 0.75;
+                    p.X += Math.Sin(_animationTime * p.SwayFreq + p.DriftOffset) * p.SwayAmplitude + (_windDriftRatio * 0.8) + p.SpeedX;
 
-                    // Nhịp phát sáng nhẹ nhàng
-                    double pulse = p.BaseOpacity * (0.50 + 0.50 * Math.Abs(Math.Sin(_animationTime * 2.0 + p.DriftOffset)));
-                    p.Element.Opacity = Math.Clamp(pulse, 0.15, 0.95);
-
-                    if (p.Y < -20)
+                    if (p.IsPulsing)
                     {
-                        p.Y = height + 10;
+                        // Nhịp thở phát sáng hữu cơ (Organic breathing luminescence)
+                        double pulse = p.BaseOpacity * (0.55 + 0.45 * Math.Sin(_animationTime * 2.6 + p.DriftOffset));
+                        p.Element.Opacity = Math.Clamp(pulse, 0.15, 1.0);
+                    }
+
+                    if (p.Transform != null)
+                    {
+                        if (p.IsFluttering)
+                        {
+                            p.CurrentAngle += p.RotSpeed;
+                            p.Transform.Rotation = p.CurrentAngle;
+                            p.Transform.ScaleX = 0.5 + 0.5 * Math.Cos(_animationTime * p.FlutterFreq + p.DriftOffset);
+                        }
+                        else
+                        {
+                            // Đèn lồng hoa đăng chao nghiêng nhẹ tự nhiên
+                            p.Transform.Rotation = Math.Sin(_animationTime * p.SwayFreq + p.DriftOffset) * 10.0;
+                        }
+                    }
+
+                    if (p.Y < -40)
+                    {
+                        p.Y = height + 15;
                         p.X = _random.NextDouble() * width;
                     }
                 }
                 else
                 {
                     p.Y += p.SpeedY;
-                    double sway = Math.Sin(_animationTime * p.SwayFreq + p.DriftOffset) * 1.6 + (_windDriftRatio * 1.4);
-                    p.X += sway;
+                    double sway = Math.Sin(_animationTime * p.SwayFreq + p.DriftOffset) * p.SwayAmplitude + (_windDriftRatio * 1.6);
+                    p.X += sway + p.SpeedX;
 
-                    if (p.RotationTransform != null)
+                    if (p.Transform != null)
                     {
-                        p.CurrentAngle += p.RotSpeed;
-                        p.RotationTransform.Angle = p.CurrentAngle;
+                        if (p.IsFlapping)
+                        {
+                            // Đập cánh dơi Halloween (Bat wing flapping)
+                            p.Transform.ScaleY = 0.35 + 0.65 * Math.Abs(Math.Sin(_animationTime * p.FlutterFreq + p.DriftOffset));
+                            p.Transform.Rotation = Math.Sin(_animationTime * 2.2 + p.DriftOffset) * 16.0;
+                        }
+                        else if (p.IsFluttering)
+                        {
+                            // Lật 3D chân thực cánh hoa / lá phong chao đảo (3D tumble flip)
+                            p.CurrentAngle += p.RotSpeed;
+                            p.Transform.Rotation = p.CurrentAngle;
+                            p.Transform.ScaleX = Math.Cos(_animationTime * p.FlutterFreq + p.DriftOffset);
+                        }
+                        else
+                        {
+                            p.CurrentAngle += p.RotSpeed;
+                            p.Transform.Rotation = p.CurrentAngle;
+                        }
                     }
 
-                    if (p.Y > height + 25)
+                    if (p.Y > height + 35)
                     {
-                        p.Y = -p.Size - 10;
+                        p.Y = -p.Size - 15;
                         p.X = _random.NextDouble() * width;
                     }
                 }

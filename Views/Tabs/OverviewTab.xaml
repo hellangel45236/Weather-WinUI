@@ -48,8 +48,8 @@
                     <Border x:Name="HeroGradientOverlay" CornerRadius="16" Opacity="0.75">
                         <Border.Background>
                             <LinearGradientBrush x:Name="HeroGradientBrush" StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop x:Name="HeroGradStop0" Color="{x:Bind ViewModel.CurrentWeather.HeroGradientStart, Mode=OneWay, Converter={StaticResource HexToColorConverter}}" Offset="0"/>
-                                <GradientStop x:Name="HeroGradStop1" Color="{x:Bind ViewModel.CurrentWeather.HeroGradientEnd, Mode=OneWay, Converter={StaticResource HexToColorConverter}}" Offset="1"/>
+                                <GradientStop x:Name="HeroGradStop0" Color="#0284C7" Offset="0"/>
+                                <GradientStop x:Name="HeroGradStop1" Color="#0F172A" Offset="1"/>
                             </LinearGradientBrush>
                         </Border.Background>
                     </Border>

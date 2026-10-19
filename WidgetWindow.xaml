@@ -530,91 +530,170 @@
                 </Grid>
 
                 <!-- ==================== GIAO DIỆN 5: KIỂU WIDGET THEO MÙA & ĐẠI LỄ HỘI (FESTIVE SEASONAL CARD v3.4.0) ==================== -->
-                <Grid x:Name="SeasonalFestivalView" RowDefinitions="Auto,Auto,Auto" RowSpacing="10" Visibility="Collapsed" Padding="16,14">
+                <Grid x:Name="SeasonalFestivalView" Visibility="Collapsed">
+                    <!-- LỚP ĐỒ HỌA MÙA & LỄ HỘI ĐẶC TRƯNG (SEASONAL ARTWORK LAYER) -->
+                    <Grid x:Name="SeasonalArtLayer" IsHitTestVisible="False">
+                        <!-- 1. Tết Cổ Truyền: Vầng trăng vàng & Cánh mai đào rực rỡ -->
+                        <Canvas x:Name="SeasonalTetArt" Visibility="Collapsed">
+                            <Ellipse Width="170" Height="170" Canvas.Left="235" Canvas.Top="-65" Fill="#15FBBF24"/>
+                            <Ellipse Width="95" Height="95" Canvas.Left="275" Canvas.Top="-25" Fill="#20F59E0B"/>
+                            <Ellipse Width="12" Height="8" Canvas.Left="295" Canvas.Top="45" Fill="#40FDE047"/>
+                            <Ellipse Width="10" Height="7" Canvas.Left="340" Canvas.Top="75" Fill="#35FDA4AF"/>
+                            <Ellipse Width="8" Height="6" Canvas.Left="275" Canvas.Top="90" Fill="#30FDE047"/>
+                        </Canvas>
 
-                    <!-- HÀNG 1: HEADER LỄ HỘI / MÙA & ĐỒNG HỒ SỐ -->
-                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,4">
-                        <StackPanel Grid.Column="0" Spacing="2">
-                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                <TextBlock x:Name="SeasonalEmojiText" Text="🧧" FontSize="14" VerticalAlignment="Center"/>
-                                <TextBlock x:Name="SeasonalTagText" Text="Tết Cổ Truyền" FontSize="12.5" FontWeight="Bold" Foreground="#FDA4AF" VerticalAlignment="Center"/>
-                            </StackPanel>
-                            <TextBlock x:Name="SeasonalGreetingText" Text="Chúc Mừng Năm Mới • Vạn Sự Như Ý" FontSize="10" FontWeight="SemiBold" Foreground="#FDE047" TextTrimming="CharacterEllipsis" MaxWidth="210"/>
-                        </StackPanel>
+                        <!-- 2. Giáng Sinh: Ánh sáng lung linh & Tinh thể tuyết -->
+                        <Canvas x:Name="SeasonalChristmasArt" Visibility="Collapsed">
+                            <Ellipse Width="180" Height="180" Canvas.Left="230" Canvas.Top="-70" Fill="#1238BDF8"/>
+                            <Ellipse Width="95" Height="95" Canvas.Left="275" Canvas.Top="-25" Fill="#1810B981"/>
+                            <Ellipse Width="6" Height="6" Canvas.Left="295" Canvas.Top="35" Fill="#90FFFFFF"/>
+                            <Ellipse Width="4" Height="4" Canvas.Left="345" Canvas.Top="60" Fill="#80FFFFFF"/>
+                            <Ellipse Width="7" Height="7" Canvas.Left="270" Canvas.Top="80" Fill="#70FFFFFF"/>
+                            <Ellipse Width="5" Height="5" Canvas.Left="330" Canvas.Top="110" Fill="#85FFFFFF"/>
+                        </Canvas>
 
-                        <!-- ĐỒNG HỒ & CÁC NÚT ĐIỀU KHIỂN HOVER -->
-                        <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Spacing="2">
-                            <TextBlock x:Name="SeasonalClockText" Text="--:--" FontSize="15" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right"/>
-                            <StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Right">
-                                <Button x:Name="SeasonalPinButton" Click="PinButton_Click" Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2" ToolTipService.ToolTip="Ghim Always on Top">
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08d;" FontSize="9.5" Foreground="#38BDF8"/>
-                                </Button>
-                                <Button x:Name="SeasonalRefreshButton" Click="WidgetRefreshButton_Click" Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2" ToolTipService.ToolTip="Làm mới thời tiết">
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="9.5" Foreground="#CBD5E1"/>
-                                </Button>
-                                <Button x:Name="SeasonalToggleStyleButton" Click="ToggleStyleButton_Click" Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2" ToolTipService.ToolTip="Đổi kiểu widget">
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf065;" FontSize="9.5" Foreground="#CBD5E1"/>
-                                </Button>
-                                <Button x:Name="SeasonalCloseButton" Click="CloseWidgetButton_Click" Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2" ToolTipService.ToolTip="Đóng widget">
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00d;" FontSize="9.5" Foreground="#94A3B8"/>
-                                </Button>
-                            </StackPanel>
-                        </StackPanel>
+                        <!-- 3. Halloween: Vầng trăng huyền bí & Dơi ma quái -->
+                        <Canvas x:Name="SeasonalHalloweenArt" Visibility="Collapsed">
+                            <Ellipse Width="160" Height="160" Canvas.Left="240" Canvas.Top="-60" Fill="#1AF97316"/>
+                            <Ellipse Width="95" Height="95" Canvas.Left="275" Canvas.Top="-25" Fill="#208B5CF6"/>
+                            <Ellipse Width="14" Height="6" Canvas.Left="290" Canvas.Top="40" Fill="#40000000"/>
+                            <Ellipse Width="18" Height="7" Canvas.Left="335" Canvas.Top="65" Fill="#45000000"/>
+                        </Canvas>
+
+                        <!-- 4. Trung Thu: Trăng rằm tròn vành vạnh & Hoa đăng -->
+                        <Canvas x:Name="SeasonalMidAutumnArt" Visibility="Collapsed">
+                            <Ellipse Width="170" Height="170" Canvas.Left="235" Canvas.Top="-65" Fill="#22F59E0B"/>
+                            <Ellipse Width="105" Height="105" Canvas.Left="270" Canvas.Top="-30" Fill="#28FBBF24"/>
+                            <Ellipse Width="10" Height="14" Canvas.Left="340" Canvas.Top="70" Fill="#35EF4444"/>
+                        </Canvas>
+
+                        <!-- 5. Mùa Thu: Quầng ấm áp lá phong -->
+                        <Canvas x:Name="SeasonalAutumnArt" Visibility="Collapsed">
+                            <Ellipse Width="170" Height="170" Canvas.Left="235" Canvas.Top="-65" Fill="#1AD97706"/>
+                            <Ellipse Width="95" Height="95" Canvas.Left="275" Canvas.Top="-25" Fill="#22EA580C"/>
+                            <Ellipse Width="10" Height="8" Canvas.Left="305" Canvas.Top="45" Fill="#40D97706"/>
+                            <Ellipse Width="12" Height="9" Canvas.Left="340" Canvas.Top="80" Fill="#35B45309"/>
+                        </Canvas>
+
+                        <!-- 6. Mùa Xuân: Vầng hồng tươi trẻ & Cánh hoa -->
+                        <Canvas x:Name="SeasonalSpringArt" Visibility="Collapsed">
+                            <Ellipse Width="170" Height="170" Canvas.Left="235" Canvas.Top="-65" Fill="#18EC4899"/>
+                            <Ellipse Width="95" Height="95" Canvas.Left="275" Canvas.Top="-25" Fill="#22F43F5E"/>
+                            <Ellipse Width="9" Height="9" Canvas.Left="305" Canvas.Top="50" Fill="#40F472B6"/>
+                            <Ellipse Width="11" Height="8" Canvas.Left="340" Canvas.Top="85" Fill="#35FB7185"/>
+                        </Canvas>
+
+                        <!-- 7. Mùa Hè: Sóng biển biếc & Nắng rực rỡ -->
+                        <Canvas x:Name="SeasonalSummerArt" Visibility="Collapsed">
+                            <Ellipse Width="180" Height="180" Canvas.Left="230" Canvas.Top="-70" Fill="#1806B6D4"/>
+                            <Ellipse Width="105" Height="105" Canvas.Left="270" Canvas.Top="-30" Fill="#20F59E0B"/>
+                            <Ellipse Width="8" Height="8" Canvas.Left="310" Canvas.Top="45" Fill="#50FDE047"/>
+                        </Canvas>
+
+                        <!-- 8. Mùa Đông: Băng giá & Tinh thể tuyết -->
+                        <Canvas x:Name="SeasonalWinterArt" Visibility="Collapsed">
+                            <Ellipse Width="180" Height="180" Canvas.Left="230" Canvas.Top="-70" Fill="#1A3B82F6"/>
+                            <Ellipse Width="95" Height="95" Canvas.Left="275" Canvas.Top="-25" Fill="#2560A5FA"/>
+                            <Ellipse Width="6" Height="6" Canvas.Left="300" Canvas.Top="40" Fill="#85FFFFFF"/>
+                            <Ellipse Width="5" Height="5" Canvas.Left="345" Canvas.Top="75" Fill="#80FFFFFF"/>
+                        </Canvas>
                     </Grid>
 
-                    <!-- HÀNG 2: THÂN THỜI TIẾT (ICON LỚN + NHIỆT ĐỘ + ĐỊA ĐIỂM + ÂM LỊCH) -->
-                    <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,*" VerticalAlignment="Center" Margin="0,4,0,8">
-                        <!-- Icon thời tiết -->
-                        <Grid Grid.Column="0" Width="44" Height="44" VerticalAlignment="Center" Margin="0,0,8,0">
-                            <Image x:Name="SeasonalWeatherIcon" Width="44" Height="44" Stretch="Uniform"/>
-                            <FontIcon x:Name="SeasonalFallbackIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="28" Foreground="#FDE047" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                    <!-- LỚP NỘI DUNG CHÍNH (CONTENT GRID) -->
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="10" Padding="16,14">
+                        <!-- HÀNG 1: HEADER LỄ HỘI / MÙA & ĐỒNG HỒ SỐ -->
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,4">
+                            <StackPanel Grid.Column="0" Spacing="2">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <TextBlock x:Name="SeasonalEmojiText" Text="🧧" FontSize="14" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="SeasonalTagText" Text="Tết Cổ Truyền" FontSize="12.5" FontWeight="Bold" Foreground="#FDA4AF" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock x:Name="SeasonalGreetingText" Text="Chúc Mừng Năm Mới • Vạn Sự Như Ý" FontSize="10" FontWeight="SemiBold" Foreground="#FDE047" TextTrimming="CharacterEllipsis" MaxWidth="195"/>
+                            </StackPanel>
+
+                            <!-- ĐỒNG HỒ & CÁC NÚT ĐIỀU KHIỂN HOVER -->
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Spacing="2">
+                                <TextBlock x:Name="SeasonalClockText" Text="--:--" FontSize="15" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right"/>
+                                <StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Right">
+                                    <Button x:Name="SeasonalThemePickerButton" Click="SeasonalThemePickerButton_Click" Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2" ToolTipService.ToolTip="Đổi chủ đề Mùa / Lễ Hội">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf5a0;" FontSize="9.5" Foreground="#F59E0B"/>
+                                    </Button>
+                                    <Button x:Name="SeasonalAddWidgetButton" Click="AddWidgetButton_Click" Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2" ToolTipService.ToolTip="Mở thêm Widget khác">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf067;" FontSize="9.5" Foreground="#38BDF8"/>
+                                    </Button>
+                                    <Button x:Name="SeasonalPinButton" Click="PinButton_Click" Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2" ToolTipService.ToolTip="Ghim Always on Top">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08d;" FontSize="9.5" Foreground="#38BDF8"/>
+                                    </Button>
+                                    <Button x:Name="SeasonalRefreshButton" Click="WidgetRefreshButton_Click" Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2" ToolTipService.ToolTip="Làm mới thời tiết">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="9.5" Foreground="#CBD5E1"/>
+                                    </Button>
+                                    <Button x:Name="SeasonalToggleStyleButton" Click="ToggleStyleButton_Click" Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2" ToolTipService.ToolTip="Đổi kiểu widget">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf065;" FontSize="9.5" Foreground="#CBD5E1"/>
+                                    </Button>
+                                    <Button x:Name="SeasonalCloseButton" Click="CloseWidgetButton_Click" Background="Transparent" BorderThickness="0" CornerRadius="6" Padding="4,2" ToolTipService.ToolTip="Đóng widget">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00d;" FontSize="9.5" Foreground="#94A3B8"/>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
                         </Grid>
 
-                        <!-- Nhiệt độ và Tình trạng -->
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="0" Margin="0,0,10,0">
-                            <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Bottom">
-                                <TextBlock x:Name="SeasonalTempText" Text="--°" FontSize="34" FontWeight="Bold" Foreground="White" Margin="0,-4,0,-2"/>
-                                <TextBlock x:Name="SeasonalRangeText" Text="--° / --°" FontSize="11" Foreground="#E2E8F0" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
-                            </StackPanel>
-                            <TextBlock x:Name="SeasonalConditionText" Text="Nắng đẹp" FontSize="11.5" FontWeight="SemiBold" Foreground="#F1F5F9" MaxWidth="110" TextTrimming="CharacterEllipsis"/>
-                        </StackPanel>
+                        <!-- HÀNG 2: THÂN THỜI TIẾT (ICON LỚN + NHIỆT ĐỘ + ĐỊA ĐIỂM + ÂM LỊCH) -->
+                        <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,*" VerticalAlignment="Center" Margin="0,4,0,8">
+                            <!-- Icon thời tiết -->
+                            <Grid Grid.Column="0" Width="44" Height="44" VerticalAlignment="Center" Margin="0,0,8,0">
+                                <Image x:Name="SeasonalWeatherIcon" Width="44" Height="44" Stretch="Uniform"/>
+                                <FontIcon x:Name="SeasonalFallbackIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="28" Foreground="#FDE047" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                            </Grid>
 
-                        <!-- Địa điểm & Âm lịch -->
-                        <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="2">
-                            <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="10" Foreground="#38BDF8"/>
-                                <TextBlock x:Name="SeasonalCityText" Text="Hà Nội" FontSize="12" FontWeight="Bold" Foreground="White" MaxWidth="120" TextTrimming="CharacterEllipsis"/>
+                            <!-- Nhiệt độ và Tình trạng -->
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="0" Margin="0,0,10,0">
+                                <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Bottom">
+                                    <TextBlock x:Name="SeasonalTempText" Text="--°" FontSize="34" FontWeight="Bold" Foreground="White" Margin="0,-4,0,-2"/>
+                                    <TextBlock x:Name="SeasonalRangeText" Text="--° / --°" FontSize="11" Foreground="#E2E8F0" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
+                                </StackPanel>
+                                <TextBlock x:Name="SeasonalConditionText" Text="Nắng đẹp" FontSize="11.5" FontWeight="SemiBold" Foreground="#F1F5F9" MaxWidth="110" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
-                            <TextBlock x:Name="SeasonalDateText" Text="23/08" FontSize="10.5" Foreground="#CBD5E1" HorizontalAlignment="Right"/>
-                            <TextBlock x:Name="SeasonalLunarText" Text="Mùng 1 Tết" FontSize="10" FontWeight="SemiBold" Foreground="#FEF08A" HorizontalAlignment="Right" MaxWidth="130" TextTrimming="CharacterEllipsis"/>
-                        </StackPanel>
-                    </Grid>
 
-                    <!-- HÀNG 3: 3 MINI CAPSULE PILLS (AQI, GIÓ, ĐỘ ẨM) -->
-                    <Grid Grid.Row="2" ColumnDefinitions="*,*,*" ColumnSpacing="6">
-                        <!-- Capsule 1: AQI -->
-                        <Border Grid.Column="0" Background="#30000000" BorderBrush="#25FFFFFF" BorderThickness="1" CornerRadius="8" Padding="6,4">
-                            <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf06c;" FontSize="9.5" Foreground="#10B981"/>
-                                <TextBlock x:Name="SeasonalAqiText" Text="AQI 35" FontSize="10.5" FontWeight="SemiBold" Foreground="White"/>
+                            <!-- Địa điểm & Âm lịch -->
+                            <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="3">
+                                <Button x:Name="SeasonalCityPickerButton" Click="CityPickerButton_Click" Background="#25000000" BorderThickness="1" BorderBrush="#35FFFFFF" CornerRadius="6" Padding="6,2" HorizontalAlignment="Right" ToolTipService.ToolTip="Bấm để đổi thành phố hoặc mở thêm Widget">
+                                    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="9" Foreground="#38BDF8"/>
+                                        <TextBlock x:Name="SeasonalCityText" Text="Hà Nội" FontSize="11.5" FontWeight="Bold" Foreground="White" MaxWidth="100" TextTrimming="CharacterEllipsis"/>
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0d7;" FontSize="8" Foreground="#CBD5E1"/>
+                                    </StackPanel>
+                                </Button>
+                                <TextBlock x:Name="SeasonalDateText" Text="23/08" FontSize="10.5" Foreground="#CBD5E1" HorizontalAlignment="Right"/>
+                                <TextBlock x:Name="SeasonalLunarText" Text="Mùng 1 Tết" FontSize="10" FontWeight="SemiBold" Foreground="#FEF08A" HorizontalAlignment="Right" MaxWidth="130" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
-                        </Border>
+                        </Grid>
 
-                        <!-- Capsule 2: Gió -->
-                        <Border Grid.Column="1" Background="#30000000" BorderBrush="#25FFFFFF" BorderThickness="1" CornerRadius="8" Padding="6,4">
-                            <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" FontSize="9.5" Foreground="#38BDF8"/>
-                                <TextBlock x:Name="SeasonalWindText" Text="12 km/h" FontSize="10.5" FontWeight="SemiBold" Foreground="White"/>
-                            </StackPanel>
-                        </Border>
+                        <!-- HÀNG 3: 3 MINI CAPSULE PILLS (AQI, GIÓ, ĐỘ ẨM) -->
+                        <Grid Grid.Row="2" ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                            <!-- Capsule 1: AQI -->
+                            <Border Grid.Column="0" Background="#30000000" BorderBrush="#25FFFFFF" BorderThickness="1" CornerRadius="8" Padding="6,4">
+                                <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf06c;" FontSize="9.5" Foreground="#10B981"/>
+                                    <TextBlock x:Name="SeasonalAqiText" Text="AQI 35" FontSize="10.5" FontWeight="SemiBold" Foreground="White"/>
+                                </StackPanel>
+                            </Border>
 
-                        <!-- Capsule 3: Độ ẩm -->
-                        <Border Grid.Column="2" Background="#30000000" BorderBrush="#25FFFFFF" BorderThickness="1" CornerRadius="8" Padding="6,4">
-                            <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf043;" FontSize="9.5" Foreground="#60A5FA"/>
-                                <TextBlock x:Name="SeasonalHumidityText" Text="65%" FontSize="10.5" FontWeight="SemiBold" Foreground="White"/>
-                            </StackPanel>
-                        </Border>
+                            <!-- Capsule 2: Gió -->
+                            <Border Grid.Column="1" Background="#30000000" BorderBrush="#25FFFFFF" BorderThickness="1" CornerRadius="8" Padding="6,4">
+                                <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" FontSize="9.5" Foreground="#38BDF8"/>
+                                    <TextBlock x:Name="SeasonalWindText" Text="12 km/h" FontSize="10.5" FontWeight="SemiBold" Foreground="White"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Capsule 3: Độ ẩm -->
+                            <Border Grid.Column="2" Background="#30000000" BorderBrush="#25FFFFFF" BorderThickness="1" CornerRadius="8" Padding="6,4">
+                                <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf043;" FontSize="9.5" Foreground="#60A5FA"/>
+                                    <TextBlock x:Name="SeasonalHumidityText" Text="65%" FontSize="10.5" FontWeight="SemiBold" Foreground="White"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>

@@ -226,22 +226,25 @@ public sealed partial class MainPage : Page
                         }
                     }
 
-                    if (Environment.GetCommandLineArgs().Any(a => a.Equals("--openwidget", StringComparison.OrdinalIgnoreCase)))
+                    string fullCmd = Environment.CommandLine;
+                    if (fullCmd.Contains("--openwidget", StringComparison.OrdinalIgnoreCase))
                     {
-                        DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+                        string skinMode = "Auto";
+                        int skinIdx = fullCmd.IndexOf("--skin=", StringComparison.OrdinalIgnoreCase);
+                        if (skinIdx >= 0)
                         {
-                            var skinArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--skin=", StringComparison.OrdinalIgnoreCase));
-                            string skinMode = skinArg != null ? skinArg.Substring(7).Trim() : "Auto";
-                            var skin = Services.SeasonalSkinService.Instance.GetActiveSkin(skinMode);
-                            
-                            if (_widgetWindow == null)
-                            {
-                                _widgetWindow = new WidgetWindow(ViewModel);
-                                _widgetWindow.Closed += (s, args) => _widgetWindow = null;
-                            }
-                            _widgetWindow.ApplySeasonalTheme(skin);
-                            _widgetWindow.Activate();
-                        });
+                            int endIdx = fullCmd.IndexOf(' ', skinIdx);
+                            skinMode = (endIdx > skinIdx ? fullCmd.Substring(skinIdx + 7, endIdx - skinIdx - 7) : fullCmd.Substring(skinIdx + 7)).Trim().Trim('"');
+                        }
+                        var skin = Services.SeasonalSkinService.Instance.GetActiveSkin(skinMode);
+                        
+                        if (_widgetWindow == null)
+                        {
+                            _widgetWindow = new WidgetWindow(ViewModel);
+                            _widgetWindow.Closed += (s, args) => _widgetWindow = null;
+                        }
+                        _widgetWindow.ApplySeasonalTheme(skin);
+                        _widgetWindow.Activate();
                     }
                 }
                 catch { }
