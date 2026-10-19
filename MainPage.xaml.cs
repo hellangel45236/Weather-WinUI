@@ -216,7 +216,15 @@ public sealed partial class MainPage : Page
                                     _ = FindName(nameof(TabCalendar)) as CalendarTab;
                                     break;
                                 case "widget":
-                                    _ = FindName(nameof(TabWidgetStudio)) as WidgetStudioTab;
+                                    var wsTab = FindName(nameof(TabWidgetStudio)) as WidgetStudioTab;
+                                    if (Environment.CommandLine.Contains("--scroll=seasonal", StringComparison.OrdinalIgnoreCase) ||
+                                        Environment.CommandLine.Contains("--scroll=bottom", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+                                        {
+                                            wsTab?.ScrollToSeasonalSection();
+                                        });
+                                    }
                                     break;
                                 case "settings":
                                     var settingsTab = FindName(nameof(TabSettings)) as SettingsTab;

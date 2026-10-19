@@ -284,6 +284,13 @@
                                         </LinearGradientBrush>
                                     </Border.Background>
                                     <Grid Padding="14,10">
+                                        <!-- Họa tiết mùa Tết: Nhánh mai vàng & Đèn lồng đỏ -->
+                                        <Canvas IsHitTestVisible="False" HorizontalAlignment="Right" Width="100" Height="85">
+                                            <Path Data="M 100,5 C 75,8 55,22 35,45 M 65,16 C 50,10 32,12 25,16" Stroke="#B45309" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Opacity="0.6"/>
+                                            <Ellipse Canvas.Left="32" Canvas.Top="42" Width="6" Height="6" Fill="#EF4444"/>
+                                            <Line X1="85" Y1="0" X2="85" Y2="12" Stroke="#F59E0B" StrokeThickness="1"/>
+                                            <Ellipse Canvas.Left="78" Canvas.Top="12" Width="14" Height="18" Fill="#DC2626" Stroke="#F59E0B" StrokeThickness="0.8"/>
+                                        </Canvas>
                                         <Grid ColumnDefinitions="*,Auto">
                                             <StackPanel Grid.Column="0" Spacing="1">
                                                 <TextBlock Text="Chúc Mừng Năm Mới • Vạn Sự Như Ý" FontSize="10" FontWeight="SemiBold" Foreground="#FDE047"/>
@@ -334,6 +341,11 @@
                                         </LinearGradientBrush>
                                     </Border.Background>
                                     <Grid Padding="14,10">
+                                        <!-- Họa tiết Trung Thu: Vầng trăng rằm & Lồng đèn ông sao -->
+                                        <Canvas IsHitTestVisible="False" HorizontalAlignment="Right" Width="100" Height="85">
+                                            <Ellipse Width="65" Height="65" Canvas.Left="35" Canvas.Top="-10" Fill="#20FDE047"/>
+                                            <Path Data="M 25,12 L 29,22 L 40,22 L 31,29 L 34,40 L 25,33 L 16,40 L 19,29 L 10,22 L 21,22 Z" Fill="#DC2626" Stroke="#FDE047" StrokeThickness="1" Opacity="0.8"/>
+                                        </Canvas>
                                         <Grid ColumnDefinitions="*,Auto">
                                             <StackPanel Grid.Column="0" Spacing="1">
                                                 <TextBlock Text="Đêm Hội Trăng Rằm • Đoàn Viên Cát Lành" FontSize="10" FontWeight="SemiBold" Foreground="#FDE047"/>
@@ -384,6 +396,11 @@
                                         </LinearGradientBrush>
                                     </Border.Background>
                                     <Grid Padding="14,10">
+                                        <!-- Họa tiết Giáng Sinh: Cành thông & Bông tuyết pha lê -->
+                                        <Canvas IsHitTestVisible="False" HorizontalAlignment="Right" Width="100" Height="85">
+                                            <Path Data="M 100,12 C 75,16 55,30 35,50" Stroke="#14532D" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Opacity="0.7"/>
+                                            <Path Data="M 70,60 L 70,80 M 60,65 L 80,75 M 60,75 L 80,65" Stroke="#FFFFFF" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Opacity="0.85"/>
+                                        </Canvas>
                                         <Grid ColumnDefinitions="*,Auto">
                                             <StackPanel Grid.Column="0" Spacing="1">
                                                 <TextBlock Text="Merry Christmas • Giáng Sinh An Lành" FontSize="10" FontWeight="SemiBold" Foreground="#86EFAC"/>
@@ -434,6 +451,13 @@
                                         </LinearGradientBrush>
                                     </Border.Background>
                                     <Grid Padding="14,10">
+                                        <!-- Họa tiết Halloween: Mạng nhện & Quả bí ngô phát sáng -->
+                                        <Canvas IsHitTestVisible="False" HorizontalAlignment="Right" Width="100" Height="85">
+                                            <Path Data="M 100,0 L 50,0 M 100,0 L 60,25 M 100,0 L 80,50 M 100,0 L 100,60" Stroke="#94A3B8" StrokeThickness="0.8" Opacity="0.45"/>
+                                            <Ellipse Canvas.Left="55" Canvas.Top="45" Width="30" Height="24" Fill="#EA580C" Stroke="#C2410C" StrokeThickness="1"/>
+                                            <Polygon Points="64,52 68,57 60,57" Fill="#FDE047"/>
+                                            <Polygon Points="76,52 80,57 72,57" Fill="#FDE047"/>
+                                        </Canvas>
                                         <Grid ColumnDefinitions="*,Auto">
                                             <StackPanel Grid.Column="0" Spacing="1">
                                                 <TextBlock Text="Spooky Season • Trick or Treat" FontSize="10" FontWeight="SemiBold" Foreground="#FB923C"/>
@@ -483,6 +507,12 @@
                                         </LinearGradientBrush>
                                     </Border.Background>
                                     <Grid Padding="14,10">
+                                        <!-- Họa tiết Mùa Xuân: Nhành hoa đào & Chồi non -->
+                                        <Canvas IsHitTestVisible="False" HorizontalAlignment="Right" Width="100" Height="85">
+                                            <Path Data="M 100,8 C 75,12 55,26 35,48" Stroke="#78350F" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Opacity="0.6"/>
+                                            <Ellipse Canvas.Left="40" Canvas.Top="38" Width="12" Height="12" Fill="#F472B6" Opacity="0.8"/>
+                                            <Ellipse Canvas.Left="44" Canvas.Top="42" Width="4" Height="4" Fill="#FACC15"/>
+                                        </Canvas>
                                         <Grid ColumnDefinitions="*,Auto">
                                             <StackPanel Grid.Column="0" Spacing="1">
                                                 <TextBlock Text="Xuân Tươi Mới • Vạn Vật Hồi Sinh" FontSize="10" FontWeight="SemiBold" Foreground="#F472B6"/>
@@ -532,6 +562,11 @@
                                         </LinearGradientBrush>
                                     </Border.Background>
                                     <Grid Padding="14,10">
+                                        <!-- Họa tiết Mùa Hạ: Mặt trời rực rỡ & Sóng biển ngọc -->
+                                        <Canvas IsHitTestVisible="False" HorizontalAlignment="Right" Width="100" Height="85">
+                                            <Ellipse Canvas.Left="45" Canvas.Top="10" Width="36" Height="36" Fill="#F59E0B" Stroke="#FDE047" StrokeThickness="1.2" Opacity="0.85"/>
+                                            <Path Data="M 10,75 Q 40,65 70,75 Q 85,70 100,72 L 100,85 L 10,85 Z" Fill="#06B6D4" Opacity="0.5"/>
+                                        </Canvas>
                                         <Grid ColumnDefinitions="*,Auto">
                                             <StackPanel Grid.Column="0" Spacing="1">
                                                 <TextBlock Text="Nắng Hạ Rực Rỡ • Năng Lượng Đầy Tràn" FontSize="10" FontWeight="SemiBold" Foreground="#38BDF8"/>
@@ -581,6 +616,11 @@
                                         </LinearGradientBrush>
                                     </Border.Background>
                                     <Grid Padding="14,10">
+                                        <!-- Họa tiết Mùa Thu: Cặp lá phong đỏ cam -->
+                                        <Canvas IsHitTestVisible="False" HorizontalAlignment="Right" Width="100" Height="85">
+                                            <Path Data="M 65,30 L 65,22 C 60,22 53,17 56,12 C 59,6 63,10 65,13 C 67,10 71,6 74,12 C 77,17 70,22 65,22 Z" Fill="#DC2626" Stroke="#FDE047" StrokeThickness="0.8" Opacity="0.85"/>
+                                            <Path Data="M 40,48 L 40,42 C 36,42 30,38 32,34 C 34,29 38,32 40,35 C 42,32 46,29 48,34 C 50,38 44,42 40,42 Z" Fill="#EA580C" Stroke="#FDE047" StrokeThickness="0.8" Opacity="0.8"/>
+                                        </Canvas>
                                         <Grid ColumnDefinitions="*,Auto">
                                             <StackPanel Grid.Column="0" Spacing="1">
                                                 <TextBlock Text="Mùa Thu Êm Ả • Gió Mát Trong Lành" FontSize="10" FontWeight="SemiBold" Foreground="#FBBF24"/>
@@ -630,6 +670,11 @@
                                         </LinearGradientBrush>
                                     </Border.Background>
                                     <Grid Padding="14,10">
+                                        <!-- Họa tiết Mùa Đông: Thạch nhũ băng giá & Tinh thể tuyết -->
+                                        <Canvas IsHitTestVisible="False" HorizontalAlignment="Right" Width="100" Height="85">
+                                            <Path Data="M 20,0 L 25,12 L 30,0 L 38,18 L 45,0 L 55,14 L 65,0 L 80,20 L 90,0 L 100,16 L 100,0 Z" Fill="#BAE6FD" Opacity="0.65"/>
+                                            <Path Data="M 65,40 L 65,70 M 52,48 L 78,62 M 52,62 L 78,48" Stroke="#FFFFFF" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Opacity="0.85"/>
+                                        </Canvas>
                                         <Grid ColumnDefinitions="*,Auto">
                                             <StackPanel Grid.Column="0" Spacing="1">
                                                 <TextBlock Text="Mùa Đông An Yên • Không Khí Trong Lành" FontSize="10" FontWeight="SemiBold" Foreground="#38BDF8"/>

@@ -531,71 +531,216 @@
 
                 <!-- ==================== GIAO DIỆN 5: KIỂU WIDGET THEO MÙA & ĐẠI LỄ HỘI (FESTIVE SEASONAL CARD v3.4.0) ==================== -->
                 <Grid x:Name="SeasonalFestivalView" Visibility="Collapsed">
-                    <!-- LỚP ĐỒ HỌA MÙA & LỄ HỘI ĐẶC TRƯNG (SEASONAL ARTWORK LAYER) -->
+                    <!-- LỚP ĐỒ HỌA MÙA & LỄ HỘI ĐẶC TRƯNG (SEASONAL ARTWORK LAYER - HOẠ TIẾT MÙA ĐỘC BẢN) -->
                     <Grid x:Name="SeasonalArtLayer" IsHitTestVisible="False">
-                        <!-- 1. Tết Cổ Truyền: Vầng trăng vàng & Cánh mai đào rực rỡ -->
+                        <!-- 1. Tết Cổ Truyền: Nhánh mai vàng ngũ phúc, Đèn lồng đỏ may mắn, Mây cát tường & Bao lì xì -->
                         <Canvas x:Name="SeasonalTetArt" Visibility="Collapsed">
-                            <Ellipse Width="170" Height="170" Canvas.Left="235" Canvas.Top="-65" Fill="#15FBBF24"/>
-                            <Ellipse Width="95" Height="95" Canvas.Left="275" Canvas.Top="-25" Fill="#20F59E0B"/>
-                            <Ellipse Width="12" Height="8" Canvas.Left="295" Canvas.Top="45" Fill="#40FDE047"/>
-                            <Ellipse Width="10" Height="7" Canvas.Left="340" Canvas.Top="75" Fill="#35FDA4AF"/>
-                            <Ellipse Width="8" Height="6" Canvas.Left="275" Canvas.Top="90" Fill="#30FDE047"/>
+                            <!-- Vầng trăng vàng kim hoàng tộc -->
+                            <Ellipse Width="170" Height="170" Canvas.Left="235" Canvas.Top="-65" Fill="#18FBBF24"/>
+                            <Ellipse Width="105" Height="105" Canvas.Left="270" Canvas.Top="-30" Fill="#22F59E0B"/>
+                            
+                            <!-- Họa tiết mây lành Á Đông (Auspicious Cloud Scroll) -->
+                            <Path Data="M 190,32 C 190,22 200,16 210,16 C 215,10 228,8 238,14 C 248,12 258,20 258,28 C 258,35 252,40 242,40 L 198,40 C 192,40 190,36 190,32 Z" Fill="#20FDE047" Stroke="#55F59E0B" StrokeThickness="1"/>
+
+                            <!-- Nhánh cành mai uốn lượn phong cách cung đình -->
+                            <Path Data="M 385,15 C 345,18 315,35 290,65 C 275,83 255,92 230,95 M 325,32 C 305,20 282,22 268,28" Stroke="#B45309" StrokeThickness="2.5" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
+
+                            <!-- Chiếc đèn lồng đỏ cung đình treo dây vàng kim -->
+                            <Line X1="348" Y1="0" X2="348" Y2="16" Stroke="#F59E0B" StrokeThickness="1.2"/>
+                            <Path Data="M 341,16 L 355,16 L 352,19 L 344,19 Z" Fill="#FBBF24"/>
+                            <Ellipse Canvas.Left="338" Canvas.Top="19" Width="20" Height="26" Fill="#DC2626" Stroke="#F59E0B" StrokeThickness="1"/>
+                            <Path Data="M 348,19 L 348,45 M 342,22 C 346,30 346,34 342,42 M 354,22 C 350,30 350,34 354,42" Stroke="#FEF08A" StrokeThickness="0.8" Opacity="0.8"/>
+                            <Path Data="M 342,45 L 354,45 L 351,47 L 345,47 Z" Fill="#FBBF24"/>
+                            <Path Data="M 348,47 L 348,65 M 346,47 L 344,63 M 350,47 L 352,63" Stroke="#FBBF24" StrokeThickness="1.2"/>
+
+                            <!-- Bông hoa mai vàng ngũ phúc lớn (Golden Apricot Flower) -->
+                            <Path Data="M 290,51 C 294,43 303,44 304,52 C 305,58 298,62 290,65 C 282,62 275,58 276,52 C 277,44 286,43 290,51 Z M 304,60 C 312,58 317,66 313,74 C 309,79 301,77 290,65 M 299,78 C 304,85 298,93 290,92 C 283,91 283,82 290,65 M 281,78 C 276,85 282,93 290,92 M 276,60 C 268,58 263,66 267,74 C 271,79 279,77 290,65" Fill="#FACC15" Stroke="#F59E0B" StrokeThickness="0.8"/>
+                            <Ellipse Canvas.Left="287" Canvas.Top="62" Width="6" Height="6" Fill="#EF4444"/>
+
+                            <!-- Bông hoa mai phụ nhỏ hơn -->
+                            <Path Data="M 268,20 C 271,15 277,15 277,20 C 278,24 273,26 268,28 C 263,26 258,24 259,20 C 260,15 265,15 268,20 Z M 277,24 C 282,23 285,28 282,33 C 280,36 275,34 268,28 M 273,34 C 276,38 273,43 268,42 C 263,42 263,37 268,28 M 263,34 C 260,38 263,43 268,42 M 260,24 C 255,23 252,28 254,33 C 256,36 261,34 268,28" Fill="#FDE047" Stroke="#F59E0B" StrokeThickness="0.6"/>
+                            <Ellipse Canvas.Left="266" Canvas.Top="26" Width="4" Height="4" Fill="#EF4444"/>
+
+                            <!-- Bao lì xì đỏ may mắn góc dưới phải -->
+                            <Border Canvas.Left="342" Canvas.Top="146" Width="24" Height="34" Background="#DC2626" BorderBrush="#FBBF24" BorderThickness="1.2" CornerRadius="3">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="1">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf06b;" FontSize="10" Foreground="#FDE047" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="LỘC" FontSize="7.5" FontWeight="Bold" Foreground="#FDE047" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
                         </Canvas>
 
-                        <!-- 2. Giáng Sinh: Ánh sáng lung linh & Tinh thể tuyết -->
+                        <!-- 2. Giáng Sinh: Cành thông tuyết, Cặp chuông vàng, Bông tuyết pha lê & Chuỗi đèn Noel -->
                         <Canvas x:Name="SeasonalChristmasArt" Visibility="Collapsed">
-                            <Ellipse Width="180" Height="180" Canvas.Left="230" Canvas.Top="-70" Fill="#1238BDF8"/>
-                            <Ellipse Width="95" Height="95" Canvas.Left="275" Canvas.Top="-25" Fill="#1810B981"/>
-                            <Ellipse Width="6" Height="6" Canvas.Left="295" Canvas.Top="35" Fill="#90FFFFFF"/>
-                            <Ellipse Width="4" Height="4" Canvas.Left="345" Canvas.Top="60" Fill="#80FFFFFF"/>
-                            <Ellipse Width="7" Height="7" Canvas.Left="270" Canvas.Top="80" Fill="#70FFFFFF"/>
-                            <Ellipse Width="5" Height="5" Canvas.Left="330" Canvas.Top="110" Fill="#85FFFFFF"/>
+                            <!-- Quầng sáng lạnh Noel -->
+                            <Ellipse Width="180" Height="180" Canvas.Left="230" Canvas.Top="-70" Fill="#1538BDF8"/>
+                            <Ellipse Width="105" Height="105" Canvas.Left="270" Canvas.Top="-30" Fill="#1810B981"/>
+
+                            <!-- Dây đèn màu trang trí Noel viền trên -->
+                            <Path Data="M 180,8 Q 230,22 280,10 Q 330,24 380,12" Stroke="#64748B" StrokeThickness="1"/>
+                            <Ellipse Canvas.Left="210" Canvas.Top="14" Width="6" Height="6" Fill="#EF4444"/>
+                            <Ellipse Canvas.Left="245" Canvas.Top="16" Width="6" Height="6" Fill="#FDE047"/>
+                            <Ellipse Canvas.Left="280" Canvas.Top="10" Width="6" Height="6" Fill="#22C55E"/>
+                            <Ellipse Canvas.Left="315" Canvas.Top="17" Width="6" Height="6" Fill="#38BDF8"/>
+                            <Ellipse Canvas.Left="350" Canvas.Top="15" Width="6" Height="6" Fill="#FFFFFF"/>
+
+                            <!-- Cành lá thông xanh tuyết phủ -->
+                            <Path Data="M 385,22 C 345,26 315,48 290,75" Stroke="#14532D" StrokeThickness="2.5" StrokeEndLineCap="Round"/>
+                            <Path Data="M 360,24 L 350,14 M 360,24 L 352,34 M 340,30 L 330,20 M 340,30 L 332,40 M 320,40 L 310,28 M 320,40 L 312,50 M 302,56 L 292,45 M 302,56 L 295,66" Stroke="#16A34A" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+
+                            <!-- Cặp chuông vàng Noel thắt nơ đỏ -->
+                            <Path Data="M 315,46 C 315,40 326,40 326,46 L 330,57 L 311,57 Z" Fill="#FACC15" Stroke="#CA8A04" StrokeThickness="1"/>
+                            <Ellipse Canvas.Left="318" Canvas.Top="55" Width="5" Height="4" Fill="#78350F"/>
+                            <Path Data="M 328,49 C 328,43 339,43 339,49 L 343,60 L 324,60 Z" Fill="#EAB308" Stroke="#A16207" StrokeThickness="1"/>
+                            <Ellipse Canvas.Left="331" Canvas.Top="58" Width="5" Height="4" Fill="#78350F"/>
+                            <!-- Nơ ruy băng đỏ -->
+                            <Path Data="M 324,40 C 316,36 312,43 322,44 C 312,45 316,52 324,47 M 325,40 C 333,36 337,43 327,44 C 337,45 333,52 325,47" Fill="#DC2626"/>
+                            <Ellipse Canvas.Left="322" Canvas.Top="41" Width="5" Height="5" Fill="#B91C1C"/>
+
+                            <!-- Đại bông tuyết pha lê 6 cánh đối xứng sắc sảo -->
+                            <Path Data="M 330,95 L 330,145 M 308,107 L 352,133 M 308,133 L 352,107 M 330,105 L 325,100 M 330,105 L 335,100 M 330,135 L 325,140 M 330,135 L 335,140 M 315,111 L 312,106 M 315,111 L 313,117 M 345,129 L 347,123 M 345,129 L 348,134 M 315,129 L 313,123 M 315,129 L 312,134 M 345,111 L 347,117 M 345,111 L 348,106" Stroke="#FFFFFF" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Opacity="0.85"/>
+                            <Ellipse Canvas.Left="327" Canvas.Top="117" Width="6" Height="6" Fill="#BAE6FD"/>
+
+                            <!-- Kẹo gậy Giáng Sinh sọc đỏ trắng góc dưới phải -->
+                            <Path Data="M 272,175 L 272,152 C 272,143 286,143 286,152" Stroke="#EF4444" StrokeThickness="3.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            <Path Data="M 272,170 L 272,165 M 272,158 L 272,153 M 276,144 L 282,145" Stroke="#FFFFFF" StrokeThickness="3.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
                         </Canvas>
 
-                        <!-- 3. Halloween: Vầng trăng huyền bí & Dơi ma quái -->
+                        <!-- 3. Halloween: Mạng nhện tinh xảo, Quả bí ngô phát sáng & Đàn dơi ma quái -->
                         <Canvas x:Name="SeasonalHalloweenArt" Visibility="Collapsed">
-                            <Ellipse Width="160" Height="160" Canvas.Left="240" Canvas.Top="-60" Fill="#1AF97316"/>
-                            <Ellipse Width="95" Height="95" Canvas.Left="275" Canvas.Top="-25" Fill="#208B5CF6"/>
-                            <Ellipse Width="14" Height="6" Canvas.Left="290" Canvas.Top="40" Fill="#40000000"/>
-                            <Ellipse Width="18" Height="7" Canvas.Left="335" Canvas.Top="65" Fill="#45000000"/>
+                            <!-- Vầng trăng huyền bí ma mị -->
+                            <Ellipse Width="160" Height="160" Canvas.Left="240" Canvas.Top="-60" Fill="#1EF97316"/>
+                            <Ellipse Width="100" Height="100" Canvas.Left="270" Canvas.Top="-30" Fill="#258B5CF6"/>
+
+                            <!-- Mạng nhện góc tinh xảo -->
+                            <Path Data="M 385,0 L 315,0 M 385,0 L 325,25 M 385,0 L 345,52 M 385,0 L 370,68 M 385,0 L 385,75" Stroke="#94A3B8" StrokeThickness="1" Opacity="0.65"/>
+                            <Path Data="M 360,0 Q 365,10 373,15 Q 380,18 385,20 M 335,0 Q 345,20 360,32 Q 373,42 385,45 M 315,0 Q 328,30 350,54 Q 368,68 385,75" Stroke="#CBD5E1" StrokeThickness="0.9" Opacity="0.55"/>
+
+                            <!-- Đàn dơi ma quái vỗ cánh -->
+                            <Path Data="M 275,42 C 270,36 260,36 254,41 C 258,47 265,48 270,46 C 272,48 275,49 278,49 C 281,48 283,46 288,48 C 293,47 300,41 294,36 C 288,36 278,36 275,42 Z" Fill="#0F172A" Opacity="0.85"/>
+                            <Path Data="M 302,68 C 298,63 290,63 285,67 C 288,72 294,73 298,71 C 300,73 302,74 305,74 C 307,73 309,71 313,73 C 317,72 322,67 317,63 C 312,63 304,63 302,68 Z" Fill="#0F172A" Opacity="0.75"/>
+
+                            <!-- Quả bí ngô ma quái Jack-o'-Lantern phát sáng -->
+                            <Ellipse Canvas.Left="315" Canvas.Top="128" Width="46" Height="36" Fill="#EA580C" Stroke="#C2410C" StrokeThickness="1.2"/>
+                            <Ellipse Canvas.Left="324" Canvas.Top="128" Width="28" Height="36" Fill="#F97316"/>
+                            <!-- Cuống bí ngô -->
+                            <Path Data="M 336,128 C 336,122 340,120 343,121 L 342,128 Z" Fill="#15803D"/>
+                            <!-- Mắt tam giác sáng rực -->
+                            <Polygon Points="328,139 333,146 323,146" Fill="#FDE047"/>
+                            <Polygon Points="348,139 353,146 343,146" Fill="#FDE047"/>
+                            <Polygon Points="338,144 340,147 336,147" Fill="#FDE047"/>
+                            <!-- Nụ cười răng cưa tinh quái phát sáng neon -->
+                            <Path Data="M 326,150 L 330,155 L 334,150 L 338,155 L 342,150 L 346,155 L 350,150 L 347,157 L 329,157 Z" Fill="#FDE047"/>
                         </Canvas>
 
-                        <!-- 4. Trung Thu: Trăng rằm tròn vành vạnh & Hoa đăng -->
+                        <!-- 4. Trung Thu: Trăng rằm tròn vành vạnh, Lồng đèn ông sao, Thỏ ngọc & Hoa đăng sen -->
                         <Canvas x:Name="SeasonalMidAutumnArt" Visibility="Collapsed">
+                            <!-- Vầng trăng rằm tròn lớn rực rỡ tỏa hào quang -->
                             <Ellipse Width="170" Height="170" Canvas.Left="235" Canvas.Top="-65" Fill="#22F59E0B"/>
-                            <Ellipse Width="105" Height="105" Canvas.Left="270" Canvas.Top="-30" Fill="#28FBBF24"/>
-                            <Ellipse Width="10" Height="14" Canvas.Left="340" Canvas.Top="70" Fill="#35EF4444"/>
+                            <Ellipse Width="110" Height="110" Canvas.Left="275" Canvas.Top="-25" Fill="#28FBBF24"/>
+                            <Ellipse Width="70" Height="70" Canvas.Left="295" Canvas.Top="-5" Fill="#FDE047" Opacity="0.85"/>
+                            <Ellipse Width="18" Height="12" Canvas.Left="325" Canvas.Top="12" Fill="#F59E0B" Opacity="0.25"/>
+
+                            <!-- Thỏ ngọc ngắm trăng bên vầng trăng -->
+                            <Path Data="M 344,48 C 342,42 340,28 343,28 C 345,28 346,38 348,42 C 350,38 351,28 353,28 C 356,28 354,42 352,48 C 356,50 358,56 356,60 C 354,64 342,64 340,60 C 338,56 340,50 344,48 Z" Fill="#FFFFFF" Opacity="0.9"/>
+                            <Ellipse Canvas.Left="343" Canvas.Top="48" Width="2" Height="2" Fill="#EF4444"/>
+
+                            <!-- Chiếc lồng đèn ông sao 5 cánh truyền thống treo dây đỏ rủ -->
+                            <Line X1="250" Y1="0" X2="250" Y2="26" Stroke="#EF4444" StrokeThickness="1.5"/>
+                            <Path Data="M 250,26 L 256,40 L 272,40 L 259,50 L 264,65 L 250,55 L 236,65 L 241,50 L 228,40 L 244,40 Z" Fill="#DC2626" Stroke="#FDE047" StrokeThickness="1.5"/>
+                            <Ellipse Canvas.Left="242" Canvas.Top="42" Width="16" Height="16" Fill="#FACC15" Stroke="#15803D" StrokeThickness="1"/>
+                            <Path Data="M 250,65 L 250,88 M 246,65 L 243,84 M 254,65 L 257,84" Stroke="#FBBF24" StrokeThickness="1.2"/>
+
+                            <!-- Đèn hoa đăng hoa sen trôi trên sóng nước -->
+                            <Path Data="M 312,165 C 307,155 317,148 324,154 C 328,146 340,146 344,154 C 351,148 361,155 356,165 Z" Fill="#EC4899" Stroke="#BE185D" StrokeThickness="0.8"/>
+                            <Path Data="M 296,168 Q 334,175 372,168" Stroke="#38BDF8" StrokeThickness="1.5"/>
+                            <Ellipse Canvas.Left="331" Canvas.Top="144" Width="6" Height="10" Fill="#FBBF24"/>
                         </Canvas>
 
-                        <!-- 5. Mùa Thu: Quầng ấm áp lá phong -->
+                        <!-- 5. Mùa Thu: Chùm lá phong 5 thùy hổ phách, Hạt sồi & Gió cuốn lá thu -->
                         <Canvas x:Name="SeasonalAutumnArt" Visibility="Collapsed">
+                            <!-- Quầng ấm áp lá phong -->
                             <Ellipse Width="170" Height="170" Canvas.Left="235" Canvas.Top="-65" Fill="#1AD97706"/>
-                            <Ellipse Width="95" Height="95" Canvas.Left="275" Canvas.Top="-25" Fill="#22EA580C"/>
-                            <Ellipse Width="10" Height="8" Canvas.Left="305" Canvas.Top="45" Fill="#40D97706"/>
-                            <Ellipse Width="12" Height="9" Canvas.Left="340" Canvas.Top="80" Fill="#35B45309"/>
+                            <Ellipse Width="100" Height="100" Canvas.Left="275" Canvas.Top="-25" Fill="#22EA580C"/>
+
+                            <!-- Làn gió thu lượn sóng cuộn lá -->
+                            <Path Data="M 220,110 Q 255,95 290,118 Q 320,135 345,115" Stroke="#FBBF24" StrokeThickness="1.2" Opacity="0.55"/>
+
+                            <!-- Lá phong 5 thùy đỏ cam lớn (Lá chính) -->
+                            <Path Data="M 335,82 L 335,68 C 327,68 317,61 321,52 C 325,43 330,50 332,54 C 329,42 327,30 335,26 C 343,30 341,42 338,54 C 340,50 345,43 349,52 C 353,61 343,68 335,68 Z" Fill="#DC2626" Stroke="#FDE047" StrokeThickness="1"/>
+                            <Path Data="M 335,78 L 335,32 M 335,62 L 325,47 M 335,62 L 345,47" Stroke="#FEF08A" StrokeThickness="0.8"/>
+
+                            <!-- Lá phong phụ màu vàng cam hổ phách -->
+                            <Path Data="M 282,90 L 282,78 C 275,78 266,72 270,64 C 273,56 278,62 280,66 C 277,55 275,44 282,40 C 289,44 287,55 284,66 C 286,62 291,56 294,64 C 298,72 289,78 282,78 Z" Fill="#EA580C" Stroke="#FDE047" StrokeThickness="0.8"/>
+                            <Path Data="M 282,86 L 282,45 M 282,72 L 273,58 M 282,72 L 291,58" Stroke="#FEF08A" StrokeThickness="0.6"/>
+
+                            <!-- Hạt sồi rừng thu xinh xắn -->
+                            <Path Data="M 335,150 C 335,164 347,164 347,150 Z" Fill="#92400E"/>
+                            <Path Data="M 332,150 C 332,144 350,144 350,150 Z" Fill="#78350F"/>
+                            <Path Data="M 341,144 L 341,138" Stroke="#78350F" StrokeThickness="1.5"/>
+
+                            <!-- Chiếc lá thu nhỏ bay chao liệng -->
+                            <Path Data="M 260,118 C 255,114 262,108 266,112 C 270,116 265,122 260,118 Z" Fill="#D97706"/>
+                            <Path Data="M 355,105 C 350,101 357,95 361,99 C 365,103 360,109 355,105 Z" Fill="#EA580C"/>
                         </Canvas>
 
-                        <!-- 6. Mùa Xuân: Vầng hồng tươi trẻ & Cánh hoa -->
+                        <!-- 6. Mùa Xuân: Nhành hoa anh đào bung nở, Đôi cánh bướm dập dờn & Lộc biếc -->
                         <Canvas x:Name="SeasonalSpringArt" Visibility="Collapsed">
+                            <!-- Quầng hồng xuân tươi trẻ -->
                             <Ellipse Width="170" Height="170" Canvas.Left="235" Canvas.Top="-65" Fill="#18EC4899"/>
-                            <Ellipse Width="95" Height="95" Canvas.Left="275" Canvas.Top="-25" Fill="#22F43F5E"/>
-                            <Ellipse Width="9" Height="9" Canvas.Left="305" Canvas.Top="50" Fill="#40F472B6"/>
-                            <Ellipse Width="11" Height="8" Canvas.Left="340" Canvas.Top="85" Fill="#35FB7185"/>
+                            <Ellipse Width="100" Height="100" Canvas.Left="275" Canvas.Top="-25" Fill="#22F43F5E"/>
+
+                            <!-- Nhành hoa đào rủ thanh mảnh uốn lượn -->
+                            <Path Data="M 385,10 C 335,14 295,35 265,68 C 250,85 235,92 215,96 M 310,32 C 290,20 270,22 255,27" Stroke="#78350F" StrokeThickness="2.2" StrokeEndLineCap="Round"/>
+
+                            <!-- Đóa hoa đào 5 cánh hồng bung nở rực rỡ -->
+                            <Path Data="M 265,58 C 269,50 278,51 279,59 C 280,65 273,69 265,72 C 257,69 250,65 251,59 C 252,51 261,50 265,58 Z M 279,67 C 287,65 292,73 288,81 C 284,86 276,84 265,72 M 274,85 C 279,92 273,100 265,99 C 258,98 258,89 265,72 M 256,85 C 251,92 257,100 265,99 M 251,67 C 243,65 238,73 242,81 C 246,86 254,84 265,72" Fill="#F472B6" Stroke="#FDA4AF" StrokeThickness="0.8"/>
+                            <Ellipse Canvas.Left="262" Canvas.Top="69" Width="6" Height="6" Fill="#FACC15"/>
+
+                            <!-- Chồi non xanh biếc -->
+                            <Path Data="M 305,24 C 300,18 308,12 312,18 Z M 255,62 C 248,58 252,50 258,56 Z" Fill="#4ADE80"/>
+
+                            <!-- Đôi bướm mùa xuân dập dờn bay lượn -->
+                            <Path Data="M 295,125 C 290,116 280,116 278,123 C 276,130 286,134 295,127 C 286,136 280,144 286,146 C 292,148 296,138 297,130 C 298,138 302,148 308,146 C 314,144 308,136 299,127 C 308,134 318,130 316,123 C 314,116 304,116 299,125 Z" Fill="#38BDF8" Stroke="#F43F5E" StrokeThickness="1"/>
                         </Canvas>
 
-                        <!-- 7. Mùa Hè: Sóng biển biếc & Nắng rực rỡ -->
+                        <!-- 7. Mùa Hè: Mặt trời nhiệt đới tỏa nắng, Tán dừa cọ & Lớp sóng biển biếc -->
                         <Canvas x:Name="SeasonalSummerArt" Visibility="Collapsed">
+                            <!-- Quầng nắng vàng biển biếc -->
                             <Ellipse Width="180" Height="180" Canvas.Left="230" Canvas.Top="-70" Fill="#1806B6D4"/>
-                            <Ellipse Width="105" Height="105" Canvas.Left="270" Canvas.Top="-30" Fill="#20F59E0B"/>
-                            <Ellipse Width="8" Height="8" Canvas.Left="310" Canvas.Top="45" Fill="#50FDE047"/>
+                            <Ellipse Width="110" Height="110" Canvas.Left="270" Canvas.Top="-30" Fill="#20F59E0B"/>
+
+                            <!-- Mặt trời nhiệt đới tỏa các tia nắng vàng rực rỡ -->
+                            <Ellipse Canvas.Left="305" Canvas.Top="25" Width="42" Height="42" Fill="#F59E0B" Stroke="#FDE047" StrokeThickness="1.5"/>
+                            <Path Data="M 326,18 L 326,12 M 326,74 L 326,80 M 298,46 L 292,46 M 354,46 L 360,46 M 306,26 L 301,21 M 346,66 L 351,71 M 346,26 L 351,21 M 306,66 L 301,71" Stroke="#FDE047" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+
+                            <!-- Tán lá cọ / lá dừa nhiệt đới râm mát -->
+                            <Path Data="M 385,8 C 340,12 305,38 280,75" Stroke="#047857" StrokeThickness="2.5" StrokeEndLineCap="Round"/>
+                            <Path Data="M 360,12 L 355,2 M 360,12 L 352,22 M 340,18 L 332,8 M 340,18 L 333,28 M 320,26 L 312,16 M 320,26 L 314,38 M 300,42 L 290,32 M 300,42 L 295,54" Stroke="#10B981" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+
+                            <!-- Sóng biển biếc đôi lớp ở chân thẻ -->
+                            <Path Data="M 250,195 Q 280,180 310,195 Q 340,180 370,195 L 385,190 L 385,215 L 250,215 Z" Fill="#06B6D4" Opacity="0.55"/>
+                            <Path Data="M 265,202 Q 295,188 325,202 Q 355,188 385,202 L 385,215 L 265,215 Z" Fill="#0284C7" Opacity="0.75"/>
                         </Canvas>
 
-                        <!-- 8. Mùa Đông: Băng giá & Tinh thể tuyết -->
+                        <!-- 8. Mùa Đông: Thạch nhũ băng giá, Đại tinh thể tuyết 3D & Bụi tuyết kim cương -->
                         <Canvas x:Name="SeasonalWinterArt" Visibility="Collapsed">
+                            <!-- Quầng lạnh băng giá -->
                             <Ellipse Width="180" Height="180" Canvas.Left="230" Canvas.Top="-70" Fill="#1A3B82F6"/>
-                            <Ellipse Width="95" Height="95" Canvas.Left="275" Canvas.Top="-25" Fill="#2560A5FA"/>
-                            <Ellipse Width="6" Height="6" Canvas.Left="300" Canvas.Top="40" Fill="#85FFFFFF"/>
-                            <Ellipse Width="5" Height="5" Canvas.Left="345" Canvas.Top="75" Fill="#80FFFFFF"/>
+                            <Ellipse Width="105" Height="105" Canvas.Left="270" Canvas.Top="-25" Fill="#2560A5FA"/>
+
+                            <!-- Dải thạch nhũ băng giá (Icicles Fringe) rủ từ mép trên -->
+                            <Path Data="M 220,0 L 225,18 L 230,0 L 238,28 L 245,0 L 255,22 L 265,0 L 280,32 L 292,0 L 305,25 L 318,0 L 335,35 L 350,0 L 365,24 L 375,0 L 385,30 L 385,0 Z" Fill="#BAE6FD" Stroke="#FFFFFF" StrokeThickness="1" Opacity="0.75"/>
+                            <Path Data="M 238,5 L 238,24 M 280,5 L 280,28 M 335,5 L 335,30" Stroke="#FFFFFF" StrokeThickness="1" Opacity="0.9"/>
+
+                            <!-- Đại tinh thể băng tuyết đối xứng 6 cánh hình học 3D -->
+                            <Path Data="M 330,85 L 330,135 M 308,97 L 352,123 M 308,123 L 352,97" Stroke="#FFFFFF" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            <Polygon Points="330,102 337,106 337,114 330,118 323,114 323,106" Fill="#38BDF8" Stroke="#FFFFFF" StrokeThickness="1.2"/>
+                            <Path Data="M 330,92 L 325,87 M 330,92 L 335,87 M 330,128 L 325,133 M 330,128 L 335,133 M 315,101 L 312,96 M 315,101 L 313,107 M 345,119 L 347,113 M 345,119 L 348,124 M 315,119 L 313,113 M 315,119 L 312,124 M 345,101 L 347,107 M 345,101 L 348,96" Stroke="#E0F2FE" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+
+                            <!-- Bụi sao băng tuyết kim cương 4 cánh -->
+                            <Path Data="M 265,48 L 267,53 L 272,55 L 267,57 L 265,62 L 263,57 L 258,55 L 263,53 Z" Fill="#FFFFFF" Opacity="0.9"/>
+                            <Path Data="M 292,138 L 293,142 L 297,143 L 293,144 L 292,148 L 291,144 L 287,143 L 291,142 Z" Fill="#FFFFFF" Opacity="0.8"/>
                         </Canvas>
                     </Grid>
 

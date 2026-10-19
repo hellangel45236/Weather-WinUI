@@ -559,7 +559,13 @@ public sealed partial class WidgetStudioTab : UserControl
     {
         try
         {
-            WidgetScrollViewer?.ChangeView(null, WidgetScrollViewer.ScrollableHeight, null, false);
+            double targetOffset = WidgetScrollViewer?.ScrollableHeight > 100 ? WidgetScrollViewer.ScrollableHeight : 1600;
+            WidgetScrollViewer?.ChangeView(null, targetOffset, null, false);
+            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+            {
+                double finalOffset = WidgetScrollViewer?.ScrollableHeight > 100 ? WidgetScrollViewer.ScrollableHeight : 1600;
+                WidgetScrollViewer?.ChangeView(null, finalOffset, null, false);
+            });
         }
         catch { }
     }
