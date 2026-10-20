@@ -97,6 +97,49 @@ public class CurrentWeatherDisplay
 
     // Tính năng mới v1.7: Câu tóm tắt thông minh đầu ngày (Smart Summary)
     public string SmartSummaryText { get; set; } = string.Empty;
+
+    // Phục vụ giao diện Nothing Design System v3.5.0
+    public string TemperatureNumberOnly
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(TemperatureText)) return "--";
+            var cleaned = TemperatureText.Replace("°C", "").Replace("°F", "").Replace("°", "").Trim();
+            return string.IsNullOrEmpty(cleaned) ? "--" : cleaned;
+        }
+    }
+
+    public string TemperatureUnitOnly => TemperatureText.Contains("°F") ? "°F" : "°C";
+
+    public string FormattedCoordinates => (Latitude != 0 || Longitude != 0)
+        ? $"LAT {Math.Abs(Latitude):F4}\u00B0 {(Latitude >= 0 ? "N" : "S")} // LON {Math.Abs(Longitude):F4}\u00B0 {(Longitude >= 0 ? "E" : "W")}"
+        : "ACTIVE STATION // METEO-NDOT";
+
+    public string FormattedConditionUppercase => string.IsNullOrEmpty(ConditionText) ? "WEATHER OBSERVATION" : ConditionText.ToUpperInvariant();
+
+    public string GlyphConditionEnglish => WeatherEffect switch
+    {
+        WeatherEffectType.ClearSunny => IsDay ? "CLEAR SKY // SUNNY" : "CLEAR SKY // MOONLIT",
+        WeatherEffectType.PartlyCloudy => IsDay ? "SCATTERED CLOUDS // FAIR" : "SCATTERED CLOUDS // NIGHT",
+        WeatherEffectType.Cloudy => "OVERCAST // DENSE CLOUDS",
+        WeatherEffectType.LightRain => "LIGHT RAIN // DRIZZLE",
+        WeatherEffectType.HeavyRain => "HEAVY RAIN // DOWNPOUR",
+        WeatherEffectType.Thunderstorm => "THUNDERSTORM // LIGHTNING",
+        WeatherEffectType.Snow => "SNOW // BLIZZARD",
+        WeatherEffectType.Fog => "MIST // DENSE FOG",
+        _ => "LOCAL OBSERVATION"
+    };
+
+    public bool IsGlyphBar1Active => AqiValue > 0;
+    public bool IsGlyphBar2Active => AqiValue >= 25;
+    public bool IsGlyphBar3Active => AqiValue >= 50;
+    public bool IsGlyphBar4Active => AqiValue >= 100;
+    public bool IsGlyphBar5Active => AqiValue >= 150;
+    public double GlyphBar1Opacity => IsGlyphBar1Active ? 1.0 : 0.15;
+    public double GlyphBar2Opacity => IsGlyphBar2Active ? 1.0 : 0.15;
+    public double GlyphBar3Opacity => IsGlyphBar3Active ? 1.0 : 0.15;
+    public double GlyphBar4Opacity => IsGlyphBar4Active ? 1.0 : 0.15;
+    public double GlyphBar5Opacity => IsGlyphBar5Active ? 1.0 : 0.15;
 }
 
 public class HourlyForecastItem : CommunityToolkit.Mvvm.ComponentModel.ObservableObject

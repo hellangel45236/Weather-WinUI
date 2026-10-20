@@ -83,7 +83,12 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsNothingDesign))]
     [NotifyPropertyChangedFor(nameof(IsFluent2Design))]
+    [NotifyPropertyChangedFor(nameof(GpsButtonBackground))]
+    [NotifyPropertyChangedFor(nameof(GpsButtonBorderBrush))]
+    [NotifyPropertyChangedFor(nameof(GpsButtonForeground))]
+    [NotifyPropertyChangedFor(nameof(GpsIconForegroundHex))]
     private string _selectedDesignLanguage = "Fluent2";
+    partial void OnSelectedDesignLanguageChanged(string value) => UpdateQuickChips();
 
     public bool IsNothingDesign => string.Equals(SelectedDesignLanguage, "Nothing", StringComparison.OrdinalIgnoreCase);
     public bool IsFluent2Design => !IsNothingDesign;
@@ -178,18 +183,20 @@ public partial class MainViewModel : ObservableObject
     private bool _isGpsLocationSelected = true;
 
     public string GpsButtonBackground => IsGpsLocationSelected 
-        ? (ThemeHelper.IsDarkTheme() ? "#3538BDF8" : "#E0F2FE") 
-        : (ThemeHelper.IsDarkTheme() ? "#1AFFFFFF" : "#F1F5F9");
+        ? (IsNothingDesign ? (ThemeHelper.IsDarkTheme() ? "#2A1416" : "#FEE2E2") : (ThemeHelper.IsDarkTheme() ? "#3538BDF8" : "#E0F2FE")) 
+        : (IsNothingDesign ? (ThemeHelper.IsDarkTheme() ? "#141416" : "#F4F4F6") : (ThemeHelper.IsDarkTheme() ? "#1AFFFFFF" : "#F1F5F9"));
 
     public string GpsButtonBorderBrush => IsGpsLocationSelected 
-        ? (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7") 
-        : (ThemeHelper.IsDarkTheme() ? "#3038BDF8" : "#CBD5E1");
+        ? (IsNothingDesign ? "#D71921" : (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7")) 
+        : (IsNothingDesign ? (ThemeHelper.IsDarkTheme() ? "#28282C" : "#E2E2E6") : (ThemeHelper.IsDarkTheme() ? "#3038BDF8" : "#CBD5E1"));
 
     public string GpsButtonForeground => IsGpsLocationSelected
-        ? (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0369A1")
-        : (ThemeHelper.IsDarkTheme() ? "#F1F5F9" : "#1E293B");
+        ? (IsNothingDesign ? (ThemeHelper.IsDarkTheme() ? "#FFFFFF" : "#D71921") : (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0369A1"))
+        : (IsNothingDesign ? (ThemeHelper.IsDarkTheme() ? "#CCCCCC" : "#222222") : (ThemeHelper.IsDarkTheme() ? "#F1F5F9" : "#1E293B"));
 
-    public string GpsIconForegroundHex => ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7";
+    public string GpsIconForegroundHex => IsNothingDesign 
+        ? (IsGpsLocationSelected ? "#D71921" : (ThemeHelper.IsDarkTheme() ? "#888888" : "#666666"))
+        : (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7");
     public string GpsButtonFontWeight => IsGpsLocationSelected ? "Bold" : "SemiBold";
 
     [ObservableProperty]
@@ -1272,7 +1279,8 @@ public partial class MainViewModel : ObservableObject
                 Latitude = fav.Latitude,
                 Longitude = fav.Longitude,
                 IsFavorite = true,
-                IsSelected = isSelected
+                IsSelected = isSelected,
+                IsNothingDesign = IsNothingDesign
             });
             addedNames.Add(fav.Name);
 
@@ -1301,7 +1309,8 @@ public partial class MainViewModel : ObservableObject
                 Latitude = preset.Lat,
                 Longitude = preset.Lon,
                 IsFavorite = false,
-                IsSelected = isSelected
+                IsSelected = isSelected,
+                IsNothingDesign = IsNothingDesign
             });
             addedNames.Add(preset.Name);
         }

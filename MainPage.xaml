@@ -39,7 +39,7 @@
                         </StackPanel>
                         <Border Visibility="{x:Bind ViewModel.IsNothingDesign, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                 Background="#D71921" CornerRadius="6" Padding="6,2" VerticalAlignment="Center" Margin="4,0,0,0">
-                            <TextBlock Text="NOTHING EDITION" FontSize="9" FontWeight="Bold" Foreground="White" FontFamily="Consolas"/>
+                            <TextBlock Text="NOTHING EDITION" FontSize="9" FontWeight="Bold" Foreground="White" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
                         </Border>
                     </StackPanel>
 
@@ -213,7 +213,7 @@
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                 <Ellipse Width="6" Height="6" Fill="{ThemeResource NothingGreenBrush}"/>
                                 <TextBlock Text="GLYPH // ONLINE" FontSize="11" FontWeight="Bold"
-                                           Foreground="{ThemeResource NothingTextPrimaryBrush}" FontFamily="Consolas"/>
+                                           Foreground="{ThemeResource NothingTextPrimaryBrush}" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
                             </StackPanel>
                         </Border>
 
@@ -836,6 +836,9 @@
                               SelectionChanged="ChangelogVersionComboBox_SelectionChanged"
                               MinWidth="240"
                               CornerRadius="8">
+                        <ComboBoxItem Content="v3.5.0 (Nothing Design System, Red Dot Accents, Dynamic Glyph LED, Desktop Widgets &amp; Zero Mojibake)" Tag="3.5.0"/>
+                        <ComboBoxItem Content="v3.4.1 (Bộ 3 Widget Desktop Bento Mới: Bento Pop, Tactical Slate &amp; Retro Cyber LCD)" Tag="3.4.1"/>
+                        <ComboBoxItem Content="v3.4.0 (Đại Tu Engine 4 Mùa &amp; 4 Đại Lễ Hội, Dynamic Seasonal Themes, Festive Desktop Widgets)" Tag="3.4.0"/>
                         <ComboBoxItem Content="v3.0.6 (Giao Diện Bento Grid, Fluent Motion Animation System &amp; 100% Win10/11)" Tag="3.0.6"/>
                         <ComboBoxItem Content="v3.0.5 (Hoàn Thiện Song Ngữ Tiếng Anh, Tối Ưu Co Giãn Responsive, 100% Win10 Compatibility)" Tag="3.0.5"/>
                         <ComboBoxItem Content="v3.0.4 (Chau Chuốt Lịch Âm Dương Vạn Niên, Đếm Ngược Lễ Hội, Can Chi Ba Trụ)" Tag="3.0.4"/>
@@ -869,13 +872,13 @@
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Có gì mới trong Weather WinUI 3.0.5?" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Có gì mới trong Weather WinUI 3.5.0?" FontSize="16" FontWeight="Bold" Foreground="White"/>
                                 <Border Background="#10B981" CornerRadius="6" Padding="6,2">
-                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.0.5 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.5.0 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
                                 </Border>
                             </StackPanel>
                             <TextBlock x:Name="ChangelogHeaderSubtitle"
-                                       Text="Bản cập nhật v3.0.5 hoàn thiện 100% song ngữ Tiếng Anh toàn bộ ứng dụng, đại tu bố cục giao diện co giãn Responsive chống tràn cắt chữ và đảm bảo độ tương thích hiển thị tuyệt đối trên Windows 10 &amp; 11."
+                                       Text="Bản cập nhật v3.5.0 giới thiệu phong cách thiết kế Nothing Design đột phá (Nothing OS Glyph Interface, phông chữ ma trận điểm NDot, tương phản cao Monochrome Stealth &amp; CMF Chalk), bổ sung 2 mẫu Desktop Widget Nothing Bento &amp; Nothing Square, cùng việc khắc phục triệt để lỗi mã hóa phông chữ."
                                        FontSize="11.5" Foreground="White" Opacity="0.88" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Grid>
@@ -884,8 +887,65 @@
                 <!-- NỘI DUNG CHANGELOG THEO TỪNG PHIÊN BẢN -->
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                     <Grid Padding="2">
+                        <!-- ==================== CHANGELOG v3.5.0 ==================== -->
+                        <StackPanel x:Name="ChangelogContent_v350" Spacing="10" Visibility="Visible">
+                            <!-- 1. Nothing Design System & Glyph Interface -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#25D71921">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0eb;" Foreground="#D71921" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#D71921" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="NOTHING DESIGN" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Ngôn Ngữ Thiết Kế Nothing OS &amp; Glyph Interface Đột Phá" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Đột phá giao diện công nghệ vị lai với phông chữ ma trận điểm Cascadia/NDot, điểm nhấn đỏ Nothing Red (#D71921), thẻ Bento viền mảnh 1px, thanh đo khí áp và la bàn cơ khí trực quan, đồng bộ toàn diện trên tất cả các tab." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 2. Desktop Widgets: Nothing Bento & Nothing Square -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#2510B981">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" Foreground="#10B981" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#10B981" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="DESKTOP WIDGETS" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="2 Mẫu Widget Desktop Mới: Nothing Bento &amp; Nothing Square" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Mẫu Nothing Bento hiển thị toàn diện số liệu thời tiết, tọa độ trạm và thanh đo Glyph; Mẫu Nothing Square phong cách khối vuông tối giản với vòng tròn Glyph LED độc đáo trên màn hình Desktop." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 3. Zero Mojibake & Systemwide Sync -->
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Background="#256366F1">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf058;" Foreground="#6366F1" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Background="#6366F1" CornerRadius="4" Padding="6,1">
+                                                <TextBlock Text="ZERO MOJIBAKE" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="Khắc Phục 100% Lỗi Phông Chữ &amp; Đồng Bộ Hóa Toàn Diện" FontSize="13" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Đảm bảo 100% tiếng Việt và tiếng Anh hiển thị chuẩn xác không lỗi mã hóa ký tự, khắc phục hiển thị phiên bản 3.5.0 trong Cài đặt và cập nhật hệ thống phím bấm Nothing Red." FontSize="12" Opacity="0.75" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
                         <!-- ==================== CHANGELOG v3.0.6 ==================== -->
-                        <StackPanel x:Name="ChangelogContent_v306" Spacing="10" Visibility="Visible">
+                        <StackPanel x:Name="ChangelogContent_v306" Spacing="10" Visibility="Collapsed">
                             <!-- 1. Giao diện Bento Grid Overview -->
                             <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="10" Padding="14,10">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">

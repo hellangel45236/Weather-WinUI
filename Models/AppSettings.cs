@@ -186,22 +186,29 @@ public partial class QuickLocationChipItem : ObservableObject
     [NotifyPropertyChangedFor(nameof(IconColor))]
     private bool _isSelected;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ChipBackgroundHex))]
+    [NotifyPropertyChangedFor(nameof(ChipBorderHex))]
+    [NotifyPropertyChangedFor(nameof(ChipForegroundHex))]
+    [NotifyPropertyChangedFor(nameof(IconColor))]
+    private bool _isNothingDesign;
+
     public string IconGlyph => IsFavorite ? "\uf004" : "\uf3c5";
     public string IconColor => IsSelected
-        ? (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7")
-        : (IsFavorite ? "#F43F5E" : (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7"));
+        ? (IsNothingDesign ? "#D71921" : (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7"))
+        : (IsFavorite ? "#F43F5E" : (IsNothingDesign ? (ThemeHelper.IsDarkTheme() ? "#888888" : "#666666") : (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7")));
 
     public string ChipBackgroundHex => IsSelected
-        ? (ThemeHelper.IsDarkTheme() ? "#3538BDF8" : "#E0F2FE")
-        : (ThemeHelper.IsDarkTheme() ? "#1AFFFFFF" : "#F1F5F9");
+        ? (IsNothingDesign ? (ThemeHelper.IsDarkTheme() ? "#2A1416" : "#FEE2E2") : (ThemeHelper.IsDarkTheme() ? "#3538BDF8" : "#E0F2FE"))
+        : (IsNothingDesign ? (ThemeHelper.IsDarkTheme() ? "#141416" : "#F4F4F6") : (ThemeHelper.IsDarkTheme() ? "#1AFFFFFF" : "#F1F5F9"));
 
     public string ChipBorderHex => IsSelected
-        ? (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7")
-        : (ThemeHelper.IsDarkTheme() ? "#2EFFFFFF" : "#CBD5E1");
+        ? (IsNothingDesign ? "#D71921" : (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0284C7"))
+        : (IsNothingDesign ? (ThemeHelper.IsDarkTheme() ? "#28282C" : "#E2E2E6") : (ThemeHelper.IsDarkTheme() ? "#2EFFFFFF" : "#CBD5E1"));
 
     public string ChipForegroundHex => IsSelected
-        ? (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0369A1")
-        : (ThemeHelper.IsDarkTheme() ? "#F1F5F9" : "#1E293B");
+        ? (IsNothingDesign ? (ThemeHelper.IsDarkTheme() ? "#FFFFFF" : "#D71921") : (ThemeHelper.IsDarkTheme() ? "#38BDF8" : "#0369A1"))
+        : (IsNothingDesign ? (ThemeHelper.IsDarkTheme() ? "#CCCCCC" : "#222222") : (ThemeHelper.IsDarkTheme() ? "#F1F5F9" : "#1E293B"));
 
     public string ChipFontWeight => IsSelected ? "Bold" : "SemiBold";
     public bool ActiveIndicatorVisibility => IsSelected;

@@ -77,7 +77,9 @@ public sealed partial class MainPage : Page
                 };
             }
             UpdateThemeComboBoxLabels();
+            ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
             LocalizationService.Instance.LanguageChanged += (s, ev) => UpdateThemeComboBoxLabels();
+            ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
 
         // Nạp dữ liệu thời tiết
             if (ViewModel != null)
@@ -730,6 +732,59 @@ public sealed partial class MainPage : Page
             this.Resources["CardBackgroundFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
             this.Resources["NavigationViewDefaultPaneBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(paneBg);
             this.Resources["NavigationViewTopPaneBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(paneBg);
+
+            // Nothing Red Accents
+            var redAccent = Windows.UI.Color.FromArgb(255, 215, 25, 33);
+            var textPrimary = isDark ? Windows.UI.Color.FromArgb(255, 250, 250, 250) : Windows.UI.Color.FromArgb(255, 15, 15, 15);
+            var badgeBg = isDark ? Windows.UI.Color.FromArgb(255, 30, 30, 34) : Windows.UI.Color.FromArgb(255, 235, 235, 238);
+
+            this.Resources["AccentFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+            this.Resources["AccentFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 225, 45, 50));
+            this.Resources["AccentFillColorTertiaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 20, 25));
+            this.Resources["AccentButtonBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+            this.Resources["AccentButtonBackgroundPointerOver"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 235, 45, 52));
+            this.Resources["AccentButtonBackgroundPressed"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 20, 25));
+            this.Resources["SystemAccentColor"] = redAccent;
+            this.Resources["NavigationViewSelectionIndicatorForeground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+
+            // Nav Badges in Nothing Style
+            this.Resources["NavTempBadgeBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
+            this.Resources["NavTempBadgeForegroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
+            this.Resources["NavFloodBadgeBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
+            this.Resources["NavFloodBadgeForegroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
+            this.Resources["NavRadarBadgeBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
+            this.Resources["NavRadarBadgeForegroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 255, 102));
+            this.Resources["NavLifestyleBadgeBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
+            this.Resources["NavLifestyleBadgeForegroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
+            this.Resources["NavCalendarBadgeBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
+            this.Resources["NavCalendarBadgeForegroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
+            this.Resources["NavWidgetBadgeBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
+            this.Resources["NavWidgetBadgeForegroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
+
+            try
+            {
+                var appRes = Microsoft.UI.Xaml.Application.Current?.Resources;
+                if (appRes != null)
+                {
+                    appRes["AccentFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+                    appRes["AccentButtonBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+                    appRes["AccentButtonBackgroundPointerOver"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 235, 45, 52));
+                    appRes["AccentButtonBackgroundPressed"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 20, 25));
+                }
+            }
+            catch { }
+
+            var tabs = new Microsoft.UI.Xaml.FrameworkElement?[] { TabOverview, TabFlood, TabRadar, TabLifestyle, TabCalendar, TabWidgetStudio, TabSettings };
+            foreach (var tab in tabs)
+            {
+                if (tab != null)
+                {
+                    tab.Resources["AccentFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+                    tab.Resources["AccentButtonBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+                    tab.Resources["AccentButtonBackgroundPointerOver"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 235, 45, 52));
+                    tab.Resources["AccentButtonBackgroundPressed"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 20, 25));
+                }
+            }
         }
         else
         {
@@ -739,6 +794,51 @@ public sealed partial class MainPage : Page
             this.Resources.Remove("CardBackgroundFillColorSecondaryBrush");
             this.Resources.Remove("NavigationViewDefaultPaneBackground");
             this.Resources.Remove("NavigationViewTopPaneBackground");
+            this.Resources.Remove("AccentFillColorDefaultBrush");
+            this.Resources.Remove("AccentFillColorSecondaryBrush");
+            this.Resources.Remove("AccentFillColorTertiaryBrush");
+            this.Resources.Remove("AccentButtonBackground");
+            this.Resources.Remove("AccentButtonBackgroundPointerOver");
+            this.Resources.Remove("AccentButtonBackgroundPressed");
+            this.Resources.Remove("SystemAccentColor");
+            this.Resources.Remove("NavigationViewSelectionIndicatorForeground");
+            this.Resources.Remove("NavTempBadgeBackgroundBrush");
+            this.Resources.Remove("NavTempBadgeForegroundBrush");
+            this.Resources.Remove("NavFloodBadgeBackgroundBrush");
+            this.Resources.Remove("NavFloodBadgeForegroundBrush");
+            this.Resources.Remove("NavRadarBadgeBackgroundBrush");
+            this.Resources.Remove("NavRadarBadgeForegroundBrush");
+            this.Resources.Remove("NavLifestyleBadgeBackgroundBrush");
+            this.Resources.Remove("NavLifestyleBadgeForegroundBrush");
+            this.Resources.Remove("NavCalendarBadgeBackgroundBrush");
+            this.Resources.Remove("NavCalendarBadgeForegroundBrush");
+            this.Resources.Remove("NavWidgetBadgeBackgroundBrush");
+            this.Resources.Remove("NavWidgetBadgeForegroundBrush");
+
+            try
+            {
+                var appRes = Microsoft.UI.Xaml.Application.Current?.Resources;
+                if (appRes != null)
+                {
+                    appRes.Remove("AccentFillColorDefaultBrush");
+                    appRes.Remove("AccentButtonBackground");
+                    appRes.Remove("AccentButtonBackgroundPointerOver");
+                    appRes.Remove("AccentButtonBackgroundPressed");
+                }
+            }
+            catch { }
+
+            var tabs = new Microsoft.UI.Xaml.FrameworkElement?[] { TabOverview, TabFlood, TabRadar, TabLifestyle, TabCalendar, TabWidgetStudio, TabSettings };
+            foreach (var tab in tabs)
+            {
+                if (tab != null)
+                {
+                    tab.Resources.Remove("AccentFillColorDefaultBrush");
+                    tab.Resources.Remove("AccentButtonBackground");
+                    tab.Resources.Remove("AccentButtonBackgroundPointerOver");
+                    tab.Resources.Remove("AccentButtonBackgroundPressed");
+                }
+            }
         }
     }
 
@@ -1163,7 +1263,7 @@ public sealed partial class MainPage : Page
 
     private void CheckAndShowChangelog()
     {
-        string currentVersion = "3.0.6";
+        string currentVersion = "3.5.0";
         string lastSeen = ViewModel.Settings.LastSeenVersion ?? string.Empty;
 
         if (string.IsNullOrEmpty(lastSeen) || lastSeen != currentVersion)
@@ -1223,6 +1323,7 @@ public sealed partial class MainPage : Page
     {
         var panels = new[]
         {
+            (ChangelogContent_v350, "3.5.0"),
             (ChangelogContent_v306, "3.0.6"),
             (ChangelogContent_v305, "3.0.5"),
             (ChangelogContent_v304, "3.0.4"),
