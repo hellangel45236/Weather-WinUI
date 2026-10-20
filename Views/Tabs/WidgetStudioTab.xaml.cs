@@ -105,7 +105,7 @@ public sealed partial class WidgetStudioTab : UserControl
 
         bool isNarrow = width < 950;
 
-        // 1. Gallery Grid (Chuyá»ƒn giá»¯a 2x2 trÃªn mÃ n rá»™ng vÃ  1x4 trÃªn mÃ n háº¹p)
+        // 1. Gallery Grid (Chuyển giữa 2x2 trên màn rộng và 1x4 trên màn hẹp)
         if (GalleryGrid != null)
         {
             if (isNarrow)
@@ -113,7 +113,7 @@ public sealed partial class WidgetStudioTab : UserControl
                 GalleryGrid.ColumnDefinitions.Clear();
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.RowDefinitions.Clear();
-                for (int r = 0; r < 7; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                for (int r = 0; r < 9; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
                 if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
                 if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 0); Grid.SetRow(CardWidgetGlassCard, 1); }
@@ -122,6 +122,8 @@ public sealed partial class WidgetStudioTab : UserControl
                 if (CardWidgetBentoVivid != null) { Grid.SetColumn(CardWidgetBentoVivid, 0); Grid.SetRow(CardWidgetBentoVivid, 4); }
                 if (CardWidgetBentoTactical != null) { Grid.SetColumn(CardWidgetBentoTactical, 0); Grid.SetRow(CardWidgetBentoTactical, 5); }
                 if (CardWidgetRetroLcd != null) { Grid.SetColumn(CardWidgetRetroLcd, 0); Grid.SetRow(CardWidgetRetroLcd, 6); Grid.SetColumnSpan(CardWidgetRetroLcd, 1); }
+                if (CardWidgetNothingBento != null) { Grid.SetColumn(CardWidgetNothingBento, 0); Grid.SetRow(CardWidgetNothingBento, 7); }
+                if (CardWidgetNothingSquare != null) { Grid.SetColumn(CardWidgetNothingSquare, 0); Grid.SetRow(CardWidgetNothingSquare, 8); }
             }
 
             else
@@ -130,7 +132,7 @@ public sealed partial class WidgetStudioTab : UserControl
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.RowDefinitions.Clear();
-                for (int r = 0; r < 4; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                for (int r = 0; r < 5; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
                 if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
                 if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 1); Grid.SetRow(CardWidgetGlassCard, 0); }
@@ -139,10 +141,12 @@ public sealed partial class WidgetStudioTab : UserControl
                 if (CardWidgetBentoVivid != null) { Grid.SetColumn(CardWidgetBentoVivid, 0); Grid.SetRow(CardWidgetBentoVivid, 2); }
                 if (CardWidgetBentoTactical != null) { Grid.SetColumn(CardWidgetBentoTactical, 1); Grid.SetRow(CardWidgetBentoTactical, 2); }
                 if (CardWidgetRetroLcd != null) { Grid.SetColumn(CardWidgetRetroLcd, 0); Grid.SetRow(CardWidgetRetroLcd, 3); Grid.SetColumnSpan(CardWidgetRetroLcd, 2); }
+                if (CardWidgetNothingBento != null) { Grid.SetColumn(CardWidgetNothingBento, 0); Grid.SetRow(CardWidgetNothingBento, 4); }
+                if (CardWidgetNothingSquare != null) { Grid.SetColumn(CardWidgetNothingSquare, 1); Grid.SetRow(CardWidgetNothingSquare, 4); }
             }
         }
 
-        // 1b. Seasonal Gallery Grid (Chuyá»ƒn giá»¯a 2x4 trÃªn mÃ n rá»™ng vÃ  1x8 trÃªn mÃ n háº¹p)
+        // 1b. Seasonal Gallery Grid (Chuyển giữa 2x4 trên màn rộng và 1x8 trên màn hẹp)
         if (SeasonalGalleryGrid != null)
         {
             var sCards = new[] { CardSeasonalTet, CardSeasonalMidAutumn, CardSeasonalChristmas, CardSeasonalHalloween, CardSeasonalSpring, CardSeasonalSummer, CardSeasonalAutumn, CardSeasonalWinter };
@@ -265,6 +269,16 @@ public sealed partial class WidgetStudioTab : UserControl
         SelectWidgetStyle("RetroLcd");
     }
 
+    private void CardWidgetNothingBento_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        SelectWidgetStyle("NothingBento");
+    }
+
+    private void CardWidgetNothingSquare_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        SelectWidgetStyle("NothingSquare");
+    }
+
     private void SelectWidgetStyle(string styleTag)
     {
         if (ViewModel == null) return;
@@ -352,6 +366,18 @@ public sealed partial class WidgetStudioTab : UserControl
             CardWidgetRetroLcd.BorderBrush = selectedTag == "RetroLcd" ? accentBrush : subtleBorderBrush;
             CardWidgetRetroLcd.BorderThickness = selectedTag == "RetroLcd" ? new Thickness(2) : new Thickness(1);
             if (BadgeWidgetRetroLcd != null) BadgeWidgetRetroLcd.Visibility = selectedTag == "RetroLcd" ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (CardWidgetNothingBento != null)
+        {
+            CardWidgetNothingBento.BorderBrush = selectedTag == "NothingBento" ? accentBrush : subtleBorderBrush;
+            CardWidgetNothingBento.BorderThickness = selectedTag == "NothingBento" ? new Thickness(2) : new Thickness(1);
+            if (BadgeWidgetNothingBento != null) BadgeWidgetNothingBento.Visibility = selectedTag == "NothingBento" ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (CardWidgetNothingSquare != null)
+        {
+            CardWidgetNothingSquare.BorderBrush = selectedTag == "NothingSquare" ? accentBrush : subtleBorderBrush;
+            CardWidgetNothingSquare.BorderThickness = selectedTag == "NothingSquare" ? new Thickness(2) : new Thickness(1);
+            if (BadgeWidgetNothingSquare != null) BadgeWidgetNothingSquare.Visibility = selectedTag == "NothingSquare" ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 
@@ -504,10 +530,10 @@ public sealed partial class WidgetStudioTab : UserControl
     {
         if (ViewModel == null) return;
 
-        // 1. Äá»“ng bá»™ skin theo mÃ¹a trÃªn toÃ n app
+        // 1. Đồng bộ skin theo mùa trên toàn app
         ViewModel.ApplySeasonalSkin(skinTag, save: true);
 
-        // 2. Cáº­p nháº­t phong cÃ¡ch widget sang SeasonalCard & lÆ°u theme mÃ¹a
+        // 2. Cập nhật phong cách widget sang SeasonalCard & lưu theme mùa
         ViewModel.Settings.WidgetStyle = "SeasonalCard";
         ViewModel.Settings.SeasonalWidgetTheme = skinTag;
         ViewModel.ApplySettings();
@@ -529,13 +555,13 @@ public sealed partial class WidgetStudioTab : UserControl
         UpdateWidgetCardsVisuals("SeasonalCard");
         UpdateSeasonalCardsVisuals(skinTag);
 
-        // 3. Khá»Ÿi táº¡o hoáº·c cáº­p nháº­t WidgetWindow trÃªn Desktop
+        // 3. Khởi tạo hoặc cập nhật WidgetWindow trên Desktop
         var targetSkin = SeasonalSkinService.Instance.GetActiveSkin(skinTag);
         double chosenOpacity = ViewModel.Settings.WidgetOpacity;
         if (chosenOpacity <= 0.05) chosenOpacity = 1.0;
         bool alwaysOnTop = ViewModel.Settings.WidgetAlwaysOnTop;
 
-        // Náº¿u Ä‘Ã£ cÃ³ Widget Ä‘ang má»Ÿ, Ã¡p dá»¥ng skin mÃ¹a ngay láº­p tá»©c
+        // Nếu đã có Widget đang mở, áp dụng skin mùa ngay lập tức
         if (WidgetWindow.ActiveWidgets.Count > 0)
         {
             foreach (var w in WidgetWindow.ActiveWidgets)
@@ -550,7 +576,7 @@ public sealed partial class WidgetStudioTab : UserControl
         }
         else
         {
-            // Náº¿u chÆ°a má»Ÿ Widget nÃ o, ghim má»™t Widget má»›i ra Desktop
+        // Nếu đã có Widget đang mở, áp dụng skin mùa ngay lập tức
             var widgetWindow = new WidgetWindow(ViewModel);
             widgetWindow.ApplySeasonalTheme(targetSkin);
             widgetWindow.SetOpacity(chosenOpacity);

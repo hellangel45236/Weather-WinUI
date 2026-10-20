@@ -69,6 +69,13 @@ public sealed partial class SettingsTab : UserControl
             if (SettingsThemeComboBox != null) SettingsThemeComboBox.SelectedIndex = themeIdx;
             if (AppearanceThemeComboBox != null) AppearanceThemeComboBox.SelectedIndex = themeIdx;
 
+            // Design Language
+            if (DesignLanguageComboBox != null)
+            {
+                string dl = s.DesignLanguage ?? "Fluent2";
+                DesignLanguageComboBox.SelectedIndex = dl == "Nothing" ? 1 : 0;
+            }
+
             // Icon Packs
             UpdateIconPackVisuals(s.SelectedIconPack ?? "Meteocons");
 
@@ -206,6 +213,16 @@ public sealed partial class SettingsTab : UserControl
             ((ComboBoxItem)WidgetStyleComboBox.Items[5]).Content = isVi ? "\U0001F371 Bento Pop (M\u00E0u s\u1EAFc s\u1ED1ng \u0111\u1ED9ng)" : "\U0001F371 Bento Pop (Vivid Color)";
             ((ComboBoxItem)WidgetStyleComboBox.Items[6]).Content = isVi ? "\U0001F9ED Bento Pilot (Bu\u1ED3ng l\u00E1i phi c\u00F4ng)" : "\U0001F9ED Bento Pilot (Tactical Slate)";
             ((ComboBoxItem)WidgetStyleComboBox.Items[7]).Content = isVi ? "\U0001F4DF Retro Cyber LCD (Tr\u1EA1m th\u1EDDi ti\u1EBFt c\u1ED5 \u0111i\u1EC3n)" : "\U0001F4DF Retro Cyber LCD Computer";
+            if (WidgetStyleComboBox.Items.Count >= 10)
+            {
+                ((ComboBoxItem)WidgetStyleComboBox.Items[8]).Content = isVi ? "\u26AB Nothing Bento (Capsule 2:1)" : "\u26AB Nothing Bento (Capsule 2:1)";
+                ((ComboBoxItem)WidgetStyleComboBox.Items[9]).Content = isVi ? "\u25FD Nothing Square (T\u1ED1i gi\u1EA3n 1:1)" : "\u25FD Nothing Square (Minimal 1:1)";
+            }
+            if (DesignLanguageComboBox != null && DesignLanguageComboBox.Items.Count >= 2)
+            {
+                ((ComboBoxItem)DesignLanguageComboBox.Items[0]).Content = isVi ? "\uD83C\uDF0A Fluent 2 (M\u1EB7c \u0111\u1ECBnh)" : "\uD83C\uDF0A Fluent 2 (Default)";
+                ((ComboBoxItem)DesignLanguageComboBox.Items[1]).Content = isVi ? "\u26AB Nothing Design (OS)" : "\u26AB Nothing Design (OS)";
+            }
         }
 
         // Commute lead time
@@ -631,6 +648,16 @@ public sealed partial class SettingsTab : UserControl
             }
         }
         catch { }
+    }
+
+    private void DesignLanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null) return;
+        if (DesignLanguageComboBox?.SelectedItem is ComboBoxItem item && item.Tag is string tag)
+        {
+            ViewModel.ApplyDesignLanguage(tag, save: true);
+            (App.MainWindow as MainWindow)?.UpdateWindowTheme();
+        }
     }
 
     private void WidgetStyleComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

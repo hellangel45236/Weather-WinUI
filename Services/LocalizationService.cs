@@ -535,6 +535,10 @@ public class LocalizationService : INotifyPropertyChanged
     public string BadgeMinimalist => IsVietnamese ? "⚡ TỐI GIẢN" : "⚡ MINIMALIST";
     public string AppThemeTitle => IsVietnamese ? "Chủ đề hiển thị ứng dụng" : "App Appearance Theme";
     public string AppThemeSub => IsVietnamese ? "Chế độ màu Sáng, Tối hoặc Tự động thích ứng Windows" : "Light, Dark, or Match Windows System mode";
+    public string DesignLanguageTitle => IsVietnamese ? "Ng\u00F4n ng\u1EEF thi\u1EBFt k\u1EBF giao di\u1EC7n (Design Language)" : "App Design Language";
+    public string DesignLanguageSub => IsVietnamese ? "Ch\u1ECDn gi\u1EEFa phong c\u00E1ch Windows 11 Fluent 2 m\u1EB7c \u0111\u1ECBnh ho\u1EB7c Nothing Design t\u1ED1i gi\u1EA3n c\u00F4ng ngh\u1EC7" : "Choose between default Windows 11 Fluent 2 or minimalist Nothing Design";
+    public string DesignLanguageFluent2 => IsVietnamese ? "\uD83C\uDF0A Fluent 2 (M\u1EB7c \u0111\u1ECBnh Windows 11)" : "\uD83C\uDF0A Fluent 2 (Default Windows 11)";
+    public string DesignLanguageNothing => IsVietnamese ? "\u26AB Nothing Design (Nothing OS Style)" : "\u26AB Nothing Design (Nothing OS Style)";
 
     // Settings Tab - City Picture
     public string CityBgHeader => IsVietnamese ? "Hình Nền Thành Phố (City Picture)" : "City Wallpapers";
@@ -563,6 +567,8 @@ public class LocalizationService : INotifyPropertyChanged
     public string WidgetStyleBentoVivid => IsVietnamese ? "🎨 Bento Pop (Vivid Color)" : "🎨 Bento Pop (Vivid Color)";
     public string WidgetStyleBentoTactical => IsVietnamese ? "⏱️ Bento Pilot (Tactical Slate)" : "⏱️ Bento Pilot (Tactical Slate)";
     public string WidgetStyleRetroLcd => IsVietnamese ? "📟 Retro LCD Cyber Station" : "📟 Retro LCD Cyber Station";
+    public string WidgetStyleNothingBento => IsVietnamese ? "\u26AB Nothing Bento (Capsule 2:1)" : "\u26AB Nothing Bento (Capsule 2:1)";
+    public string WidgetStyleNothingSquare => IsVietnamese ? "\u25FD Nothing Square (T\u1ED1i gi\u1EA3n 1:1)" : "\u25FD Nothing Square (Minimal 1:1)";
     public string WidgetOpacityTitle => IsVietnamese ? "Độ trong suốt Widget (Opacity)" : "Widget Transparency (Opacity)";
     public string WidgetOpacitySub => IsVietnamese ? "Tự động sáng rõ 100% khi rê chuột vào" : "Automatically dims and highlights 100% on mouse hover";
 
@@ -612,6 +618,10 @@ public class LocalizationService : INotifyPropertyChanged
     public string WidgetStudioBentoTacticalDesc => IsVietnamese ? "Thiết kế Bento sắc đen huyền bí với ô xanh phiến đá, đồng hồ phi công kim dạ quang neon và chỉ số áp suất số nguyên bản" : "Tactical slate bento with muted blue weather tile, neon green pilot watch dial, sunset tile and digital barometer";
     public string WidgetStudioRetroLcdTitle => "📟 Retro LCD Cyber Station";
     public string WidgetStudioRetroLcdDesc => IsVietnamese ? "Trạm thời tiết màn hình LCD ma trận điểm hoài cổ, số 7 đoạn, mây pixel art, đồng hồ đo gió và bảng vi khí hậu viễn tưởng" : "Vintage dual-screen LCD cyber station with 7-segment digital temperature, pixel cloud art, wind speed gauge and sci-fi telemetry";
+    public string WidgetStudioNothingBentoTitle => "\u26AB Nothing Bento (Capsule 2:1)";
+    public string WidgetStudioNothingBentoDesc => IsVietnamese ? "Phong c\u00E1ch Nothing OS v\u1EDBi th\u1EDDi ti\u1EBFt ma tr\u1EADn \u0111i\u1EC3m, \u0111\u1ED3ng h\u1ED3 Nothing Clock, \u00F4 ho\u00E0ng h\u00F4n ch\u1EA5m \u0111\u1ECF v\u00E0 th\u01B0\u1EDBc \u0111o \u0111\u1ED9 \u1EA9m d\u1EA1ng v\u1EA1ch Glyph LED" : "Nothing OS aesthetic capsule with dot-matrix weather, Nothing Clock, red sun sunset tile and Glyph LED humidity bar";
+    public string WidgetStudioNothingSquareTitle => "\u25FD Nothing Square (Minimal 1:1)";
+    public string WidgetStudioNothingSquareDesc => IsVietnamese ? "Widget vu\u00F4ng t\u1ED1i gi\u1EA3n 1:1 phong c\u00E1ch Nothing Tech v\u1EDBi s\u1ED1 nhi\u1EC7t \u0111\u1ED9 l\u1EDBn, m\u00E3 th\u00E0nh ph\u1ED1 IATA v\u00E0 thanh \u0111o ch\u1EC9 s\u1ED1 m\u00F4i tr\u01B0\u1EDDng" : "Minimalist 1:1 square Nothing Tech widget with oversized dot-matrix temperature, IATA airport code and environmental telemetry";
     public string WidgetStudio4DayForecast => IsVietnamese ? "Dự báo 4 ngày" : "4-Day Forecast";
     public string WidgetStudioAqiGood => IsVietnamese ? "AQI Chuẩn" : "AQI Good";
     public string WidgetStudioControlsHeader => IsVietnamese ? "Tùy Biến & Điều Khiển Widget" : "Widget Controls & Customization";

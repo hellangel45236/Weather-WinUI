@@ -368,8 +368,10 @@ public sealed partial class WidgetWindow : Window
         bool isBentoVivid = style == "BentoVivid";
         bool isBentoTactical = style == "BentoTactical";
         bool isRetroLcd = style == "RetroLcd";
+        bool isNothingBento = style == "NothingBento";
+        bool isNothingSquare = style == "NothingSquare";
 
-        if (!isBryanC && !isIsland && !isCompact && !isGlass && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd)
+        if (!isBryanC && !isIsland && !isCompact && !isGlass && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare)
         {
             isBryanC = true;
             _currentStyle = "BryanCDynamic";
@@ -383,8 +385,10 @@ public sealed partial class WidgetWindow : Window
         if (BentoVividView != null) BentoVividView.Visibility = isBentoVivid ? Visibility.Visible : Visibility.Collapsed;
         if (BentoTacticalView != null) BentoTacticalView.Visibility = isBentoTactical ? Visibility.Visible : Visibility.Collapsed;
         if (RetroLcdView != null) RetroLcdView.Visibility = isRetroLcd ? Visibility.Visible : Visibility.Collapsed;
+        if (NothingBentoView != null) NothingBentoView.Visibility = isNothingBento ? Visibility.Visible : Visibility.Collapsed;
+        if (NothingSquareView != null) NothingSquareView.Visibility = isNothingSquare ? Visibility.Visible : Visibility.Collapsed;
 
-        int cornerRadiusDip = (isBryanC || isIsland || isSeasonal || isBentoVivid || isBentoTactical) ? 20 : (isRetroLcd ? 16 : 14);
+        int cornerRadiusDip = (isNothingBento) ? 24 : (isNothingSquare ? 22 : ((isBryanC || isIsland || isSeasonal || isBentoVivid || isBentoTactical) ? 20 : (isRetroLcd ? 16 : 14)));
         WidgetRoot.CornerRadius = new CornerRadius(cornerRadiusDip);
 
         IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
@@ -392,8 +396,8 @@ public sealed partial class WidgetWindow : Window
         if (dpi == 0) dpi = 96;
         double scale = dpi / 96.0;
 
-        int widthDip = (isBentoVivid || isBentoTactical) ? 365 : (isRetroLcd ? 265 : (isSeasonal ? 385 : (isBryanC ? 340 : (isIsland ? 290 : (isCompact ? 300 : 385)))));
-        int heightDip = (isBentoVivid || isBentoTactical) ? 175 : (isRetroLcd ? 295 : (isSeasonal ? 215 : (isBryanC ? 200 : (isIsland ? 40 : (isCompact ? 54 : 230)))));
+        int widthDip = (isNothingBento) ? 320 : (isNothingSquare ? 190 : ((isBentoVivid || isBentoTactical) ? 365 : (isRetroLcd ? 265 : (isSeasonal ? 385 : (isBryanC ? 340 : (isIsland ? 290 : (isCompact ? 300 : 385)))))));
+        int heightDip = (isNothingBento) ? 160 : (isNothingSquare ? 190 : ((isBentoVivid || isBentoTactical) ? 175 : (isRetroLcd ? 295 : (isSeasonal ? 215 : (isBryanC ? 200 : (isIsland ? 40 : (isCompact ? 54 : 230)))))));
 
         int physicalWidth = (int)Math.Round(widthDip * scale);
         int physicalHeight = (int)Math.Round(heightDip * scale);
@@ -418,13 +422,13 @@ public sealed partial class WidgetWindow : Window
         {
             ApplyBryanCWeatherTheme(_currentWeather.WeatherEffect, _currentWeather.IsDay);
         }
-        else if (isBentoVivid || isBentoTactical || isRetroLcd)
+        else if (isBentoVivid || isBentoTactical || isRetroLcd || isNothingBento || isNothingSquare)
         {
             WidgetRoot.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
             WidgetRoot.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
             UpdateWidgetData();
         }
-        else if (!isBryanC && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd)
+        else if (!isBryanC && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare)
         {
             // Khôi phục background kính tối chuẩn cho GlassCard/Compact
             var brush = new Microsoft.UI.Xaml.Media.LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
@@ -448,7 +452,9 @@ public sealed partial class WidgetWindow : Window
             "MiniIsland" => "BentoVivid",
             "BentoVivid" => "BentoTactical",
             "BentoTactical" => "RetroLcd",
-            "RetroLcd" => "SeasonalCard",
+            "RetroLcd" => "NothingBento",
+            "NothingBento" => "NothingSquare",
+            "NothingSquare" => "SeasonalCard",
             _ => "BryanCDynamic"
         };
 
@@ -504,8 +510,10 @@ public sealed partial class WidgetWindow : Window
         CompactClockText.Text = clock;
         if (BryanCClockText != null) BryanCClockText.Text = clock;
         if (SeasonalClockText != null) SeasonalClockText.Text = clock;
+        if (NothingBentoClockText != null) NothingBentoClockText.Text = clock;
+        if (NothingSquareTimeText != null) NothingSquareTimeText.Text = clock;
 
-        // Cáº­p nháº­t Ä‘á»“ng há»“ kim cho BentoVivid & BentoTactical
+        // Cập nhật đồng hồ kim cho BentoVivid & BentoTactical
         double hourAngle = ((DateTime.Now.Hour % 12) + DateTime.Now.Minute / 60.0) * 30.0;
         double minAngle = (DateTime.Now.Minute + DateTime.Now.Second / 60.0) * 6.0;
 
@@ -907,6 +915,35 @@ public sealed partial class WidgetWindow : Window
         }
         SetSevenSegmentDigit(tVal / 10, RetroDigit1A, RetroDigit1B, RetroDigit1C, RetroDigit1D, RetroDigit1E, RetroDigit1F, RetroDigit1G);
         SetSevenSegmentDigit(tVal % 10, RetroDigit2A, RetroDigit2B, RetroDigit2C, RetroDigit2D, RetroDigit2E, RetroDigit2F, RetroDigit2G);
+
+        // Nothing Bento & Nothing Square (v3.5.0)
+        string upperCity = displayCity.ToUpperInvariant();
+        string cityCode = GetCityCode(displayCity);
+        string nothingCity = $"{upperCity} [{cityCode}]";
+        int aqiVal = _currentWeather.HasAqi ? _currentWeather.AqiValue : 42;
+        int humVal = (int)Math.Clamp(_currentWeather.HumidityValue > 0 ? _currentWeather.HumidityValue : 75, 0, 100);
+        string rangeStr = !string.IsNullOrEmpty(_currentWeather.HighLowTempText) ? _currentWeather.HighLowTempText : $"{tempOnly}\u00B0";
+
+        if (NothingBentoCityText != null) NothingBentoCityText.Text = nothingCity;
+        if (NothingBentoTempText != null) NothingBentoTempText.Text = tempOnly;
+        if (NothingBentoConditionText != null) NothingBentoConditionText.Text = _currentWeather.ConditionText.ToUpperInvariant();
+        if (NothingBentoRangeText != null) NothingBentoRangeText.Text = rangeStr;
+        if (NothingBentoAqiText != null) NothingBentoAqiText.Text = $"AQI {aqiVal}";
+        if (NothingBentoSunsetText != null) NothingBentoSunsetText.Text = sunsetTime;
+        if (NothingBentoHumidityText != null) NothingBentoHumidityText.Text = $"{humVal}%";
+
+        if (NothingGlyph1 != null) NothingGlyph1.Opacity = humVal >= 20 ? 1.0 : 0.2;
+        if (NothingGlyph2 != null) NothingGlyph2.Opacity = humVal >= 40 ? 1.0 : 0.2;
+        if (NothingGlyph3 != null) NothingGlyph3.Opacity = humVal >= 60 ? 1.0 : 0.2;
+        if (NothingGlyph4 != null) NothingGlyph4.Opacity = humVal >= 80 ? 1.0 : 0.2;
+        if (NothingGlyph5 != null) NothingGlyph5.Opacity = humVal >= 90 ? 1.0 : 0.2;
+
+        if (NothingSquareCityText != null) NothingSquareCityText.Text = nothingCity;
+        if (NothingSquareTempText != null) NothingSquareTempText.Text = $"{tempOnly}\u00B0";
+        if (NothingSquareConditionText != null) NothingSquareConditionText.Text = _currentWeather.ConditionText.ToUpperInvariant();
+        if (NothingSquareAqiText != null) NothingSquareAqiText.Text = $"{aqiVal}";
+        if (NothingSquareHumText != null) NothingSquareHumText.Text = $"{humVal}%";
+        if (NothingSquareWindText != null) NothingSquareWindText.Text = $"{_currentWeather.WindSpeedValue:F0}k";
 
         double windMs = 8.0;
         if (_currentWeather.WindSpeedValue > 0) windMs = _currentWeather.WindSpeedValue / 3.6;
@@ -1512,16 +1549,16 @@ public sealed partial class WidgetWindow : Window
     {
         if (string.IsNullOrWhiteSpace(cityName)) return "SGN";
         string lower = cityName.ToLowerInvariant();
-        if (lower.Contains("hÃ  ná»™i") || lower.Contains("hanoi")) return "HAN";
-        if (lower.Contains("há»“ chÃ­ minh") || lower.Contains("ho chi minh") || lower.Contains("sÃ i gÃ²n") || lower.Contains("saigon")) return "SGN";
-        if (lower.Contains("Ä‘Ã  náºµng") || lower.Contains("da nang")) return "DAD";
-        if (lower.Contains("háº£i phÃ²ng") || lower.Contains("hai phong")) return "HPH";
-        if (lower.Contains("cáº§n thÆ¡") || lower.Contains("can tho")) return "VCA";
-        if (lower.Contains("nha trang")) return "CXR";
-        if (lower.Contains("huáº¿") || lower.Contains("hue")) return "HUI";
-        if (lower.Contains("vÅ©ng tÃ u") || lower.Contains("vung tau")) return "VTG";
-        if (lower.Contains("Ä‘Ã  láº¡t") || lower.Contains("da lat")) return "DLI";
-        if (lower.Contains("phÃº quá»‘c") || lower.Contains("phu quoc")) return "PQC";
+        if (lower.Contains("\u0068\u00E0\u0020\u006E\u1ED9\u0069") || lower.Contains("hanoi")) return "HAN";
+        if (lower.Contains("\u0068\u1ED3\u0020\u0063\u0068\u00ED\u0020\u006D\u0069\u006E\u0068") || lower.Contains("ho chi minh") || lower.Contains("\u0073\u00E0\u0069\u0020\u0067\u00F2\u006E") || lower.Contains("saigon")) return "SGN";
+        if (lower.Contains("\u0111\u00E0\u0020\u006E\u1EB5\u006E\u0067") || lower.Contains("da nang")) return "DAD";
+        if (lower.Contains("\u0111\u00E0\u0020\u006E\u1EB5\u006E\u0067") || lower.Contains("da nang")) return "DAD";
+        if (lower.Contains("\u0063\u1EA7\u006E\u0020\u0074\u0068\u01A1") || lower.Contains("can tho")) return "VCA";
+        if (lower.Contains("\u0111\u00E0\u0020\u006E\u1EB5\u006E\u0067") || lower.Contains("da nang")) return "DAD";
+        if (lower.Contains("\u0068\u0075\u1EBF") || lower.Contains("hue")) return "HUI";
+        if (lower.Contains("\u0076\u0169\u006E\u0067\u0020\u0074\u00E0\u0075") || lower.Contains("vung tau")) return "VTG";
+        if (lower.Contains("\u0111\u00E0\u0020\u006C\u1EA1\u0074") || lower.Contains("da lat")) return "DLI";
+        if (lower.Contains("\u0070\u0068\u00FA\u0020\u0071\u0075\u1ED1\u0063") || lower.Contains("phu quoc")) return "PQC";
         if (lower.Contains("sa pa") || lower.Contains("sapa")) return "SPA";
         if (lower.Contains("quy nhÆ¡n") || lower.Contains("quy nhon")) return "UIH";
         if (lower.Contains("new york")) return "NYC";

@@ -8,6 +8,7 @@ public class AppSettings
 {
     // 1. Giao diện (Theme) & Chủ đề Mùa/Lễ hội (Seasonal & Festival Skins)
     public string ThemeMode { get; set; } = "System"; // "System", "Light", "Dark"
+    public string DesignLanguage { get; set; } = "Fluent2"; // "Fluent2", "Nothing"
     public string SeasonalSkinMode { get; set; } = "Auto"; // "Auto", "Spring", "Summer", "Autumn", "Winter", "Tet", "MidAutumn", "Christmas", "Halloween"
     public bool EnableSeasonalParticles { get; set; } = true;
     public string SeasonalWidgetTheme { get; set; } = "Auto";
@@ -42,7 +43,7 @@ public class AppSettings
     public string AppLanguage { get; set; } = "vi-VN"; // "vi-VN", "en-US"
 
     // 8. Cấu hình Widget Desktop
-    public string WidgetStyle { get; set; } = "BryanCDynamic"; // "BryanCDynamic", "GlassCard", "Compact", "MiniIsland", "SeasonalCard", "BentoVivid", "BentoTactical", "RetroLcd"
+    public string WidgetStyle { get; set; } = "BryanCDynamic"; // "BryanCDynamic", "GlassCard", "Compact", "MiniIsland", "SeasonalCard", "BentoVivid", "BentoTactical", "RetroLcd", "NothingBento", "NothingSquare"
     public double WidgetOpacity { get; set; } = 1.0; // 0.3 - 1.0 (50% = 0.5)
     public int WidgetLastX { get; set; } = -1;
     public int WidgetLastY { get; set; } = -1;

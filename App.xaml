@@ -49,6 +49,19 @@
                     <SolidColorBrush x:Key="NavCalendarBadgeForegroundBrush" Color="#6D28D9" />
                     <SolidColorBrush x:Key="NavWidgetBadgeBackgroundBrush" Color="#250284C7" />
                     <SolidColorBrush x:Key="NavWidgetBadgeForegroundBrush" Color="#0284C7" />
+                    <!-- Nothing OS Design Tokens (Light Mode CMF Chalk) -->
+                    <SolidColorBrush x:Key="NothingCardBackgroundBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="NothingCardBorderBrush" Color="#E2E2E6" />
+                    <SolidColorBrush x:Key="NothingSubCardBackgroundBrush" Color="#F5F5F7" />
+                    <SolidColorBrush x:Key="NothingSubCardBorderBrush" Color="#E5E5E8" />
+                    <SolidColorBrush x:Key="NothingGlyphBoxBackgroundBrush" Color="#F9F9FA" />
+                    <SolidColorBrush x:Key="NothingTextPrimaryBrush" Color="#0A0A0C" />
+                    <SolidColorBrush x:Key="NothingTextSecondaryBrush" Color="#71717A" />
+                    <SolidColorBrush x:Key="NothingTextMutedBrush" Color="#A1A1AA" />
+                    <SolidColorBrush x:Key="NothingRedBrush" Color="#D71921" />
+                    <SolidColorBrush x:Key="NothingGreenBrush" Color="#16A34A" />
+                    <SolidColorBrush x:Key="NothingPillBackgroundBrush" Color="#EAEAEA" />
+                    <SolidColorBrush x:Key="NothingPillBorderBrush" Color="#DDDDDD" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <SolidColorBrush x:Key="ZenButtonBackgroundBrush" Color="#208B5CF6" />
@@ -68,6 +81,19 @@
                     <SolidColorBrush x:Key="NavCalendarBadgeForegroundBrush" Color="#A78BFA" />
                     <SolidColorBrush x:Key="NavWidgetBadgeBackgroundBrush" Color="#2038BDF8" />
                     <SolidColorBrush x:Key="NavWidgetBadgeForegroundBrush" Color="#38BDF8" />
+                    <!-- Nothing OS Design Tokens (Dark Mode OLED Stealth) -->
+                    <SolidColorBrush x:Key="NothingCardBackgroundBrush" Color="#121214" />
+                    <SolidColorBrush x:Key="NothingCardBorderBrush" Color="#242428" />
+                    <SolidColorBrush x:Key="NothingSubCardBackgroundBrush" Color="#18181B" />
+                    <SolidColorBrush x:Key="NothingSubCardBorderBrush" Color="#26262B" />
+                    <SolidColorBrush x:Key="NothingGlyphBoxBackgroundBrush" Color="#0A0A0C" />
+                    <SolidColorBrush x:Key="NothingTextPrimaryBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="NothingTextSecondaryBrush" Color="#737373" />
+                    <SolidColorBrush x:Key="NothingTextMutedBrush" Color="#52525B" />
+                    <SolidColorBrush x:Key="NothingRedBrush" Color="#D71921" />
+                    <SolidColorBrush x:Key="NothingGreenBrush" Color="#00FF66" />
+                    <SolidColorBrush x:Key="NothingPillBackgroundBrush" Color="#1F1F23" />
+                    <SolidColorBrush x:Key="NothingPillBorderBrush" Color="#333333" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Default">
                     <SolidColorBrush x:Key="ZenButtonBackgroundBrush" Color="#208B5CF6" />
@@ -87,6 +113,19 @@
                     <SolidColorBrush x:Key="NavCalendarBadgeForegroundBrush" Color="#A78BFA" />
                     <SolidColorBrush x:Key="NavWidgetBadgeBackgroundBrush" Color="#2038BDF8" />
                     <SolidColorBrush x:Key="NavWidgetBadgeForegroundBrush" Color="#38BDF8" />
+                    <!-- Nothing OS Design Tokens (Dark Mode OLED Stealth) -->
+                    <SolidColorBrush x:Key="NothingCardBackgroundBrush" Color="#121214" />
+                    <SolidColorBrush x:Key="NothingCardBorderBrush" Color="#242428" />
+                    <SolidColorBrush x:Key="NothingSubCardBackgroundBrush" Color="#18181B" />
+                    <SolidColorBrush x:Key="NothingSubCardBorderBrush" Color="#26262B" />
+                    <SolidColorBrush x:Key="NothingGlyphBoxBackgroundBrush" Color="#0A0A0C" />
+                    <SolidColorBrush x:Key="NothingTextPrimaryBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="NothingTextSecondaryBrush" Color="#737373" />
+                    <SolidColorBrush x:Key="NothingTextMutedBrush" Color="#52525B" />
+                    <SolidColorBrush x:Key="NothingRedBrush" Color="#D71921" />
+                    <SolidColorBrush x:Key="NothingGreenBrush" Color="#00FF66" />
+                    <SolidColorBrush x:Key="NothingPillBackgroundBrush" Color="#1F1F23" />
+                    <SolidColorBrush x:Key="NothingPillBorderBrush" Color="#333333" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>

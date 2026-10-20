@@ -94,10 +94,24 @@ public sealed partial class OverviewTab : UserControl
             e.PropertyName == nameof(MainViewModel.HourlyForecast) ||
             e.PropertyName == nameof(MainViewModel.CurrentSeasonalSkin) ||
             e.PropertyName == nameof(MainViewModel.EnableSeasonalParticles) ||
-            e.PropertyName == nameof(MainViewModel.SeasonalGreetingText))
+            e.PropertyName == nameof(MainViewModel.SeasonalGreetingText) ||
+            e.PropertyName == nameof(MainViewModel.IsNothingDesign) ||
+            e.PropertyName == nameof(MainViewModel.IsFluent2Design))
         {
             DispatcherQueue.TryEnqueue(() =>
             {
+                if (ViewModel?.IsNothingDesign == true)
+                {
+                    _weatherEffectRenderer?.Pause();
+                    if (WeatherEffectsCanvas != null) WeatherEffectsCanvas.Visibility = Visibility.Collapsed;
+                    if (HeroAmbientGlow != null) HeroAmbientGlow.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    if (WeatherEffectsCanvas != null) WeatherEffectsCanvas.Visibility = Visibility.Visible;
+                    if (HeroAmbientGlow != null) HeroAmbientGlow.Visibility = Visibility.Visible;
+                    _weatherEffectRenderer?.Resume();
+                }
                 UpdateHourlyItemsForCurrentMetric();
                 UpdateHourlyMetricButtonsStyle();
                 UpdateWeatherVisuals();
@@ -300,6 +314,20 @@ public sealed partial class OverviewTab : UserControl
     public void UpdateWeatherVisuals()
     {
         if (ViewModel?.CurrentWeather == null) return;
+
+        if (ViewModel.IsNothingDesign)
+        {
+            _weatherEffectRenderer?.Pause();
+            if (WeatherEffectsCanvas != null)
+            {
+                WeatherEffectsCanvas.Children.Clear();
+                WeatherEffectsCanvas.Visibility = Visibility.Collapsed;
+            }
+            if (HeroAmbientGlow != null) HeroAmbientGlow.Visibility = Visibility.Collapsed;
+            if (CityHeroBackgroundBorder != null) CityHeroBackgroundBorder.Visibility = Visibility.Collapsed;
+            StopAmbientGlowAnimation();
+            return;
+        }
 
         UpdateHeroCardSeasonalColors();
 

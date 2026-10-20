@@ -1,4 +1,4 @@
-<Window
+﻿<Window
     x:Class="WeatherApp.WidgetWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -855,7 +855,7 @@
                                     <TextBlock Grid.Column="1" x:Name="BentoVividConditionText" Text="Few clouds" FontSize="12.5" FontWeight="SemiBold" Foreground="#0F172A" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
 
-                                <TextBlock Grid.Row="1" x:Name="BentoVividTempText" Text="28Â°" FontSize="46" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center" Margin="0,-4,0,-2"/>
+                                <TextBlock Grid.Row="1" x:Name="BentoVividTempText" Text="28&#x00B0;" FontSize="46" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center" Margin="0,-4,0,-2"/>
 
                                 <Button Grid.Row="2" Click="CityPickerButton_Click" Background="Transparent" BorderThickness="0" Padding="0" HorizontalAlignment="Left" ToolTipService.ToolTip="Select city">
                                     <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
@@ -936,11 +936,11 @@
                                     <TextBlock Grid.Column="1" x:Name="BentoTacticalConditionText" Text="Overcast" FontSize="12.5" FontWeight="SemiBold" Foreground="#0F172A" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
 
-                                <TextBlock Grid.Row="1" x:Name="BentoTacticalTempText" Text="16Â°" FontSize="46" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center" Margin="0,-4,0,-2"/>
+                                <TextBlock Grid.Row="1" x:Name="BentoTacticalTempText" Text="16&#x00B0;" FontSize="46" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center" Margin="0,-4,0,-2"/>
 
                                 <Button Grid.Row="2" Click="CityPickerButton_Click" Background="Transparent" BorderThickness="0" Padding="0" HorizontalAlignment="Left" ToolTipService.ToolTip="Select city">
                                     <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                                        <TextBlock x:Name="BentoTacticalCityText" Text="BogotÃ¡" FontSize="14" FontWeight="SemiBold" Foreground="#0F172A" MaxWidth="135" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock x:Name="BentoTacticalCityText" Text="Bogot&#x00E1;" FontSize="14" FontWeight="SemiBold" Foreground="#0F172A" MaxWidth="135" TextTrimming="CharacterEllipsis"/>
                                         <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0d7;" FontSize="8" Foreground="#475569" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
@@ -1107,6 +1107,116 @@
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- ==================== STYLE 9: NOTHING BENTO CAPSULE (v3.5.0) ==================== -->
+                <Grid x:Name="NothingBentoView" Visibility="Collapsed" Padding="6">
+                    <Border CornerRadius="24" Background="#0C0C0E" BorderBrush="#252529" BorderThickness="1.5" Padding="14,12"
+                            PointerPressed="WidgetRoot_PointerPressed">
+                        <Grid ColumnDefinitions="*,1,Auto" ColumnSpacing="12">
+                            <!-- LEFT HALF: WEATHER & TEMP -->
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="4">
+                                <!-- Location & Red Dot -->
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="#D71921"/>
+                                    <TextBlock x:Name="NothingBentoCityText" Text="HANOI [HAN]" FontSize="11" FontWeight="Bold" Foreground="#888888" FontFamily="Consolas"/>
+                                </StackPanel>
+
+                                <!-- Big Temperature -->
+                                <StackPanel Orientation="Horizontal" Spacing="2" VerticalAlignment="Center" Margin="0,2">
+                                    <TextBlock x:Name="NothingBentoTempText" Text="31" FontSize="44" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="Segoe UI Variable Display, Consolas"/>
+                                    <TextBlock Text="&#176;C" FontSize="20" FontWeight="Bold" Foreground="#D71921" FontFamily="Consolas" VerticalAlignment="Top" Margin="0,4,0,0"/>
+                                </StackPanel>
+
+                                <!-- Condition -->
+                                <TextBlock x:Name="NothingBentoConditionText" Text="THUNDERSTORM" FontSize="11" FontWeight="SemiBold" Foreground="#CCCCCC" TextTrimming="CharacterEllipsis"/>
+
+                                <!-- Telemetry Row: Range & AQI -->
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="0,2,0,0">
+                                    <TextBlock x:Name="NothingBentoRangeText" Text="H:34&#176; L:26&#176;" FontSize="10" Foreground="#737373" FontFamily="Consolas"/>
+                                    <TextBlock Text="&#8226;" FontSize="10" Foreground="#444444"/>
+                                    <TextBlock x:Name="NothingBentoAqiText" Text="AQI 42" FontSize="10" FontWeight="Bold" Foreground="#00FF66" FontFamily="Consolas"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- VERTICAL DIVIDER -->
+                            <Border Grid.Column="1" Width="1" Background="#222226" Margin="0,4"/>
+
+                            <!-- RIGHT HALF: CLOCK, SUNSET & GLYPH -->
+                            <StackPanel Grid.Column="2" Width="110" VerticalAlignment="Center" Spacing="6">
+                                <!-- Digital Clock -->
+                                <StackPanel Spacing="1">
+                                    <TextBlock Text="NOTHING TIME" FontSize="8.5" FontWeight="Bold" Foreground="#666666" FontFamily="Consolas"/>
+                                    <TextBlock x:Name="NothingBentoClockText" Text="12:30" FontSize="22" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="Consolas"/>
+                                </StackPanel>
+
+                                <!-- Sunset Capsule -->
+                                <Border Background="#161619" BorderBrush="#2A2A2E" BorderThickness="1" CornerRadius="8" Padding="6,3">
+                                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                        <Ellipse Width="6" Height="6" Fill="#D71921"/>
+                                        <TextBlock x:Name="NothingBentoSunsetText" Text="17:42" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="Consolas"/>
+                                        <TextBlock Text="SUNSET" FontSize="8.5" Foreground="#737373" FontFamily="Consolas"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Glyph Humidity Bar -->
+                                <StackPanel Spacing="2">
+                                    <Grid>
+                                        <TextBlock Text="GLYPH HUM" FontSize="8.5" FontWeight="Bold" Foreground="#666666" FontFamily="Consolas"/>
+                                        <TextBlock x:Name="NothingBentoHumidityText" Text="82%" FontSize="8.5" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="2">
+                                        <Border x:Name="NothingGlyph1" Grid.Column="0" Height="4" CornerRadius="2" Background="#FFFFFF"/>
+                                        <Border x:Name="NothingGlyph2" Grid.Column="1" Height="4" CornerRadius="2" Background="#FFFFFF"/>
+                                        <Border x:Name="NothingGlyph3" Grid.Column="2" Height="4" CornerRadius="2" Background="#FFFFFF"/>
+                                        <Border x:Name="NothingGlyph4" Grid.Column="3" Height="4" CornerRadius="2" Background="#FFFFFF"/>
+                                        <Border x:Name="NothingGlyph5" Grid.Column="4" Height="4" CornerRadius="2" Background="#D71921"/>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- ==================== STYLE 10: NOTHING SQUARE MINIMAL (v3.5.0) ==================== -->
+                <Grid x:Name="NothingSquareView" Visibility="Collapsed" Padding="6">
+                    <Border CornerRadius="22" Background="#0C0C0E" BorderBrush="#252529" BorderThickness="1.5" Padding="14,12"
+                            PointerPressed="WidgetRoot_PointerPressed">
+                        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="6">
+                            <!-- TOP: Red Dot & City -->
+                            <Grid Grid.Row="0">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="#D71921"/>
+                                    <TextBlock x:Name="NothingSquareCityText" Text="HANOI [HAN]" FontSize="11" FontWeight="Bold" Foreground="#888888" FontFamily="Consolas"/>
+                                </StackPanel>
+                                <TextBlock x:Name="NothingSquareTimeText" Text="12:30" FontSize="10" FontWeight="Bold" Foreground="#666666" FontFamily="Consolas" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <!-- CENTER: Weather Icon & Huge Temp -->
+                            <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="2">
+                                <TextBlock x:Name="NothingSquareTempText" Text="31&#176;" FontSize="46" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="Segoe UI Variable Display, Consolas" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="NothingSquareConditionText" Text="THUNDERSTORM" FontSize="10.5" FontWeight="SemiBold" Foreground="#CCCCCC" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="150"/>
+                            </StackPanel>
+
+                            <!-- BOTTOM: 3 Pillars (AQI, HUM, WIND) -->
+                            <Border Grid.Row="2" Background="#141417" BorderBrush="#26262A" BorderThickness="1" CornerRadius="10" Padding="8,4">
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="4">
+                                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                        <TextBlock Text="AQI" FontSize="8" Foreground="#737373" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                        <TextBlock x:Name="NothingSquareAqiText" Text="42" FontSize="10" FontWeight="Bold" Foreground="#00FF66" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                        <TextBlock Text="HUM" FontSize="8" Foreground="#737373" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                        <TextBlock x:Name="NothingSquareHumText" Text="82%" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                        <TextBlock Text="WIND" FontSize="8" Foreground="#737373" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                        <TextBlock x:Name="NothingSquareWindText" Text="18k" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
                         </Grid>
                     </Border>
                 </Grid>

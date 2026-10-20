@@ -101,10 +101,26 @@ public sealed partial class MainWindow : Window
     {
         try
         {
+            var settings = new Services.SettingsService().LoadSettings();
             bool isDark = ThemeHelper.IsDarkTheme(RootWindowGrid);
             bool isWindows11 = Environment.OSVersion.Version.Build >= 22000 && !_forceWin10Mode;
+            bool isNothing = string.Equals(settings.DesignLanguage, "Nothing", StringComparison.OrdinalIgnoreCase);
 
-            if (isWindows11 && Microsoft.UI.Composition.SystemBackdrops.MicaController.IsSupported())
+            if (isNothing)
+            {
+                SystemBackdrop = null;
+                if (isDark)
+                {
+                    RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                        Windows.UI.Color.FromArgb(255, 10, 10, 12));
+                }
+                else
+                {
+                    RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                        Windows.UI.Color.FromArgb(255, 240, 240, 242));
+                }
+            }
+            else if (isWindows11 && Microsoft.UI.Composition.SystemBackdrops.MicaController.IsSupported())
             {
                 if (SystemBackdrop is not Microsoft.UI.Xaml.Media.MicaBackdrop)
                 {

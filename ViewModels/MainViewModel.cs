@@ -81,6 +81,14 @@ public partial class MainViewModel : ObservableObject
     private int _selectedThemeIndex = 2; // 0: Light, 1: Dark, 2: System
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNothingDesign))]
+    [NotifyPropertyChangedFor(nameof(IsFluent2Design))]
+    private string _selectedDesignLanguage = "Fluent2";
+
+    public bool IsNothingDesign => string.Equals(SelectedDesignLanguage, "Nothing", StringComparison.OrdinalIgnoreCase);
+    public bool IsFluent2Design => !IsNothingDesign;
+
+    [ObservableProperty]
     private bool _feedbackSubmitted;
 
     [ObservableProperty]
@@ -159,7 +167,7 @@ public partial class MainViewModel : ObservableObject
     private readonly PowerManagementService _powerService = new();
 
     [ObservableProperty]
-    private string _appVersionDisplay = "v3.4.1 Official";
+    private string _appVersionDisplay = "v3.5.0 Official";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(GpsButtonBackground))]
@@ -465,6 +473,7 @@ public partial class MainViewModel : ObservableObject
     public void SyncSettingsToProperties()
     {
         UnitButtonText = Settings.TemperatureUnit == "F" ? "°F" : "°C";
+        SelectedDesignLanguage = Settings.DesignLanguage ?? "Fluent2";
         SelectedThemeIndex = Settings.ThemeMode switch
         {
             "Light" => 0,
@@ -491,6 +500,18 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(IsZenClockFlip));
         OnPropertyChanged(nameof(IsZenClockStacked));
         OnPropertyChanged(nameof(IsZenClockAnalog));
+    }
+
+    public void ApplyDesignLanguage(string language, bool save = true)
+    {
+        SelectedDesignLanguage = language;
+        if (save)
+        {
+            Settings.DesignLanguage = language;
+            _settingsService.SaveSettings(Settings);
+        }
+        OnPropertyChanged(nameof(IsNothingDesign));
+        OnPropertyChanged(nameof(IsFluent2Design));
     }
 
     public void UpdateOutfitAdvice()
