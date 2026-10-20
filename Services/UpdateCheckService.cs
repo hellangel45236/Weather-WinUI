@@ -27,7 +27,7 @@ public class UpdateCheckService
         Timeout = TimeSpan.FromSeconds(12)
     };
 
-    public const string CurrentAppVersion = "3.1.0";
+    public const string CurrentAppVersion = "3.4.1";
     private const string GitHubApiUrl = "https://api.github.com/repos/hellangel45236/Weather-WinUI/releases/latest";
 
     public async Task<UpdateInfo> CheckForUpdatesAsync()

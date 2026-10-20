@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using WeatherApp.Models;
@@ -105,7 +105,7 @@ public sealed partial class WidgetStudioTab : UserControl
 
         bool isNarrow = width < 950;
 
-        // 1. Gallery Grid (Chuyển giữa 2x2 trên màn rộng và 1x4 trên màn hẹp)
+        // 1. Gallery Grid (Chuyá»ƒn giá»¯a 2x2 trÃªn mÃ n rá»™ng vÃ  1x4 trÃªn mÃ n háº¹p)
         if (GalleryGrid != null)
         {
             if (isNarrow)
@@ -113,33 +113,36 @@ public sealed partial class WidgetStudioTab : UserControl
                 GalleryGrid.ColumnDefinitions.Clear();
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.RowDefinitions.Clear();
-                GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                for (int r = 0; r < 7; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
                 if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
                 if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 0); Grid.SetRow(CardWidgetGlassCard, 1); }
                 if (CardWidgetCompact != null) { Grid.SetColumn(CardWidgetCompact, 0); Grid.SetRow(CardWidgetCompact, 2); }
                 if (CardWidgetMiniIsland != null) { Grid.SetColumn(CardWidgetMiniIsland, 0); Grid.SetRow(CardWidgetMiniIsland, 3); }
+                if (CardWidgetBentoVivid != null) { Grid.SetColumn(CardWidgetBentoVivid, 0); Grid.SetRow(CardWidgetBentoVivid, 4); }
+                if (CardWidgetBentoTactical != null) { Grid.SetColumn(CardWidgetBentoTactical, 0); Grid.SetRow(CardWidgetBentoTactical, 5); }
+                if (CardWidgetRetroLcd != null) { Grid.SetColumn(CardWidgetRetroLcd, 0); Grid.SetRow(CardWidgetRetroLcd, 6); Grid.SetColumnSpan(CardWidgetRetroLcd, 1); }
             }
+
             else
             {
                 GalleryGrid.ColumnDefinitions.Clear();
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.RowDefinitions.Clear();
-                GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                for (int r = 0; r < 4; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
                 if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
                 if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 1); Grid.SetRow(CardWidgetGlassCard, 0); }
                 if (CardWidgetCompact != null) { Grid.SetColumn(CardWidgetCompact, 0); Grid.SetRow(CardWidgetCompact, 1); }
                 if (CardWidgetMiniIsland != null) { Grid.SetColumn(CardWidgetMiniIsland, 1); Grid.SetRow(CardWidgetMiniIsland, 1); }
+                if (CardWidgetBentoVivid != null) { Grid.SetColumn(CardWidgetBentoVivid, 0); Grid.SetRow(CardWidgetBentoVivid, 2); }
+                if (CardWidgetBentoTactical != null) { Grid.SetColumn(CardWidgetBentoTactical, 1); Grid.SetRow(CardWidgetBentoTactical, 2); }
+                if (CardWidgetRetroLcd != null) { Grid.SetColumn(CardWidgetRetroLcd, 0); Grid.SetRow(CardWidgetRetroLcd, 3); Grid.SetColumnSpan(CardWidgetRetroLcd, 2); }
             }
         }
 
-        // 1b. Seasonal Gallery Grid (Chuyển giữa 2x4 trên màn rộng và 1x8 trên màn hẹp)
+        // 1b. Seasonal Gallery Grid (Chuyá»ƒn giá»¯a 2x4 trÃªn mÃ n rá»™ng vÃ  1x8 trÃªn mÃ n háº¹p)
         if (SeasonalGalleryGrid != null)
         {
             var sCards = new[] { CardSeasonalTet, CardSeasonalMidAutumn, CardSeasonalChristmas, CardSeasonalHalloween, CardSeasonalSpring, CardSeasonalSummer, CardSeasonalAutumn, CardSeasonalWinter };
@@ -247,6 +250,21 @@ public sealed partial class WidgetStudioTab : UserControl
         }
     }
 
+    private void CardWidgetBentoVivid_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        SelectWidgetStyle("BentoVivid");
+    }
+
+    private void CardWidgetBentoTactical_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        SelectWidgetStyle("BentoTactical");
+    }
+
+    private void CardWidgetRetroLcd_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        SelectWidgetStyle("RetroLcd");
+    }
+
     private void SelectWidgetStyle(string styleTag)
     {
         if (ViewModel == null) return;
@@ -316,6 +334,24 @@ public sealed partial class WidgetStudioTab : UserControl
             CardWidgetMiniIsland.BorderBrush = selectedTag == "MiniIsland" ? accentBrush : subtleBorderBrush;
             CardWidgetMiniIsland.BorderThickness = selectedTag == "MiniIsland" ? new Thickness(2) : new Thickness(1);
             if (BadgeWidgetMiniIsland != null) BadgeWidgetMiniIsland.Visibility = selectedTag == "MiniIsland" ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (CardWidgetBentoVivid != null)
+        {
+            CardWidgetBentoVivid.BorderBrush = selectedTag == "BentoVivid" ? accentBrush : subtleBorderBrush;
+            CardWidgetBentoVivid.BorderThickness = selectedTag == "BentoVivid" ? new Thickness(2) : new Thickness(1);
+            if (BadgeWidgetBentoVivid != null) BadgeWidgetBentoVivid.Visibility = selectedTag == "BentoVivid" ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (CardWidgetBentoTactical != null)
+        {
+            CardWidgetBentoTactical.BorderBrush = selectedTag == "BentoTactical" ? accentBrush : subtleBorderBrush;
+            CardWidgetBentoTactical.BorderThickness = selectedTag == "BentoTactical" ? new Thickness(2) : new Thickness(1);
+            if (BadgeWidgetBentoTactical != null) BadgeWidgetBentoTactical.Visibility = selectedTag == "BentoTactical" ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (CardWidgetRetroLcd != null)
+        {
+            CardWidgetRetroLcd.BorderBrush = selectedTag == "RetroLcd" ? accentBrush : subtleBorderBrush;
+            CardWidgetRetroLcd.BorderThickness = selectedTag == "RetroLcd" ? new Thickness(2) : new Thickness(1);
+            if (BadgeWidgetRetroLcd != null) BadgeWidgetRetroLcd.Visibility = selectedTag == "RetroLcd" ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 
@@ -468,10 +504,10 @@ public sealed partial class WidgetStudioTab : UserControl
     {
         if (ViewModel == null) return;
 
-        // 1. Đồng bộ skin theo mùa trên toàn app
+        // 1. Äá»“ng bá»™ skin theo mÃ¹a trÃªn toÃ n app
         ViewModel.ApplySeasonalSkin(skinTag, save: true);
 
-        // 2. Cập nhật phong cách widget sang SeasonalCard & lưu theme mùa
+        // 2. Cáº­p nháº­t phong cÃ¡ch widget sang SeasonalCard & lÆ°u theme mÃ¹a
         ViewModel.Settings.WidgetStyle = "SeasonalCard";
         ViewModel.Settings.SeasonalWidgetTheme = skinTag;
         ViewModel.ApplySettings();
@@ -493,13 +529,13 @@ public sealed partial class WidgetStudioTab : UserControl
         UpdateWidgetCardsVisuals("SeasonalCard");
         UpdateSeasonalCardsVisuals(skinTag);
 
-        // 3. Khởi tạo hoặc cập nhật WidgetWindow trên Desktop
+        // 3. Khá»Ÿi táº¡o hoáº·c cáº­p nháº­t WidgetWindow trÃªn Desktop
         var targetSkin = SeasonalSkinService.Instance.GetActiveSkin(skinTag);
         double chosenOpacity = ViewModel.Settings.WidgetOpacity;
         if (chosenOpacity <= 0.05) chosenOpacity = 1.0;
         bool alwaysOnTop = ViewModel.Settings.WidgetAlwaysOnTop;
 
-        // Nếu đã có Widget đang mở, áp dụng skin mùa ngay lập tức
+        // Náº¿u Ä‘Ã£ cÃ³ Widget Ä‘ang má»Ÿ, Ã¡p dá»¥ng skin mÃ¹a ngay láº­p tá»©c
         if (WidgetWindow.ActiveWidgets.Count > 0)
         {
             foreach (var w in WidgetWindow.ActiveWidgets)
@@ -514,7 +550,7 @@ public sealed partial class WidgetStudioTab : UserControl
         }
         else
         {
-            // Nếu chưa mở Widget nào, ghim một Widget mới ra Desktop
+            // Náº¿u chÆ°a má»Ÿ Widget nÃ o, ghim má»™t Widget má»›i ra Desktop
             var widgetWindow = new WidgetWindow(ViewModel);
             widgetWindow.ApplySeasonalTheme(targetSkin);
             widgetWindow.SetOpacity(chosenOpacity);
@@ -555,6 +591,18 @@ public sealed partial class WidgetStudioTab : UserControl
         }
     }
 
+        public void ScrollToBentoSection()
+    {
+        try
+        {
+            WidgetScrollViewer?.ChangeView(null, 1100, null, false);
+            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+            {
+                WidgetScrollViewer?.ChangeView(null, 1100, null, false);
+            });
+        }
+        catch { }
+    }
     public void ScrollToSeasonalSection()
     {
         try

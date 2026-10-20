@@ -560,6 +560,9 @@ public class LocalizationService : INotifyPropertyChanged
     public string WidgetStyleGlass => IsVietnamese ? "🪟 Glass Card (Đầy đủ)" : "🪟 Glass Card (Full)";
     public string WidgetStyleCompact => IsVietnamese ? "➖ Compact Bar (Gọn)" : "➖ Compact Bar (Slim)";
     public string WidgetStyleIsland => IsVietnamese ? "💊 Mini Island (Viên thuốc)" : "💊 Mini Island";
+    public string WidgetStyleBentoVivid => IsVietnamese ? "🎨 Bento Pop (Vivid Color)" : "🎨 Bento Pop (Vivid Color)";
+    public string WidgetStyleBentoTactical => IsVietnamese ? "⏱️ Bento Pilot (Tactical Slate)" : "⏱️ Bento Pilot (Tactical Slate)";
+    public string WidgetStyleRetroLcd => IsVietnamese ? "📟 Retro LCD Cyber Station" : "📟 Retro LCD Cyber Station";
     public string WidgetOpacityTitle => IsVietnamese ? "Độ trong suốt Widget (Opacity)" : "Widget Transparency (Opacity)";
     public string WidgetOpacitySub => IsVietnamese ? "Tự động sáng rõ 100% khi rê chuột vào" : "Automatically dims and highlights 100% on mouse hover";
 
@@ -603,6 +606,12 @@ public class LocalizationService : INotifyPropertyChanged
     public string WidgetStudioCompactDesc => IsVietnamese ? "Thanh ngang dài thanh mảnh, chiếm diện tích tối thiểu, đặt sát góc trên màn hình" : "Ultra-slim horizontal bar taking minimal desktop space, ideal for screen edges";
     public string WidgetStudioIslandTitle => "💊 Dynamic Island Pill";
     public string WidgetStudioIslandDesc => IsVietnamese ? "Viên thuốc bo tròn tinh tế, tối giản sang trọng, luôn nổi nhẹ nhàng trên màn hình" : "Sleek floating capsule pill with minimalist luxury, always gently present";
+    public string WidgetStudioBentoVividTitle => "🎨 Bento Pop (Vivid Color)";
+    public string WidgetStudioBentoVividDesc => IsVietnamese ? "Thiết kế module Bento sống động với ô thời tiết xanh da trời, ô ngày cam ấm, ô hoàng hôn và đồng hồ kim mặt đỏ san hô" : "Vibrant bento grid with sky-blue weather tile, amber date tile, sunset indicator and coral world clock";
+    public string WidgetStudioBentoTacticalTitle => "⏱️ Bento Pilot (Tactical Slate)";
+    public string WidgetStudioBentoTacticalDesc => IsVietnamese ? "Thiết kế Bento sắc đen huyền bí với ô xanh phiến đá, đồng hồ phi công kim dạ quang neon và chỉ số áp suất số nguyên bản" : "Tactical slate bento with muted blue weather tile, neon green pilot watch dial, sunset tile and digital barometer";
+    public string WidgetStudioRetroLcdTitle => "📟 Retro LCD Cyber Station";
+    public string WidgetStudioRetroLcdDesc => IsVietnamese ? "Trạm thời tiết màn hình LCD ma trận điểm hoài cổ, số 7 đoạn, mây pixel art, đồng hồ đo gió và bảng vi khí hậu viễn tưởng" : "Vintage dual-screen LCD cyber station with 7-segment digital temperature, pixel cloud art, wind speed gauge and sci-fi telemetry";
     public string WidgetStudio4DayForecast => IsVietnamese ? "Dự báo 4 ngày" : "4-Day Forecast";
     public string WidgetStudioAqiGood => IsVietnamese ? "AQI Chuẩn" : "AQI Good";
     public string WidgetStudioControlsHeader => IsVietnamese ? "Tùy Biến & Điều Khiển Widget" : "Widget Controls & Customization";

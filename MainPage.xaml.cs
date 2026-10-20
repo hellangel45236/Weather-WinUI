@@ -79,12 +79,12 @@ public sealed partial class MainPage : Page
             UpdateThemeComboBoxLabels();
             LocalizationService.Instance.LanguageChanged += (s, ev) => UpdateThemeComboBoxLabels();
 
-            // Nạp dữ liệu thời tiết
+            // Náº¡p dá»¯ liá»‡u thá»i tiáº¿t
             if (ViewModel != null)
             {
                 await ViewModel.InitializeAsync();
 
-                // Khởi tạo khay hệ thống (System Tray Icon)
+                // Khá»Ÿi táº¡o khay há»‡ thá»‘ng (System Tray Icon)
                 if (App.MainWindow != null && ViewModel.TrayService == null)
                 {
                     var trayService = new TrayIconService();
@@ -92,10 +92,10 @@ public sealed partial class MainPage : Page
                     ViewModel.TrayService = trayService;
                 }
 
-                // Tự động hiển thị Changelog nếu vừa cập nhật phiên bản mới
+                // Tá»± Ä‘á»™ng hiá»ƒn thá»‹ Changelog náº¿u vá»«a cáº­p nháº­t phiÃªn báº£n má»›i
                 CheckAndShowChangelog();
 
-                // Lắng nghe sự kiện đổi chủ đề Mùa/Lễ hội để đồng bộ hạt và ánh sáng Zen Mode
+                // Láº¯ng nghe sá»± kiá»‡n Ä‘á»•i chá»§ Ä‘á» MÃ¹a/Lá»… há»™i Ä‘á»ƒ Ä‘á»“ng bá»™ háº¡t vÃ  Ã¡nh sÃ¡ng Zen Mode
                 ViewModel.SeasonalSkinChanged += (s, skin) =>
                 {
                     UpdateZenGradientColor();
@@ -115,7 +115,7 @@ public sealed partial class MainPage : Page
                     TabOverview?.RedrawCanvases();
                 };
 
-                // Hỗ trợ kiểm thử skin qua command-line (--skin=tet, midautumn, christmas, halloween, spring, summer, autumn, winter, auto)
+                // Há»— trá»£ kiá»ƒm thá»­ skin qua command-line (--skin=tet, midautumn, christmas, halloween, spring, summer, autumn, winter, auto)
                 try
                 {
                     var skinArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--skin=", StringComparison.OrdinalIgnoreCase));
@@ -127,7 +127,7 @@ public sealed partial class MainPage : Page
                 }
                 catch { }
 
-                // Hỗ trợ kiểm thử Theme qua command-line (--theme=light, dark, system)
+                // Há»— trá»£ kiá»ƒm thá»­ Theme qua command-line (--theme=light, dark, system)
                 try
                 {
                     var themeArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--theme=", StringComparison.OrdinalIgnoreCase));
@@ -144,7 +144,7 @@ public sealed partial class MainPage : Page
                 }
                 catch { }
 
-                // Hỗ trợ cuộn trang qua command-line (--scroll=hourly, bottom)
+                // Há»— trá»£ cuá»™n trang qua command-line (--scroll=hourly, bottom)
                 try
                 {
                     var scrollArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--scroll=", StringComparison.OrdinalIgnoreCase));
@@ -170,7 +170,7 @@ public sealed partial class MainPage : Page
                 }
                 catch { }
 
-                // Hỗ trợ điều hướng Tab qua command-line (--tab=overview, flood, radar, lifestyle, calendar, widget, zen)
+                // Há»— trá»£ Ä‘iá»u hÆ°á»›ng Tab qua command-line (--tab=overview, flood, radar, lifestyle, calendar, widget, zen)
                 try
                 {
                     var tabArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--tab=", StringComparison.OrdinalIgnoreCase));
@@ -217,7 +217,14 @@ public sealed partial class MainPage : Page
                                     break;
                                 case "widget":
                                     var wsTab = FindName(nameof(TabWidgetStudio)) as WidgetStudioTab;
-                                    if (Environment.CommandLine.Contains("--scroll=seasonal", StringComparison.OrdinalIgnoreCase) ||
+                                    if (Environment.CommandLine.Contains("--scroll=bento", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+                                        {
+                                            wsTab?.ScrollToBentoSection();
+                                        });
+                                    }
+                                    else if (Environment.CommandLine.Contains("--scroll=seasonal", StringComparison.OrdinalIgnoreCase) ||
                                         Environment.CommandLine.Contains("--scroll=bottom", StringComparison.OrdinalIgnoreCase))
                                     {
                                         DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
@@ -244,14 +251,30 @@ public sealed partial class MainPage : Page
                             int endIdx = fullCmd.IndexOf(' ', skinIdx);
                             skinMode = (endIdx > skinIdx ? fullCmd.Substring(skinIdx + 7, endIdx - skinIdx - 7) : fullCmd.Substring(skinIdx + 7)).Trim().Trim('"');
                         }
-                        var skin = Services.SeasonalSkinService.Instance.GetActiveSkin(skinMode);
-                        
+
+                        string? widgetStyle = null;
+                        int styleIdx = fullCmd.IndexOf("--style=", StringComparison.OrdinalIgnoreCase);
+                        if (styleIdx >= 0)
+                        {
+                            int endIdx = fullCmd.IndexOf(' ', styleIdx);
+                            widgetStyle = (endIdx > styleIdx ? fullCmd.Substring(styleIdx + 8, endIdx - styleIdx - 8) : fullCmd.Substring(styleIdx + 8)).Trim().Trim('"');
+                        }
+
                         if (_widgetWindow == null)
                         {
                             _widgetWindow = new WidgetWindow(ViewModel);
                             _widgetWindow.Closed += (s, args) => _widgetWindow = null;
                         }
-                        _widgetWindow.ApplySeasonalTheme(skin);
+
+                        if (!string.IsNullOrEmpty(widgetStyle))
+                        {
+                            _widgetWindow.ApplyWidgetStyle(widgetStyle);
+                        }
+                        else
+                        {
+                            var skin = Services.SeasonalSkinService.Instance.GetActiveSkin(skinMode);
+                            _widgetWindow.ApplySeasonalTheme(skin);
+                        }
                         _widgetWindow.Activate();
                     }
                 }
@@ -265,7 +288,7 @@ public sealed partial class MainPage : Page
     {
         double width = e.NewSize.Width;
 
-        // 1. Tinh chỉnh Top Bar linh hoạt để thanh tìm kiếm luôn rộng rãi trên mọi độ phân giải
+        // 1. Tinh chá»‰nh Top Bar linh hoáº¡t Ä‘á»ƒ thanh tÃ¬m kiáº¿m luÃ´n rá»™ng rÃ£i trÃªn má»i Ä‘á»™ phÃ¢n giáº£i
         if (width < 1220)
         {
             if (BtnTextWidget != null) BtnTextWidget.Visibility = Visibility.Collapsed;
@@ -288,13 +311,13 @@ public sealed partial class MainPage : Page
             if (ThemeComboBox != null) ThemeComboBox.Width = 124;
         }
 
-        // Tự co giãn MaxWidth ô tìm kiếm khi cửa sổ hẹp
+        // Tá»± co giÃ£n MaxWidth Ã´ tÃ¬m kiáº¿m khi cá»­a sá»• háº¹p
         if (LocationSearchBox != null)
         {
             LocationSearchBox.MaxWidth = width < 950 ? 280 : (width < 1140 ? 380 : 520);
         }
 
-        // 2. Tinh chỉnh lề ngoài gọn gàng trên màn hình nhỏ (MainContentGrid)
+        // 2. Tinh chá»‰nh lá» ngoÃ i gá»n gÃ ng trÃªn mÃ n hÃ¬nh nhá» (MainContentGrid)
         if (MainContentGrid != null)
         {
             var targetMargin = width < 1250 ? new Thickness(14, 10, 14, 14) : new Thickness(24, 12, 24, 24);
@@ -681,9 +704,9 @@ public sealed partial class MainPage : Page
         bool isVi = LocalizationService.Instance.IsVietnamese;
         if (ThemeComboBox != null && ThemeComboBox.Items.Count >= 3)
         {
-            ((ComboBoxItem)ThemeComboBox.Items[0]).Content = isVi ? "☀️ Sáng" : "☀️ Light";
-            ((ComboBoxItem)ThemeComboBox.Items[1]).Content = isVi ? "🌙 Tối" : "🌙 Dark";
-            ((ComboBoxItem)ThemeComboBox.Items[2]).Content = isVi ? "💻 Hệ thống" : "💻 System";
+            ((ComboBoxItem)ThemeComboBox.Items[0]).Content = isVi ? "â˜€ï¸ SÃ¡ng" : "â˜€ï¸ Light";
+            ((ComboBoxItem)ThemeComboBox.Items[1]).Content = isVi ? "ðŸŒ™ Tá»‘i" : "ðŸŒ™ Dark";
+            ((ComboBoxItem)ThemeComboBox.Items[2]).Content = isVi ? "ðŸ’» Há»‡ thá»‘ng" : "ðŸ’» System";
         }
     }
 
@@ -726,15 +749,15 @@ public sealed partial class MainPage : Page
     {
         var inputTextBox = new TextBox
         {
-            PlaceholderText = "Nhập tên thành phố (VD: Đà Nẵng, Tokyo, Paris, New York...)",
+            PlaceholderText = "Nháº­p tÃªn thÃ nh phá»‘ (VD: ÄÃ  Náºµng, Tokyo, Paris, New York...)",
             Height = 38
         };
         var dialog = new ContentDialog
         {
-            Title = "➕ Tạo Widget Mới Cho Thành Phố Khác",
+            Title = "âž• Táº¡o Widget Má»›i Cho ThÃ nh Phá»‘ KhÃ¡c",
             Content = inputTextBox,
-            PrimaryButtonText = "Tạo Widget",
-            CloseButtonText = "Hủy",
+            PrimaryButtonText = "Táº¡o Widget",
+            CloseButtonText = "Há»§y",
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = this.XamlRoot
         };
@@ -809,18 +832,18 @@ public sealed partial class MainPage : Page
 
         bool isVi = LocalizationService.Instance.IsVietnamese;
         string location = ViewModel.LocationTitle.ToUpper();
-        string nowTime = isVi ? $"{DateTime.Now:dddd, dd/MM/yyyy • HH:mm}" : $"{DateTime.Now:dddd, MM/dd/yyyy • HH:mm}";
-        string lunar = isVi ? $"Âm lịch: {w.LunarDateText} • {w.SolarTermText}" : $"Lunar: {w.LunarDateText} • {w.SolarTermText}";
+        string nowTime = isVi ? $"{DateTime.Now:dddd, dd/MM/yyyy â€¢ HH:mm}" : $"{DateTime.Now:dddd, MM/dd/yyyy â€¢ HH:mm}";
+        string lunar = isVi ? $"Ã‚m lá»‹ch: {w.LunarDateText} â€¢ {w.SolarTermText}" : $"Lunar: {w.LunarDateText} â€¢ {w.SolarTermText}";
         string temp = w.TemperatureText.Replace("C", "").Trim();
-        string feelsLike = $"{w.FeelsLikeText} • {w.MinMaxText}";
+        string feelsLike = $"{w.FeelsLikeText} â€¢ {w.MinMaxText}";
         string uv = $"{w.UvIndexText} - {w.UvIndexDescription}";
         string aqi = $"{w.AqiValue} - {w.AqiDescription}";
         string rain = w.RainProbabilityText;
         string wind = $"{w.WindText} {w.WindDirectionText}";
         string humidity = w.HumidityText;
-        string sun = $"{w.SunriseText} • {w.SunsetText}";
+        string sun = $"{w.SunriseText} â€¢ {w.SunsetText}";
 
-        // 1. Cập nhật Khổ Ngang FHD (1920x1080)
+        // 1. Cáº­p nháº­t Khá»• Ngang FHD (1920x1080)
         if (FhdLandscapeLocationText != null) FhdLandscapeLocationText.Text = location;
         if (FhdLandscapeDateText != null) FhdLandscapeDateText.Text = nowTime;
         if (FhdLandscapeLunarText != null) FhdLandscapeLunarText.Text = lunar;
@@ -836,15 +859,15 @@ public sealed partial class MainPage : Page
 
         if (o != null)
         {
-            if (FhdLandscapeOotdTitle != null) FhdLandscapeOotdTitle.Text = isVi ? $"HÔM NAY MẶC GÌ? (OOTD ADVISOR) — {o.OccasionTitle.ToUpper()}" : $"WHAT TO WEAR TODAY? (OOTD ADVISOR) — {o.OccasionTitle.ToUpper()}";
+            if (FhdLandscapeOotdTitle != null) FhdLandscapeOotdTitle.Text = isVi ? $"HÃ”M NAY Máº¶C GÃŒ? (OOTD ADVISOR) â€” {o.OccasionTitle.ToUpper()}" : $"WHAT TO WEAR TODAY? (OOTD ADVISOR) â€” {o.OccasionTitle.ToUpper()}";
             if (FhdLandscapeThermalTag != null) FhdLandscapeThermalTag.Text = o.ThermalComfortNotice;
             if (FhdLandscapeOotdHeadline != null) FhdLandscapeOotdHeadline.Text = o.Headline;
             if (FhdLandscapeOotdClothing != null) FhdLandscapeOotdClothing.Text = $"{o.TopClothing}, {o.BottomClothing}, {o.Footwear}";
-            if (FhdLandscapeOotdAccessories != null) FhdLandscapeOotdAccessories.Text = string.Join(" • ", o.Accessories.Select(a => $"{a.Name}"));
+            if (FhdLandscapeOotdAccessories != null) FhdLandscapeOotdAccessories.Text = string.Join(" â€¢ ", o.Accessories.Select(a => $"{a.Name}"));
             if (FhdLandscapeMotorbikeText != null) FhdLandscapeMotorbikeText.Text = o.MotorbikeWarning;
         }
 
-        // Cập nhật 3 ngày dự báo
+        // Cáº­p nháº­t 3 ngÃ y dá»± bÃ¡o
         if (ViewModel.DailyForecast != null && ViewModel.DailyForecast.Count >= 3)
         {
             var d1 = ViewModel.DailyForecast[0];
@@ -859,9 +882,9 @@ public sealed partial class MainPage : Page
             if (FhdD3Temp != null) FhdD3Temp.Text = $"{d3.TempMinDisplay} / {d3.TempMaxDisplay}";
         }
 
-        // 2. Cập nhật Khổ Dọc Story FHD (1080x1920)
+        // 2. Cáº­p nháº­t Khá»• Dá»c Story FHD (1080x1920)
         if (FhdStoryLocationText != null) FhdStoryLocationText.Text = location;
-        if (FhdStoryDateText != null) FhdStoryDateText.Text = isVi ? $"{DateTime.Now:dd/MM/yyyy • HH:mm}" : $"{DateTime.Now:MM/dd/yyyy • HH:mm}";
+        if (FhdStoryDateText != null) FhdStoryDateText.Text = isVi ? $"{DateTime.Now:dd/MM/yyyy â€¢ HH:mm}" : $"{DateTime.Now:MM/dd/yyyy â€¢ HH:mm}";
         if (FhdStoryLunarText != null) FhdStoryLunarText.Text = lunar;
         if (FhdStoryTempText != null) FhdStoryTempText.Text = temp;
         if (FhdStoryConditionText != null) FhdStoryConditionText.Text = w.ConditionText;
@@ -875,9 +898,9 @@ public sealed partial class MainPage : Page
 
         if (o != null)
         {
-            if (FhdStoryOotdTitle != null) FhdStoryOotdTitle.Text = isVi ? $"👗 HÔM NAY MẶC GÌ? — {o.OccasionTitle.ToUpper()}" : $"👗 WHAT TO WEAR TODAY? — {o.OccasionTitle.ToUpper()}";
+            if (FhdStoryOotdTitle != null) FhdStoryOotdTitle.Text = isVi ? $"ðŸ‘— HÃ”M NAY Máº¶C GÃŒ? â€” {o.OccasionTitle.ToUpper()}" : $"ðŸ‘— WHAT TO WEAR TODAY? â€” {o.OccasionTitle.ToUpper()}";
             if (FhdStoryOotdHeadline != null) FhdStoryOotdHeadline.Text = o.Headline;
-            if (FhdStoryOotdAccessories != null) FhdStoryOotdAccessories.Text = isVi ? $"🎒 Phụ kiện: {string.Join(" • ", o.Accessories.Select(a => a.Name))}" : $"🎒 Accessories: {string.Join(" • ", o.Accessories.Select(a => a.Name))}";
+            if (FhdStoryOotdAccessories != null) FhdStoryOotdAccessories.Text = isVi ? $"ðŸŽ’ Phá»¥ kiá»‡n: {string.Join(" â€¢ ", o.Accessories.Select(a => a.Name))}" : $"ðŸŽ’ Accessories: {string.Join(" â€¢ ", o.Accessories.Select(a => a.Name))}";
             if (FhdStoryMotorbikeText != null) FhdStoryMotorbikeText.Text = o.MotorbikeWarning;
         }
 
@@ -895,7 +918,7 @@ public sealed partial class MainPage : Page
             if (FhdStoryD3Temp != null) FhdStoryD3Temp.Text = $"{d3.TempMinDisplay} / {d3.TempMaxDisplay}";
         }
 
-        // Hình nền thành phố nếu có
+        // HÃ¬nh ná»n thÃ nh phá»‘ náº¿u cÃ³
         if (w.HasCityImage && !string.IsNullOrEmpty(w.CityImagePath))
         {
             try
@@ -935,7 +958,7 @@ public sealed partial class MainPage : Page
 
             if (targetElement == null) return;
 
-            // Đảm bảo layout 1:1 Full HD không bị co kéo hay scale bởi Viewbox
+            // Äáº£m báº£o layout 1:1 Full HD khÃ´ng bá»‹ co kÃ©o hay scale bá»Ÿi Viewbox
             targetElement.Measure(new Windows.Foundation.Size(targetWidth, targetHeight));
             targetElement.Arrange(new Windows.Foundation.Rect(0, 0, targetWidth, targetHeight));
             targetElement.UpdateLayout();
@@ -1029,17 +1052,17 @@ public sealed partial class MainPage : Page
                 dataPackage.SetBitmap(RandomAccessStreamReference.CreateFromFile(storageFile));
                 var isVi = LocalizationService.Instance.IsVietnamese;
                 dataPackage.SetText(isVi
-                    ? $"🌤️ Dự báo thời tiết {ViewModel.LocationTitle}: {ViewModel.CurrentWeather?.TemperatureText}, {ViewModel.CurrentWeather?.ConditionText} (Thẻ Full HD {outWidth}x{outHeight} từ Weather WinUI v3.0.5)"
-                    : $"🌤️ Weather Forecast {ViewModel.LocationTitle}: {ViewModel.CurrentWeather?.TemperatureText}, {ViewModel.CurrentWeather?.ConditionText} (Full HD Card {outWidth}x{outHeight} from Weather WinUI v3.0.5)");
+                    ? $"ðŸŒ¤ï¸ Dá»± bÃ¡o thá»i tiáº¿t {ViewModel.LocationTitle}: {ViewModel.CurrentWeather?.TemperatureText}, {ViewModel.CurrentWeather?.ConditionText} (Tháº» Full HD {outWidth}x{outHeight} tá»« Weather WinUI v3.0.5)"
+                    : $"ðŸŒ¤ï¸ Weather Forecast {ViewModel.LocationTitle}: {ViewModel.CurrentWeather?.TemperatureText}, {ViewModel.CurrentWeather?.ConditionText} (Full HD Card {outWidth}x{outHeight} from Weather WinUI v3.0.5)");
                 dataPackage.RequestedOperation = DataPackageOperation.Copy;
                 Clipboard.SetContent(dataPackage);
 
                 ShareCardDialog?.Hide();
                 if (ShareSuccessInfoBar != null)
                 {
-                    ShareSuccessInfoBar.Title = isVi ? "Đã sao chép ảnh Full HD thành công!" : "Full HD image copied successfully!";
+                    ShareSuccessInfoBar.Title = isVi ? "ÄÃ£ sao chÃ©p áº£nh Full HD thÃ nh cÃ´ng!" : "Full HD image copied successfully!";
                     ShareSuccessInfoBar.Message = isVi
-                        ? $"Ảnh thời tiết {outWidth}x{outHeight} siêu nét đã lưu vào Clipboard. Bạn có thể nhấn Ctrl+V để dán trực tiếp vào Zalo, Facebook, Messenger."
+                        ? $"áº¢nh thá»i tiáº¿t {outWidth}x{outHeight} siÃªu nÃ©t Ä‘Ã£ lÆ°u vÃ o Clipboard. Báº¡n cÃ³ thá»ƒ nháº¥n Ctrl+V Ä‘á»ƒ dÃ¡n trá»±c tiáº¿p vÃ o Zalo, Facebook, Messenger."
                         : $"Ultra-sharp {outWidth}x{outHeight} weather card copied to Clipboard. You can press Ctrl+V to paste directly into social apps or chats.";
                     ShareSuccessInfoBar.IsOpen = true;
                 }
@@ -1073,9 +1096,9 @@ public sealed partial class MainPage : Page
                     if (ShareSuccessInfoBar != null)
                     {
                         var isVi = LocalizationService.Instance.IsVietnamese;
-                        ShareSuccessInfoBar.Title = isVi ? "Đã lưu ảnh Full HD thành công!" : "Full HD image saved successfully!";
+                        ShareSuccessInfoBar.Title = isVi ? "ÄÃ£ lÆ°u áº£nh Full HD thÃ nh cÃ´ng!" : "Full HD image saved successfully!";
                         ShareSuccessInfoBar.Message = isVi
-                            ? $"File ảnh chất lượng cao {outWidth}x{outHeight}px đã lưu tại: {file.Path}."
+                            ? $"File áº£nh cháº¥t lÆ°á»£ng cao {outWidth}x{outHeight}px Ä‘Ã£ lÆ°u táº¡i: {file.Path}."
                             : $"High quality {outWidth}x{outHeight}px image saved to: {file.Path}.";
                         ShareSuccessInfoBar.IsOpen = true;
                     }
@@ -1130,8 +1153,8 @@ public sealed partial class MainPage : Page
             if (ChangelogDialog != null)
             {
                 ChangelogDialog.PrimaryButtonText = LocalizationService.Instance.IsVietnamese
-                    ? "Bắt đầu trải nghiệm ngay 🚀"
-                    : "Get Started Now 🚀";
+                    ? "Báº¯t Ä‘áº§u tráº£i nghiá»‡m ngay ðŸš€"
+                    : "Get Started Now ðŸš€";
                 ChangelogDialog.XamlRoot = this.XamlRoot;
                 await ChangelogDialog.ShowAsync();
             }
@@ -1193,22 +1216,22 @@ public sealed partial class MainPage : Page
         {
             ChangelogHeaderTitle.Text = versionTag switch
             {
-                "3.0.6" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.6" : "Official Release Notes v3.0.6",
-                "3.0.5" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.5" : "Official Release Notes v3.0.5",
-                "3.0.4" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.4" : "Official Release Notes v3.0.4",
-                "3.0.3" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.3" : "Official Release Notes v3.0.3",
-                "3.0.2" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.2" : "Official Release Notes v3.0.2",
-                "3.0.1" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.1" : "Official Release Notes v3.0.1",
-                "3.0.0" => isVi ? "Chi Tiết Bản Phát Hành Chính Thức v3.0.0" : "Official Release Notes v3.0.0",
-                "2.2.3" => isVi ? "Chi Tiết Bản Cập Nhật v2.2.3" : "Release Notes v2.2.3",
-                "2.2.1" => isVi ? "Chi Tiết Bản Cập Nhật v2.2.1" : "Release Notes v2.2.1",
-                "2.2" => isVi ? "Chi Tiết Bản Cập Nhật v2.2" : "Release Notes v2.2",
-                "v2.1" => isVi ? "Chi Tiết Bản Cập Nhật v2.1" : "Release Notes v2.1",
-                "v2.0" => isVi ? "Chi Tiết Bản Cập Nhật v2.0" : "Release Notes v2.0",
-                "v1.9" => isVi ? "Chi Tiết Bản Cập Nhật v1.9" : "Release Notes v1.9",
-                "v1.8" => isVi ? "Chi Tiết Bản Cập Nhật v1.8" : "Release Notes v1.8",
-                "v1.7" => isVi ? "Chi Tiết Bản Cập Nhật v1.7" : "Release Notes v1.7",
-                _ => isVi ? $"Chi Tiết Bản Cập Nhật {versionTag}" : $"Release Notes {versionTag}"
+                "3.0.6" => isVi ? "Chi Tiáº¿t Báº£n PhÃ¡t HÃ nh ChÃ­nh Thá»©c v3.0.6" : "Official Release Notes v3.0.6",
+                "3.0.5" => isVi ? "Chi Tiáº¿t Báº£n PhÃ¡t HÃ nh ChÃ­nh Thá»©c v3.0.5" : "Official Release Notes v3.0.5",
+                "3.0.4" => isVi ? "Chi Tiáº¿t Báº£n PhÃ¡t HÃ nh ChÃ­nh Thá»©c v3.0.4" : "Official Release Notes v3.0.4",
+                "3.0.3" => isVi ? "Chi Tiáº¿t Báº£n PhÃ¡t HÃ nh ChÃ­nh Thá»©c v3.0.3" : "Official Release Notes v3.0.3",
+                "3.0.2" => isVi ? "Chi Tiáº¿t Báº£n PhÃ¡t HÃ nh ChÃ­nh Thá»©c v3.0.2" : "Official Release Notes v3.0.2",
+                "3.0.1" => isVi ? "Chi Tiáº¿t Báº£n PhÃ¡t HÃ nh ChÃ­nh Thá»©c v3.0.1" : "Official Release Notes v3.0.1",
+                "3.0.0" => isVi ? "Chi Tiáº¿t Báº£n PhÃ¡t HÃ nh ChÃ­nh Thá»©c v3.0.0" : "Official Release Notes v3.0.0",
+                "2.2.3" => isVi ? "Chi Tiáº¿t Báº£n Cáº­p Nháº­t v2.2.3" : "Release Notes v2.2.3",
+                "2.2.1" => isVi ? "Chi Tiáº¿t Báº£n Cáº­p Nháº­t v2.2.1" : "Release Notes v2.2.1",
+                "2.2" => isVi ? "Chi Tiáº¿t Báº£n Cáº­p Nháº­t v2.2" : "Release Notes v2.2",
+                "v2.1" => isVi ? "Chi Tiáº¿t Báº£n Cáº­p Nháº­t v2.1" : "Release Notes v2.1",
+                "v2.0" => isVi ? "Chi Tiáº¿t Báº£n Cáº­p Nháº­t v2.0" : "Release Notes v2.0",
+                "v1.9" => isVi ? "Chi Tiáº¿t Báº£n Cáº­p Nháº­t v1.9" : "Release Notes v1.9",
+                "v1.8" => isVi ? "Chi Tiáº¿t Báº£n Cáº­p Nháº­t v1.8" : "Release Notes v1.8",
+                "v1.7" => isVi ? "Chi Tiáº¿t Báº£n Cáº­p Nháº­t v1.7" : "Release Notes v1.7",
+                _ => isVi ? $"Chi Tiáº¿t Báº£n Cáº­p Nháº­t {versionTag}" : $"Release Notes {versionTag}"
             };
         }
 
@@ -1216,11 +1239,11 @@ public sealed partial class MainPage : Page
         {
             if (versionTag == "3.0.6")
             {
-                ChangelogHeaderBadge.Text = isVi ? "v3.0.6 BẢN CHÍNH THỨC" : "v3.0.6 OFFICIAL";
+                ChangelogHeaderBadge.Text = isVi ? "v3.0.6 Báº¢N CHÃNH THá»¨C" : "v3.0.6 OFFICIAL";
             }
             else if (versionTag == "3.0.5")
             {
-                ChangelogHeaderBadge.Text = isVi ? "v3.0.5 BẢN CHÍNH THỨC" : "v3.0.5 OFFICIAL";
+                ChangelogHeaderBadge.Text = isVi ? "v3.0.5 Báº¢N CHÃNH THá»¨C" : "v3.0.5 OFFICIAL";
             }
         }
 
@@ -1229,13 +1252,13 @@ public sealed partial class MainPage : Page
             if (versionTag == "3.0.6")
             {
                 ChangelogHeaderSubtitle.Text = isVi
-                    ? "Bản cập nhật v3.0.6 ra mắt cấu trúc Bento Grid hiện đại cho tab Tổng quan, hệ thống hoạt họa Fluent Motion nhịp nhàng (kim la bàn xoay ngắn nhất, UV/AQI lướt êm, biểu tượng thở lơ lửng, vật lý vi mô thẻ card) và chuyển tab mượt mà 100% trên Win 10 & 11."
+                    ? "Báº£n cáº­p nháº­t v3.0.6 ra máº¯t cáº¥u trÃºc Bento Grid hiá»‡n Ä‘áº¡i cho tab Tá»•ng quan, há»‡ thá»‘ng hoáº¡t há»a Fluent Motion nhá»‹p nhÃ ng (kim la bÃ n xoay ngáº¯n nháº¥t, UV/AQI lÆ°á»›t Ãªm, biá»ƒu tÆ°á»£ng thá»Ÿ lÆ¡ lá»­ng, váº­t lÃ½ vi mÃ´ tháº» card) vÃ  chuyá»ƒn tab mÆ°á»£t mÃ  100% trÃªn Win 10 & 11."
                     : "Version 3.0.6 introduces a modern Bento Grid Overview layout, a comprehensive Fluent Motion animation system (shortest-arc compass, gliding UV/AQI indicators, breathing hero icon, card hover physics) and seamless tab transitions on Win 10 & 11.";
             }
             else if (versionTag == "3.0.5")
             {
                 ChangelogHeaderSubtitle.Text = isVi
-                    ? "Bản cập nhật v3.0.5 hoàn thiện 100% song ngữ Tiếng Anh toàn bộ ứng dụng, đại tu bố cục giao diện co giãn Responsive chống tràn cắt chữ và đảm bảo độ tương thích hiển thị tuyệt đối trên Windows 10 & 11."
+                    ? "Báº£n cáº­p nháº­t v3.0.5 hoÃ n thiá»‡n 100% song ngá»¯ Tiáº¿ng Anh toÃ n bá»™ á»©ng dá»¥ng, Ä‘áº¡i tu bá»‘ cá»¥c giao diá»‡n co giÃ£n Responsive chá»‘ng trÃ n cáº¯t chá»¯ vÃ  Ä‘áº£m báº£o Ä‘á»™ tÆ°Æ¡ng thÃ­ch hiá»ƒn thá»‹ tuyá»‡t Ä‘á»‘i trÃªn Windows 10 & 11."
                     : "Version 3.0.5 delivers 100% comprehensive English localization across the entire app, responsive layout scaling overhaul preventing text clipping, and guaranteed visual compatibility on Windows 10 & 11.";
             }
         }

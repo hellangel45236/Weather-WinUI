@@ -159,7 +159,7 @@ public partial class MainViewModel : ObservableObject
     private readonly PowerManagementService _powerService = new();
 
     [ObservableProperty]
-    private string _appVersionDisplay = "v3.0.6 Official";
+    private string _appVersionDisplay = "v3.4.1 Official";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(GpsButtonBackground))]

@@ -42,7 +42,7 @@ public class AppSettings
     public string AppLanguage { get; set; } = "vi-VN"; // "vi-VN", "en-US"
 
     // 8. Cấu hình Widget Desktop
-    public string WidgetStyle { get; set; } = "BryanCDynamic"; // "BryanCDynamic", "GlassCard", "Compact", "MiniIsland"
+    public string WidgetStyle { get; set; } = "BryanCDynamic"; // "BryanCDynamic", "GlassCard", "Compact", "MiniIsland", "SeasonalCard", "BentoVivid", "BentoTactical", "RetroLcd"
     public double WidgetOpacity { get; set; } = 1.0; // 0.3 - 1.0 (50% = 0.5)
     public int WidgetLastX { get; set; } = -1;
     public int WidgetLastY { get; set; } = -1;

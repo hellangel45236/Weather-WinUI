@@ -417,6 +417,9 @@
                                                 <ComboBoxItem Content="📱 Minimalist Compact" Tag="Compact"/>
                                                 <ComboBoxItem Content="🏝️ Dynamic Island Bar" Tag="MiniIsland"/>
                                                 <ComboBoxItem Content="🎆 Seasonal Festival (Mùa &amp; Lễ hội)" Tag="SeasonalCard"/>
+                                                <ComboBoxItem Content="&#x1F371; Bento Pop (M&#224;u s&#7854;c s&#7889;ng &#273;&#7897;ng)" Tag="BentoVivid"/>
+                                                <ComboBoxItem Content="&#x1F9ED; Bento Pilot (Bu&#7891;ng l&#225;i phi c&#244;ng)" Tag="BentoTactical"/>
+                                                <ComboBoxItem Content="&#x1F4DF; Retro Cyber LCD (Tr&#7841;m th&#7801;i ti&#7871;t c&#7893; &#273;i&#7875;n)" Tag="RetroLcd"/>
                                             </ComboBox>
                                         </Grid>
 

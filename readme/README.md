@@ -1,324 +1,232 @@
-# 🌤️ Weather WinUI (Version 3.0.0)
-### Hệ Điều Hành Vi Khí Hậu Cá Nhân Hóa & Trực Quan Hóa Đô Thị Dành Cho Windows
-> **Nền tảng:** Windows App SDK (WinUI 3) • .NET 8 • C# 12 • Fluent Design System 2.0  
-> **Nhánh phát triển chính thức:** `main` | **Phiên bản:** `v3.0.0 (Bản Phát Hành Chính Thức)`  
-> **Bản phát hành tiền nhiệm:** `v2.2.3`
+# ðŸŒ¤ï¸ Weather WinUI (Version 3.4.1)
+### Há»‡ Äiá»u HÃ nh Vi KhÃ­ Háº­u CÃ¡ NhÃ¢n HÃ³a & Trá»±c Quan HÃ³a ÄÃ´ Thá»‹ DÃ nh Cho Windows
+> **Ná»n táº£ng:** Windows App SDK (WinUI 3) â€¢ .NET 8 â€¢ C# 12 â€¢ Fluent Design System 2.0  
+> **NhÃ¡nh phÃ¡t triá»ƒn chÃ­nh thá»©c:** `main` | **PhiÃªn báº£n:** `v3.4.1 (Báº£n PhÃ¡t HÃ nh ChÃ­nh Thá»©c)`  
+> **Báº£n phÃ¡t hÃ nh tiá»n nhiá»‡m:** `v3.4.0` â€¢ `v3.3.1` â€¢ `v3.3.0` â€¢ `v3.0.0`
 
 ---
 
-## 📑 Mục Lục
-1. [Giới Thiệu Tổng Quan & Tầm Nhìn Dự Án](#-1-giới-thiệu-tổng-quan--tầm-nhìn-dự-án)
-2. [Ngăn Xếp Công Nghệ (Tech Stack) & Kiến Trúc Phần Mềm](#-2-ngăn-xếp-công-nghệ-tech-stack--kiến-trúc-phần-mềm)
-3. [Đại Tu Kiến Trúc & Tính Năng Nổi Bật Trên Bản 3.0.0 Chính Thức](#-3-đại-tu-kiến-trúc--tính-năng-nổi-bật-trên-bản-300-chính-thức)
-4. [Khám Phá Chi Tiết 7 Phân Hệ Chính (7 Core Modules)](#-4-khám-phá-chi-tiết-7-phân-hệ-chính-7-core-modules)
-   - [Tab 1: Tổng Quan Vi Khí Hậu & 24h Interactive Scrubber](#tab-1-tổng-quan-vi-khí-hậu--24h-interactive-scrubber)
-   - [Tab 2: Cảnh Báo Ngập Úng & Triều Cường Đô Thị (Urban Flood Hub)](#tab-2-cảnh-báo-ngập-úng--triều-cường-đô-thị-urban-flood-hub)
-   - [Tab 3: Bản Đồ & Radar Khí Tượng 360° Realtime (Radar Hub)](#tab-3-bản-đồ--radar-khí-tượng-360-realtime-radar-hub)
-   - [Tab 4: Trợ Lý Trang Phục "Hôm Nay Mặc Gì?" & Đời Sống (OOTD Hub)](#tab-4-trợ-lý-trang-phục-hôm-nay-mặc-gì--đời-sống-ootd-hub)
-   - [Tab 5: Lịch Vạn Niên Âm Dương & Kế Hoạch Cá Nhân (Calendar Hub)](#tab-5-lịch-vạn-niên-âm-dương--kế-hoạch-cá-nhân-calendar-hub)
-   - [Tab 6: Widget Studio Showcase & Ghim Desktop Đa Dạng](#tab-6-widget-studio-showcase--ghim-desktop-đa-dạng)
-   - [Tab 7: Trung Tâm Cài Đặt & Cá Nhân Hóa Toàn Trang (Settings Hub)](#tab-7-trung-tâm-cài-đặt--cá-nhân-hóa-toàn-trang-settings-hub)
-5. [Hệ Thống Tiện Ích Độc Quyền (Exclusive Ecosystem)](#-5-hệ-thống-tiện-ích-độc-quyền-exclusive-ecosystem)
-6. [Biên Niên Sử Phát Triển Toàn Diện (Full Version History: v1.0.0 ➔ v3.0.0)](#-6-biên-niên-sử-phát-triển-toàn-diện-full-version-history-v100--v300)
-7. [Hướng Dẫn Cài Đặt, Build & Khởi Chạy](#-7-hướng-dẫn-cài-đặt-build--khởi-chạy)
+## ðŸ“‘ Má»¥c Lá»¥c
+1. [Giá»›i Thiá»‡u Tá»•ng Quan & Táº§m NhÃ¬n Dá»± Ãn](#-1-giá»›i-thiá»‡u-tá»•ng-quan--táº§m-nhÃ¬n-dá»±-Ã¡n)
+2. [NgÄƒn Xáº¿p CÃ´ng Nghá»‡ (Tech Stack) & Kiáº¿n TrÃºc Pháº§n Má»m](#-2-ngÄƒn-xáº¿p-cÃ´ng-nghá»‡-tech-stack--kiáº¿n-trÃºc-pháº§n-má»m)
+3. [Äiá»ƒm Má»›i Ná»•i Báº­t TrÃªn PhiÃªn Báº£n 3.4.1](#-3-Ä‘iá»ƒm-má»›i-ná»•i-báº­t-trÃªn-phiÃªn-báº£n-341)
+   - [Bá»™ 3 Kiá»ƒu DÃ¡ng Desktop Widget Má»›i (Bento & Retro Cyber)](#bá»™-3-kiá»ƒu-dÃ¡ng-desktop-widget-má»›i-v341)
+   - [Há»‡ Thá»‘ng Háº¡t KhÃ­ Quyá»ƒn 4 MÃ¹a & 4 Äáº¡i Lá»… Há»™i (Seasonal Engine v3.4.0)](#há»‡-thá»‘ng-háº¡t-khÃ­-quyá»ƒn-4-mÃ¹a--4-Ä‘áº¡i-lá»…-há»™i-v340)
+   - [Äáº¡i Tu NÃºt Báº¥m & Tá»‘i Æ¯u Light Mode Windows 10 (v3.3.1)](#Ä‘áº¡i-tu-nÃºt-báº¥m--tá»‘i-Æ°u-light-mode-windows-10-v331)
+4. [KhÃ¡m PhÃ¡ Chi Tiáº¿t 7 PhÃ¢n Há»‡ ChÃ­nh (7 Core Modules)](#-4-khÃ¡m-phÃ¡-chi-tiáº¿t-7-phÃ¢n-há»‡-chÃ­nh-7-core-modules)
+   - [Tab 1: Tá»•ng Quan Vi KhÃ­ Háº­u & 24h Interactive Scrubber](#tab-1-tá»•ng-quan-vi-khÃ­-háº­u--24h-interactive-scrubber)
+   - [Tab 2: Cáº£nh BÃ¡o Ngáº­p Ãšng & Triá»u CÆ°á»ng ÄÃ´ Thá»‹ (Urban Flood Hub)](#tab-2-cáº£nh-bÃ¡o-ngáº­p-Ãºng--triá»u-cÆ°á»ng-Ä‘Ã´-thá»‹-urban-flood-hub)
+   - [Tab 3: Báº£n Äá»“ & Radar KhÃ­ TÆ°á»£ng 360Â° Realtime (Radar Hub)](#tab-3-báº£n-Ä‘á»“--radar-khÃ­-tÆ°á»£ng-360-realtime-radar-hub)
+   - [Tab 4: Trá»£ LÃ½ Trang Phá»¥c "HÃ´m Nay Máº·c GÃ¬?" & Äá»i Sá»‘ng (OOTD Hub)](#tab-4-trá»£-lÃ½-trang-phá»¥c-hÃ´m-nay-máº·c-gÃ¬--Ä‘á»i-sá»‘ng-ootd-hub)
+   - [Tab 5: Lá»‹ch Váº¡n NiÃªn Ã‚m DÆ°Æ¡ng & Káº¿ Hoáº¡ch CÃ¡ NhÃ¢n (Calendar Hub)](#tab-5-lá»‹ch-váº¡n-niÃªn-Ã¢m-dÆ°Æ¡ng--káº¿-hoáº¡ch-cÃ¡-nhÃ¢n-calendar-hub)
+   - [Tab 6: Widget Studio â€” Bá»™ SÆ°u Táº­p 15 Kiá»ƒu DÃ¡ng Desktop Widget](#tab-6-widget-studio--bá»™-sÆ°u-táº­p-15-kiá»ƒu-dÃ¡ng-desktop-widget)
+   - [Tab 7: Trung TÃ¢m CÃ i Äáº·t & CÃ¡ NhÃ¢n HÃ³a ToÃ n Trang (Settings Hub)](#tab-7-trung-tÃ¢m-cÃ i-Ä‘áº·t--cÃ¡-nhÃ¢n-hÃ³a-toÃ n-trang-settings-hub)
+5. [Há»‡ Thá»‘ng Tiá»‡n Ãch Äá»™c Quyá»n (Exclusive Ecosystem)](#-5-há»‡-thá»‘ng-tiá»‡n-Ã­ch-Ä‘á»™c-quyá»n-exclusive-ecosystem)
+6. [BiÃªn NiÃªn Sá»­ PhÃ¡t Triá»ƒn ToÃ n Diá»‡n (Full Version History: v1.0.0 âž” v3.4.1)](#-6-biÃªn-niÃªn-sá»­-phÃ¡t-triá»ƒn-toÃ n-diá»‡n-full-version-history-v100--v341)
+7. [HÆ°á»›ng Dáº«n CÃ i Äáº·t, Build & Khá»Ÿi Cháº¡y](#-7-hÆ°á»›ng-dáº«n-cÃ i-Ä‘áº·t-build--khá»Ÿi-cháº¡y)
 
 ---
 
-## 🌟 1. Giới Thiệu Tổng Quan & Tầm Nhìn Dự Án
+## ðŸŒŸ 1. Giá»›i Thiá»‡u Tá»•ng Quan & Táº§m NhÃ¬n Dá»± Ãn
 
-**Weather WinUI** khởi đầu là một ứng dụng thời tiết hiện đại khai thác tối đa sức mạnh của **Windows App SDK (WinUI 3)**. Qua hơn 18 phiên bản cải tiến liên tục, ứng dụng đã chuyển mình ngoạn mục từ một công cụ hiển thị nhiệt độ thông thường thành một **Hệ Điều Hành Vi Khí Hậu Cá Nhân Hóa (Personal Microclimate OS)** dành riêng cho người dùng máy tính tại Việt Nam.
+**Weather WinUI** lÃ  má»™t á»©ng dá»¥ng thá»i tiáº¿t desktop hiá»‡n Ä‘áº¡i khai thÃ¡c tá»‘i Ä‘a sá»©c máº¡nh cá»§a **Windows App SDK (WinUI 3)** vÃ  **.NET 8**. á»¨ng dá»¥ng lÃ  má»™t **Há»‡ Äiá»u HÃ nh Vi KhÃ­ Háº­u CÃ¡ NhÃ¢n HÃ³a (Personal Microclimate OS)** thiáº¿t káº¿ riÃªng cho ngÆ°á»i dÃ¹ng mÃ¡y tÃ­nh táº¡i Viá»‡t Nam.
 
-### Điểm khác biệt cốt lõi:
-- **Thấu hiểu sâu sắc đặc thù đô thị Việt Nam**: Tích hợp thuật toán thủy triều thiên văn bán nhật triều sông Sài Gòn/Đồng Nai, cảnh báo ngập lụt theo từng tuyến phố ngập tại TP.HCM & Hà Nội, kết hợp Lịch Âm truyền thống, 24 Tiết khí, và hướng dẫn di chuyển xe máy an toàn khi mưa gió.
-- **Trải nghiệm thị giác đột phá (Fluent Design 2.0 & Glassmorphism)**: Tận dụng vật liệu Mica Alt, Acrylic, Dynamic Chromatic Adaptation (bầu trời tự đổi sắc độ ánh sáng theo vị trí mặt trời thời gian thực), và hoạt họa vector mượt mà 60 FPS.
-- **Độc lập, bền vững & tôn trọng quyền riêng tư**: Không quảng cáo, không theo dõi định vị người dùng, hoạt động không cần đăng ký tài khoản và hoàn toàn tự do sử dụng API khí tượng độ phân giải cao toàn cầu từ Open-Meteo.
+### Äiá»ƒm khÃ¡c biá»‡t cá»‘t lÃµi:
+- **Tháº¥u hiá»ƒu sÃ¢u sáº¯c Ä‘áº·c thÃ¹ Ä‘Ã´ thá»‹ Viá»‡t Nam**: Thuáº­t toÃ¡n thá»§y triá»u thiÃªn vÄƒn bÃ¡n nháº­t triá»u sÃ´ng SÃ i GÃ²n/Äá»“ng Nai, cáº£nh bÃ¡o ngáº­p lá»¥t theo tá»«ng tuyáº¿n phá»‘ ngáº­p táº¡i TP.HCM & HÃ  Ná»™i, káº¿t há»£p Lá»‹ch Ã‚m truyá»n thá»‘ng, 24 Tiáº¿t khÃ­, vÃ  hÆ°á»›ng dáº«n di chuyá»ƒn an toÃ n khi mÆ°a bÃ£o.
+- **Tráº£i nghiá»‡m thá»‹ giÃ¡c Ä‘á»™t phÃ¡ (Fluent Design 2.0, Glassmorphism & Bento Aesthetic)**: Táº­n dá»¥ng váº­t liá»‡u Mica Alt, Acrylic, Dynamic Chromatic Adaptation (báº§u trá»i tá»± Ä‘á»•i sáº¯c Ä‘á»™ Ã¡nh sÃ¡ng theo thá»i gian thá»±c), vÃ  bá»™ sÆ°u táº­p 15 phong cÃ¡ch widget Ä‘á»™c báº£n tá»« Dribbble dynamic, Bento Ä‘a sáº¯c, Pilot buá»“ng lÃ¡i Ä‘áº¿n Retro Cyberpunk LCD.
+- **Äá»™c láº­p, bá»n vá»¯ng & tÃ´n trá»ng quyá»n riÃªng tÆ°**: KhÃ´ng quáº£ng cÃ¡o, khÃ´ng theo dÃµi Ä‘á»‹nh vá»‹ ngÆ°á»i dÃ¹ng, hoáº¡t Ä‘á»™ng khÃ´ng cáº§n Ä‘Äƒng kÃ½ tÃ i khoáº£n vÃ  hoÃ n toÃ n tá»± do sá»­ dá»¥ng API khÃ­ tÆ°á»£ng Ä‘á»™ phÃ¢n giáº£i cao tá»« Open-Meteo.
 
 ---
 
-## 🛠️ 2. Ngăn Xếp Công Nghệ (Tech Stack) & Kiến Trúc Phần Mềm
-
-Ứng dụng được xây dựng trên nền tảng kỹ thuật hiện đại nhất của hệ sinh thái desktop Windows:
+## ðŸ› ï¸ 2. NgÄƒn Xáº¿p CÃ´ng Nghá»‡ (Tech Stack) & Kiáº¿n TrÃºc Pháº§n Má»m
 
 ```mermaid
 graph TD
-    UI[Giao Diện Người Dùng: WinUI 3 / XAML] --> VM[Lớp ViewModel: CommunityToolkit.Mvvm]
-    VM --> SRV[Tầng Dịch Vụ: WeatherService, FloodService, SoundService, LunarHelper]
-    SRV --> API[API Ngoại Vi: Open-Meteo High-Resolution Ensemble API]
-    SRV --> DB[Lưu Trữ Bền Vững: SettingsService JSON Atomic with Backup]
+    UI[Giao Diá»‡n NgÆ°á»i DÃ¹ng: WinUI 3 / XAML] --> VM[Lá»›p ViewModel: CommunityToolkit.Mvvm]
+    VM --> SRV[Táº§ng Dá»‹ch Vá»¥: WeatherService, FloodService, SoundService, LunarHelper, SeasonalSkinService]
+    SRV --> API[API Ngoáº¡i Vi: Open-Meteo High-Resolution Ensemble API]
+    SRV --> DB[LÆ°u Trá»¯ Bá»n Vá»¯ng: SettingsService JSON Atomic with Backup]
     UI --> WIN32[Windows API: WinUIEx, DWM Glass, WinRT Dispatcher, Audio Pipeline]
 ```
 
-### Chi tiết các công nghệ chính:
-
-| Phân Vùng Kỹ Thuật | Công Nghệ / Thư Viện | Phiên Bản | Mục Đích & Vai Trò Trong Dự Án |
+| PhÃ¢n VÃ¹ng Ká»¹ Thuáº­t | CÃ´ng Nghá»‡ / ThÆ° Viá»‡n | PhiÃªn Báº£n | Má»¥c ÄÃ­ch & Vai TrÃ² Trong Dá»± Ãn |
 |---|---|---|---|
-| **Ngôn Ngữ Lập Trình** | C# (C-Sharp) | **12.0** | Ngôn ngữ chủ đạo, cú pháp pattern matching, primary constructors, collection expressions. |
-| **Nền Tảng Runtime** | .NET (Core) | **8.0 (LTS)** | Tối ưu hóa JIT compilation, hiệu năng cao, tiêu thụ RAM thấp (~75-120MB). |
-| **UI Framework** | WinUI 3 (Windows App SDK) | **1.8.250907003** | Khung giao diện desktop thế hệ mới của Microsoft, hỗ trợ Native Windows 11 Fluent Design, Dark/Light Mode. |
-| **Mẫu Kiến Trúc** | MVVM Architecture | N/A | Tách biệt hoàn toàn UI và Business Logic qua Data Binding hai chiều (`x:Bind`, `Mode=OneWay/TwoWay`). |
-| **MVVM Toolkit** | CommunityToolkit.Mvvm | **8.4.2** | Mã nguồn nguồn mở chính thức của Microsoft: `ObservableObject`, `[ObservableProperty]`, `[RelayCommand]`. |
-| **Mở Rộng Cửa Sổ** | WinUIEx | **2.9.3** | Quản lý cửa sổ không viền, căn giữa màn hình, Taskbar thumbnail, kéo thả chuột không lag, cửa sổ trong suốt. |
-| **Dịch Vụ Khí Tượng** | Open-Meteo API | RESTful JSON | Dữ liệu dự báo vi khí hậu độ phân giải cao (ECMWF, GFS, ICON) với hơn 30 thông số thời tiết, không cần API Key. |
-| **Thủy Triều & Lịch Âm** | Thuật toán Thiên văn Học | Thuật toán Hồ Ngọc Đức & Jean Meeus | Tính toán chu kỳ trăng, can chi ngày/tháng/năm, 24 tiết khí, và đồ thị hàm sin sóng bán nhật triều 24 giờ. |
-| **Đồ Họa & Biểu Tượng** | FontAwesome Solid + Meteocons SVG | 6.0 Free Solid + Meteocons | Hàng ngàn biểu tượng vector sắc nét không bể nét ở độ phân giải 4K, hỗ trợ hoạt họa động SVG. |
-| **Âm Thanh Môi Trường** | WinRT Audio Pipeline | Procedural Synth & Waves | Phát âm thanh nền thời tiết thư giãn (mưa rào, sấm sét, gió rít, sóng biển, rừng thông) không độ trễ. |
-| **Đóng Gói & Cài Đặt** | Inno Setup & Self-contained ZIP | 6.x | Tạo bộ cài đặt chuyên nghiệp và bản portable cắm chạy ngay không cần cài đặt môi trường. |
+| **NgÃ´n Ngá»¯ Láº­p TrÃ¬nh** | C# (C-Sharp) | **12.0** | NgÃ´n ngá»¯ chá»§ Ä‘áº¡o, cÃº phÃ¡p pattern matching, primary constructors, collection expressions. |
+| **Ná»n Táº£ng Runtime** | .NET (Core) | **8.0 (LTS)** | Tá»‘i Æ°u hÃ³a JIT compilation, hiá»‡u nÄƒng cao, tiÃªu thá»¥ RAM tháº¥p (~75-120MB). |
+| **UI Framework** | WinUI 3 (Windows App SDK) | **1.8.250906003** | Khung giao diá»‡n desktop tháº¿ há»‡ má»›i cá»§a Microsoft, há»— trá»£ Native Windows 11 Fluent Design, Dark/Light Mode. |
+| **Máº«u Kiáº¿n TrÃºc** | MVVM Architecture | N/A | TÃ¡ch biá»‡t hoÃ n toÃ n UI vÃ  Business Logic qua Data Binding hai chiá»u (`x:Bind`, `Mode=OneWay/TwoWay`). |
+| **MVVM Toolkit** | CommunityToolkit.Mvvm | **8.4.2** | MÃ£ nguá»“n chÃ­nh thá»©c cá»§a Microsoft: `ObservableObject`, `[ObservableProperty]`, `[RelayCommand]`. |
+| **Má»Ÿ Rá»™ng Cá»­a Sá»•** | WinUIEx | **2.9.3** | Quáº£n lÃ½ cá»­a sá»• khÃ´ng viá»n, cÄƒn giá»¯a mÃ n hÃ¬nh, Taskbar thumbnail, kÃ©o tháº£ chuá»™t khÃ´ng lag, cá»­a sá»• trong suá»‘t. |
+| **Dá»‹ch Vá»¥ KhÃ­ TÆ°á»£ng** | Open-Meteo API | RESTful JSON | Dá»¯ liá»‡u dá»± bÃ¡o vi khÃ­ háº­u Ä‘á»™ phÃ¢n giáº£i cao (ECMWF, GFS, ICON) vá»›i hÆ¡n 30 thÃ´ng sá»‘ thá»i tiáº¿t, khÃ´ng cáº§n API Key. |
+| **Thá»§y Triá»u & Lá»‹ch Ã‚m** | Thuáº­t toÃ¡n ThiÃªn vÄƒn Há»c | Thuáº­t toÃ¡n Há»“ Ngá»c Äá»©c & Jean Meeus | TÃ­nh toÃ¡n chu ká»³ trÄƒng, can chi ngÃ y/thÃ¡ng/nÄƒm, 24 tiáº¿t khÃ­, vÃ  Ä‘á»“ thá»‹ hÃ m sin sÃ³ng bÃ¡n nháº­t triá»u 24 giá». |
+| **Äá»“ Há»a & Biá»ƒu TÆ°á»£ng** | FontAwesome Solid + Meteocons SVG | 6.0 Free Solid + Meteocons | HÃ ng ngÃ n biá»ƒu tÆ°á»£ng vector sáº¯c nÃ©t khÃ´ng bá»ƒ nÃ©t á»Ÿ Ä‘á»™ phÃ¢n giáº£i 4K, há»— trá»£ hoáº¡t há»a Ä‘á»™ng SVG. |
+| **Ã‚m Thanh MÃ´i TrÆ°á»ng** | WinRT Audio Pipeline | Procedural Synth & Waves | PhÃ¡t Ã¢m thanh ná»n thá»i tiáº¿t thÆ° giÃ£n (mÆ°a rÃ o, sáº¥m sÃ©t, giÃ³ rÃ­t, sÃ³ng biá»ƒn, rá»«ng thÃ´ng) khÃ´ng Ä‘á»™ trá»…. |
+| **ÄÃ³ng GÃ³i & CÃ i Äáº·t** | Inno Setup & Self-Contained Release | 6.x | Táº¡o bá»™ cÃ i Ä‘áº·t chuyÃªn nghiá»‡p vÃ  báº£n portable cáº¯m cháº¡y ngay khÃ´ng cáº§n cÃ i Ä‘áº·t mÃ´i trÆ°á»ng .NET. |
 
 ---
 
-## 🚀 3. Đại Tu Kiến Trúc & Tính Năng Nổi Bật Trên Bản 3.0.0 Chính Thức
+## ðŸš€ 3. Äiá»ƒm Má»›i Ná»•i Báº­t TrÃªn PhiÃªn Báº£n 3.4.1
 
-Phiên bản **Version 3.0.0 Chính Thức** đánh dấu bước tiến mang tính bước ngoặt về kiến trúc phần mềm, hiệu năng khởi động và khả năng tương thích toàn diện:
+### ðŸ± Bá»™ 3 Kiá»ƒu DÃ¡ng Desktop Widget Má»›i (v3.4.1)
 
-### 🌟 Ba Nâng Cấp Cốt Lõi Trên Bản 3.0.0:
-1. **Kiến Trúc Module Hóa Toàn Diện (Phương Án B: Modular UserControls + Lazy Loading)**:
-   - **Xóa bỏ mã nguồn nguyên khối (Monolithic XAML)**: Tách toàn bộ 7 phân hệ giao diện từ `MainPage.xaml` thành 7 `UserControl` độc lập đặt gọn gàng trong thư mục `Views/Tabs/` (`OverviewTab`, `UrbanFloodTab`, `RadarTab`, `LifestyleTab`, `CalendarTab`, `WidgetStudioTab`, `SettingsTab`).
-   - **Tối ưu thời gian khởi động (Cold Start) với `x:DeferLoadStrategy="Lazy"`**: Chỉ Tab 1 (Tổng quan) được biên dịch và khởi tạo ngay khi mở ứng dụng. Các Tab từ 2 đến 7 được hoãn tải và chỉ nạp vào bộ nhớ theo nhu cầu (`FindName`) khi người dùng bấm chuyển tab.
-   - **Giảm 63% kích thước file MainPage**: Cắt giảm từ **4.648 dòng** xuống chỉ còn **1.744 dòng**, giúp bộ biên dịch `XamlCompiler` hoạt động tức thì, code sạch sẽ và cực kỳ dễ dàng mở rộng thêm các tab tính năng mới trong tương lai.
-   - **Tiết kiệm tài nguyên & Pin laptop**: Các tác vụ ngầm như vòng quét Radar Doppler 360° và hạt vi khí quyển chỉ chạy khi người dùng đang xem tab tương ứng, tự động tạm dừng khi rời tab giúp CPU luôn ở mức **0% khi nhàn rỗi**.
+PhiÃªn báº£n **v3.4.1** bá»• sung 3 phong cÃ¡ch thiáº¿t káº¿ Desktop Widget Ä‘á»‰nh cao, giá»¯ trá»n váº¹n tá»«ng Ä‘Æ°á»ng nÃ©t thiáº¿t káº¿ nguyÃªn báº£n tá»« cÃ¡c tÃ¡c pháº©m Ä‘á»“ há»a danh tiáº¿ng:
 
-2. **Tối Ưu Thị Giác Thích Ứng Toàn Diện Cho Cả Windows 10 & Windows 11**:
-   - **Nhận diện OS Build thông minh tại Runtime**: Kiểm tra tự động phiên bản hệ điều hành (`Environment.OSVersion.Version.Build >= 22000`).
-   - **Windows 11 (Build 22000+)**: Tận dụng chất liệu `MicaBackdrop` (Mica Alt) cao cấp với hiệu ứng khúc xạ chiều sâu Fluent Design 2.0.
-   - **Windows 10 (Build 17763 - 19045)**: Tự động fallback sang `DesktopAcrylicBackdrop` được gia cố lớp đệm màu Slate Dark chuyên sâu (`#0F172A`). Nhờ đó, các thẻ giao diện Glassmorphism trên Windows 10 luôn giữ được viền sắc nét, độ tương phản hoàn hảo và triệt tiêu 100% hiện tượng chói mắt hoặc xuyên thấu lộ hình nền desktop.
+1. **Bento Pop / Vivid Color (`BentoVivid`)**:
+   - Tháº» thá»i tiáº¿t xanh da trá»i tÆ°Æ¡i sÃ¡ng (`#38BDF8`), hiá»ƒn thá»‹ nhiá»‡t Ä‘á»™ lá»›n 31Â°, tráº¡ng thÃ¡i mÃ¢y trá»i vÃ  nÃºt chá»n thÃ nh phá»‘ nhanh.
+   - Tháº» ngÃ y cam rá»±c rá»¡ (`#F97316`) ná»•i báº­t thá»© vÃ  ngÃ y trong tuáº§n (`Sun 15`).
+   - Tháº» hoÃ ng hÃ´n ná»n tá»‘i sang trá»ng (`#141518`) vá»›i biá»ƒu tÆ°á»£ng máº·t trá»i láº·n chÃ¢n trá»i vÃ  giá» láº·n chuáº©n xÃ¡c.
+   - Tháº» Ä‘á»“ng há»“ tháº¿ giá»›i Ä‘á» san hÃ´ (`#EF4444`) tÃ­ch há»£p **máº·t Ä‘á»“ng há»“ kim Analog chuyá»ƒn Ä‘á»™ng thá»i gian thá»±c**, tÃªn thÃ nh phá»‘ quá»‘c táº¿ vÃ  mÃºi giá» UTC.
 
-3. **Cơ Chế Nạp Font Đa Tầng — Triệt Tiêu Lỗi Mất Biểu Tượng (Icon Fallback)**:
-   - **Đăng ký Font động tại Runtime**: `App.xaml.cs` tự động gọi hàm Win32 `AddFontResourceEx` nạp trực tiếp file `Assets/Fonts/fa-solid-900.ttf` ngay khi tiến trình khởi chạy, xử lý lỗi trên các máy Windows bị kẹt Font Cache hoặc chưa cài font bên thứ ba.
-   - **Chuỗi Fallback FontFamily kiên cố trong XAML**: Khai báo chuỗi dự phòng đa cấp `ms-appx:///Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, ms-appx:///Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free, Font Awesome 6 Free Solid, Segoe Fluent Icons, Segoe MDL2 Assets`. Biểu tượng luôn hiển thị chuẩn xác, không bao giờ xuất hiện ô vuông lỗi chữ `[?]`.
+2. **Bento Pilot / Tactical Slate (`BentoTactical`)**:
+   - Tháº» thá»i tiáº¿t phiáº¿n Ä‘Ã¡ xÃ¡m khÃ³i (`#7E99AB`) phong cÃ¡ch buá»“ng lÃ¡i tá»‘i giáº£n.
+   - **Äá»“ng há»“ phi cÃ´ng buá»“ng lÃ¡i (Cockpit Pilot Dial)** vá»›i máº·t dial Ä‘en sÃ¢u (`#0D0F12`), váº¡ch sá»‘ tráº¯ng dáº¡ quang vÃ  kim phÃºt neon xanh lÃ¡ sÃ¡ng rá»±c (`#00FF66`).
+   - MÃ£ hÃ ng khÃ´ng sÃ¢n bay thÃ nh phá»‘ (vÃ­ dá»¥ `TPH`, `BOG`) cÃ¹ng mÃºi giá» UTC.
+   - Cáº·p viÃªn thuá»‘c kÃ©p (Double Pills): Tháº» Ä‘áº¿m ngÆ°á»£c hoÃ ng hÃ´n tá»‘i giáº£n vÃ  **ThÆ°á»›c Ä‘o Ãp suáº¥t KhÃ­ quyá»ƒn Ä‘iá»‡n tá»­ (Digital Barometer)** hiá»ƒn thá»‹ chá»‰ sá»‘ chÃ­nh xÃ¡c (vÃ­ dá»¥ `10.130` / `1013 hPa`).
 
-### 💎 Kế Thừa Trọn Vẹn Các Cải Tiến Từ Beta 3.0.1:
-4. **Fluent NavigationView Shell 7 Phân Hệ Chuyên Biệt**: Bố cục Sidebar hiện đại, co giãn linh hoạt chuẩn Fluent Design.
-5. **Thanh Tua Nhanh Thời Gian (Interactive 24h Time-Scrubber)**: Kéo trượt xem trước nhiệt độ, xác suất mưa và chuyển sắc bầu trời 24h.
-6. **Bản Đồ Radar Doppler Khí Tượng 360° Realtime**: Canvas Doppler 360 độ chân thực với 4 vòng cự ly, 12 lát cắt phosphor trail xoay mượt mà.
-7. **Khung Chi Tiết Lịch Trực Tiếp (Inline Day Details)**: Thay thế popup che khuất bằng khung thông tin 2 cột thông minh dưới lưới lịch vạn niên.
-8. **Trợ Lý Trang Phục (OOTD Advisor) Độ Tương Phản Cao**: Hiển thị sắc nét trên cả Light và Dark Theme.
-9. **Widget Studio Đa Dạng & Đồng Bộ Tuyệt Đối**: Ghim chuẩn xác cả 4 kiểu dáng widget ra Desktop và ghi nhớ độ mờ (Opacity).
-10. **Trung Tâm Cài Đặt 2 Cột Toàn Trang**: Giao diện cài đặt Win11 toàn màn hình với 8 danh mục chuyên sâu.
+3. **Retro LCD Cyber Weather Computer (`RetroLcd`)**:
+   - Vá» mÃ¡y cáº§m tay cÃ´ng nghiá»‡p bo gÃ³c mÃ u xanh xÃ¡m lÃ­nh (`#6E826F`) vá»›i tem gÃ³c chÃ³p "WEATHER".
+   - **MÃ n hÃ¬nh LCD ma tráº­n Ä‘iá»ƒm xanh rÃªu chÃ­nh (`#A2B79E`)**: Äá»“ng há»“ sá»‘ nhiá»‡t Ä‘á»™ 7 phÃ¢n Ä‘oáº¡n (7-segment) chÃ¢n thá»±c vá»›i hiá»‡u á»©ng bÃ³ng má» (ghosting segments), biá»ƒu tÆ°á»£ng Ä‘Ã¡m mÃ¢y pixel-art 8-bit vÃ  3 vá»‡t mÆ°a chÃ©o Ä‘áº·c trÆ°ng (`///`).
+   - **MÃ n hÃ¬nh LCD phá»¥ Ä‘o giÃ³**: Hiá»ƒn thá»‹ tá»‘c Ä‘á»™ giÃ³ (`M/S`), mÅ©i tÃªn hÆ°á»›ng giÃ³ phong thá»§y `â†—` vÃ  Ä‘á»“ng há»“ kim Ä‘o tá»‘c Ä‘á»™ giÃ³ (Speedometer Gauge) xoay theo thá»i gian thá»±c.
+   - **Báº£ng chá»‰ thá»‹ Telemetry quÃ¢n sá»±**: ÄÃ¨n LED xanh sÃ¡ng bÃ¡o hiá»‡u WIND, chá»‰ sá»‘ UV Index, Ã¡p suáº¥t khÃ­ quyá»ƒn HPA vÃ  chá»‰ bÃ¡o FALLOUT: CLEAR.
 
----
+### ðŸŒ¸ Há»‡ Thá»‘ng Háº¡t KhÃ­ Quyá»ƒn 4 MÃ¹a & 4 Äáº¡i Lá»… Há»™i (v3.4.0)
+- **Táº¿t Cá»• Truyá»n**: CÃ nh hoa mai vÃ ng rá»±c rá»¡, hoa Ä‘Ã o phá»›t há»“ng ná»Ÿ rá»™ káº¿t há»£p hÃ ng trÄƒm cÃ¡nh hoa mai Ä‘Ã o rÆ¡i chao lÆ°á»£n ngáº­p trÃ n sáº¯c xuÃ¢n.
+- **Trung Thu**: Ãnh trÄƒng ráº±m huyá»n áº£o, lá»“ng Ä‘Ã¨n cÃ¡ chÃ©p, Ä‘Ã¨n Ã´ng sao xoay nháº¹ nhÃ ng.
+- **Halloween**: Báº§y dÆ¡i ma thuáº­t vá»— cÃ¡nh bay trong bÃ³ng Ä‘Ãªm, bÃ­ ngÃ´ phÃ¡t sÃ¡ng Jack-o'-Lantern láº­p lÃ²e.
+- **GiÃ¡ng Sinh & NÄƒm Má»›i**: BÃ´ng tuyáº¿t pha lÃª 6 cÃ¡nh xoay láº¥p lÃ¡nh, quáº£ cáº§u Noel thá»§y tinh vÃ  ngÃ´i sao vÃ ng Bethlehem.
+- **4 MÃ¹a ThiÃªn NhiÃªn**: LÃ¡ phong mÃ¹a thu 5 thÃ¹y rÆ¡i xoay theo giÃ³, giá»t mÆ°a mÃ¹a háº¡, tuyáº¿t tráº¯ng mÃ¹a Ä‘Ã´ng, chá»“i non lá»™c biáº¿c mÃ¹a xuÃ¢n.
+- **8 Widget MÃ¹a Ä‘á»™c báº£n**: Äá»“ng bá»™ tá»©c thÃ¬ vÃ  cÃ³ thá»ƒ ghim riÃªng láº» tá»«ng mÃ¹a ra Desktop.
 
-## 🔍 4. Khám Phá Chi Tiết 7 Phân Hệ Chính (7 Core Modules)
-
-### Tab 1: Tổng Quan Vi Khí Hậu & 24h Interactive Scrubber
-- **Thẻ Hero Khí Quyển 3D (Atmospheric Hero Card)**:
-  - Hiển thị nhiệt độ hiện tại to bản, nhiệt độ cảm nhận thực tế (*Feels Like*), tình trạng thời tiết và câu châm ngôn tóm tắt thời tiết thông minh (*Smart Summary*).
-  - Tích hợp công nghệ **Dynamic Chromatic Sky Blending**: Tự động pha màu chuyển sắc theo vị trí mặt trời: Rạng đông (hồng cam đào), Ban trưa (xanh ngọc nắng vàng), Chiều tà (hổ phách pha tím), Đêm quang (tím than ánh bạc) và Dông bão (xám khói có chớp giật nền).
-- **Thanh Tua Nhanh Thời Gian 24 Giờ (Interactive 24h Time-Scrubber)**:
-  - Kéo chuột hoặc chạm vuốt trực tiếp trên thanh trượt 24h để xem biến động nhiệt độ, mây, mưa ở các khung giờ tiếp theo.
-- **Biểu Đồ Nhiệt Độ 24h Dạng Spline Bezier (Hourly Trendline)**:
-  - Đường cong nhiệt độ mượt mà hiển thị cùng xác suất mưa dạng giọt nước và mốc giờ.
-- **Dự Báo 7 Ngày Tới Với Thanh Đo Nhiệt Độ Tuần (Weekly Range Bar)**:
-  - Hiển thị đầy đủ thứ, ngày tháng, icon thời tiết, mô tả khí hậu, nhiệt độ Min/Max kèm thanh đo dải nhiệt độ tuần trực quan có chấm định vị nhiệt độ hiện tại.
-- **Lưới 8 Chỉ Số Khí Tượng Chuyên Sâu**:
-  - Độ ẩm không khí (%), Tốc độ & Hướng gió (km/h, m/s), Tầm nhìn xa (km), Áp suất khí quyển (hPa), Chỉ số UV cực tím kèm cảnh báo bảo vệ da, Điểm sương (*Dew Point*), Lượng mưa tích lũy và Xác suất mưa (%).
+### ðŸŽ¨ Äáº¡i Tu NÃºt Báº¥m & Tá»‘i Æ¯u Light Mode Windows 10 (v3.3.1)
+- Xá»­ lÃ½ triá»‡t Ä‘á»ƒ 100% lá»—i Ä‘á»™ tÆ°Æ¡ng pháº£n trÃªn Windows 10 Light Mode.
+- ToÃ n bá»™ há»‡ thá»‘ng nÃºt báº¥m Ä‘Æ°á»£c tinh chá»‰nh bo trÃ²n viÃªn thuá»‘c (Pill-shaped), viá»n bÃ¡n trong suá»‘t tinh táº¿, hiá»‡u á»©ng hover chuyá»ƒn sáº¯c mÆ°á»£t mÃ .
 
 ---
 
-### Tab 2: Cảnh Báo Ngập Úng & Triều Cường Đô Thị (Urban Flood Hub)
-- **Đồ Thị Sóng Bán Nhật Triều 24 Giờ (Live Tidal Wave Curve)**:
-  - Mô phỏng chính xác mực nước dao động lên xuống theo quy luật bán nhật triều của sông Sài Gòn & sông Đồng Nai qua 24 mốc giờ.
-  - Vạch rõ 3 mức báo động khẩn cấp: Báo động 1 (1.40m), Báo động 2 (1.55m), Báo động 3 (1.60m - 1.78m).
-  - Đồng hồ đếm ngược tự động đến mốc đỉnh triều buổi sáng và đỉnh triều buổi chiều tiếp theo.
-- **Phân Tích Nguy Cơ Kép Đô Thị**:
-  - Tự động nhận diện tình huống nguy hiểm: Khi đỉnh triều dâng cao trùng hợp với mưa dông dồn dập khiến nước không thể thoát ra cửa sông, ứng dụng sẽ lập tức kích hoạt cảnh báo nguy cơ ngập sâu diện rộng.
-- **Giám Sát Lưu Vực Thoát Nước Hà Nội**:
-  - Theo dõi khả năng tiếp nhận nước của lưu vực sông Tô Lịch, sông Nhuệ, sông Kim Ngưu, sông Sét và công suất vận hành trạm bơm Yên Sở theo cường độ mưa (mm/h).
-- **Tra Cứu Nhanh Tuyến Đường Ngập Úng**:
-  - Tích hợp cơ sở dữ liệu hơn 40 tuyến đường trọng điểm thường xuyên ngập sâu tại TP.HCM (Huỳnh Tấn Phát, Trần Xuân Soạn, Lê Văn Lương, Nguyễn Hữu Cảnh, Quốc Hương, Thảo Điền, Võ Văn Ngân, Tô Ngọc Vân, Mễ Cốc...) và Hà Nội (Thái Hà, Chùa Bộc, Nguyễn Khuyến, Cao Bá Quát, hầm chui Đại lộ Thăng Long...).
-- **Cẩm Nang Lưu Thông Phương Tiện An Toàn**:
-  - Hướng dẫn lái xe máy qua vùng ngập (đi số thấp đều ga, mốc ngập an toàn dưới 25cm).
-  - Hướng dẫn lái xe ô tô tránh thủy kích (tắt điều hòa, giữ khoảng cách chống sóng dềnh từ xe tải).
+## ðŸ” 4. KhÃ¡m PhÃ¡ Chi Tiáº¿t 7 PhÃ¢n Há»‡ ChÃ­nh (7 Core Modules)
+
+### Tab 1: Tá»•ng Quan Vi KhÃ­ Háº­u & 24h Interactive Scrubber
+- Báº§u trá»i Ä‘á»™ng chuyá»ƒn sáº¯c theo thá»i gian thá»±c (Clear Sunny, Thunderstorm, Heavy Rain, Snow, Fog...).
+- Thanh trÆ°á»£t thá»i gian 24h Time-Scrubber: KÃ©o trÆ°á»£t Ä‘á»ƒ xem trÆ°á»›c nhiá»‡t Ä‘á»™, xÃ¡c suáº¥t mÆ°a vÃ  hÆ°á»›ng giÃ³ tá»«ng giá» trong ngÃ y.
+- Báº£ng 5 tháº» thÃ´ng sá»‘ nhanh: Äá»™ áº©m, Tá»‘c Ä‘á»™ giÃ³, Chá»‰ sá»‘ UV, Ãp suáº¥t khÃ­ quyá»ƒn, Äiá»ƒm sÆ°Æ¡ng.
+- BÃ¡o cÃ¡o cháº¥t lÆ°á»£ng khÃ´ng khÃ­ chuyÃªn sÃ¢u (AQI Tracker) vá»›i phÃ¢n tÃ­ch bá»¥i má»‹n PM2.5, PM10 vÃ  khuyáº¿n cÃ¡o sá»©c khá»e.
+
+### Tab 2: Cáº£nh BÃ¡o Ngáº­p Ãšng & Triá»u CÆ°á»ng ÄÃ´ Thá»‹ (Urban Flood Hub)
+- MÃ´ phá»ng Ä‘á»“ thá»‹ hÃ m sin bÃ¡n nháº­t triá»u 24 giá» cá»§a sÃ´ng SÃ i GÃ²n & sÃ´ng Há»“ng.
+- Äáº¿m ngÆ°á»£c thá»i gian Ä‘á»‰nh triá»u cÆ°á»ng tiáº¿p theo kÃ¨m má»©c cáº£nh bÃ¡o (BÃ¡o Ä‘á»™ng I, II, III).
+- Danh sÃ¡ch cáº£nh bÃ¡o cÃ¡c tuyáº¿n Ä‘Æ°á»ng trÅ©ng tháº¥p cÃ³ nguy cÆ¡ ngáº­p sÃ¢u khi triá»u cÆ°á»ng káº¿t há»£p mÆ°a lá»›n táº¡i TP.HCM vÃ  HÃ  Ná»™i.
+
+### Tab 3: Báº£n Äá»“ & Radar KhÃ­ TÆ°á»£ng 360Â° Realtime (Radar Hub)
+- VÃ²ng quÃ©t Radar Doppler 360 Ä‘á»™ xoay liÃªn tá»¥c vá»›i vá»‡t sÃ¡ng phosphor trail chÃ¢n thá»±c.
+- Báº£n Ä‘á»“ tÆ°Æ¡ng tÃ¡c trá»±c quan hiá»ƒn thá»‹ vÃ¹ng mÆ°a, máº­t Ä‘á»™ mÃ¢y vÃ  hÆ°á»›ng di chuyá»ƒn cá»§a bÃ£o.
+
+### Tab 4: Trá»£ LÃ½ Trang Phá»¥c "HÃ´m Nay Máº·c GÃ¬?" & Äá»i Sá»‘ng (OOTD Hub)
+- Trá»£ lÃ½ thÃ´ng minh phÃ¢n tÃ­ch thá»i tiáº¿t Ä‘Æ°a ra gá»£i Ã½ trang phá»¥c phÃ¹ há»£p theo giá»›i tÃ­nh vÃ  hoÃ n cáº£nh (Äi lÃ m vÄƒn phÃ²ng, Dáº¡o phá»‘, Thá»ƒ thao ngoÃ i trá»i, Du lá»‹ch...).
+- Cáº£nh bÃ¡o chá»‰ sá»‘ báº£o vá»‡ da, khuyáº¿n cÃ¡o mang Ã´ dÃ¹ hoáº·c Ã¡o mÆ°a khi ra Ä‘Æ°á»ng.
+
+### Tab 5: Lá»‹ch Váº¡n NiÃªn Ã‚m DÆ°Æ¡ng & Káº¿ Hoáº¡ch CÃ¡ NhÃ¢n (Calendar Hub)
+- Lá»‹ch thÃ¡ng 42 Ã´ ngÃ y tÃ­ch há»£p Ã‚m lá»‹ch Viá»‡t Nam, Can Chi ngÃ y/thÃ¡ng/nÄƒm, vÃ  24 Tiáº¿t khÃ­ thiÃªn vÄƒn.
+- Khung chi tiáº¿t ngÃ y trá»±c tiáº¿p (Inline Day Details) hiá»ƒn thá»‹ giá» hoÃ ng Ä‘áº¡o, viá»‡c nÃªn lÃ m / kiÃªng cá»¯.
+- Sá»• tay ghi chÃº cÃ´ng viá»‡c cÃ¡ nhÃ¢n, tá»± Ä‘á»™ng cáº£nh bÃ¡o náº¿u lá»‹ch trÃ¬nh ngoÃ i trá»i gáº·p ngÃ y mÆ°a bÃ£o.
+
+### Tab 6: Widget Studio â€” Bá»™ SÆ°u Táº­p 15 Kiá»ƒu DÃ¡ng Desktop Widget
+Há»‡ sinh thÃ¡i Desktop Widget phong phÃº nháº¥t trÃªn Windows:
+- **7 Kiá»ƒu DÃ¡ng Thiáº¿t Káº¿ Hiá»‡n Äáº¡i**:
+  1. `Bryan C Dynamic`: Phong cÃ¡ch Dribbble Ä‘á»•i mÃ u ná»n theo báº§u trá»i thá»±c táº¿ vÃ  hÃ¬nh há»c máº·t trá»i/máº·t trÄƒng.
+  2. `Fluent Glass Card`: KÃ­nh má» Acrylic/Mica sang trá»ng vá»›i Ä‘áº§y Ä‘á»§ thÃ´ng sá»‘ Ä‘á»™ áº©m, giÃ³, AQI.
+  3. `Compact Bar`: Thanh ngang máº£nh tá»‘i giáº£n, chiáº¿m diá»‡n tÃ­ch tá»‘i thiá»ƒu á»Ÿ gÃ³c mÃ n hÃ¬nh.
+  4. `Dynamic Island Pill`: ViÃªn thuá»‘c bo trÃ²n tinh táº¿ phong cÃ¡ch Dynamic Island ná»•i nháº¹ nhÃ ng trÃªn desktop.
+  5. `Bento Pop (Vivid Sky)`: Khá»‘i bento Ä‘a sáº¯c vá»›i Ä‘á»“ng há»“ kim Ä‘á» san hÃ´ vÃ  Ã´ ngÃ y cam áº¥m.
+  6. `Bento Pilot (Tactical Slate)`: Phong cÃ¡ch buá»“ng lÃ¡i quÃ¢n sá»± vá»›i kim dáº¡ quang neon vÃ  chá»‰ sá»‘ Ã¡p suáº¥t.
+  7. `Retro Cyber LCD Computer`: Tráº¡m thá»i tiáº¿t cá»• Ä‘iá»ƒn vá»›i Ä‘á»“ng há»“ sá»‘ 7 Ä‘oáº¡n, mÃ¢y mÆ°a 8-bit vÃ  telemetry quÃ¢n sá»±.
+- **8 Kiá»ƒu DÃ¡ng ChuyÃªn Äá» MÃ¹a & Lá»… Há»™i**:
+  8. `Táº¿t Cá»• Truyá»n (HoÃ ng Kim CÃ¡t TÆ°á»ng)`
+  9. `Táº¿t Trung Thu (Dáº¡ Nguyá»‡t ÄoÃ n ViÃªn)`
+  10. `GiÃ¡ng Sinh (BÄƒng Tuyáº¿t áº¤m Ãp)`
+  11. `Lá»… Há»™i Ma Halloween (BÃ­ NgÃ´ & ÄÃªm Äen)`
+  12. `MÃ¹a XuÃ¢n (XuÃ¢n TÆ°Æ¡i Má»›i)`
+  13. `MÃ¹a Háº¡ (Biá»ƒn Xanh Náº¯ng VÃ ng)`
+  14. `MÃ¹a Thu (Rá»«ng Thu RÆ¡i LÃ¡)`
+  15. `MÃ¹a ÄÃ´ng (BÄƒng GiÃ¡ Lung Linh)`
+
+### Tab 7: Trung TÃ¢m CÃ i Äáº·t & CÃ¡ NhÃ¢n HÃ³a ToÃ n Trang (Settings Hub)
+- TÃ¹y chá»‰nh cháº¿ Ä‘á»™ giao diá»‡n (Há»‡ thá»‘ng / SÃ¡ng / Tá»‘i).
+- Chá»n kiá»ƒu dÃ¡ng widget máº·c Ä‘á»‹nh, chá»‰nh thanh trÆ°á»£t Ä‘á»™ má» trong suá»‘t (Opacity 20% - 100%), báº­t/táº¯t Always on Top.
+- Cáº¥u hÃ¬nh Ä‘Æ¡n vá»‹ Ä‘o lÆ°á»ng (Äá»™ C/F, km/h, m/s, mph, hPa, mmHg).
+- Ã‚m thanh mÃ´i trÆ°á»ng thÆ° giÃ£n (Ambient Weather Sounds) vÃ  cáº£nh bÃ¡o mÆ°a thÃ´ng minh qua Windows Toast.
 
 ---
 
-### Tab 3: Bản Đồ & Radar Khí Tượng 360° Realtime (Radar Hub)
-- **Màn Hình Quét Doppler Khí Tượng Độc Quyền**:
-  - Vẽ trực tiếp trên nền đồ họa Canvas với 4 vòng cự ly đồng tâm: 50 km, 100 km, 150 km và 200 km kèm thẻ khoảng cách.
-  - 8 tia phương vị la bàn chính xác (Bắc, Đông Bắc, Đông, Đông Nam, Nam, Tây Nam, Tây, Tây Bắc).
-- **Hệ Thống Phản Hồi Mây Mưa Đa Tầng Màu (dBZ Storm Fronts)**:
-  - Xanh lục (20 - 30 dBZ): Mưa phùn hoặc mây mù nhẹ.
-  - Vàng hổ phách (35 - 45 dBZ): Vùng mưa rào vừa đến to.
-  - Đỏ thẫm (50 - 65 dBZ): Tâm bão, dông tố cực mạnh có nguy cơ kèm tố lốc.
-- **Vệ Tinh Địa Danh Vùng Miền**:
-  - Định vị các đô thị vệ tinh xung quanh trạm chính (Hồ Chí Minh: Bình Dương, Biên Hòa, Vũng Tàu, Cần Giờ, Long An, Tây Ninh; Hà Nội: Bắc Ninh, Hải Phòng, Nam Định, Hòa Bình, Vĩnh Phúc, Thái Nguyên).
-- **Tia Quét Radar 360° Realtime Chân Thực**:
-  - Tia quét xoay vòng liên tục với dải quạt vệt sáng phosphor trail 12 lát cắt tan dần. Tự động tạm dừng khi rời tab để tối ưu hóa tài nguyên phần cứng.
+## ðŸŒŸ 5. Há»‡ Thá»‘ng Tiá»‡n Ãch Äá»™c Quyá»n (Exclusive Ecosystem)
+
+- **Quick Peek Window**: Cá»­a sá»• thu nhá» má»Ÿ tá»©c thÃ¬ tá»« khay há»‡ thá»‘ng (System Tray) Ä‘á»ƒ liáº¿c nhanh thá»i tiáº¿t mÃ  khÃ´ng cáº§n má»Ÿ á»©ng dá»¥ng chÃ­nh.
+- **Xuáº¥t Tháº» áº¢nh Chia Sáº» Máº¡ng XÃ£ Há»™i**: Káº¿t xuáº¥t tháº» thá»i tiáº¿t Full HD 1080p sáº¯c nÃ©t (dáº¡ng Story dá»c 9:16 hoáº·c Landscape 16:9) sao chÃ©p trá»±c tiáº¿p vÃ o Clipboard.
+- **Há»— Trá»£ Tham Sá»‘ Khá»Ÿi Cháº¡y Nhanh (CLI Arguments)**:
+  - `--openwidget`: Khá»Ÿi cháº¡y trá»±c tiáº¿p cháº¿ Ä‘á»™ Desktop Widget.
+  - `--style=[BentoVivid|BentoTactical|RetroLcd|BryanCDynamic|GlassCard|Compact|MiniIsland]`: Chá»n kiá»ƒu widget khá»Ÿi cháº¡y.
+  - `--skin=[tet|midautumn|christmas|halloween|spring|summer|autumn|winter]`: Chá»n skin mÃ¹a cho widget.
+  - `--tab=[overview|flood|radar|lifestyle|calendar|widget|settings|zen]`: Má»Ÿ tháº³ng tab tÃ­nh nÄƒng.
+  - `--scroll=[bento|seasonal|bottom]`: Tá»± Ä‘á»™ng cuá»™n Ä‘áº¿n phÃ¢n khu widget mong muá»‘n.
 
 ---
 
-### Tab 4: Trợ Lý Trang Phục "Hôm Nay Mặc Gì?" & Đời Sống (OOTD Hub)
-- **Hệ Chuyên Gia Gợi Ý Trang Phục (OOTD Advisor v2.1)**:
-  - Phân tích đa thông số: Nhiệt độ thực tế, nhiệt độ cảm nhận, chỉ số UV, gió, xác suất mưa và thời điểm ngày/đêm.
-  - Phân bổ đề xuất 4 nhóm trang phục:
-    1. *Áo & Thân trên* (Áo thun cotton, áo sơ mi thoáng khí, áo len...).
-    2. *Quần & Thân dưới* (Quần âu, jeans co giãn, kaki chống bẩn gấu...).
-    3. *Áo khoác & Che chắn* (Áo chống nắng UPF 50+, áo gió cản nước, áo măng tô...).
-    4. *Giày & Dép* (Giày da công sở, sneaker thoáng khí, dép đi mưa bọc chống nước...).
-- **3 Ngữ Cảnh Tùy Biến**:
-  - Chuyển đổi linh hoạt giữa: **Công sở**, **Đi học**, và **Dạo phố**.
-- **Checklist Vật Dụng Cần Mang Theo**:
-  - Nhắc nhở thông minh: Ô/dù gấp gọn, kính râm chống tia cực tím, áo mưa dự phòng, bình nước bù khoáng, kem chống nắng.
-- **Lời Khuyên Di Chuyển Bằng Xe Máy**:
-  - Đánh giá độ an toàn khi lưu thông bằng xe máy hai bánh dưới điều kiện thời tiết thực tế.
-- **Lưới 4 Chỉ Số Sinh Hoạt & Sức Khỏe**:
-  - *Thể thao ngoài trời*: Đánh giá mức độ phù hợp cho chạy bộ, đạp xe, đá bóng.
-  - *Giặt phơi quần áo*: Tốc độ khô dựa trên độ ẩm và nắng.
-  - *Bảo vệ da & tia cực tím*: Mức độ cần thoa kem chống nắng hoặc đeo kính râm.
-  - *Chất lượng không khí AQI & Bụi mịn PM2.5/PM10*: Lời khuyên đeo khẩu trang N95 hay đóng kín cửa bật máy lọc không khí.
+## ðŸ“œ 6. BiÃªn NiÃªn Sá»­ PhÃ¡t Triá»ƒn ToÃ n Diá»‡n (Full Version History: v1.0.0 âž” v3.4.1)
 
----
-
-### Tab 5: Lịch Vạn Niên Âm Dương & Kế Hoạch Cá Nhân (Calendar Hub)
-- **Lưới Lịch Tháng Vạn Niên 42 Ô Ngày**:
-  - Tích hợp song song Ngày Dương (to bản) và Ngày Âm lịch truyền thống Việt Nam.
-  - Tự động đánh dấu ngày Mùng 1 & Ngày Rằm (15 âm lịch) bằng sắc vàng hổ phách.
-  - Nhận diện toàn bộ Ngày Lễ Quốc Gia & Truyền Thống Việt Nam (Tết Nguyên Đán, Giỗ Tổ Hùng Vương, 30/4 - 1/5, Quốc Khánh 2/9, Tết Trung Thu, Tết Đoan Ngọ...).
-  - Thể hiện 24 Tiết khí thiên văn (Xuân phân, Lập hạ, Đại thử, Thu phân, Đông chí...).
-  - Tích hợp icon dự báo thời tiết 7 ngày tới ngay trên từng ô ngày.
-- **Khung Chi Tiết Ngày Trực Tiếp (Inline Day Details Panel)**:
-  - Hiển thị ngay bên dưới lịch khi click vào bất kỳ ô ngày nào (không mở popup che màn hình).
-  - **Cảnh Báo Xung Đột Thời Tiết (Weather Conflict Warning)**: Tự động cảnh báo nếu người dùng có kế hoạch hoạt động ngoài trời vào ngày có dự báo mưa bão to.
-  - **Quản Lý Mục Tiêu Trong Ngày (Daily Goals)**: Thiết lập mục tiêu hàng ngày, đánh dấu hoàn thành (checkbox gạch ngang chữ), tự động lưu trữ.
-  - **Sổ Tay Kế Hoạch & Sự Kiện Theo Giờ**: Thêm lịch hẹn, ghi chú cuộc họp, nhắc nhở thời gian.
-
----
-
-### Tab 6: Widget Studio Showcase & Ghim Desktop Đa Dạng
-- **Bộ Sưu Tập Mockup 4 Phong Cách Widget Thực Tế**:
-  1. ✨ **BryanC Dynamic**: Kiểu dáng Dribbble trứ danh, nền tự biến đổi màu bầu trời, vầng trăng khuyết, hình học mặt trời và dự báo 4 ngày tiếp theo.
-  2. 🪟 **Fluent Glass Card**: Kính mờ Acrylic Aero trong suốt, hiển thị toàn diện nhiệt độ, độ ẩm, gió, AQI.
-  3. ➖ **Compact Bar**: Thanh ngang tối giản siêu gọn chiếm diện tích tối thiểu ở cạnh màn hình.
-  4. 💊 **Mini Island / Capsule Pill**: Kiểu dáng viên thuốc thuôn dài nổi tinh tế, phóng to thông tin khi rê chuột vào.
-- **Trình Tinh Chỉnh Độ Mờ (Opacity Slider)**:
-  - Tùy chỉnh độ trong suốt từ 20% đến 100%, áp dụng tức thì lên widget trên màn hình.
-- **Hỗ Trợ Ghim Nhiều Widget Đồng Thời**:
-  - Người dùng có thể ghim đồng thời widget của địa phương hiện tại và mở thêm widget cho các thành phố khác trên thế giới (Tokyo, Paris, New York, Đà Nẵng...).
-
----
-
-### Tab 7: Trung Tâm Cài Đặt & Cá Nhân Hóa Toàn Trang (Settings Hub)
-- **Bố Cục Toàn Màn Hình Chuẩn Windows 11 Fluent 2 Cột**:
-  - Sidebar bên trái (230px) với 8 danh mục có icon minh họa sinh động.
-  - Tự động cuộn mượt về đầu trang khi chuyển mục.
-- **8 Phân Mục Cấu Hình Toàn Diện**:
-  1. *Cá nhân hóa*: Đặt tên người dùng, hiển thị lời chào buổi sáng/tối.
-  2. *Giao diện & Biểu tượng*: Chọn bộ Icon Pack (Meteocons Animated SVG, Microsoft Fluent 3D, Minimalist Vector), hiệu ứng Mica Alt.
-  3. *Thời gian & Đơn vị*: Chuyển đổi °C / °F, định dạng 24 giờ / 12 giờ AM-PM, chọn ngày bắt đầu tuần (Thứ Hai hoặc Chủ Nhật).
-  4. *Hình nền thành phố*: Chế độ hình nền động, hình nền ảnh tĩnh chất lượng cao theo thành phố.
-  5. *Widget Desktop*: Cài đặt kiểu dáng mặc định, phím tắt gọi nhanh, độ mờ mặc định.
-  6. *Thông báo & Khay Taskbar*: Cảnh báo mưa bão tức thì, thu nhỏ về khay hệ thống, chạy ngầm khởi động cùng Windows.
-  7. *Hiệu năng & Dữ liệu*: Tần suất tự động làm mới thời tiết (15p, 30p, 1h, 2h), chế độ tiết kiệm tài nguyên máy tính.
-  8. *Giới thiệu & Changelog*: Lịch sử phiên bản, bản quyền và thông tin phát triển.
-- **Nút "Lưu & Áp Dụng"**: Đồng bộ tức thời và ghi file an toàn chống mất mát dữ liệu.
-
----
-
-## 💎 5. Hệ Thống Tiện Ích Độc Quyền (Exclusive Ecosystem)
-
-### 1. Bộ Hòa Âm Thiên Nhiên Thư Giãn (Ambient Weather Sounds)
-- Tích hợp bộ tạo âm thanh vi khí hậu không gian thực: Tiếng mưa rơi trên mái tôn, tiếng sấm rền từ xa, tiếng gió rít qua khe cửa, tiếng sóng biển rì rào và tiếng suối rừng thông.
-- Giúp người dùng tập trung làm việc, học tập hoặc thư giãn giải tỏa căng thẳng.
-
-### 2. Xem Nhanh Khay Hệ Thống (Quick Peek System Tray Flyout)
-- Nhấp chuột phải hoặc rê chuột vào biểu tượng khay Taskbar để hiển thị ngay bảng điều khiển nổi Quick Peek mà không cần mở toàn bộ cửa sổ chính.
-
-### 3. Chia Sẻ Thẻ Thời Tiết Full HD 1080p (Full HD Share Cards)
-- Kết xuất đồ họa siêu nét độ phân giải cao:
-  - Dạng dọc **Story (1080 x 1920 px)**: Tối ưu cho Facebook/Instagram Story, Zalo Nhật ký.
-  - Dạng ngang **Landscape (1920 x 1080 px)**: Tối ưu cho gửi vào nhóm chat Facebook, Zalo, Teams.
-- Hỗ trợ nút **Sao Chép Vào Clipboard** (nhấn Ctrl+V để dán ảnh ngay) hoặc **Lưu File PNG**.
-
----
-
-## 📜 6. Biên Niên Sử Phát Triển Toàn Diện (Full Version History: v1.0.0 ➔ v3.0.0)
-
-```mermaid
-timeline
-    title Lộ Trình Phát Triển Weather WinUI
-    2026 Q1 : v1.0.0 (Bản phát hành đầu tiên)
-            : v1.1.0 (Toast, Tray & Widget)
-            : v1.2.0 (Trendline & Chia sẻ ảnh)
-            : v1.3.0 (Báo cáo & Lời khuyên)
-    2026 Q2 : v1.4.0 (Fix Crash & Settings JSON)
-            : v1.5.0 (Biểu đồ Spline & Đa phiên bản)
-            : v1.6.0 (Tương thích Windows 10)
-            : v1.7.0 (AQI, Bụi mịn PM2.5, Mặt trời)
-    2026 Q3 : v1.8.0 (Lịch Tháng Đa Niên & Ngày Lễ VN)
-            : v1.9.0 (Ghi Chú Kế Hoạch & Mini Island)
-            : v2.0.0 (Mục Tiêu Ngày & Giờ Đi Làm)
-            : v2.1.0 (Hôm Nay Mặc Gì OOTD & Thẻ Full HD)
-    2026 Q4 : v2.2.0 (BryanC Dynamic & Meteocons SVG)
-            : v2.2.1 (Fix Icon Win10 & Tìm kiếm không dấu)
-            : v2.2.2 (Ambient Weather Sounds & Quick Peek)
-            : v2.2.3 (Fix Lưu Cài Đặt & Cảnh Báo Ngập Triều Cường)
-            : v3.0.0-beta (Đại tu giao diện Fluent Navigation Shell)
-            : v3.0.1-beta (Radar 360, Inline Calendar, Widget Studio, OOTD High Contrast)
-            : v3.0.2-beta (Modular UserControl, Lazy Loading, Win10/11 Adaptive, Font Fallback)
-            : v3.0.0 (Bản Phát Hành Chính Thức: Hệ Điều Hành Vi Khí Hậu Toàn Diện)
+```
+2026 Q1 : v1.0.0 (Khá»Ÿi táº¡o dá»± Ã¡n WinUI 3 & Open-Meteo)
+        : v1.1.0 âž” v1.9.0 (System Tray, Toast, Lá»‹ch Ã‚m, OOTD, Mini Island)
+2026 Q2 : v2.0.0 âž” v2.2.3 (CÃ¡ nhÃ¢n hÃ³a Ä‘a chiá»u, BryanC Dynamic, Ã‚m thanh mÃ´i trÆ°á»ng, Thá»§y triá»u)
+2026 Q3 : v3.0.0 (Äáº¡i tu Fluent Navigation Shell, Modular UserControls, Lazy Loading, Radar 360)
+2026 Q4 : v3.1.0 (AQI chuyÃªn sÃ¢u, nÃ¢ng cáº¥p báº£n Ä‘á»“ ngáº­p lá»¥t Ä‘Ã´ thá»‹)
+        : v3.2.0 (Dynamic Island widget, QuickPeek window)
+        : v3.3.0 (Bá»™ sÆ°u táº­p 8 Theme MÃ¹a & Lá»… há»™i, Seasonal Desktop Widgets)
+        : v3.3.1 (Tá»‘i Æ°u Ä‘á»™ tÆ°Æ¡ng pháº£n Light Mode Windows 10, thiáº¿t káº¿ láº¡i nÃºt báº¥m)
+        : v3.4.0 (Äáº¡i tu toÃ n diá»‡n háº¡t mÃ¹a: hoa mai Ä‘Ã o, lÃ¡ phong 5 thÃ¹y, dÆ¡i ma thuáº­t, tuyáº¿t sao)
+        : v3.4.1 (Báº£n PhÃ¡t HÃ nh ChÃ­nh Thá»©c: Ra máº¯t 3 Designer Widgets Bento Pop, Bento Pilot & Retro LCD)
 ```
 
-### Bảng Chi Tiết Toàn Bộ Lịch Sử Phiên Bản:
-
-| Phiên Bản | Ngày Phát Hành | Trọng Tâm Phát Triển | Chi Tiết Tính Năng Mới & Khắc Phục Lỗi |
-|---|---|---|---|
-| **v1.0.0** | Đầu dự án | Khởi tạo nền tảng | Xây dựng dự án trên WinUI 3 & .NET 8, kết nối Open-Meteo API, hiển thị nhiệt độ hiện tại, dự báo 7 ngày, đổi đơn vị C/F, hiệu ứng Acrylic cơ bản. |
-| **v1.1.0** | Bản nâng cấp 1 | Hệ sinh thái Windows | Tích hợp biểu tượng khay hệ thống (System Tray), thông báo Windows Toast Notification khi có thời tiết xấu, Widget Desktop nổi cơ bản. |
-| **v1.2.0** | Bản nâng cấp 2 | Đồ thị & Chia sẻ | Thêm biểu đồ nhiệt độ 24h đường cong Spline, tính năng xuất thẻ thời tiết ảnh JPEG để chia sẻ lên mạng xã hội. |
-| **v1.3.0** | Bản nâng cấp 3 | Lời khuyên sinh hoạt | Bổ sung báo cáo thời tiết mở rộng (gió, áp suất, độ ẩm, tầm nhìn, UV) kèm các lời khuyên sinh hoạt cơ bản. |
-| **v1.4.0** | Bản ổn định | Ổn định hệ thống | Khắc phục sự cố crash khi mất mạng, hoàn thiện hộp thoại Settings dialog lưu cấu hình vào `settings.json`. |
-| **v1.5.0** | Bản nâng cấp 4 | Tối ưu hiển thị | Nâng cấp đường cong nhiệt độ Spline mượt mà, hỗ trợ DPI đa màn hình và màn hình độ phân giải cao. |
-| **v1.6.0** | Bản tương thích | Mở rộng hệ điều hành | Tối ưu hóa khả năng tương thích với Windows 10 (Build 17763+), cơ chế fallback Mica sang Acrylic khi chạy trên Windows 10. |
-| **v1.7.0** | Bản vi khí hậu | Sức khỏe & Môi trường | Tích hợp chỉ số chất lượng không khí AQI và bụi mịn PM2.5 / PM10, đồng hồ chu kỳ Mặt trời mọc / lặn, thanh đo dải nhiệt độ tuần (Weekly Range Bar). |
-| **v1.8.0** | Bản bản địa hóa | Văn hóa Việt Nam | Ra mắt Lịch Tháng Đa Niên (42 ô ngày) tích hợp Âm Lịch Việt Nam, Can Chi (ngày/tháng/năm), 24 Tiết Khí thiên văn, ngày lễ truyền thống & quốc gia. |
-| **v1.9.0** | Bản tương tác | Kế hoạch & Mini Widget | Thêm sổ tay ghi chú kế hoạch theo ngày, thuật toán tự phát hiện xung đột thời tiết với lịch ngoài trời, mẫu widget Mini Island siêu nhỏ gọn. |
-| **v2.0.0** | Cột mốc 2.0 | Cá nhân hóa đa chiều | Thêm tính năng Mục Tiêu Ngày (Daily Goals), nhắc nhở giờ đi làm (Commute alerts), hỗ trợ mở cùng lúc nhiều widget cho các thành phố khác nhau. |
-| **v2.1.0** | Bản thời trang | Trợ lý trang phục & Full HD | Ra mắt trợ lý thông minh "Hôm Nay Mặc Gì?" (OOTD Advisor), bộ công cụ kết xuất thẻ thời tiết Full HD 1080p (Story dọc & Landscape ngang) lưu Clipboard. |
-| **v2.2.0** | Bản đột phá thị giác | Giao diện Dynamic Dribbble | Bổ sung phong cách widget BryanC Dynamic đổi màu theo bầu trời thực tế, tích hợp gói biểu tượng Meteocons Animated SVG, triệt tiêu viền trắng trên Taskbar. |
-| **v2.2.1** | Bản vá lỗi | Khả năng tìm kiếm | Sửa lỗi font biểu tượng trên Windows 10, nâng cấp tìm kiếm địa điểm hỗ trợ gõ tiếng Việt không dấu (Ha Noi, Da Nang...), tối ưu responsive cho màn hình < FullHD, fix cảnh báo nhầm của phần mềm diệt virus. |
-| **v2.2.2** | Bản trải nghiệm | Âm thanh & Quick Peek | Tích hợp hệ thống âm thanh môi trường Ambient Weather Sounds (mưa, sấm, gió, sóng biển, rừng thông), cửa sổ Quick Peek thumbnail nhanh tại khay hệ thống. |
-| **v2.2.3** | Bản dân sinh & Ổn định | Fix lưu cài đặt & Triều cường | **Fix lỗi chí mạng**: Xử lý triệt để lỗi không lưu cài đặt và lỗi Widget Opacity bị ép về 20% khi mở lại app; **Tính năng mới**: Cảnh báo ngập úng triều cường đô thị tại TP.HCM & Hà Nội (đồ thị sóng bán nhật triều 24h, đếm ngược đỉnh triều, danh sách tuyến đường ngập). |
-| **v3.0.0-beta** | Bản đại tu UI Beta | Khung NavigationView Shell | Đại tu toàn bộ giao diện thành bố cục Fluent NavigationView 7 tab chuyên biệt, xây dựng thanh tua thời gian 24h Time-Scrubber, thiết kế Widget Studio. |
-| **v3.0.1-beta** | Bản Beta Hoàn Thiện | Chau chuốt toàn diện | Khắc phục lỗi font chữ UTF-8, sửa lỗi hiển thị icon 24h và bảng 7 ngày, thiết kế Radar Doppler khí quyển 360° có vệt sáng phosphor trail, khung chi tiết Lịch trực tiếp (Inline Day Details) thay thế popup, tăng độ tương phản OOTD trên Light Mode, Widget Studio ghim chính xác cả 4 kiểu dáng và lưu độ mờ, Trung tâm cài đặt 2 cột Win11 toàn trang. |
-| **v3.0.2-beta** | Bản Tối Ưu Kiến Trúc | Module Hóa & Tương Thích Win10/11 | Phương Án B Modular UserControl: Tách biệt 7 tab độc lập vào `Views/Tabs/`, áp dụng `x:DeferLoadStrategy="Lazy"` tải theo nhu cầu (on-demand via `FindName`), giảm 63% kích thước XAML MainPage, tiết kiệm RAM khởi động; Tối ưu Windows 10 & 11 (MicaAlt / Acrylic Slate); Sửa triệt để lỗi mất biểu tượng. |
-| **v3.0.0** | **Bản Phát Hành Chính Thức** | **Cột Mốc v3.0 Hoàn Thiện** | **Hệ Điều Hành Vi Khí Hậu Toàn Diện**: Hội tụ đầy đủ kiến trúc Modular UserControl 7 Tab, nạp lười Lazy Loading tối ưu Cold Start & 0% CPU nhàn rỗi, tương thích thích ứng sâu Windows 10 (Acrylic Slate Dark) & Windows 11 (MicaAlt), nạp font động Win32 AddFontResourceEx chống mất icon, Sóng bán nhật triều 24h & đếm ngược đỉnh triều, Radar Doppler 360°, Lịch Vạn Niên Inline Details, Widget Studio 4 kiểu dáng, Trung tâm Cài đặt 2 cột Win11 và bộ xuất thẻ ảnh Full HD độ phân giải cao. |
+| PhiÃªn Báº£n | Trá»ng TÃ¢m PhÃ¡t Triá»ƒn | Chi Tiáº¿t TÃ­nh NÄƒng Má»›i & Kháº¯c Phá»¥c Lá»—i |
+|---|---|---|
+| **v3.4.1** | **Báº£n PhÃ¡t HÃ nh ChÃ­nh Thá»©c** | **Ra máº¯t 3 Kiá»ƒu DÃ¡ng Desktop Widget Má»›i**: Bento Pop (`BentoVivid` vá»›i Ä‘á»“ng há»“ kim Ä‘á» san hÃ´ & Ã´ ngÃ y cam áº¥m), Bento Pilot (`BentoTactical` vá»›i buá»“ng lÃ¡i phi cÃ´ng kim neon xanh lÃ¡ & barometer), Retro LCD (`RetroLcd` vá»›i vá» xanh lÃ­nh cÃ´ng nghiá»‡p, Ä‘á»“ng há»“ sá»‘ 7 Ä‘oáº¡n, mÃ¢y mÆ°a 8-bit, Ä‘á»“ng há»“ Ä‘o giÃ³ vÃ  báº£ng telemetry quÃ¢n sá»±); Cáº­p nháº­t Widget Studio 15 kiá»ƒu dÃ¡ng; Há»— trá»£ tham sá»‘ dÃ²ng lá»‡nh `--style=`; ÄÃ³ng gÃ³i Self-Contained Release & Inno Setup Setup v3.4.1. |
+| **v3.4.0** | **Äáº¡i Tu Hiá»‡u á»¨ng MÃ¹a & NÃºt Báº¥m** | NÃ¢ng cáº¥p há»‡ thá»‘ng háº¡t khÃ­ quyá»ƒn sá»‘ng Ä‘á»™ng: CÃ¡nh hoa mai Ä‘Ã o ná»Ÿ rá»™ vÃ  rÆ¡i láº£ táº£ (Táº¿t), lÃ¡ phong 5 thÃ¹y chao lÆ°á»£n theo giÃ³ (Thu), báº§y dÆ¡i vá»— cÃ¡nh ma thuáº­t & bÃ­ ngÃ´ phÃ¡t sÃ¡ng (Halloween), bÃ´ng tuyáº¿t pha lÃª 6 cÃ¡nh xoay láº¥p lÃ¡nh & quáº£ cáº§u giÃ¡ng sinh (Noel); Sá»­a triá»‡t Ä‘á»ƒ 100% lá»—i Widget mÃ¹a khÃ´ng Ã¡p dá»¥ng; LÃ m má»›i toÃ n diá»‡n há»‡ thá»‘ng nÃºt báº¥m hiá»‡n Ä‘áº¡i chuáº©n Fluent. |
+| **v3.3.1** | **Báº£n VÃ¡ Giao Diá»‡n Win10 Light Mode** | Kháº¯c phá»¥c 100% lá»—i má» Ä‘á»¥c vÃ  chÃ³i sÃ¡ng trÃªn Windows 10 Light Theme; TÄƒng cÆ°á»ng Ä‘á»™ tÆ°Æ¡ng pháº£n vÄƒn báº£n vÃ  viá»n tháº»; Tá»‘i Æ°u hÃ³a báº£ng mÃ u Slate vÃ  Acrylic. |
+| **v3.3.0** | **Chá»§ Äá» 4 MÃ¹a & 4 Äáº¡i Lá»… Há»™i** | Ra máº¯t phÃ¢n há»‡ SeasonalSkin: 4 mÃ¹a thiÃªn nhiÃªn (XuÃ¢n, Háº¡, Thu, ÄÃ´ng) vÃ  4 Ä‘áº¡i lá»… há»™i (Táº¿t, Trung Thu, Halloween, GiÃ¡ng Sinh); Ghim widget chuyÃªn Ä‘á» ra Desktop. |
+| **v3.2.0** | **Dynamic Island & QuickPeek** | Bá»• sung widget viÃªn thuá»‘c Dynamic Island; Cá»­a sá»• QuickPeek xem nhanh thá»i tiáº¿t tá»« System Tray. |
+| **v3.1.0** | **KhÃ­ tÆ°á»£ng & Thá»§y vÄƒn ÄÃ´ thá»‹** | NÃ¢ng cáº¥p chá»‰ sá»‘ cháº¥t lÆ°á»£ng khÃ´ng khÃ­ AQI chuyÃªn sÃ¢u vÃ  báº£n Ä‘á»“ ngáº­p lá»¥t Ä‘Ã´ thá»‹ TP.HCM & HÃ  Ná»™i. |
+| **v3.0.0** | **Cá»™t Má»‘c Há»‡ Äiá»u HÃ nh Vi KhÃ­ Háº­u** | Äáº¡i tu kiáº¿n trÃºc Modular UserControls 7 Tab, náº¡p lÆ°á»i Lazy Loading tá»‘i Æ°u Cold Start & 0% CPU nhÃ n rá»—i, tÆ°Æ¡ng thÃ­ch thÃ­ch á»©ng sÃ¢u Windows 10 (Acrylic Slate Dark) & Windows 11 (MicaAlt), náº¡p font Ä‘á»™ng Win32 AddFontResourceEx chá»‘ng máº¥t icon, SÃ³ng bÃ¡n nháº­t triá»u 24h & Ä‘áº¿m ngÆ°á»£c Ä‘á»‰nh triá»u, Radar Doppler 360Â°, Lá»‹ch Váº¡n NiÃªn Inline Details, Widget Studio 4 kiá»ƒu dÃ¡ng. |
+| **v1.0.0 âž” v2.2.3** | **Khá»Ÿi Táº¡o & HoÃ n Thiá»‡n Ná»n Táº£ng** | ToÃ n bá»™ chuá»—i phÃ¡t triá»ƒn ban Ä‘áº§u tá»« v1.0.0 (WinUI 3 & .NET 8) qua cÃ¡c báº£n nÃ¢ng cáº¥p System Tray, Spline Graph, OOTD Advisor, Lá»‹ch Ã‚m, Dribbble BryanC Dynamic, vÃ  cáº£nh bÃ¡o ngáº­p lá»¥t Ä‘Ã´ thá»‹. |
 
 ---
 
-## 💻 7. Hướng Dẫn Cài Đặt, Build & Khởi Chạy
+## ðŸ’» 7. HÆ°á»›ng Dáº«n CÃ i Äáº·t, Build & Khá»Ÿi Cháº¡y
 
-### A. Tải & Sử Dụng Bản Đóng Gói Sẵn (Portable / Setup)
-- **Bản Cài Đặt Windows Chính Thức v3.0.0**:
-  - Tải bộ cài đặt: `Output/WeatherApp_Setup_v3.0.0.exe` (~83 MB).
-  - Tự động cài đặt chuẩn Windows 10/11, tạo shortcut Desktop, Start Menu và tự khởi động cùng máy.
-- **Bản Di Động (Portable) Chính Thức v3.0.0**:
-  - Tải file nén `Output/WeatherApp_Portable_v3.0.0.zip` (~97 MB).
-  - Giải nén ra bất kỳ thư mục nào trên máy tính và chạy trực tiếp `WeatherApp.exe` (Self-contained, không phụ thuộc môi trường ngoài).
-- **Bản Tiền Nhiệm v2.2.3**:
-  - Bộ cài đặt: `Output/WeatherApp_Setup_v2.2.3.exe` (~81 MB).
-  - Bản Portable: `Output/WeatherApp_Portable_v2.2.3.zip` (~97 MB).
+### A. Táº£i & Sá»­ Dá»¥ng Báº£n ÄÃ³ng GÃ³i Sáºµn (Portable / Setup)
+- **Báº£n CÃ i Äáº·t Windows ChÃ­nh Thá»©c v3.4.1**:
+  - Táº£i bá»™ cÃ i Ä‘áº·t: `Output/WeatherApp_Setup_v3.4.1.exe` (~85 MB).
+  - Tá»± Ä‘á»™ng cÃ i Ä‘áº·t chuáº©n Windows 10/11, táº¡o shortcut Desktop, Start Menu vÃ  tá»± khá»Ÿi Ä‘á»™ng cÃ¹ng mÃ¡y.
+- **Báº£n Di Äá»™ng (Portable) ChÃ­nh Thá»©c v3.4.1**:
+  - Táº£i file nÃ©n `Output/WeatherApp_Portable_v3.4.1.zip` (~98 MB).
+  - Giáº£i nÃ©n ra báº¥t ká»³ thÆ° má»¥c nÃ o trÃªn mÃ¡y tÃ­nh vÃ  cháº¡y trá»±c tiáº¿p `WeatherApp.exe` (Self-contained, khÃ´ng phá»¥ thuá»™c mÃ´i trÆ°á»ng ngoÃ i).
 
-### B. Hướng Dẫn Biên Dịch Từ Mã Nguồn (Build from Source)
-1. **Yêu cầu môi trường**:
-   - Hệ điều hành: Windows 10 (Phiên bản 1809 Build 17763 trở lên) hoặc Windows 11.
-   - .NET 8.0 SDK (x64 hoặc ARM64).
-   - Visual Studio 2022 (v17.8+) với workload *.NET Desktop Development* và *Windows App SDK C# Templates*.
-2. **Các bước thực hiện**:
+### B. HÆ°á»›ng Dáº«n BiÃªn Dá»‹ch Tá»« MÃ£ Nguá»“n (Build from Source)
+1. **YÃªu cáº§u mÃ´i trÆ°á»ng**:
+   - Há»‡ Ä‘iá»u hÃ nh: Windows 10 (Build 17763 trá»Ÿ lÃªn) hoáº·c Windows 11.
+   - .NET 8.0 SDK (x64 hoáº·c ARM64).
+   - Inno Setup 6 (Ä‘á»ƒ biÃªn dá»‹ch file cÃ i Ä‘áº·t).
+2. **CÃ¡c bÆ°á»›c thá»±c hiá»‡n**:
 ```bash
-# 1. Chuyển sang nhánh main
-git checkout main
-
-# 2. Khôi phục các gói NuGet phụ thuộc
+# 1. KhÃ´i phá»¥c cÃ¡c gÃ³i NuGet
 dotnet restore
 
-# 3. Biên dịch bản Debug x64 để chạy thử nghiệm
-dotnet build -p:Platform=x64
+# 2. BiÃªn dá»‹ch báº£n Release x64
+dotnet build -c Release -p:Platform=x64
 
-# 4. Xuất bản gói Release x64 Self-Contained (Bản Portable & Chuẩn bị Setup)
-dotnet publish -c Release -p:Platform=x64 -r win-x64 --self-contained true -o publish
+# 3. Xuáº¥t báº£n gÃ³i Release x64 Self-Contained
+dotnet publish -c Release -r win-x64 --self-contained true -o publish
 
-# 5. Biên dịch bộ cài đặt Inno Setup
+# 4. BiÃªn dá»‹ch bá»™ cÃ i Ä‘áº·t Inno Setup
 ISCC installer.iss
 ```
 
 ---
-*Tài liệu kỹ thuật được lập và cập nhật tự động bởi Weather WinUI Team (2026).*
+*TÃ i liá»‡u ká»¹ thuáº­t Ä‘Æ°á»£c láº­p vÃ  cáº­p nháº­t tá»± Ä‘á»™ng bá»Ÿi Weather WinUI Team (2026).*

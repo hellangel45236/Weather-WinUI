@@ -196,13 +196,16 @@ public sealed partial class SettingsTab : UserControl
         }
 
         // Widget style
-        if (WidgetStyleComboBox != null && WidgetStyleComboBox.Items.Count >= 5)
+        if (WidgetStyleComboBox != null && WidgetStyleComboBox.Items.Count >= 8)
         {
-            ((ComboBoxItem)WidgetStyleComboBox.Items[0]).Content = isVi ? "✨ Dribbble Dynamic (Đổi màu)" : "✨ Dribbble Dynamic (Color shift)";
-            ((ComboBoxItem)WidgetStyleComboBox.Items[1]).Content = isVi ? "🪟 Fluent Glass (Kính mờ)" : "🪟 Fluent Glass (Frosted)";
-            ((ComboBoxItem)WidgetStyleComboBox.Items[2]).Content = isVi ? "📱 Minimalist Compact" : "📱 Minimalist Compact";
-            ((ComboBoxItem)WidgetStyleComboBox.Items[3]).Content = isVi ? "🏝️ Dynamic Island Bar" : "🏝️ Dynamic Island Bar";
-            ((ComboBoxItem)WidgetStyleComboBox.Items[4]).Content = isVi ? "🎆 Seasonal Festival (Mùa & Lễ hội)" : "🎆 Seasonal Festival Card";
+            ((ComboBoxItem)WidgetStyleComboBox.Items[0]).Content = isVi ? "\u2728 Dribbble Dynamic (\u0110\u1ED5i m\u00E0u)" : "\u2728 Dribbble Dynamic (Color shift)";
+            ((ComboBoxItem)WidgetStyleComboBox.Items[1]).Content = isVi ? "\U0001FA9F Fluent Glass (K\u00EDnh m\u1EDD)" : "\U0001FA9F Fluent Glass (Frosted)";
+            ((ComboBoxItem)WidgetStyleComboBox.Items[2]).Content = isVi ? "\U0001F4F1 Minimalist Compact" : "\U0001F4F1 Minimalist Compact";
+            ((ComboBoxItem)WidgetStyleComboBox.Items[3]).Content = isVi ? "\U0001F3DD\uFE0F Dynamic Island Bar" : "\U0001F3DD\uFE0F Dynamic Island Bar";
+            ((ComboBoxItem)WidgetStyleComboBox.Items[4]).Content = isVi ? "\U0001F386 Seasonal Festival (M\u00F9a & L\u1EC5 h\u1ED9i)" : "\U0001F386 Seasonal Festival Card";
+            ((ComboBoxItem)WidgetStyleComboBox.Items[5]).Content = isVi ? "\U0001F371 Bento Pop (M\u00E0u s\u1EAFc s\u1ED1ng \u0111\u1ED9ng)" : "\U0001F371 Bento Pop (Vivid Color)";
+            ((ComboBoxItem)WidgetStyleComboBox.Items[6]).Content = isVi ? "\U0001F9ED Bento Pilot (Bu\u1ED3ng l\u00E1i phi c\u00F4ng)" : "\U0001F9ED Bento Pilot (Tactical Slate)";
+            ((ComboBoxItem)WidgetStyleComboBox.Items[7]).Content = isVi ? "\U0001F4DF Retro Cyber LCD (Tr\u1EA1m th\u1EDDi ti\u1EBFt c\u1ED5 \u0111i\u1EC3n)" : "\U0001F4DF Retro Cyber LCD Computer";
         }
 
         // Commute lead time

@@ -841,6 +841,275 @@
                         </Grid>
                     </Grid>
                 </Grid>
+                <!-- ==================== STYLE 6: BENTO POP / VIVID COLOR (v3.4.1) ==================== -->
+                <Grid x:Name="BentoVividView" Visibility="Collapsed" Padding="8">
+                    <Grid ColumnDefinitions="*,*">
+                        <!-- SKY BLUE TILE -->
+                        <Border Grid.Column="0" CornerRadius="22" Background="#38BDF8" Margin="0,0,4,0" Padding="14,12">
+                            <Grid RowDefinitions="Auto,*,Auto">
+                                <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
+                                    <Grid Width="22" Height="22" Margin="0,0,6,0" VerticalAlignment="Center">
+                                        <Image x:Name="BentoVividWeatherIcon" Width="22" Height="22" Stretch="Uniform"/>
+                                        <FontIcon x:Name="BentoVividFallbackIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6c4;" FontSize="15" Foreground="#0F172A" VerticalAlignment="Center" Visibility="Collapsed"/>
+                                    </Grid>
+                                    <TextBlock Grid.Column="1" x:Name="BentoVividConditionText" Text="Few clouds" FontSize="12.5" FontWeight="SemiBold" Foreground="#0F172A" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                </Grid>
+
+                                <TextBlock Grid.Row="1" x:Name="BentoVividTempText" Text="28Â°" FontSize="46" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center" Margin="0,-4,0,-2"/>
+
+                                <Button Grid.Row="2" Click="CityPickerButton_Click" Background="Transparent" BorderThickness="0" Padding="0" HorizontalAlignment="Left" ToolTipService.ToolTip="Select city">
+                                    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                        <TextBlock x:Name="BentoVividCityText" Text="New York City" FontSize="14" FontWeight="SemiBold" Foreground="#0F172A" MaxWidth="135" TextTrimming="CharacterEllipsis"/>
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0d7;" FontSize="8" Foreground="#475569" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </Border>
+
+                        <!-- RIGHT COLUMN: 3 BENTO TILES -->
+                        <Grid Grid.Column="1" Margin="4,0,0,0" RowDefinitions="Auto,*" RowSpacing="8">
+                            <!-- TOP ROW: DATE &amp; SUNSET -->
+                            <Grid Grid.Row="0" ColumnDefinitions="*,*" ColumnSpacing="8" Height="68">
+                                <!-- DATE TILE (AMBER) -->
+                                <Border Grid.Column="0" CornerRadius="18" Background="#F97316" Padding="10,6">
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="0">
+                                        <TextBlock x:Name="BentoVividDayOfWeekText" Text="Sun" FontSize="13.5" FontWeight="SemiBold" Foreground="#1E1B18" HorizontalAlignment="Center"/>
+                                        <TextBlock x:Name="BentoVividDayNumText" Text="15" FontSize="26" FontWeight="Bold" Foreground="#1E1B18" HorizontalAlignment="Center" Margin="0,-4,0,0"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- SUNSET TILE (DARK) -->
+                                <Border Grid.Column="1" CornerRadius="18" Background="#141518" Padding="6,6">
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="3">
+                                        <Canvas Width="32" Height="18" HorizontalAlignment="Center">
+                                            <Line X1="2" Y1="17" X2="30" Y2="17" Stroke="#FB923C" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                            <Path Data="M 9,17 A 7,7 0 0 1 23,17" Fill="#FB923C"/>
+                                            <Path Data="M 16,1 L 16,7 M 13,4 L 16,7 L 19,4" Stroke="#FB923C" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                        </Canvas>
+                                        <TextBlock x:Name="BentoVividSunsetText" Text="22:04" FontSize="15" FontWeight="Bold" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- BOTTOM ROW: ANALOG WORLD CLOCK (CORAL RED) -->
+                            <Border Grid.Row="1" CornerRadius="18" Background="#EF4444" Padding="10,8">
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <!-- WATCH DIAL -->
+                                    <Canvas Width="52" Height="52" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Ellipse Width="52" Height="52" Fill="#FFFFFF" Stroke="#FCA5A5" StrokeThickness="1.2"/>
+                                        <Ellipse Canvas.Left="24" Canvas.Top="24" Width="4" Height="4" Fill="#DC2626"/>
+                                        <Line X1="26" Y1="26" X2="26" Y2="13" Stroke="#DC2626" StrokeThickness="2" StrokeStartLineCap="Round">
+                                            <Line.RenderTransform>
+                                                <RotateTransform x:Name="BentoVividHourTransform" CenterX="26" CenterY="26" Angle="0"/>
+                                            </Line.RenderTransform>
+                                        </Line>
+                                        <Line X1="26" Y1="26" X2="26" Y2="9" Stroke="#DC2626" StrokeThickness="1.3" StrokeStartLineCap="Round">
+                                            <Line.RenderTransform>
+                                                <RotateTransform x:Name="BentoVividMinuteTransform" CenterX="26" CenterY="26" Angle="0"/>
+                                            </Line.RenderTransform>
+                                        </Line>
+                                    </Canvas>
+
+                                    <!-- INFO -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0" Spacing="1">
+                                        <TextBlock x:Name="BentoVividClockCityText" Text="NYC" FontSize="14.5" FontWeight="Bold" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock x:Name="BentoVividClockSubText" Text="Sun, Dec 15" FontSize="10.5" FontWeight="Medium" Foreground="#FEE2E2" Opacity="0.9"/>
+                                        <TextBlock x:Name="BentoVividTzText" Text="UTC -5" FontSize="10" FontWeight="SemiBold" Foreground="#FFFFFF" Opacity="0.8"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+                <!-- ==================== STYLE 7: BENTO PILOT / TACTICAL SLATE (v3.4.1) ==================== -->
+                <Grid x:Name="BentoTacticalView" Visibility="Collapsed" Padding="8">
+                    <Grid ColumnDefinitions="*,*">
+                        <!-- SLATE BLUE WEATHER TILE -->
+                        <Border Grid.Column="0" CornerRadius="22" Background="#7E99AB" Margin="0,0,4,0" Padding="14,12">
+                            <Grid RowDefinitions="Auto,*,Auto">
+                                <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
+                                    <Grid Width="22" Height="22" Margin="0,0,6,0" VerticalAlignment="Center">
+                                        <Image x:Name="BentoTacticalWeatherIcon" Width="22" Height="22" Stretch="Uniform"/>
+                                        <FontIcon x:Name="BentoTacticalFallbackIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c2;" FontSize="15" Foreground="#0F172A" VerticalAlignment="Center" Visibility="Collapsed"/>
+                                    </Grid>
+                                    <TextBlock Grid.Column="1" x:Name="BentoTacticalConditionText" Text="Overcast" FontSize="12.5" FontWeight="SemiBold" Foreground="#0F172A" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                </Grid>
+
+                                <TextBlock Grid.Row="1" x:Name="BentoTacticalTempText" Text="16Â°" FontSize="46" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center" Margin="0,-4,0,-2"/>
+
+                                <Button Grid.Row="2" Click="CityPickerButton_Click" Background="Transparent" BorderThickness="0" Padding="0" HorizontalAlignment="Left" ToolTipService.ToolTip="Select city">
+                                    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                        <TextBlock x:Name="BentoTacticalCityText" Text="BogotÃ¡" FontSize="14" FontWeight="SemiBold" Foreground="#0F172A" MaxWidth="135" TextTrimming="CharacterEllipsis"/>
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0d7;" FontSize="8" Foreground="#475569" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </Border>
+
+                        <!-- RIGHT COLUMN: COCKPIT PILOT DIAL + SUNSET &amp; BAROMETER PILLS -->
+                        <Grid Grid.Column="1" Margin="4,0,0,0" RowDefinitions="*,Auto" RowSpacing="8">
+                            <!-- TOP: COCKPIT PILOT WATCH TILE -->
+                            <Border Grid.Row="0" CornerRadius="20" Background="#16191D" Padding="8,6">
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <!-- PILOT DIAL -->
+                                    <Canvas Width="64" Height="64" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Ellipse Width="64" Height="64" Fill="#0D0F12" Stroke="#2D333B" StrokeThickness="1.5"/>
+                                        <Line X1="32" Y1="3" X2="32" Y2="8" Stroke="#FFFFFF" StrokeThickness="2"/>
+                                        <Line X1="61" Y1="32" X2="56" Y2="32" Stroke="#FFFFFF" StrokeThickness="2"/>
+                                        <Line X1="32" Y1="61" X2="32" Y2="56" Stroke="#FFFFFF" StrokeThickness="2"/>
+                                        <Line X1="3" Y1="32" X2="8" Y2="32" Stroke="#FFFFFF" StrokeThickness="2"/>
+                                        <Line X1="32" Y1="32" X2="32" Y2="17" Stroke="#FFFFFF" StrokeThickness="2.5" StrokeStartLineCap="Round">
+                                            <Line.RenderTransform>
+                                                <RotateTransform x:Name="BentoTacticalHourTransform" CenterX="32" CenterY="32" Angle="0"/>
+                                            </Line.RenderTransform>
+                                        </Line>
+                                        <Line X1="32" Y1="32" X2="32" Y2="10" Stroke="#00FF66" StrokeThickness="2" StrokeStartLineCap="Round">
+                                            <Line.RenderTransform>
+                                                <RotateTransform x:Name="BentoTacticalMinuteTransform" CenterX="32" CenterY="32" Angle="0"/>
+                                            </Line.RenderTransform>
+                                        </Line>
+                                        <Ellipse Canvas.Left="29" Canvas.Top="29" Width="6" Height="6" Fill="#00FF66"/>
+                                    </Canvas>
+
+                                    <!-- COCKPIT CODE -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="2">
+                                        <TextBlock x:Name="BentoTacticalCityCodeText" Text="BOG" FontSize="15" FontWeight="ExtraBold" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="UTC-5" FontSize="9" FontWeight="SemiBold" Foreground="#64748B" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- BOTTOM ROW: SUNSET &amp; BAROMETER PILLS -->
+                            <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="8" Height="54">
+                                <!-- SUNSET PILL -->
+                                <Border Grid.Column="0" CornerRadius="16" Background="#16191D" Padding="6,6">
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="2">
+                                        <Canvas Width="28" Height="14" HorizontalAlignment="Center">
+                                            <Line X1="2" Y1="13" X2="26" Y2="13" Stroke="#E2E8F0" StrokeThickness="1.5" StrokeStartLineCap="Round"/>
+                                            <Path Data="M 8,13 A 6,6 0 0 1 20,13" Fill="#E2E8F0"/>
+                                            <Path Data="M 14,1 L 14,6 M 11,3 L 14,6 L 17,3" Stroke="#E2E8F0" StrokeThickness="1.2" StrokeStartLineCap="Round"/>
+                                        </Canvas>
+                                        <TextBlock x:Name="BentoTacticalSunsetText" Text="17:54" FontSize="13.5" FontWeight="Bold" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- BAROMETER PILL -->
+                                <Border Grid.Column="1" CornerRadius="16" Background="#16191D" Padding="6,6">
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="1">
+                                        <TextBlock x:Name="BentoTacticalBaroText" Text="10.139" FontSize="13" FontWeight="ExtraBold" Foreground="#00FF66" HorizontalAlignment="Center"/>
+                                        <TextBlock x:Name="BentoTacticalBaroUnitText" Text="1014 hPa" FontSize="9" FontWeight="SemiBold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+                <!-- ==================== STYLE 8: RETRO LCD CYBER WEATHER COMPUTER (v3.4.1) ==================== -->
+                <Grid x:Name="RetroLcdView" Visibility="Collapsed" Padding="6">
+                    <!-- INDUSTRIAL SAGE GREEN CHASSIS -->
+                    <Border CornerRadius="18" Background="#6E826F" BorderBrush="#506151" BorderThickness="3" Padding="12,10">
+                        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="10">
+                            <!-- TOP BEZEL WITH WEATHER TRAPEZOID BADGE -->
+                            <Grid Grid.Row="0">
+                                <Path Data="M 0,18 L 8,0 L 32,0 L 40,18 Z" Fill="#455446" HorizontalAlignment="Center"/>
+                                <TextBlock Text="WEATHER" FontSize="8.5" FontWeight="ExtraBold" Foreground="#9BAFA0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,3,0,0"/>
+                            </Grid>
+
+                            <!-- MAIN LCD SCREEN: 7-SEGMENT TEMP &amp; PIXEL CLOUD RAIN -->
+                            <Border Grid.Row="1" CornerRadius="14" Background="#A2B79E" BorderBrush="#5E725F" BorderThickness="2" Padding="10,6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <!-- 7-SEGMENT TEMPERATURE DISPLAY -->
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Spacing="4">
+                                        <!-- DIGIT 1 -->
+                                        <Canvas Width="28" Height="50">
+                                            <Rectangle x:Name="RetroDigit1A" Canvas.Left="4" Canvas.Top="0" Width="20" Height="5" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                            <Rectangle x:Name="RetroDigit1B" Canvas.Left="23" Canvas.Top="4" Width="5" Height="19" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                            <Rectangle x:Name="RetroDigit1C" Canvas.Left="23" Canvas.Top="25" Width="5" Height="19" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                            <Rectangle x:Name="RetroDigit1D" Canvas.Left="4" Canvas.Top="44" Width="20" Height="5" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                            <Rectangle x:Name="RetroDigit1E" Canvas.Left="0" Canvas.Top="25" Width="5" Height="19" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                            <Rectangle x:Name="RetroDigit1F" Canvas.Left="0" Canvas.Top="4" Width="5" Height="19" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                            <Rectangle x:Name="RetroDigit1G" Canvas.Left="4" Canvas.Top="22" Width="20" Height="5" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                        </Canvas>
+
+                                        <!-- DIGIT 2 -->
+                                        <Canvas Width="28" Height="50">
+                                            <Rectangle x:Name="RetroDigit2A" Canvas.Left="4" Canvas.Top="0" Width="20" Height="5" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                            <Rectangle x:Name="RetroDigit2B" Canvas.Left="23" Canvas.Top="4" Width="5" Height="19" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                            <Rectangle x:Name="RetroDigit2C" Canvas.Left="23" Canvas.Top="25" Width="5" Height="19" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                            <Rectangle x:Name="RetroDigit2D" Canvas.Left="4" Canvas.Top="44" Width="20" Height="5" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                            <Rectangle x:Name="RetroDigit2E" Canvas.Left="0" Canvas.Top="25" Width="5" Height="19" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                            <Rectangle x:Name="RetroDigit2F" Canvas.Left="0" Canvas.Top="4" Width="5" Height="19" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                            <Rectangle x:Name="RetroDigit2G" Canvas.Left="4" Canvas.Top="22" Width="20" Height="5" Fill="#19231B" RadiusX="2" RadiusY="2"/>
+                                        </Canvas>
+
+                                        <!-- DEGREE CIRCLE -->
+                                        <Canvas Width="14" Height="50">
+                                            <Ellipse Canvas.Left="2" Canvas.Top="3" Width="7" Height="7" Stroke="#19231B" StrokeThickness="2.5" Fill="Transparent"/>
+                                        </Canvas>
+                                    </StackPanel>
+
+                                    <!-- 8-BIT PIXEL ART CLOUD WITH RAIN -->
+                                    <Canvas Grid.Column="1" Width="70" Height="52" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,4,0">
+                                        <Rectangle Canvas.Left="12" Canvas.Top="14" Width="44" Height="22" Fill="#19231B" RadiusX="6" RadiusY="6"/>
+                                        <Ellipse Canvas.Left="20" Canvas.Top="4" Width="22" Height="22" Fill="#19231B"/>
+                                        <Ellipse Canvas.Left="8" Canvas.Top="12" Width="18" Height="18" Fill="#19231B"/>
+                                        <Ellipse Canvas.Left="36" Canvas.Top="10" Width="20" Height="20" Fill="#19231B"/>
+                                        <Rectangle Canvas.Left="18" Canvas.Top="20" Width="4" Height="4" Fill="#19231B"/>
+                                        <Rectangle Canvas.Left="52" Canvas.Top="20" Width="4" Height="4" Fill="#19231B"/>
+                                        <Line X1="24" Y1="41" X2="17" Y2="52" Stroke="#19231B" StrokeThickness="3.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                        <Line X1="42" Y1="41" X2="35" Y2="52" Stroke="#19231B" StrokeThickness="3.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                        <Line X1="60" Y1="41" X2="53" Y2="52" Stroke="#19231B" StrokeThickness="3.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                    </Canvas>
+                                </Grid>
+                            </Border>
+
+                            <!-- BOTTOM ROW: SECONDARY LCD (WIND) &amp; TELEMETRY PANEL -->
+                            <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="10" Height="90">
+                                <!-- SECONDARY LCD SCREEN (WIND &amp; GAUGE) -->
+                                <Border Grid.Column="0" CornerRadius="14" Background="#A2B79E" BorderBrush="#5E725F" BorderThickness="2" Padding="8">
+                                    <Grid>
+                                        <Path Data="M 72,12 L 80,4 M 73,4 L 80,4 L 80,11" Stroke="#19231B" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,4,0"/>
+                                        <TextBlock x:Name="RetroWindText" Text="8 M/S" FontSize="19" FontWeight="ExtraBold" Foreground="#19231B" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        <Canvas Width="40" Height="26" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="2,0,0,0">
+                                            <Path Data="M 4,20 A 14,14 0 0 1 32,20" Stroke="#19231B" StrokeThickness="1.6" Fill="Transparent"/>
+                                            <Ellipse Canvas.Left="16" Canvas.Top="18" Width="4" Height="4" Fill="#19231B"/>
+                                            <Line X1="18" Y1="20" X2="27" Y2="10" Stroke="#19231B" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                                                <Line.RenderTransform>
+                                                    <RotateTransform x:Name="RetroWindNeedleTransform" CenterX="18" CenterY="20" Angle="0"/>
+                                                </Line.RenderTransform>
+                                            </Line>
+                                        </Canvas>
+                                    </Grid>
+                                </Border>
+
+                                <!-- TELEMETRY STATUS PANEL -->
+                                <StackPanel Grid.Column="1" Width="96" VerticalAlignment="Center" Spacing="4">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <Ellipse Width="7" Height="7" Fill="#34D399" Stroke="#10B981" StrokeThickness="1" VerticalAlignment="Center"/>
+                                        <TextBlock Text="WIND" FontSize="11.5" FontWeight="ExtraBold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="UF INDEX" FontSize="10" FontWeight="SemiBold" Foreground="#64748B"/>
+                                        <TextBlock x:Name="RetroUfIndexVal" Text="3" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="PRESSURE" FontSize="10" FontWeight="SemiBold" Foreground="#64748B"/>
+                                        <TextBlock x:Name="RetroPressureVal" Text="1013" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="FALLOUT" FontSize="10" FontWeight="SemiBold" Foreground="#64748B"/>
+                                        <TextBlock x:Name="RetroFalloutVal" Text="CLEAR" FontSize="9.5" FontWeight="Bold" Foreground="#10B981"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
             </Grid>
         </Border>
     </Grid>

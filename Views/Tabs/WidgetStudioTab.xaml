@@ -33,7 +33,7 @@
             </Border>
 
             <!-- ==================== BỘ SƯU TẬP 4 KIỂU DÁNG WIDGET TRỰC QUAN ==================== -->
-            <Grid x:Name="GalleryGrid" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="16" RowSpacing="16">
+            <Grid x:Name="GalleryGrid" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="16">
                 <!-- 1. BRYAN C DYNAMIC CARD -->
                 <Border x:Name="CardWidgetBryanC" Grid.Row="0" Grid.Column="0"
                         PointerPressed="CardWidgetBryanC_PointerPressed"
@@ -216,6 +216,168 @@
                             </Border>
                         </Border>
                         <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioIslandDesc, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 5. BENTO POP / VIVID COLOR CARD -->
+                <Border x:Name="CardWidgetBentoVivid" Grid.Row="2" Grid.Column="0"
+                        PointerPressed="CardWidgetBentoVivid_PointerPressed"
+                        PointerEntered="Card_PointerEntered"
+                        PointerExited="Card_PointerExited"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="16">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioBentoVividTitle, Mode=OneWay}" FontWeight="Bold" FontSize="14"/>
+                            </StackPanel>
+                            <Border x:Name="BadgeWidgetBentoVivid" Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="10" Padding="8,2" Visibility="Collapsed">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioSelected, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                            </Border>
+                        </Grid>
+
+                        <!-- Mockup Box -->
+                        <Border Height="148" CornerRadius="14" Background="#150F172A" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="8">
+                            <Grid ColumnDefinitions="*,*">
+                                <!-- Sky Blue Tile -->
+                                <Border Grid.Column="0" CornerRadius="14" Background="#38BDF8" Margin="0,0,4,0" Padding="8">
+                                    <Grid RowDefinitions="Auto,*,Auto">
+                                        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.CurrentWeather.ConditionText, Mode=OneWay}" FontSize="10" FontWeight="SemiBold" Foreground="#0F172A" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Grid.Row="1" Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="28" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Row="2" Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}" FontSize="10" FontWeight="SemiBold" Foreground="#0F172A" TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </Border>
+                                <!-- Right Tiles Mockup -->
+                                <Grid Grid.Column="1" Margin="4,0,0,0" RowDefinitions="*,*" RowSpacing="4">
+                                    <Grid Grid.Row="0" ColumnDefinitions="*,*" ColumnSpacing="4">
+                                        <Border Grid.Column="0" CornerRadius="10" Background="#F97316" Padding="4">
+                                            <TextBlock Text="Sun 15" FontSize="11" FontWeight="Bold" Foreground="#1E1B18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <Border Grid.Column="1" CornerRadius="10" Background="#141518" Padding="4">
+                                            <TextBlock Text="22:04" FontSize="11" FontWeight="Bold" Foreground="#F8FAFC" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </Grid>
+                                    <Border Grid.Row="1" CornerRadius="10" Background="#EF4444" Padding="6,2">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Ellipse Width="18" Height="18" Fill="White"/>
+                                            <TextBlock Text="NYC - UTC -5" FontSize="10" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                        <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioBentoVividDesc, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 6. BENTO PILOT / TACTICAL SLATE CARD -->
+                <Border x:Name="CardWidgetBentoTactical" Grid.Row="2" Grid.Column="1"
+                        PointerPressed="CardWidgetBentoTactical_PointerPressed"
+                        PointerEntered="Card_PointerEntered"
+                        PointerExited="Card_PointerExited"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="16">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioBentoTacticalTitle, Mode=OneWay}" FontWeight="Bold" FontSize="14"/>
+                            </StackPanel>
+                            <Border x:Name="BadgeWidgetBentoTactical" Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="10" Padding="8,2" Visibility="Collapsed">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioSelected, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                            </Border>
+                        </Grid>
+
+                        <!-- Mockup Box -->
+                        <Border Height="148" CornerRadius="14" Background="#150F172A" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="8">
+                            <Grid ColumnDefinitions="*,*">
+                                <!-- Slate Blue Tile -->
+                                <Border Grid.Column="0" CornerRadius="14" Background="#7E99AB" Margin="0,0,4,0" Padding="8">
+                                    <Grid RowDefinitions="Auto,*,Auto">
+                                        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.CurrentWeather.ConditionText, Mode=OneWay}" FontSize="10" FontWeight="SemiBold" Foreground="#0F172A" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Grid.Row="1" Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="28" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Row="2" Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}" FontSize="10" FontWeight="SemiBold" Foreground="#0F172A" TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </Border>
+                                <!-- Right Pilot Dial & Pills Mockup -->
+                                <Grid Grid.Column="1" Margin="4,0,0,0" RowDefinitions="*,*" RowSpacing="4">
+                                    <Border Grid.Row="0" CornerRadius="10" Background="#16191D" Padding="4">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Ellipse Width="24" Height="24" Fill="#0D0F12" Stroke="#00FF66" StrokeThickness="1.5"/>
+                                            <TextBlock Text="BOG - UTC-5" FontSize="9.5" FontWeight="Bold" Foreground="#00FF66" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="4">
+                                        <Border Grid.Column="0" CornerRadius="8" Background="#16191D" Padding="2">
+                                            <TextBlock Text="17:54" FontSize="10" FontWeight="Bold" Foreground="#E2E8F0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <Border Grid.Column="1" CornerRadius="8" Background="#16191D" Padding="2">
+                                            <TextBlock Text="10.139" FontSize="10" FontWeight="Bold" Foreground="#00FF66" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                        <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioBentoTacticalDesc, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 7. RETRO LCD CYBER WEATHER COMPUTER CARD -->
+                <Border x:Name="CardWidgetRetroLcd" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                        PointerPressed="CardWidgetRetroLcd_PointerPressed"
+                        PointerEntered="Card_PointerEntered"
+                        PointerExited="Card_PointerExited"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="16">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioRetroLcdTitle, Mode=OneWay}" FontWeight="Bold" FontSize="14"/>
+                            </StackPanel>
+                            <Border x:Name="BadgeWidgetRetroLcd" Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="10" Padding="8,2" Visibility="Collapsed">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioSelected, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                            </Border>
+                        </Grid>
+
+                        <!-- Mockup Box -->
+                        <Border Height="148" CornerRadius="14" Background="#6E826F" BorderBrush="#506151" BorderThickness="2" Padding="14,10">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                                <!-- Left Primary LCD Mockup -->
+                                <Border Grid.Column="0" CornerRadius="10" Background="#A2B79E" BorderBrush="#5E725F" BorderThickness="1.5" Padding="12,8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="WEATHER COMPUTER" FontSize="8.5" FontWeight="Bold" Foreground="#19231B" Opacity="0.7"/>
+                                            <TextBlock Text="22&#176;C" FontSize="36" FontWeight="ExtraBold" Foreground="#19231B"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Spacing="2">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c2;" FontSize="24" Foreground="#19231B"/>
+                                            <TextBlock Text="///" FontSize="14" FontWeight="Bold" Foreground="#19231B" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Right Secondary LCD & Telemetry -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6" Width="140">
+                                    <Border CornerRadius="8" Background="#A2B79E" BorderBrush="#5E725F" BorderThickness="1.5" Padding="8,4">
+                                        <TextBlock Text="WIND - 8 M/S" FontSize="12" FontWeight="ExtraBold" Foreground="#19231B" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="UF INDEX: 3" FontSize="10" FontWeight="Bold" Foreground="#E2E8F0"/>
+                                        <TextBlock Text="PRESSURE: 1013 HPA" FontSize="10" FontWeight="Bold" Foreground="#E2E8F0"/>
+                                        <TextBlock Text="FALLOUT: CLEAR" FontSize="10" FontWeight="Bold" Foreground="#34D399"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioRetroLcdDesc, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -718,6 +880,9 @@
                                 <ComboBoxItem Content="➖ Compact Bar" Tag="Compact"/>
                                 <ComboBoxItem Content="💊 Dynamic Island Pill" Tag="MiniIsland"/>
                                 <ComboBoxItem Content="🎆 Seasonal Festival Card" Tag="SeasonalCard"/>
+                                <ComboBoxItem Content="ðŸ± Bento Pop (Vivid Sky)" Tag="BentoVivid"/>
+                                <ComboBoxItem Content="ðŸ§­ Bento Pilot (Tactical Slate)" Tag="BentoTactical"/>
+                                <ComboBoxItem Content="ðŸ“Ÿ Retro Cyber LCD Computer" Tag="RetroLcd"/>
                             </ComboBox>
                         </StackPanel>
 
