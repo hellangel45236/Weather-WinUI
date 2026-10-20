@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Windows.Graphics;
 using WeatherApp.Helpers;
 
@@ -40,12 +40,16 @@ public sealed partial class MainWindow : Window
         var settingsService = new Services.SettingsService();
         var settings = settingsService.LoadSettings();
 
+        string cmd = Environment.CommandLine;
         ElementTheme initialTheme = ElementTheme.Default;
-        if (string.Equals(settings.ThemeMode, "light", StringComparison.OrdinalIgnoreCase))
+        if (cmd.Contains("--theme=light", StringComparison.OrdinalIgnoreCase))
+            initialTheme = ElementTheme.Light;
+        else if (cmd.Contains("--theme=dark", StringComparison.OrdinalIgnoreCase))
+            initialTheme = ElementTheme.Dark;
+        else if (string.Equals(settings.ThemeMode, "light", StringComparison.OrdinalIgnoreCase))
             initialTheme = ElementTheme.Light;
         else if (string.Equals(settings.ThemeMode, "dark", StringComparison.OrdinalIgnoreCase))
             initialTheme = ElementTheme.Dark;
-
         RootWindowGrid.RequestedTheme = initialTheme;
 
         // Lắng nghe sự kiện đổi theme để cập nhật nền cửa sổ và titlebar tức thời

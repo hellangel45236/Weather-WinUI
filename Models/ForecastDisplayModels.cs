@@ -99,6 +99,48 @@ public class CurrentWeatherDisplay
     public string SmartSummaryText { get; set; } = string.Empty;
 
     // Phục vụ giao diện Nothing Design System v3.5.0
+    public string CityIataCode
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(LocationName)) return "NDOT";
+            var loc = LocationName.Trim();
+            if (loc.Contains("Hà Nội", StringComparison.OrdinalIgnoreCase) || loc.Contains("Hanoi", StringComparison.OrdinalIgnoreCase)) return "HAN";
+            if (loc.Contains("Hồ Chí Minh", StringComparison.OrdinalIgnoreCase) || loc.Contains("Ho Chi Minh", StringComparison.OrdinalIgnoreCase) || loc.Contains("Sài Gòn", StringComparison.OrdinalIgnoreCase) || loc.Contains("Saigon", StringComparison.OrdinalIgnoreCase)) return "SGN";
+            if (loc.Contains("Đà Nẵng", StringComparison.OrdinalIgnoreCase) || loc.Contains("Da Nang", StringComparison.OrdinalIgnoreCase)) return "DAD";
+            if (loc.Contains("Hải Phòng", StringComparison.OrdinalIgnoreCase) || loc.Contains("Hai Phong", StringComparison.OrdinalIgnoreCase)) return "HPH";
+            if (loc.Contains("Cần Thơ", StringComparison.OrdinalIgnoreCase) || loc.Contains("Can Tho", StringComparison.OrdinalIgnoreCase)) return "VCA";
+            if (loc.Contains("Nha Trang", StringComparison.OrdinalIgnoreCase)) return "CXR";
+            if (loc.Contains("Huế", StringComparison.OrdinalIgnoreCase) || loc.Contains("Hue", StringComparison.OrdinalIgnoreCase)) return "HUI";
+            if (loc.Contains("Đà Lạt", StringComparison.OrdinalIgnoreCase) || loc.Contains("Da Lat", StringComparison.OrdinalIgnoreCase)) return "DLI";
+            if (loc.Contains("Quy Nhơn", StringComparison.OrdinalIgnoreCase) || loc.Contains("Quy Nhon", StringComparison.OrdinalIgnoreCase)) return "UIH";
+            if (loc.Contains("Phú Quốc", StringComparison.OrdinalIgnoreCase) || loc.Contains("Phu Quoc", StringComparison.OrdinalIgnoreCase)) return "PQC";
+            if (loc.Contains("Vinh", StringComparison.OrdinalIgnoreCase)) return "VII";
+            if (loc.Contains("Tokyo", StringComparison.OrdinalIgnoreCase)) return "TYO";
+            if (loc.Contains("Seoul", StringComparison.OrdinalIgnoreCase)) return "ICN";
+            if (loc.Contains("Singapore", StringComparison.OrdinalIgnoreCase)) return "SIN";
+            if (loc.Contains("Bangkok", StringComparison.OrdinalIgnoreCase)) return "BKK";
+            if (loc.Contains("London", StringComparison.OrdinalIgnoreCase)) return "LON";
+            if (loc.Contains("New York", StringComparison.OrdinalIgnoreCase)) return "NYC";
+            if (loc.Contains("Paris", StringComparison.OrdinalIgnoreCase)) return "PAR";
+            var letters = new string(loc.Where(char.IsLetter).ToArray());
+            return letters.Length >= 3 ? letters.Substring(0, 3).ToUpperInvariant() : "MET";
+        }
+    }
+
+    public string DaylightTelemetryText
+    {
+        get
+        {
+            if (IsDay)
+            {
+                int percent = (int)Math.Clamp(SunProgressPercent * 100, 0, 100);
+                return $"DAYLIGHT ACTIVE // {percent}% ELAPSED";
+            }
+            return "NIGHT CYCLE // BELOW HORIZON";
+        }
+    }
+
     public string TemperatureNumberOnly
     {
         get

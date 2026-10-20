@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.UI.Xaml;
@@ -103,6 +103,7 @@ public sealed partial class OverviewTab : UserControl
                 if (ViewModel?.IsNothingDesign == true)
                 {
                     _weatherEffectRenderer?.Pause();
+                    UpdateNothingThemeVisuals();
                     if (WeatherEffectsCanvas != null) WeatherEffectsCanvas.Visibility = Visibility.Collapsed;
                     if (HeroAmbientGlow != null) HeroAmbientGlow.Visibility = Visibility.Collapsed;
                 }
@@ -200,6 +201,7 @@ public sealed partial class OverviewTab : UserControl
             SetupAllCardHoverPhysics();
             UpdateResponsiveLayout(this.ActualWidth);
             UpdateHourlyItemsForCurrentMetric();
+            UpdateNothingThemeVisuals();
             UpdateWeatherVisuals();
             RedrawCanvases();
             StartHeroIconAnimation();
@@ -230,6 +232,7 @@ public sealed partial class OverviewTab : UserControl
         {
             DispatcherQueue.TryEnqueue(() =>
             {
+                UpdateNothingThemeVisuals();
                 UpdateHourlyMetricButtonsStyle();
                 UpdateWeatherVisuals();
                 RedrawCanvases();
@@ -694,6 +697,84 @@ public sealed partial class OverviewTab : UserControl
                 }
             }
         }
+    }
+
+        public void UpdateNothingThemeVisuals()
+    {
+        bool isDark = ThemeHelper.IsDarkTheme(this);
+        var cardBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 18, 18, 20)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255));
+        var cardBorder = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 36, 36, 40)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 226, 226, 230));
+        var subtleBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 24, 24, 27)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 245, 245, 247));
+        var subCardBorder = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 38, 38, 43)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 229, 229, 232));
+        var glyphBoxBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 10, 10, 12)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 249, 249, 250));
+        var textPrimary = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 10, 10, 12));
+        var textSecondary = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 136, 136, 136)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 102, 102, 102));
+        var textMuted = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 82, 82, 91)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 161, 161, 170));
+        var pillBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 31, 31, 35)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 234, 234, 234));
+        var pillBorder = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 51, 51, 51)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 221, 221, 221));
+
+        // Update outer card containers
+        if (NothingHeaderBorder != null) { NothingHeaderBorder.Background = cardBg; NothingHeaderBorder.BorderBrush = cardBorder; }
+        if (NothingHeroBorder != null) { NothingHeroBorder.Background = cardBg; NothingHeroBorder.BorderBrush = cardBorder; }
+        if (NothingGlyphBoxBorder != null) { NothingGlyphBoxBorder.Background = glyphBoxBg; NothingGlyphBoxBorder.BorderBrush = subCardBorder; }
+        if (NothingAqiBorder != null) { NothingAqiBorder.Background = cardBg; NothingAqiBorder.BorderBrush = cardBorder; }
+        if (NothingSunsetBorder != null) { NothingSunsetBorder.Background = cardBg; NothingSunsetBorder.BorderBrush = cardBorder; }
+        if (NothingHourlyBorder != null) { NothingHourlyBorder.Background = cardBg; NothingHourlyBorder.BorderBrush = cardBorder; }
+        if (NothingDailyBorder != null) { NothingDailyBorder.Background = cardBg; NothingDailyBorder.BorderBrush = cardBorder; }
+
+        // Update static pills & borders
+        if (NothingHeaderPill1 != null) { NothingHeaderPill1.Background = pillBg; NothingHeaderPill1.BorderBrush = pillBorder; }
+        if (NothingHeaderStationSub != null) { NothingHeaderStationSub.Foreground = textSecondary; }
+        if (NothingHeaderPill2 != null) { NothingHeaderPill2.Background = pillBg; NothingHeaderPill2.BorderBrush = pillBorder; }
+        if (NothingHeaderCoordSub != null) { NothingHeaderCoordSub.Foreground = textSecondary; }
+        if (NothingHeaderTimePill != null) { NothingHeaderTimePill.Background = pillBg; NothingHeaderTimePill.BorderBrush = pillBorder; }
+        if (NothingHeaderTimeVal != null) { NothingHeaderTimeVal.Foreground = textPrimary; }
+        if (NothingHeroSensorPill != null) { NothingHeroSensorPill.Background = pillBg; NothingHeroSensorPill.BorderBrush = pillBorder; }
+        if (NothingHeroFeelsLikePill != null) { NothingHeroFeelsLikePill.Background = pillBg; NothingHeroFeelsLikePill.BorderBrush = pillBorder; }
+        if (NothingHeroConditionPill != null) { NothingHeroConditionPill.Background = pillBg; }
+        if (NothingAqiPm25Pill != null) { NothingAqiPm25Pill.Background = pillBg; NothingAqiPm25Pill.BorderBrush = pillBorder; }
+
+        // Update dividing separator borders
+        if (NothingHeroMetricsSeparator != null) { NothingHeroMetricsSeparator.BorderBrush = subCardBorder; }
+        if (NothingAqiAdviceSeparator != null) { NothingAqiAdviceSeparator.BorderBrush = subCardBorder; }
+        if (NothingSunProgressSeparator != null) { NothingSunProgressSeparator.BorderBrush = subCardBorder; }
+
+        // Update static typography
+        if (NothingStationTitle != null) { NothingStationTitle.Foreground = textPrimary; }
+        if (NothingTempNumber != null) { NothingTempNumber.Foreground = textPrimary; }
+        if (NothingFeelsLikeValue != null) { NothingFeelsLikeValue.Foreground = textPrimary; }
+        if (NothingHighLowText != null) { NothingHighLowText.Foreground = textSecondary; }
+        if (NothingHeroIcon != null) { NothingHeroIcon.Foreground = textPrimary; }
+        if (NothingConditionTitle != null) { NothingConditionTitle.Foreground = textPrimary; }
+
+        // Telemetry strip labels & values
+        if (NothingHumidityVal != null) { NothingHumidityVal.Foreground = textPrimary; }
+        if (NothingHumidityProgress != null) { NothingHumidityProgress.Foreground = textPrimary; NothingHumidityProgress.Background = subCardBorder; }
+        if (NothingWindVal != null) { NothingWindVal.Foreground = textPrimary; }
+        if (NothingWindProgress != null) { NothingWindProgress.Foreground = textPrimary; NothingWindProgress.Background = subCardBorder; }
+        if (NothingUvProgress != null) { NothingUvProgress.Foreground = textPrimary; }
+        if (NothingPressureVal != null) { NothingPressureVal.Foreground = textPrimary; }
+        if (NothingBarometerProgress != null) { NothingBarometerProgress.Foreground = textPrimary; NothingBarometerProgress.Background = subCardBorder; }
+
+        // AQI Card
+        if (NothingAqiVal != null) { NothingAqiVal.Foreground = textPrimary; }
+        if (NothingAqiDot != null) { NothingAqiDot.Fill = textPrimary; }
+        if (NothingAqiPm25Val != null) { NothingAqiPm25Val.Foreground = textPrimary; }
+        if (NothingAqiAdviceText != null) { NothingAqiAdviceText.Foreground = textSecondary; }
+        if (NothingAqiGlyphBar1 != null) { NothingAqiGlyphBar1.Background = textPrimary; }
+        if (NothingAqiGlyphBar2 != null) { NothingAqiGlyphBar2.Background = textPrimary; }
+        if (NothingAqiGlyphBar3 != null) { NothingAqiGlyphBar3.Background = textPrimary; }
+        if (NothingAqiGlyphBar4 != null) { NothingAqiGlyphBar4.Background = textPrimary; }
+        if (NothingAqiGlyphBar5 != null) { NothingAqiGlyphBar5.Background = textPrimary; }
+
+        // Sunset Card
+        if (NothingSunsetValue != null) { NothingSunsetValue.Foreground = textPrimary; }
+        if (NothingSunriseValue != null) { NothingSunriseValue.Foreground = textSecondary; }
+        if (NothingSunriseSubValue != null) { NothingSunriseSubValue.Foreground = textSecondary; }
+        if (NothingSunsetSubValue != null) { NothingSunsetSubValue.Foreground = textSecondary; }
+        if (NothingCompassNeedle != null) { NothingCompassNeedle.Background = textPrimary; }
+        if (NothingCompassDial != null) { NothingCompassDial.BorderBrush = textSecondary; }
+        if (NothingSunProgressBar != null) { NothingSunProgressBar.Background = subCardBorder; }
     }
 
     public void RenderHourlyTemperatureTrendline() => RenderHourlyTrendline();

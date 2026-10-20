@@ -79,7 +79,7 @@
                     </Grid>
 
                     <!-- THANH ĐIỀU KHIỂN BÁN KÍNH (RANGE) & TẦNG KHÍ TƯỢNG (LAYER MODES) -->
-                    <Border Background="#150F172A" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="12,8">
+                    <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="12,8">
                         <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
 
                             <!-- Nhóm 1: Bán kính quét (100km, 200km, 300km, 500km) -->
@@ -138,7 +138,7 @@
                     </Border>
 
                     <!-- THANH ĐIỀU KHIỂN DÒNG THỜI GIAN TUA NGƯỢC (RADAR TIME-SCRUBBER 2 GIỜ) -->
-                    <Border Background="#150F172A" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="14,10">
+                    <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="14,10">
                         <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
                             <!-- Hàng 1: Nút Play Loop & Nhãn mốc thời gian -->
                             <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">

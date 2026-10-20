@@ -37,6 +37,14 @@ public static class ThemeHelper
             {
                 rootElement.RequestedTheme = theme;
             }
+            if (_window?.Content is Microsoft.UI.Xaml.Controls.Grid rootGrid && rootGrid.Children.FirstOrDefault() is Microsoft.UI.Xaml.Controls.Frame rootFrame)
+            {
+                rootFrame.RequestedTheme = theme;
+                if (rootFrame.Content is FrameworkElement pageElement)
+                {
+                    pageElement.RequestedTheme = theme;
+                }
+            }
             ThemeChanged?.Invoke(theme);
         }
         catch { }
@@ -46,17 +54,20 @@ public static class ThemeHelper
     {
         try
         {
+            if (_window?.Content is FrameworkElement root)
+            {
+                if (root.RequestedTheme == ElementTheme.Light) return false;
+                if (root.RequestedTheme == ElementTheme.Dark) return true;
+            }
             if (element != null)
             {
                 if (element.RequestedTheme == ElementTheme.Light) return false;
                 if (element.RequestedTheme == ElementTheme.Dark) return true;
                 return element.ActualTheme != ElementTheme.Light;
             }
-            if (_window?.Content is FrameworkElement root)
+            if (_window?.Content is FrameworkElement rootElem)
             {
-                if (root.RequestedTheme == ElementTheme.Light) return false;
-                if (root.RequestedTheme == ElementTheme.Dark) return true;
-                return root.ActualTheme != ElementTheme.Light;
+                return rootElem.ActualTheme != ElementTheme.Light;
             }
             if (Application.Current?.RequestedTheme == ApplicationTheme.Light) return false;
         }
