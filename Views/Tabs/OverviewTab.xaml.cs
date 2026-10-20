@@ -713,14 +713,65 @@ public sealed partial class OverviewTab : UserControl
         var pillBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 31, 31, 35)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 234, 234, 234));
         var pillBorder = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 51, 51, 51)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 221, 221, 221));
 
+        // Update local resources
+        this.Resources["NothingCardBackgroundBrush"] = cardBg;
+        this.Resources["NothingCardBorderBrush"] = cardBorder;
+        this.Resources["NothingSubCardBackgroundBrush"] = subtleBg;
+        this.Resources["NothingSubCardBorderBrush"] = subCardBorder;
+        this.Resources["NothingGlyphBoxBackgroundBrush"] = glyphBoxBg;
+        this.Resources["NothingTextPrimaryBrush"] = textPrimary;
+        this.Resources["NothingTextSecondaryBrush"] = textSecondary;
+        this.Resources["NothingTextMutedBrush"] = textMuted;
+        this.Resources["NothingPillBackgroundBrush"] = pillBg;
+        this.Resources["NothingPillBorderBrush"] = pillBorder;
+
         // Update outer card containers
         if (NothingHeaderBorder != null) { NothingHeaderBorder.Background = cardBg; NothingHeaderBorder.BorderBrush = cardBorder; }
         if (NothingHeroBorder != null) { NothingHeroBorder.Background = cardBg; NothingHeroBorder.BorderBrush = cardBorder; }
         if (NothingGlyphBoxBorder != null) { NothingGlyphBoxBorder.Background = glyphBoxBg; NothingGlyphBoxBorder.BorderBrush = subCardBorder; }
         if (NothingAqiBorder != null) { NothingAqiBorder.Background = cardBg; NothingAqiBorder.BorderBrush = cardBorder; }
         if (NothingSunsetBorder != null) { NothingSunsetBorder.Background = cardBg; NothingSunsetBorder.BorderBrush = cardBorder; }
-        if (NothingHourlyBorder != null) { NothingHourlyBorder.Background = cardBg; NothingHourlyBorder.BorderBrush = cardBorder; }
-        if (NothingDailyBorder != null) { NothingDailyBorder.Background = cardBg; NothingDailyBorder.BorderBrush = cardBorder; }
+        if (NothingHourlyBorder != null)
+        {
+            NothingHourlyBorder.Background = cardBg;
+            NothingHourlyBorder.BorderBrush = cardBorder;
+            NothingHourlyBorder.Resources["NothingSubCardBackgroundBrush"] = subtleBg;
+            NothingHourlyBorder.Resources["NothingSubCardBorderBrush"] = subCardBorder;
+            NothingHourlyBorder.Resources["NothingTextPrimaryBrush"] = textPrimary;
+            NothingHourlyBorder.Resources["NothingTextSecondaryBrush"] = textSecondary;
+            NothingHourlyBorder.Resources["NothingTextMutedBrush"] = textMuted;
+        }
+        if (NothingDailyBorder != null)
+        {
+            NothingDailyBorder.Background = cardBg;
+            NothingDailyBorder.BorderBrush = cardBorder;
+            NothingDailyBorder.Resources["NothingSubCardBackgroundBrush"] = subtleBg;
+            NothingDailyBorder.Resources["NothingSubCardBorderBrush"] = subCardBorder;
+            NothingDailyBorder.Resources["NothingTextPrimaryBrush"] = textPrimary;
+            NothingDailyBorder.Resources["NothingTextSecondaryBrush"] = textSecondary;
+            NothingDailyBorder.Resources["NothingTextMutedBrush"] = textMuted;
+        }
+
+        // Re-template dynamic items so they pick up the fresh theme resources!
+        if (NothingHourlyItemsControl != null && ViewModel != null)
+        {
+            var hourly = ViewModel.HourlyForecast;
+            NothingHourlyItemsControl.ItemsSource = null;
+            NothingHourlyItemsControl.ItemsSource = hourly;
+        }
+        if (NothingDailyItemsControl != null && ViewModel != null)
+        {
+            var daily = ViewModel.DailyForecast;
+            NothingDailyItemsControl.ItemsSource = null;
+            NothingDailyItemsControl.ItemsSource = daily;
+        }
+
+        // Mini compact weather pill
+        if (MiniWeatherPill != null)
+        {
+            MiniWeatherPill.Background = cardBg;
+            MiniWeatherPill.BorderBrush = cardBorder;
+        }
 
         // Update static pills & borders
         if (NothingHeaderPill1 != null) { NothingHeaderPill1.Background = pillBg; NothingHeaderPill1.BorderBrush = pillBorder; }

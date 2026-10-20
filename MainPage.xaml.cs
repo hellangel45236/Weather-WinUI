@@ -763,6 +763,8 @@ public sealed partial class MainPage : Page
         bool isDark = ThemeHelper.IsDarkTheme(this);
         this.RequestedTheme = isDark ? ElementTheme.Dark : ElementTheme.Light;
 
+        var tabs = new Microsoft.UI.Xaml.FrameworkElement?[] { TabOverview, TabFlood, TabRadar, TabLifestyle, TabCalendar, TabWidgetStudio, TabSettings };
+
         if (isNothing)
         {
             var cardBg = isDark ? Windows.UI.Color.FromArgb(255, 18, 18, 20) : Windows.UI.Color.FromArgb(255, 255, 255, 255);
@@ -777,9 +779,9 @@ public sealed partial class MainPage : Page
             var textPrimary = isDark ? Windows.UI.Color.FromArgb(255, 255, 255, 255) : Windows.UI.Color.FromArgb(255, 10, 10, 12);
             var textSecondary = isDark ? Windows.UI.Color.FromArgb(255, 136, 136, 136) : Windows.UI.Color.FromArgb(255, 102, 102, 102);
             var textMuted = isDark ? Windows.UI.Color.FromArgb(255, 82, 82, 91) : Windows.UI.Color.FromArgb(255, 161, 161, 170);
-            var badgeBg = isDark ? Windows.UI.Color.FromArgb(255, 30, 30, 34) : Windows.UI.Color.FromArgb(255, 235, 235, 238);
-            var pillBg = isDark ? Windows.UI.Color.FromArgb(255, 31, 31, 35) : Windows.UI.Color.FromArgb(255, 234, 234, 234);
-            var pillBorder = isDark ? Windows.UI.Color.FromArgb(255, 51, 51, 51) : Windows.UI.Color.FromArgb(255, 221, 221, 221);
+            var badgeBg = isDark ? Windows.UI.Color.FromArgb(255, 30, 30, 34) : Windows.UI.Color.FromArgb(255, 240, 240, 242);
+            var pillBg = isDark ? Windows.UI.Color.FromArgb(255, 31, 31, 35) : Windows.UI.Color.FromArgb(255, 238, 238, 240);
+            var pillBorder = isDark ? Windows.UI.Color.FromArgb(255, 51, 51, 51) : Windows.UI.Color.FromArgb(255, 225, 225, 228);
 
             // Set on MainPage.Resources
             this.Resources["CardBackgroundFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
@@ -812,46 +814,32 @@ public sealed partial class MainPage : Page
             this.Resources["NothingPillBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(pillBg);
             this.Resources["NothingPillBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(pillBorder);
 
-            // Nav Badges in Nothing Style
-            this.Resources["NavTempBadgeBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
-            this.Resources["NavTempBadgeForegroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
-            this.Resources["NavFloodBadgeBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
-            this.Resources["NavFloodBadgeForegroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
-            this.Resources["NavRadarBadgeBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
-            this.Resources["NavRadarBadgeForegroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 0, 255, 102) : Windows.UI.Color.FromArgb(255, 16, 185, 129));
-            this.Resources["NavLifestyleBadgeBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
-            this.Resources["NavLifestyleBadgeForegroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
-            this.Resources["NavCalendarBadgeBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
-            this.Resources["NavCalendarBadgeForegroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
-            this.Resources["NavWidgetBadgeBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
-            this.Resources["NavWidgetBadgeForegroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
-
-            // Also update Application.Current.Resources
-            try
-            {
-                var appRes = Microsoft.UI.Xaml.Application.Current?.Resources;
-                if (appRes != null)
-                {
-                    appRes["CardBackgroundFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
-                    appRes["CardStrokeColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
-                    appRes["SubtleFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
-                    appRes["AccentFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
-                    appRes["AccentButtonBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
-                    appRes["AccentButtonBackgroundPointerOver"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 235, 45, 52));
-                    appRes["AccentButtonBackgroundPressed"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 20, 25));
-                }
-            }
-            catch { }
-
-            // Directly update Header Border
+            // Update Header Border
             if (FloatingIslandHeader != null)
             {
                 FloatingIslandHeader.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
                 FloatingIslandHeader.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
             }
 
-            // Directly set on all child tabs
-            var tabs = new Microsoft.UI.Xaml.FrameworkElement?[] { TabOverview, TabFlood, TabRadar, TabLifestyle, TabCalendar, TabWidgetStudio, TabSettings };
+            // Explicitly style Nav Badges for Nothing Mode (Clean, consistent Nothing OS aesthetic)
+            var nBadgeBgBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
+            var nBadgeFgBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
+            var nBadgeRedBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+
+            if (NavOverviewBadgeBorder != null) NavOverviewBadgeBorder.Background = nBadgeBgBrush;
+            if (NavOverviewBadgeText != null) NavOverviewBadgeText.Foreground = nBadgeFgBrush;
+            if (NavFloodBadgeBorder != null) NavFloodBadgeBorder.Background = nBadgeBgBrush;
+            if (NavFloodBadgeText != null) NavFloodBadgeText.Foreground = nBadgeFgBrush;
+            if (NavRadarBadgeBorder != null) NavRadarBadgeBorder.Background = nBadgeBgBrush;
+            if (NavRadarBadgeText != null) NavRadarBadgeText.Foreground = isDark ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 255, 102)) : nBadgeRedBrush;
+            if (NavLifestyleBadgeBorder != null) NavLifestyleBadgeBorder.Background = nBadgeBgBrush;
+            if (NavLifestyleBadgeText != null) NavLifestyleBadgeText.Foreground = nBadgeFgBrush;
+            if (NavCalendarBadgeBorder != null) NavCalendarBadgeBorder.Background = nBadgeBgBrush;
+            if (NavCalendarBadgeText != null) NavCalendarBadgeText.Foreground = nBadgeFgBrush;
+            if (NavWidgetBadgeBorder != null) NavWidgetBadgeBorder.Background = nBadgeBgBrush;
+            if (NavWidgetBadgeText != null) NavWidgetBadgeText.Foreground = nBadgeFgBrush;
+
+            // Set on tabs
             foreach (var tab in tabs)
             {
                 if (tab != null)
@@ -881,8 +869,9 @@ public sealed partial class MainPage : Page
         }
         else
         {
-            // Fluent 2 Mode: Remove overrides so ThemeDictionaries take over naturally!
-            var keysToRemove = new string[]
+            // Fluent 2 Mode: Restore authentic Fluent 2 theme brushes locally on this and tabs
+            // NEVER mutate or remove from Application.Current.Resources!
+            var fluentKeys = new string[]
             {
                 "CardBackgroundFillColorDefaultBrush",
                 "CardStrokeColorDefaultBrush",
@@ -898,18 +887,6 @@ public sealed partial class MainPage : Page
                 "AccentButtonBackgroundPressed",
                 "SystemAccentColor",
                 "NavigationViewSelectionIndicatorForeground",
-                "NavTempBadgeBackgroundBrush",
-                "NavTempBadgeForegroundBrush",
-                "NavFloodBadgeBackgroundBrush",
-                "NavFloodBadgeForegroundBrush",
-                "NavRadarBadgeBackgroundBrush",
-                "NavRadarBadgeForegroundBrush",
-                "NavLifestyleBadgeBackgroundBrush",
-                "NavLifestyleBadgeForegroundBrush",
-                "NavCalendarBadgeBackgroundBrush",
-                "NavCalendarBadgeForegroundBrush",
-                "NavWidgetBadgeBackgroundBrush",
-                "NavWidgetBadgeForegroundBrush",
                 "NothingCardBackgroundBrush",
                 "NothingCardBorderBrush",
                 "NothingSubCardBackgroundBrush",
@@ -922,7 +899,7 @@ public sealed partial class MainPage : Page
                 "NothingPillBorderBrush"
             };
 
-            foreach (var k in keysToRemove)
+            foreach (var k in fluentKeys)
             {
                 this.Resources.Remove(k);
             }
@@ -933,37 +910,44 @@ public sealed partial class MainPage : Page
                 FloatingIslandHeader.ClearValue(Border.BorderBrushProperty);
             }
 
-            try
-            {
-                var appRes = Microsoft.UI.Xaml.Application.Current?.Resources;
-                if (appRes != null)
-                {
-                    appRes.Remove("CardBackgroundFillColorDefaultBrush");
-                    appRes.Remove("CardStrokeColorDefaultBrush");
-                    appRes.Remove("SubtleFillColorSecondaryBrush");
-                    appRes.Remove("AccentFillColorDefaultBrush");
-                    appRes.Remove("AccentButtonBackground");
-                    appRes.Remove("AccentButtonBackgroundPointerOver");
-                    appRes.Remove("AccentButtonBackgroundPressed");
-                }
-            }
-            catch { }
+            // Restore vibrant Fluent 2 navigation badges
+            if (NavOverviewBadgeBorder != null) NavOverviewBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 12, 74, 110) : Windows.UI.Color.FromArgb(255, 224, 242, 254));
+            if (NavOverviewBadgeText != null) NavOverviewBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 56, 189, 248) : Windows.UI.Color.FromArgb(255, 2, 132, 199));
 
-            var tabs = new Microsoft.UI.Xaml.FrameworkElement?[] { TabOverview, TabFlood, TabRadar, TabLifestyle, TabCalendar, TabWidgetStudio, TabSettings };
+            if (NavFloodBadgeBorder != null) NavFloodBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 12, 74, 110) : Windows.UI.Color.FromArgb(255, 224, 242, 254));
+            if (NavFloodBadgeText != null) NavFloodBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 56, 189, 248) : Windows.UI.Color.FromArgb(255, 2, 132, 199));
+
+            if (NavRadarBadgeBorder != null) NavRadarBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 6, 78, 59) : Windows.UI.Color.FromArgb(255, 220, 252, 231));
+            if (NavRadarBadgeText != null) NavRadarBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 52, 211, 153) : Windows.UI.Color.FromArgb(255, 22, 163, 74));
+
+            if (NavLifestyleBadgeBorder != null) NavLifestyleBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 112, 26, 117) : Windows.UI.Color.FromArgb(255, 252, 231, 243));
+            if (NavLifestyleBadgeText != null) NavLifestyleBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 244, 114, 182) : Windows.UI.Color.FromArgb(255, 219, 39, 119));
+
+            if (NavCalendarBadgeBorder != null) NavCalendarBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 76, 29, 149) : Windows.UI.Color.FromArgb(255, 237, 233, 254));
+            if (NavCalendarBadgeText != null) NavCalendarBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 167, 139, 250) : Windows.UI.Color.FromArgb(255, 124, 58, 237));
+
+            if (NavWidgetBadgeBorder != null) NavWidgetBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 30, 41, 59) : Windows.UI.Color.FromArgb(255, 241, 245, 249));
+            if (NavWidgetBadgeText != null) NavWidgetBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 148, 163, 184) : Windows.UI.Color.FromArgb(255, 100, 116, 139));
+
             foreach (var tab in tabs)
             {
                 if (tab != null)
                 {
                     tab.RequestedTheme = isDark ? ElementTheme.Dark : ElementTheme.Light;
-                    foreach (var k in keysToRemove)
+                    foreach (var k in fluentKeys)
                     {
                         tab.Resources.Remove(k);
                     }
                 }
             }
+
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                TabOverview?.UpdateWeatherVisuals();
+                TabOverview?.RedrawCanvases();
+            });
         }
     }
-
     private void UpdateThemeComboBoxLabels()
     {
         bool isVi = LocalizationService.Instance.IsVietnamese;

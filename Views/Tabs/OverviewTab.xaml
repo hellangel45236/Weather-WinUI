@@ -1782,7 +1782,7 @@
 
                         <!-- Hourly Horizontal Items -->
                         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" HorizontalScrollMode="Enabled">
-                            <ItemsControl ItemsSource="{x:Bind ViewModel.HourlyForecast, Mode=OneWay}">
+                            <ItemsControl x:Name="NothingHourlyItemsControl" ItemsSource="{x:Bind ViewModel.HourlyForecast, Mode=OneWay}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <StackPanel Orientation="Horizontal" Spacing="12"/>
@@ -1833,7 +1833,7 @@
                         </Grid>
 
                         <!-- Daily Items List -->
-                        <ItemsControl ItemsSource="{x:Bind ViewModel.DailyForecast, Mode=OneWay}">
+                        <ItemsControl x:Name="NothingDailyItemsControl" ItemsSource="{x:Bind ViewModel.DailyForecast, Mode=OneWay}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="models:DailyForecastItem">
                                     <Border Background="{ThemeResource NothingSubCardBackgroundBrush}"

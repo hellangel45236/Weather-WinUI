@@ -1111,7 +1111,7 @@
                     </Border>
                 </Grid>
 
-                <!-- ==================== STYLE 9: NOTHING BENTO CAPSULE (v3.5.0) ==================== -->
+                <!-- ==================== STYLE 9: NOTHING BENTO CAPSULE (v3.5.1) ==================== -->
                 <Grid x:Name="NothingBentoView" Visibility="Collapsed" Padding="6">
                     <Border CornerRadius="24" Background="#0C0C0E" BorderBrush="#252529" BorderThickness="1.5" Padding="14,12"
                             PointerPressed="WidgetRoot_PointerPressed">
@@ -1180,7 +1180,7 @@
                     </Border>
                 </Grid>
 
-                <!-- ==================== STYLE 10: NOTHING SQUARE MINIMAL (v3.5.0) ==================== -->
+                <!-- ==================== STYLE 10: NOTHING SQUARE MINIMAL (v3.5.1) ==================== -->
                 <Grid x:Name="NothingSquareView" Visibility="Collapsed" Padding="6">
                     <Border CornerRadius="22" Background="#0C0C0E" BorderBrush="#252529" BorderThickness="1.5" Padding="14,12"
                             PointerPressed="WidgetRoot_PointerPressed">

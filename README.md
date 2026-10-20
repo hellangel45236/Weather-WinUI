@@ -1,8 +1,8 @@
-﻿# 🌤️ Weather WinUI (Version 3.5.0)
+﻿# 🌤️ Weather WinUI (Version 3.5.1)
 ### Hệ Điều Hành Vi Khí Hậu Cá Nhân Hóa & Trực Quan Hóa Đô Thị Dành Cho Windows
 > **Nền tảng:** Windows App SDK (WinUI 3) • .NET 8 • C# 12 • Fluent Design System 2.0 & Nothing Design System  
-> **Nhánh phát triển chính thức:** `main` | **Phiên bản:** `v3.5.0 (Bản Phát Hành Chính Thức)`  
-> **Bản phát hành tiền nhiệm:** `v3.4.1` • `v3.4.0` • `v3.3.1` • `v3.3.0` • `v3.0.0`
+> **Nhánh phát triển chính thức:** `main` | **Phiên bản:** `v3.5.1 (Bản Phát Hành Chính Thức)`  
+> **Bản phát hành tiền nhiệm:** `v3.5.0` • `v3.4.1` • `v3.4.0` • `v3.3.1` • `v3.3.0` • `v3.0.0`
 
 ---
 
@@ -48,7 +48,15 @@
 
 ---
 
-## 🚀 3. Điểm Mới Đột Phá Trên Phiên Bản 3.5.0
+## 🚀 3. Điểm Mới Đột Phá Trên Phiên Bản 3.5.1
+
+### Nâng Cấp Toàn Diện Ngôn Ngữ Nothing OS 3.5.1
+- **Hơi thở Nothing OS 100%**: Từng phân hệ, biểu tượng, dải viễn thám và câu chữ được nâng cấp lên chuẩn Nothing OS 3.5.1, mang phong cách công nghệ vị lai tối giản, sắc sảo và đồng bộ.
+- **Khắc phục 100% thẻ con màu đen trong Light Mode**: Sửa triệt để hiện tượng các thẻ con (24-hour forecast strip, 7-day forecast items, navigation badges) bị đen xì khi dùng Nothing Light Mode. Áp dụng bảng màu Chalk White `#F5F5F7` và Titanium Wireframe `#E5E5E8` thanh lịch, dịu mắt.
+- **Loại bỏ hoàn toàn lỗi crash khi chuyển đổi giữa Nothing và Fluent 2**: Tái cấu trúc cơ chế hoán đổi Design Language an toàn, triệt tiêu mọi xung đột resource brushes trên WinUI 3, đảm bảo hoán đổi mượt mà 100% không chớp nháy và không crash.
+- **Hiển thị phiên bản 3.5.1 chuẩn xác**: Cập nhật đồng bộ toàn bộ chuỗi phiên bản trong Cài đặt, Changelog và bộ cài đặt Inno Setup.
+
+## 🚀 Điểm Mới Trên Phiên Bản 3.5.0
 
 ### Hệ Thống Ngôn Ngữ Thiết Kế Nothing Design (Nothing OS Style)
 - **Tùy chọn phong cách thiết kế độc lập**: Người dùng có thể dễ dàng chuyển đổi qua lại giữa **Fluent 2 (Mặc định)** và **Nothing Design (OS)** ngay tại menu Cài đặt hoặc tham số khởi chạy `--design=nothing`.
