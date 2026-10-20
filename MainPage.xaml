@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="WeatherApp.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -44,7 +44,7 @@
                     </StackPanel>
 
                     <!-- Tìm kiếm địa điểm trung tâm -->
-                    <Grid Grid.Column="1" MaxWidth="520" Margin="8,0" HorizontalAlignment="Stretch">
+                    <Grid Grid.Column="1" MaxWidth="460" Margin="8,0" HorizontalAlignment="Stretch">
                         <AutoSuggestBox x:Name="LocationSearchBox"
                                         PlaceholderText="{x:Bind ViewModel.Loc.SearchPlaceholder, Mode=OneWay}"
                                         QueryIcon="Find"
@@ -103,18 +103,7 @@
                             </StackPanel>
                         </Button>
 
-                        <!-- Bộ chọn giao diện Sáng / Tối / Hệ thống -->
-                        <ComboBox x:Name="ThemeComboBox"
-                                  SelectedIndex="2"
-                                  SelectionChanged="ThemeComboBox_SelectionChanged"
-                                  Width="124"
-                                  MinWidth="116"
-                                  CornerRadius="14"
-                                  ToolTipService.ToolTip="{x:Bind ViewModel.Loc.ThemeTooltip, Mode=OneWay}">
-                            <ComboBoxItem Content="&#x2600;&#xFE0F; S&#x00E1;ng" Tag="light"/>
-                            <ComboBoxItem Content="&#x1F319; T&#x1ED1;i" Tag="dark"/>
-                            <ComboBoxItem Content="&#x1F4BB; H&#x1EC7; th&#x1ED1;ng" Tag="system"/>
-                        </ComboBox>
+                        
 
                         <!-- Bộ Chọn Giao Diện Theo Mùa & Đại Lễ Hội (v3.3.0) -->
                         <Button x:Name="SeasonalThemeButton"

@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Windows.Graphics;
 using WeatherApp.Helpers;
 
@@ -112,7 +112,7 @@ public sealed partial class MainWindow : Window
 
             if (isNothing)
             {
-                SystemBackdrop = null;
+                // SystemBackdrop remains active; opaque background cleanly covers the window
                 if (isDark)
                 {
                     RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
@@ -161,7 +161,7 @@ public sealed partial class MainWindow : Window
                 else
                 {
                     // Fallback vững chắc cho Windows 10 cũ không có Acrylic Controller
-                    SystemBackdrop = null;
+                    // SystemBackdrop remains active; opaque background cleanly covers the window
                     if (isDark)
                     {
                         RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(

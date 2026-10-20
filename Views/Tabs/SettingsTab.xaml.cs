@@ -60,14 +60,46 @@ public sealed partial class SettingsTab : UserControl
             }
 
             // Theme Combos
-            int themeIdx = s.ThemeMode switch
+            // Theme Combo (Index 0: System, 1: Light, 2: Dark)
+            _isSyncing = true;
+            try
             {
-                "light" => 0,
-                "dark" => 1,
-                _ => 2
+                int themeIdx = s.ThemeMode?.ToLowerInvariant() switch
+                {
+                    "light" => 1,
+                    "dark" => 2,
+                    _ => 0
+                };
+                if (AppearanceThemeComboBox != null) AppearanceThemeComboBox.SelectedIndex = themeIdx;
+            }
+            finally
+            {
+                _isSyncing = false;
+            }
+
+            // Lắng nghe sự kiện Theme thay đổi toàn cầu để đồng bộ giao diện
+            ThemeHelper.ThemeChanged += (t) =>
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    if (AppearanceThemeComboBox == null) return;
+                    _isSyncing = true;
+                    try
+                    {
+                        string mode = ViewModel?.Settings?.ThemeMode?.ToLowerInvariant() ?? "system";
+                        AppearanceThemeComboBox.SelectedIndex = mode switch
+                        {
+                            "light" => 1,
+                            "dark" => 2,
+                            _ => 0
+                        };
+                    }
+                    finally
+                    {
+                        _isSyncing = false;
+                    }
+                });
             };
-            if (SettingsThemeComboBox != null) SettingsThemeComboBox.SelectedIndex = themeIdx;
-            if (AppearanceThemeComboBox != null) AppearanceThemeComboBox.SelectedIndex = themeIdx;
 
             // Design Language
             if (DesignLanguageComboBox != null)
@@ -244,7 +276,6 @@ public sealed partial class SettingsTab : UserControl
                 ((ComboBoxItem)combo.Items[2]).Content = isVi ? "🌙 Chế độ Tối" : "🌙 Dark mode";
             }
         }
-        UpdateThemeCombo(SettingsThemeComboBox);
         UpdateThemeCombo(AppearanceThemeComboBox);
 
         // Refresh interval
@@ -310,33 +341,21 @@ public sealed partial class SettingsTab : UserControl
         }
     }
 
-    private void SettingsThemeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (_isSyncing || ViewModel == null) return;
-        if (SettingsThemeComboBox?.SelectedItem is ComboBoxItem item && item.Tag is string tag)
-        {
-            ViewModel.ChangeTheme(tag);
-            _isSyncing = true;
-            if (AppearanceThemeComboBox != null)
-            {
-                AppearanceThemeComboBox.SelectedIndex = SettingsThemeComboBox.SelectedIndex;
-            }
-            _isSyncing = false;
-        }
-    }
-
     private void AppearanceThemeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (_isSyncing || ViewModel == null) return;
         if (AppearanceThemeComboBox?.SelectedItem is ComboBoxItem item && item.Tag is string tag)
         {
-            ViewModel.ChangeTheme(tag);
             _isSyncing = true;
-            if (SettingsThemeComboBox != null)
+            try
             {
-                SettingsThemeComboBox.SelectedIndex = AppearanceThemeComboBox.SelectedIndex;
+                ViewModel.ChangeTheme(tag);
+                (App.MainWindow as MainWindow)?.UpdateWindowTheme();
             }
-            _isSyncing = false;
+            finally
+            {
+                _isSyncing = false;
+            }
         }
     }
 

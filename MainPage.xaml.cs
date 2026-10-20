@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,6 +21,7 @@ namespace WeatherApp;
 
 public sealed partial class MainPage : Page
 {
+    private bool _isApplyingVisuals = false;
     public MainViewModel ViewModel { get; }
 
     private WidgetWindow? _widgetWindow;
@@ -66,19 +67,28 @@ public sealed partial class MainPage : Page
     {
         try
         {
-            // Sync theme combo box in top bar
-            if (ThemeComboBox != null)
-            {
-                ThemeComboBox.SelectedIndex = ViewModel.Settings.ThemeMode switch
-                {
-                    "light" => 0,
-                    "dark" => 1,
-                    _ => 2
-                };
-            }
-            UpdateThemeComboBoxLabels();
             ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
-            LocalizationService.Instance.LanguageChanged += (s, ev) => UpdateThemeComboBoxLabels();
+            // Đồng bộ theme ngay khi ThemeHelper thay đổi hoặc hệ thống đổi Light/Dark
+            ThemeHelper.ThemeChanged += (theme) =>
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
+                    UpdateSeasonalThemeButtonStyle();
+                    TabOverview?.UpdateNothingThemeVisuals();
+                    TabOverview?.UpdateWeatherVisuals();
+                    TabOverview?.RedrawCanvases();
+                });
+            };
+            this.ActualThemeChanged += (s, e) =>
+            {
+                ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
+                UpdateSeasonalThemeButtonStyle();
+                TabOverview?.UpdateNothingThemeVisuals();
+                TabOverview?.UpdateWeatherVisuals();
+                TabOverview?.RedrawCanvases();
+            };
+            
             // Đồng bộ theme ngay khi ThemeHelper thay đổi hoặc hệ thống đổi Light/Dark
             ThemeHelper.ThemeChanged += (theme) =>
             {
@@ -131,13 +141,6 @@ public sealed partial class MainPage : Page
                     }
                 };
 
-                ActualThemeChanged += (s, e) =>
-                {
-                    UpdateSeasonalThemeButtonStyle();
-                    TabOverview?.UpdateNothingThemeVisuals();
-                    TabOverview?.UpdateWeatherVisuals();
-                    TabOverview?.RedrawCanvases();
-                };
 
                 // Hỗ trợ kiểm thử skin qua command-line (--skin=tet, midautumn, christmas, halloween, spring, summer, autumn, winter, auto)
                 try
@@ -159,10 +162,6 @@ public sealed partial class MainPage : Page
                     {
                         string targetTheme = themeArg.Substring(8).Trim().ToLowerInvariant();
                         ViewModel.ChangeTheme(targetTheme);
-                        if (ThemeComboBox != null)
-                        {
-                            ThemeComboBox.SelectedIndex = targetTheme == "light" ? 0 : (targetTheme == "dark" ? 1 : 2);
-                        }
                         UpdateSeasonalThemeButtonStyle();
                     }
                 }
@@ -280,15 +279,6 @@ public sealed partial class MainPage : Page
                         int endIdx = fullCmd.IndexOf(" ", tIdx);
                         string tMode = (endIdx > tIdx ? fullCmd.Substring(tIdx + 8, endIdx - tIdx - 8) : fullCmd.Substring(tIdx + 8)).Trim().Trim('"');
                         ViewModel.ChangeTheme(tMode);
-                        if (ThemeComboBox != null)
-                        {
-                            ThemeComboBox.SelectedIndex = tMode.ToLowerInvariant() switch
-                            {
-                                "light" => 0,
-                                "dark" => 1,
-                                _ => 2
-                            };
-                        }
                         ApplyDesignLanguageVisuals(ViewModel.SelectedDesignLanguage);
                         (App.MainWindow as MainWindow)?.UpdateWindowTheme();
                     }
@@ -353,15 +343,12 @@ public sealed partial class MainPage : Page
         if (width < 1140)
         {
             if (AppSubtitleText != null) AppSubtitleText.Visibility = Visibility.Collapsed;
-            if (ThemeComboBox != null) ThemeComboBox.Width = width < 980 ? 116 : 124;
         }
         else
         {
             if (AppSubtitleText != null) AppSubtitleText.Visibility = Visibility.Visible;
-            if (ThemeComboBox != null) ThemeComboBox.Width = 124;
         }
 
-        // Tự co giãn MaxWidth ô tìm kiếm khi cửa sổ hẹp
         if (LocationSearchBox != null)
         {
             LocationSearchBox.MaxWidth = width < 950 ? 280 : (width < 1140 ? 380 : 520);
@@ -739,223 +726,201 @@ public sealed partial class MainPage : Page
         }
     }
 
-    private void ThemeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (ViewModel == null) return;
-        if (ThemeComboBox.SelectedItem is ComboBoxItem item && item.Tag is string tag)
-        {
-            ViewModel.ChangeTheme(tag);
-            UpdateSeasonalThemeButtonStyle();
-            ApplyDesignLanguageVisuals(ViewModel.SelectedDesignLanguage);
-            (App.MainWindow as MainWindow)?.UpdateWindowTheme();
-            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
-            {
-                TabOverview?.UpdateWeatherVisuals();
-                TabOverview?.RedrawCanvases();
-            });
-        }
-    }
 
     public void ApplyDesignLanguageVisuals(string? designLanguage)
     {
-        string dl = designLanguage ?? ViewModel?.SelectedDesignLanguage ?? "Fluent2";
-        bool isNothing = string.Equals(dl, "Nothing", StringComparison.OrdinalIgnoreCase);
-        bool isDark = ThemeHelper.IsDarkTheme(this);
-        this.RequestedTheme = isDark ? ElementTheme.Dark : ElementTheme.Light;
-
-        var tabs = new Microsoft.UI.Xaml.FrameworkElement?[] { TabOverview, TabFlood, TabRadar, TabLifestyle, TabCalendar, TabWidgetStudio, TabSettings };
-
-        if (isNothing)
+        if (_isApplyingVisuals) return;
+        _isApplyingVisuals = true;
+        try
         {
-            var cardBg = isDark ? Windows.UI.Color.FromArgb(255, 18, 18, 20) : Windows.UI.Color.FromArgb(255, 255, 255, 255);
-            var cardBorder = isDark ? Windows.UI.Color.FromArgb(255, 36, 36, 40) : Windows.UI.Color.FromArgb(255, 226, 226, 230);
-            var subtleBg = isDark ? Windows.UI.Color.FromArgb(255, 24, 24, 27) : Windows.UI.Color.FromArgb(255, 245, 245, 247);
-            var subCardBorder = isDark ? Windows.UI.Color.FromArgb(255, 38, 38, 43) : Windows.UI.Color.FromArgb(255, 229, 229, 232);
-            var paneBg = isDark ? Windows.UI.Color.FromArgb(255, 10, 10, 12) : Windows.UI.Color.FromArgb(255, 240, 240, 242);
-            var glyphBoxBg = isDark ? Windows.UI.Color.FromArgb(255, 10, 10, 12) : Windows.UI.Color.FromArgb(255, 249, 249, 250);
+            string dl = designLanguage ?? ViewModel?.SelectedDesignLanguage ?? "Fluent2";
+            bool isNothing = string.Equals(dl, "Nothing", StringComparison.OrdinalIgnoreCase);
+            bool isDark = ThemeHelper.IsDarkTheme(this);
 
-            // Nothing Red Accents
-            var redAccent = Windows.UI.Color.FromArgb(255, 215, 25, 33);
-            var textPrimary = isDark ? Windows.UI.Color.FromArgb(255, 255, 255, 255) : Windows.UI.Color.FromArgb(255, 10, 10, 12);
-            var textSecondary = isDark ? Windows.UI.Color.FromArgb(255, 136, 136, 136) : Windows.UI.Color.FromArgb(255, 102, 102, 102);
-            var textMuted = isDark ? Windows.UI.Color.FromArgb(255, 82, 82, 91) : Windows.UI.Color.FromArgb(255, 161, 161, 170);
-            var badgeBg = isDark ? Windows.UI.Color.FromArgb(255, 30, 30, 34) : Windows.UI.Color.FromArgb(255, 240, 240, 242);
-            var pillBg = isDark ? Windows.UI.Color.FromArgb(255, 31, 31, 35) : Windows.UI.Color.FromArgb(255, 238, 238, 240);
-            var pillBorder = isDark ? Windows.UI.Color.FromArgb(255, 51, 51, 51) : Windows.UI.Color.FromArgb(255, 225, 225, 228);
+            var tabs = new Microsoft.UI.Xaml.FrameworkElement?[] { TabOverview, TabFlood, TabRadar, TabLifestyle, TabCalendar, TabWidgetStudio, TabSettings };
 
-            // Set on MainPage.Resources
-            this.Resources["CardBackgroundFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
-            this.Resources["CardStrokeColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
-            this.Resources["SubtleFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
-            this.Resources["CardBackgroundFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
-            this.Resources["NavigationViewDefaultPaneBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(paneBg);
-            this.Resources["NavigationViewTopPaneBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(paneBg);
-
-            this.Resources["AccentFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
-            this.Resources["AccentFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 225, 45, 50));
-            this.Resources["AccentFillColorTertiaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 20, 25));
-            this.Resources["AccentButtonBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
-            this.Resources["AccentButtonBackgroundPointerOver"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 235, 45, 52));
-            this.Resources["AccentButtonBackgroundPressed"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 20, 25));
-            this.Resources["SystemAccentColor"] = redAccent;
-            this.Resources["NavigationViewSelectionIndicatorForeground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
-
-            // Nothing OS Tokens on MainPage
-            this.Resources["NothingCardBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
-            this.Resources["NothingCardBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
-            this.Resources["NothingSubCardBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
-            this.Resources["NothingSubCardBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subCardBorder);
-            this.Resources["NothingGlyphBoxBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(glyphBoxBg);
-            this.Resources["NothingTextPrimaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
-            this.Resources["NothingTextSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textSecondary);
-            this.Resources["NothingTextMutedBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textMuted);
-            this.Resources["NothingRedBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
-            this.Resources["NothingGreenBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 0, 255, 102) : Windows.UI.Color.FromArgb(255, 22, 163, 74));
-            this.Resources["NothingPillBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(pillBg);
-            this.Resources["NothingPillBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(pillBorder);
-
-            // Update Header Border
-            if (FloatingIslandHeader != null)
+            if (isNothing)
             {
-                FloatingIslandHeader.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
-                FloatingIslandHeader.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
-            }
+                var cardBg = isDark ? Windows.UI.Color.FromArgb(255, 18, 18, 20) : Windows.UI.Color.FromArgb(255, 255, 255, 255);
+                var cardBorder = isDark ? Windows.UI.Color.FromArgb(255, 36, 36, 40) : Windows.UI.Color.FromArgb(255, 226, 226, 230);
+                var subtleBg = isDark ? Windows.UI.Color.FromArgb(255, 24, 24, 27) : Windows.UI.Color.FromArgb(255, 245, 245, 247);
+                var subCardBorder = isDark ? Windows.UI.Color.FromArgb(255, 38, 38, 43) : Windows.UI.Color.FromArgb(255, 229, 229, 232);
+                var paneBg = isDark ? Windows.UI.Color.FromArgb(255, 10, 10, 12) : Windows.UI.Color.FromArgb(255, 240, 240, 242);
+                var glyphBoxBg = isDark ? Windows.UI.Color.FromArgb(255, 10, 10, 12) : Windows.UI.Color.FromArgb(255, 249, 249, 250);
 
-            // Explicitly style Nav Badges for Nothing Mode (Clean, consistent Nothing OS aesthetic)
-            var nBadgeBgBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
-            var nBadgeFgBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
-            var nBadgeRedBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+                var redAccent = Windows.UI.Color.FromArgb(255, 215, 25, 33);
+                var textPrimary = isDark ? Windows.UI.Color.FromArgb(255, 255, 255, 255) : Windows.UI.Color.FromArgb(255, 10, 10, 12);
+                var textSecondary = isDark ? Windows.UI.Color.FromArgb(255, 136, 136, 136) : Windows.UI.Color.FromArgb(255, 102, 102, 102);
+                var textMuted = isDark ? Windows.UI.Color.FromArgb(255, 82, 82, 91) : Windows.UI.Color.FromArgb(255, 161, 161, 170);
+                var badgeBg = isDark ? Windows.UI.Color.FromArgb(255, 30, 30, 34) : Windows.UI.Color.FromArgb(255, 240, 240, 242);
+                var pillBg = isDark ? Windows.UI.Color.FromArgb(255, 31, 31, 35) : Windows.UI.Color.FromArgb(255, 238, 238, 240);
+                var pillBorder = isDark ? Windows.UI.Color.FromArgb(255, 51, 51, 51) : Windows.UI.Color.FromArgb(255, 225, 225, 228);
 
-            if (NavOverviewBadgeBorder != null) NavOverviewBadgeBorder.Background = nBadgeBgBrush;
-            if (NavOverviewBadgeText != null) NavOverviewBadgeText.Foreground = nBadgeFgBrush;
-            if (NavFloodBadgeBorder != null) NavFloodBadgeBorder.Background = nBadgeBgBrush;
-            if (NavFloodBadgeText != null) NavFloodBadgeText.Foreground = nBadgeFgBrush;
-            if (NavRadarBadgeBorder != null) NavRadarBadgeBorder.Background = nBadgeBgBrush;
-            if (NavRadarBadgeText != null) NavRadarBadgeText.Foreground = isDark ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 255, 102)) : nBadgeRedBrush;
-            if (NavLifestyleBadgeBorder != null) NavLifestyleBadgeBorder.Background = nBadgeBgBrush;
-            if (NavLifestyleBadgeText != null) NavLifestyleBadgeText.Foreground = nBadgeFgBrush;
-            if (NavCalendarBadgeBorder != null) NavCalendarBadgeBorder.Background = nBadgeBgBrush;
-            if (NavCalendarBadgeText != null) NavCalendarBadgeText.Foreground = nBadgeFgBrush;
-            if (NavWidgetBadgeBorder != null) NavWidgetBadgeBorder.Background = nBadgeBgBrush;
-            if (NavWidgetBadgeText != null) NavWidgetBadgeText.Foreground = nBadgeFgBrush;
+                this.Resources["CardBackgroundFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
+                this.Resources["CardStrokeColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
+                this.Resources["SubtleFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
+                this.Resources["CardBackgroundFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
+                this.Resources["NavigationViewDefaultPaneBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(paneBg);
+                this.Resources["NavigationViewTopPaneBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(paneBg);
 
-            // Set on tabs
-            foreach (var tab in tabs)
-            {
-                if (tab != null)
+                this.Resources["AccentFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+                this.Resources["AccentFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 225, 45, 50));
+                this.Resources["AccentFillColorTertiaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 20, 25));
+                this.Resources["AccentButtonBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+                this.Resources["AccentButtonBackgroundPointerOver"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 235, 45, 52));
+                this.Resources["AccentButtonBackgroundPressed"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 20, 25));
+                this.Resources["SystemAccentColor"] = redAccent;
+                this.Resources["NavigationViewSelectionIndicatorForeground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+
+                this.Resources["NothingCardBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
+                this.Resources["NothingCardBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
+                this.Resources["NothingSubCardBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
+                this.Resources["NothingSubCardBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subCardBorder);
+                this.Resources["NothingGlyphBoxBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(glyphBoxBg);
+                this.Resources["NothingTextPrimaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
+                this.Resources["NothingTextSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textSecondary);
+                this.Resources["NothingTextMutedBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textMuted);
+                this.Resources["NothingRedBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+                this.Resources["NothingGreenBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 0, 255, 102) : Windows.UI.Color.FromArgb(255, 22, 163, 74));
+                this.Resources["NothingPillBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(pillBg);
+                this.Resources["NothingPillBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(pillBorder);
+
+                if (FloatingIslandHeader != null)
                 {
-                    tab.RequestedTheme = isDark ? ElementTheme.Dark : ElementTheme.Light;
-                    tab.Resources["CardBackgroundFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
-                    tab.Resources["CardStrokeColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
-                    tab.Resources["SubtleFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
-                    tab.Resources["AccentFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
-                    tab.Resources["AccentButtonBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
-                    tab.Resources["AccentButtonBackgroundPointerOver"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 235, 45, 52));
-                    tab.Resources["AccentButtonBackgroundPressed"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 20, 25));
-
-                    tab.Resources["NothingCardBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
-                    tab.Resources["NothingCardBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
-                    tab.Resources["NothingSubCardBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
-                    tab.Resources["NothingSubCardBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subCardBorder);
-                    tab.Resources["NothingGlyphBoxBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(glyphBoxBg);
-                    tab.Resources["NothingTextPrimaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
-                    tab.Resources["NothingTextSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textSecondary);
-                    tab.Resources["NothingTextMutedBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textMuted);
-                    tab.Resources["NothingPillBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(pillBg);
-                    tab.Resources["NothingPillBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(pillBorder);
+                    FloatingIslandHeader.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
+                    FloatingIslandHeader.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
                 }
-            }
-            TabOverview?.UpdateNothingThemeVisuals();
-        }
-        else
-        {
-            // Fluent 2 Mode: Restore authentic Fluent 2 theme brushes locally on this and tabs
-            // NEVER mutate or remove from Application.Current.Resources!
-            var fluentKeys = new string[]
-            {
-                "CardBackgroundFillColorDefaultBrush",
-                "CardStrokeColorDefaultBrush",
-                "SubtleFillColorSecondaryBrush",
-                "CardBackgroundFillColorSecondaryBrush",
-                "NavigationViewDefaultPaneBackground",
-                "NavigationViewTopPaneBackground",
-                "AccentFillColorDefaultBrush",
-                "AccentFillColorSecondaryBrush",
-                "AccentFillColorTertiaryBrush",
-                "AccentButtonBackground",
-                "AccentButtonBackgroundPointerOver",
-                "AccentButtonBackgroundPressed",
-                "SystemAccentColor",
-                "NavigationViewSelectionIndicatorForeground",
-                "NothingCardBackgroundBrush",
-                "NothingCardBorderBrush",
-                "NothingSubCardBackgroundBrush",
-                "NothingSubCardBorderBrush",
-                "NothingGlyphBoxBackgroundBrush",
-                "NothingTextPrimaryBrush",
-                "NothingTextSecondaryBrush",
-                "NothingTextMutedBrush",
-                "NothingPillBackgroundBrush",
-                "NothingPillBorderBrush"
-            };
 
-            foreach (var k in fluentKeys)
-            {
-                this.Resources.Remove(k);
-            }
-
-            if (FloatingIslandHeader != null)
-            {
-                FloatingIslandHeader.ClearValue(Border.BackgroundProperty);
-                FloatingIslandHeader.ClearValue(Border.BorderBrushProperty);
-            }
-
-            // Restore vibrant Fluent 2 navigation badges
-            if (NavOverviewBadgeBorder != null) NavOverviewBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 12, 74, 110) : Windows.UI.Color.FromArgb(255, 224, 242, 254));
-            if (NavOverviewBadgeText != null) NavOverviewBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 56, 189, 248) : Windows.UI.Color.FromArgb(255, 2, 132, 199));
-
-            if (NavFloodBadgeBorder != null) NavFloodBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 12, 74, 110) : Windows.UI.Color.FromArgb(255, 224, 242, 254));
-            if (NavFloodBadgeText != null) NavFloodBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 56, 189, 248) : Windows.UI.Color.FromArgb(255, 2, 132, 199));
-
-            if (NavRadarBadgeBorder != null) NavRadarBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 6, 78, 59) : Windows.UI.Color.FromArgb(255, 220, 252, 231));
-            if (NavRadarBadgeText != null) NavRadarBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 52, 211, 153) : Windows.UI.Color.FromArgb(255, 22, 163, 74));
-
-            if (NavLifestyleBadgeBorder != null) NavLifestyleBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 112, 26, 117) : Windows.UI.Color.FromArgb(255, 252, 231, 243));
-            if (NavLifestyleBadgeText != null) NavLifestyleBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 244, 114, 182) : Windows.UI.Color.FromArgb(255, 219, 39, 119));
-
-            if (NavCalendarBadgeBorder != null) NavCalendarBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 76, 29, 149) : Windows.UI.Color.FromArgb(255, 237, 233, 254));
-            if (NavCalendarBadgeText != null) NavCalendarBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 167, 139, 250) : Windows.UI.Color.FromArgb(255, 124, 58, 237));
-
-            if (NavWidgetBadgeBorder != null) NavWidgetBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 30, 41, 59) : Windows.UI.Color.FromArgb(255, 241, 245, 249));
-            if (NavWidgetBadgeText != null) NavWidgetBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 148, 163, 184) : Windows.UI.Color.FromArgb(255, 100, 116, 139));
-
-            foreach (var tab in tabs)
-            {
-                if (tab != null)
+                if (MainNavView != null)
                 {
-                    tab.RequestedTheme = isDark ? ElementTheme.Dark : ElementTheme.Light;
-                    foreach (var k in fluentKeys)
+                    MainNavView.Resources["NavigationViewDefaultPaneBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(paneBg);
+                    MainNavView.Resources["NavigationViewTopPaneBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(paneBg);
+                }
+
+                var nBadgeBgBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
+                var nBadgeFgBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
+                var nBadgeRedBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+
+                if (NavOverviewBadgeBorder != null) NavOverviewBadgeBorder.Background = nBadgeBgBrush;
+                if (NavOverviewBadgeText != null) NavOverviewBadgeText.Foreground = nBadgeFgBrush;
+                if (NavFloodBadgeBorder != null) NavFloodBadgeBorder.Background = nBadgeBgBrush;
+                if (NavFloodBadgeText != null) NavFloodBadgeText.Foreground = nBadgeFgBrush;
+                if (NavRadarBadgeBorder != null) NavRadarBadgeBorder.Background = nBadgeBgBrush;
+                if (NavRadarBadgeText != null) NavRadarBadgeText.Foreground = isDark ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 255, 102)) : nBadgeRedBrush;
+                if (NavLifestyleBadgeBorder != null) NavLifestyleBadgeBorder.Background = nBadgeBgBrush;
+                if (NavLifestyleBadgeText != null) NavLifestyleBadgeText.Foreground = nBadgeFgBrush;
+                if (NavCalendarBadgeBorder != null) NavCalendarBadgeBorder.Background = nBadgeBgBrush;
+                if (NavCalendarBadgeText != null) NavCalendarBadgeText.Foreground = nBadgeFgBrush;
+                if (NavWidgetBadgeBorder != null) NavWidgetBadgeBorder.Background = nBadgeBgBrush;
+                if (NavWidgetBadgeText != null) NavWidgetBadgeText.Foreground = nBadgeFgBrush;
+
+                foreach (var tab in tabs)
+                {
+                    if (tab != null)
                     {
-                        tab.Resources.Remove(k);
+                        tab.Resources["CardBackgroundFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
+                        tab.Resources["CardStrokeColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
+                        tab.Resources["SubtleFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
+                        tab.Resources["AccentFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+                        tab.Resources["AccentButtonBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
+                        tab.Resources["AccentButtonBackgroundPointerOver"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 235, 45, 52));
+                        tab.Resources["AccentButtonBackgroundPressed"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 20, 25));
+                        tab.Resources["NothingCardBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
+                        tab.Resources["NothingCardBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
+                        tab.Resources["NothingSubCardBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
+                        tab.Resources["NothingSubCardBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subCardBorder);
+                        tab.Resources["NothingGlyphBoxBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(glyphBoxBg);
+                        tab.Resources["NothingTextPrimaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
+                        tab.Resources["NothingTextSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textSecondary);
+                        tab.Resources["NothingTextMutedBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textMuted);
+                        tab.Resources["NothingPillBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(pillBg);
+                        tab.Resources["NothingPillBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(pillBorder);
                     }
                 }
+                TabOverview?.UpdateNothingThemeVisuals();
             }
-
-            DispatcherQueue.TryEnqueue(() =>
+            else
             {
+                var fluentKeys = new string[]
+                {
+                    "CardBackgroundFillColorDefaultBrush",
+                    "CardStrokeColorDefaultBrush",
+                    "SubtleFillColorSecondaryBrush",
+                    "CardBackgroundFillColorSecondaryBrush",
+                    "NavigationViewDefaultPaneBackground",
+                    "NavigationViewTopPaneBackground",
+                    "AccentFillColorDefaultBrush",
+                    "AccentFillColorSecondaryBrush",
+                    "AccentFillColorTertiaryBrush",
+                    "AccentButtonBackground",
+                    "AccentButtonBackgroundPointerOver",
+                    "AccentButtonBackgroundPressed",
+                    "SystemAccentColor",
+                    "NavigationViewSelectionIndicatorForeground",
+                    "NothingCardBackgroundBrush",
+                    "NothingCardBorderBrush",
+                    "NothingSubCardBackgroundBrush",
+                    "NothingSubCardBorderBrush",
+                    "NothingGlyphBoxBackgroundBrush",
+                    "NothingTextPrimaryBrush",
+                    "NothingTextSecondaryBrush",
+                    "NothingTextMutedBrush",
+                    "NothingPillBackgroundBrush",
+                    "NothingPillBorderBrush"
+                };
+
+                foreach (var k in fluentKeys)
+                {
+                    if (this.Resources.ContainsKey(k)) this.Resources.Remove(k);
+                }
+
+                if (FloatingIslandHeader != null)
+                {
+                    FloatingIslandHeader.ClearValue(Border.BackgroundProperty);
+                    FloatingIslandHeader.ClearValue(Border.BorderBrushProperty);
+                }
+
+                if (MainNavView != null)
+                {
+                    MainNavView.Resources.Remove("NavigationViewDefaultPaneBackground");
+                    MainNavView.Resources.Remove("NavigationViewTopPaneBackground");
+                }
+
+                if (NavOverviewBadgeBorder != null) NavOverviewBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 12, 74, 110) : Windows.UI.Color.FromArgb(255, 224, 242, 254));
+                if (NavOverviewBadgeText != null) NavOverviewBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 56, 189, 248) : Windows.UI.Color.FromArgb(255, 2, 132, 199));
+                if (NavFloodBadgeBorder != null) NavFloodBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 12, 74, 110) : Windows.UI.Color.FromArgb(255, 224, 242, 254));
+                if (NavFloodBadgeText != null) NavFloodBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 56, 189, 248) : Windows.UI.Color.FromArgb(255, 2, 132, 199));
+                if (NavRadarBadgeBorder != null) NavRadarBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 6, 78, 59) : Windows.UI.Color.FromArgb(255, 220, 252, 231));
+                if (NavRadarBadgeText != null) NavRadarBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 52, 211, 153) : Windows.UI.Color.FromArgb(255, 22, 163, 74));
+                if (NavLifestyleBadgeBorder != null) NavLifestyleBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 112, 26, 117) : Windows.UI.Color.FromArgb(255, 252, 231, 243));
+                if (NavLifestyleBadgeText != null) NavLifestyleBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 244, 114, 182) : Windows.UI.Color.FromArgb(255, 219, 39, 119));
+                if (NavCalendarBadgeBorder != null) NavCalendarBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 76, 29, 149) : Windows.UI.Color.FromArgb(255, 237, 233, 254));
+                if (NavCalendarBadgeText != null) NavCalendarBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 167, 139, 250) : Windows.UI.Color.FromArgb(255, 124, 58, 237));
+                if (NavWidgetBadgeBorder != null) NavWidgetBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 30, 41, 59) : Windows.UI.Color.FromArgb(255, 241, 245, 249));
+                if (NavWidgetBadgeText != null) NavWidgetBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 148, 163, 184) : Windows.UI.Color.FromArgb(255, 100, 116, 139));
+
+                foreach (var tab in tabs)
+                {
+                    if (tab != null)
+                    {
+                        foreach (var k in fluentKeys)
+                        {
+                            if (tab.Resources.ContainsKey(k)) tab.Resources.Remove(k);
+                        }
+                    }
+                }
+
                 TabOverview?.UpdateWeatherVisuals();
                 TabOverview?.RedrawCanvases();
-            });
+            }
         }
-    }
-    private void UpdateThemeComboBoxLabels()
-    {
-        bool isVi = LocalizationService.Instance.IsVietnamese;
-        if (ThemeComboBox != null && ThemeComboBox.Items.Count >= 3)
+        catch (Exception ex)
         {
-            ((ComboBoxItem)ThemeComboBox.Items[0]).Content = isVi ? "\u2600\uFE0F S\u00E1ng" : "\u2600\uFE0F Light";
-            ((ComboBoxItem)ThemeComboBox.Items[1]).Content = isVi ? "\uD83C\uDF19 T\u1ED1i" : "\uD83C\uDF19 Dark";
-            ((ComboBoxItem)ThemeComboBox.Items[2]).Content = isVi ? "\uD83D\uDCBB H\u1EC7 th\u1ED1ng" : "\uD83D\uDCBB System";
+            System.Diagnostics.Debug.WriteLine($"[ApplyDesignLanguageVisuals] Error: {ex.Message}");
+        }
+        finally
+        {
+            _isApplyingVisuals = false;
         }
     }
 
