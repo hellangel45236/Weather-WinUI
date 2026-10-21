@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="WeatherApp.Views.Tabs.OverviewTab"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -1529,10 +1529,10 @@
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="14">
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Spacing="4">
                                         <TextBlock x:Name="NothingTempNumber" Text="{x:Bind ViewModel.CurrentWeather.TemperatureNumberOnly, Mode=OneWay}"
-                                                   FontSize="104" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI Variable Display"
+                                                   FontSize="104" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
                                                    Foreground="{ThemeResource NothingTextPrimaryBrush}" VerticalAlignment="Bottom" Margin="0,0,0,-8"/>
                                         <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureUnitOnly, Mode=OneWay}"
-                                                   FontSize="48" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI Variable Display"
+                                                   FontSize="48" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
                                                    Foreground="{ThemeResource NothingRedBrush}" VerticalAlignment="Bottom" Margin="0,0,0,14"/>
                                     </StackPanel>
 
@@ -1543,11 +1543,11 @@
                                                 BorderThickness="1" CornerRadius="8" Padding="10,4"
                                                 HorizontalAlignment="Left">
                                             <TextBlock x:Name="NothingFeelsLikeValue" Text="{x:Bind ViewModel.CurrentWeather.FeelsLikeText, Mode=OneWay}"
-                                                       FontSize="12" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                                       FontSize="12" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
                                                        Foreground="{ThemeResource NothingTextPrimaryBrush}"/>
                                         </Border>
                                         <TextBlock x:Name="NothingHighLowText" Text="{x:Bind ViewModel.CurrentWeather.HighLowTempText, Mode=OneWay}"
-                                                   FontSize="12" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                                   FontSize="12" FontFamily="{StaticResource NdotFontFamily}"
                                                    Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
                                     </StackPanel>
                                 </StackPanel>
@@ -1562,22 +1562,22 @@
                                         CornerRadius="22"
                                         Padding="14">
                                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8">
-                                        <Grid Width="64" Height="60" HorizontalAlignment="Center">
-                                            <FontIcon x:Name="NothingHeroIcon" FontFamily="{StaticResource FontAwesomeSolid}"
-                                                      Glyph="{x:Bind ViewModel.CurrentWeather.IconGlyph, Mode=OneWay}"
-                                                      FontSize="48"
+                                        <Grid Width="72" Height="68" HorizontalAlignment="Center">
+                                            <FontIcon x:Name="NothingHeroIcon" FontFamily="{StaticResource NdotFontFamily}"
+                                                      Glyph="{x:Bind ViewModel.CurrentWeather.NothingGlyph, Mode=OneWay}"
+                                                      FontSize="56"
                                                       Foreground="{ThemeResource NothingTextPrimaryBrush}"
                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             <Ellipse Width="6" Height="6" Fill="{ThemeResource NothingRedBrush}"
                                                      HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,2,0"/>
                                         </Grid>
                                         <TextBlock x:Name="NothingConditionTitle" Text="{x:Bind ViewModel.CurrentWeather.FormattedConditionUppercase, Mode=OneWay}"
-                                                   FontSize="12" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                                   FontSize="12" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
                                                    Foreground="{ThemeResource NothingTextPrimaryBrush}"
                                                    HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="180"/>
                                         <Border x:Name="NothingHeroConditionPill" Background="{ThemeResource NothingPillBackgroundBrush}" CornerRadius="6" Padding="6,2">
                                             <TextBlock Text="{x:Bind ViewModel.CurrentWeather.GlyphConditionEnglish, Mode=OneWay}"
-                                                       FontSize="9.5" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                                       FontSize="9.5" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
                                                        Foreground="{ThemeResource NothingRedBrush}"
                                                        HorizontalAlignment="Center"/>
                                         </Border>
@@ -1591,32 +1591,44 @@
                                 <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="16">
                                     <!-- Col 0: Humidity -->
                                     <StackPanel Grid.Column="0" Spacing="4">
-                                        <TextBlock Text="HUMIDITY" FontSize="11" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
-                                        <TextBlock x:Name="NothingHumidityVal" Text="{x:Bind ViewModel.CurrentWeather.HumidityText, Mode=OneWay}" FontSize="17" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingTextPrimaryBrush}"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <FontIcon FontFamily="{StaticResource NdotFontFamily}" Glyph="&#xF191A;" FontSize="11" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
+                                            <TextBlock Text="HUMIDITY" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="NothingHumidityVal" Text="{x:Bind ViewModel.CurrentWeather.HumidityText, Mode=OneWay}" FontSize="17" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}" Foreground="{ThemeResource NothingTextPrimaryBrush}"/>
                                         <ProgressBar x:Name="NothingHumidityProgress" Value="{x:Bind ViewModel.CurrentWeather.HumidityValue, Mode=OneWay}" Maximum="100" Height="5"
                                                      Foreground="{ThemeResource NothingTextPrimaryBrush}" Background="{ThemeResource NothingSubCardBorderBrush}" CornerRadius="2.5"/>
                                     </StackPanel>
 
                                     <!-- Col 1: Wind Speed -->
                                     <StackPanel Grid.Column="1" Spacing="4">
-                                        <TextBlock Text="WIND SPEED" FontSize="11" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
-                                        <TextBlock x:Name="NothingWindVal" Text="{x:Bind ViewModel.CurrentWeather.WindText, Mode=OneWay}" FontSize="17" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingTextPrimaryBrush}"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <FontIcon FontFamily="{StaticResource NdotFontFamily}" Glyph="&#xF191D;" FontSize="11" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
+                                            <TextBlock Text="WIND SPEED" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="NothingWindVal" Text="{x:Bind ViewModel.CurrentWeather.WindText, Mode=OneWay}" FontSize="17" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}" Foreground="{ThemeResource NothingTextPrimaryBrush}"/>
                                         <ProgressBar x:Name="NothingWindProgress" Value="{x:Bind ViewModel.CurrentWeather.WindSpeedValue, Mode=OneWay}" Maximum="50" Height="5"
                                                      Foreground="{ThemeResource NothingTextPrimaryBrush}" Background="{ThemeResource NothingSubCardBorderBrush}" CornerRadius="2.5"/>
                                     </StackPanel>
 
                                     <!-- Col 2: UV Index -->
                                     <StackPanel Grid.Column="2" Spacing="4">
-                                        <TextBlock Text="UV INDEX" FontSize="11" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
-                                        <TextBlock x:Name="NothingUvProgress" Text="{x:Bind ViewModel.CurrentWeather.UvIndexText, Mode=OneWay}" FontSize="17" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingRedBrush}"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <FontIcon FontFamily="{StaticResource NdotFontFamily}" Glyph="&#xF1964;" FontSize="11" Foreground="{ThemeResource NothingRedBrush}"/>
+                                            <TextBlock Text="UV INDEX" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="NothingUvProgress" Text="{x:Bind ViewModel.CurrentWeather.UvIndexText, Mode=OneWay}" FontSize="17" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}" Foreground="{ThemeResource NothingRedBrush}"/>
                                         <ProgressBar Value="{x:Bind ViewModel.CurrentWeather.UvIndexValue, Mode=OneWay}" Maximum="11" Height="5"
                                                      Foreground="{ThemeResource NothingRedBrush}" Background="{ThemeResource NothingSubCardBorderBrush}" CornerRadius="2.5"/>
                                     </StackPanel>
 
                                     <!-- Col 3: Barometer Pressure -->
                                     <StackPanel Grid.Column="3" Spacing="4">
-                                        <TextBlock Text="BAROMETER" FontSize="11" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
-                                        <TextBlock x:Name="NothingPressureVal" Text="{x:Bind ViewModel.CurrentWeather.PressureText, Mode=OneWay}" FontSize="17" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingTextPrimaryBrush}"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <FontIcon FontFamily="{StaticResource NdotFontFamily}" Glyph="&#xF1930;" FontSize="11" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
+                                            <TextBlock Text="BAROMETER" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="NothingPressureVal" Text="{x:Bind ViewModel.CurrentWeather.PressureText, Mode=OneWay}" FontSize="17" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}" Foreground="{ThemeResource NothingTextPrimaryBrush}"/>
                                         <ProgressBar x:Name="NothingBarometerProgress" Value="60" Maximum="100" Height="5"
                                                      Foreground="{ThemeResource NothingTextPrimaryBrush}" Background="{ThemeResource NothingSubCardBorderBrush}" CornerRadius="2.5"/>
                                     </StackPanel>
@@ -1797,13 +1809,13 @@
                                                 Width="96"
                                                 Padding="10,14">
                                             <StackPanel Spacing="6" HorizontalAlignment="Center">
-                                                <TextBlock Text="{x:Bind TimeDisplay}" FontSize="11" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                                <TextBlock Text="{x:Bind TimeDisplay}" FontSize="11" FontFamily="{StaticResource NdotFontFamily}"
                                                            Foreground="{ThemeResource NothingTextSecondaryBrush}" HorizontalAlignment="Center"/>
-                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}"
-                                                          FontSize="18" Foreground="{ThemeResource NothingTextPrimaryBrush}" HorizontalAlignment="Center" Margin="0,2"/>
-                                                <TextBlock Text="{x:Bind TempDisplay}" FontSize="15" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                                <FontIcon FontFamily="{StaticResource NdotFontFamily}" Glyph="{x:Bind NothingGlyph}"
+                                                          FontSize="20" Foreground="{ThemeResource NothingTextPrimaryBrush}" HorizontalAlignment="Center" Margin="0,2"/>
+                                                <TextBlock Text="{x:Bind TempDisplay}" FontSize="15" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
                                                            Foreground="{ThemeResource NothingTextPrimaryBrush}" HorizontalAlignment="Center"/>
-                                                <TextBlock Text="{x:Bind RainProbabilityText}" FontSize="10.5" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                                <TextBlock Text="{x:Bind RainProbabilityText}" FontSize="10.5" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
                                                            Foreground="{ThemeResource NothingRedBrush}" HorizontalAlignment="Center"/>
                                             </StackPanel>
                                         </Border>
@@ -1845,26 +1857,26 @@
                                         <Grid ColumnDefinitions="120,Auto,*,Auto,110,Auto">
                                             <!-- Day & Date -->
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                                <TextBlock Text="{x:Bind DayName}" FontWeight="Bold" FontSize="13" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                                <TextBlock Text="{x:Bind DayName}" FontWeight="Bold" FontSize="13" FontFamily="{StaticResource NdotFontFamily}"
                                                            Foreground="{ThemeResource NothingTextPrimaryBrush}"/>
-                                                <TextBlock Text="{x:Bind DateDisplay}" FontSize="11" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                                <TextBlock Text="{x:Bind DateDisplay}" FontSize="11" FontFamily="{StaticResource NdotFontFamily}"
                                                            Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
                                             </StackPanel>
 
                                             <!-- Icon & Rain -->
                                             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="6,0,12,0">
-                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="{x:Bind IconGlyph}"
-                                                          FontSize="16" Foreground="{ThemeResource NothingTextPrimaryBrush}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{x:Bind RainProbabilityText}" FontSize="11" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                                <FontIcon FontFamily="{StaticResource NdotFontFamily}" Glyph="{x:Bind NothingGlyph}"
+                                                          FontSize="18" Foreground="{ThemeResource NothingTextPrimaryBrush}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{x:Bind RainProbabilityText}" FontSize="11" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
                                                            Foreground="{ThemeResource NothingRedBrush}" VerticalAlignment="Center"/>
                                             </StackPanel>
 
                                             <!-- Condition -->
-                                            <TextBlock Grid.Column="2" Text="{x:Bind ConditionText}" FontSize="12" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                            <TextBlock Grid.Column="2" Text="{x:Bind ConditionText}" FontSize="12" FontFamily="{StaticResource NdotFontFamily}"
                                                        Foreground="{ThemeResource NothingTextSecondaryBrush}" VerticalAlignment="Center" Margin="6,0" TextTrimming="CharacterEllipsis"/>
 
                                             <!-- Min Temp -->
-                                            <TextBlock Grid.Column="3" Text="{x:Bind TempMinDisplay}" FontSize="12.5" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                            <TextBlock Grid.Column="3" Text="{x:Bind TempMinDisplay}" FontSize="12.5" FontFamily="{StaticResource NdotFontFamily}"
                                                        Foreground="{ThemeResource NothingTextMutedBrush}" VerticalAlignment="Center"/>
 
                                             <!-- Clean Range Bar -->
@@ -1875,7 +1887,7 @@
                                             </Grid>
 
                                             <!-- Max Temp -->
-                                            <TextBlock Grid.Column="5" Text="{x:Bind TempMaxDisplay}" FontSize="13.5" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingTextPrimaryBrush}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="5" Text="{x:Bind TempMaxDisplay}" FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}" Foreground="{ThemeResource NothingTextPrimaryBrush}" VerticalAlignment="Center"/>
                 
                                         </Grid>
                                     </Border>

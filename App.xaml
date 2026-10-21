@@ -29,6 +29,7 @@
             <helpers:SeasonalSkinToAdaptiveBackgroundConverter x:Key="SeasonalSkinToAdaptiveBackgroundConverter" />
             <FontFamily x:Key="SymbolThemeFontFamily">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
             <FontFamily x:Key="FontAwesomeSolid">Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, Font Awesome 6 Free Solid, ms-appx:///Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, Font Awesome 6 Free</FontFamily>
+            <FontFamily x:Key="NdotFontFamily">Assets/Fonts/Ndot77JPExtended.ttf#Ndot77JPExtended, ms-appx:///Assets/Fonts/Ndot77JPExtended.ttf#Ndot77JPExtended, Ndot77JPExtended, Cascadia Mono, Consolas</FontFamily>
 
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">

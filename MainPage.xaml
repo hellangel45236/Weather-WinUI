@@ -79,7 +79,7 @@
                                 CornerRadius="18"
                                 Padding="12,5">
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6c4;" FontSize="13" Foreground="{ThemeResource ZenButtonForegroundBrush}"/>
+                                <FontIcon x:Name="ZenButtonIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf6c4;" FontSize="13" Foreground="{ThemeResource ZenButtonForegroundBrush}"/>
                                 <TextBlock Text="Zen" FontWeight="SemiBold" FontSize="12" Foreground="{ThemeResource ZenButtonForegroundBrush}"/>
                             </StackPanel>
                         </Button>
@@ -89,7 +89,7 @@
                                 CornerRadius="14"
                                 Padding="10,6"
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.RefreshTooltip, Mode=OneWay}">
-                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="13"/>
+                            <FontIcon x:Name="RefreshButtonIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2f1;" FontSize="13"/>
                         </Button>
 
                         <!-- Chuyển đổi đơn vị °C / °F -->
@@ -98,7 +98,7 @@
                                 Padding="10,6"
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.UnitTooltip, Mode=OneWay}">
                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2c9;" FontSize="13"/>
+                                <FontIcon x:Name="UnitButtonIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2c9;" FontSize="13"/>
                                 <TextBlock Text="{x:Bind ViewModel.UnitButtonText, Mode=OneWay}" FontWeight="SemiBold"/>
                             </StackPanel>
                         </Button>
@@ -212,7 +212,7 @@
                                         ToolTipService.ToolTip="{x:Bind ViewModel.Loc.WidgetTooltip, Mode=OneWay}">
                             <DropDownButton.Content>
                                 <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" FontSize="13" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                    <FontIcon x:Name="DesktopWidgetButtonIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" FontSize="13" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                                     <TextBlock x:Name="BtnTextWidget" Text="{x:Bind ViewModel.Loc.WidgetBtnText, Mode=OneWay}" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </DropDownButton.Content>
@@ -252,7 +252,7 @@
                                 Padding="10,4"
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Loc.GpsTooltip, Mode=OneWay}">
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="11" Foreground="{x:Bind ViewModel.GpsIconForegroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
+                                <FontIcon x:Name="GpsButtonIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="11" Foreground="{x:Bind ViewModel.GpsIconForegroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
                                 <TextBlock Text="{x:Bind ViewModel.Loc.GpsLocation, Mode=OneWay}" FontSize="11.5" FontWeight="{x:Bind ViewModel.GpsButtonFontWeight, Mode=OneWay}" Foreground="{x:Bind ViewModel.GpsButtonForeground, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}"/>
                                 <Ellipse Width="5" Height="5" Fill="{x:Bind ViewModel.GpsIconForegroundHex, Mode=OneWay, Converter={StaticResource HexToBrushConverter}}" VerticalAlignment="Center"/>
                             </StackPanel>
@@ -331,7 +331,7 @@
             <NavigationView.MenuItems>
                 <NavigationViewItem Tag="overview" IsSelected="True">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#F59E0B"/>
+                        <FontIcon x:Name="NavOverviewIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" Foreground="#F59E0B"/>
                     </NavigationViewItem.Icon>
                     <NavigationViewItem.Content>
                         <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
@@ -344,7 +344,7 @@
                 </NavigationViewItem>
                 <NavigationViewItem Tag="flood">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf773;" Foreground="#0284C7"/>
+                        <FontIcon x:Name="NavFloodIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf773;" Foreground="#0284C7"/>
                     </NavigationViewItem.Icon>
                     <NavigationViewItem.InfoBadge>
                         <InfoBadge Visibility="{x:Bind ViewModel.HasFloodAlert, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
@@ -361,7 +361,7 @@
                 </NavigationViewItem>
                 <NavigationViewItem Tag="radar">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" Foreground="#10B981"/>
+                        <FontIcon x:Name="NavRadarIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" Foreground="#10B981"/>
                     </NavigationViewItem.Icon>
                     <NavigationViewItem.Content>
                         <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
@@ -374,7 +374,7 @@
                 </NavigationViewItem>
                 <NavigationViewItem Tag="lifestyle">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf553;" Foreground="#EC4899"/>
+                        <FontIcon x:Name="NavLifestyleIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf553;" Foreground="#EC4899"/>
                     </NavigationViewItem.Icon>
                     <NavigationViewItem.Content>
                         <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
@@ -387,7 +387,7 @@
                 </NavigationViewItem>
                 <NavigationViewItem Tag="calendar">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" Foreground="#8B5CF6"/>
+                        <FontIcon x:Name="NavCalendarIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" Foreground="#8B5CF6"/>
                     </NavigationViewItem.Icon>
                     <NavigationViewItem.Content>
                         <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
@@ -402,7 +402,7 @@
             <NavigationView.FooterMenuItems>
                 <NavigationViewItem Tag="widget">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" Foreground="#38BDF8"/>
+                        <FontIcon x:Name="NavWidgetIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" Foreground="#38BDF8"/>
                     </NavigationViewItem.Icon>
                     <NavigationViewItem.Content>
                         <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch" Width="195">
@@ -415,7 +415,7 @@
                 </NavigationViewItem>
                 <NavigationViewItem Content="{x:Bind ViewModel.Loc.NavSettings, Mode=OneWay}" Tag="settings">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf013;" Foreground="#94A3B8"/>
+                        <FontIcon x:Name="NavSettingsIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf013;" Foreground="#94A3B8"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>

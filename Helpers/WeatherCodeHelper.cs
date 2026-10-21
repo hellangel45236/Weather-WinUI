@@ -58,6 +58,11 @@ public static class WeatherCodeHelper
         };
     }
 
+    public static string GetNothingWeatherGlyph(int weatherCode, bool isDay = true)
+    {
+        return NothingGlyphs.GetWeatherGlyph(weatherCode, isDay);
+    }
+
     public static string GetSvgFileName(int weatherCode, bool isDay)
     {
         return weatherCode switch

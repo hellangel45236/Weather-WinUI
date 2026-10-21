@@ -25,6 +25,7 @@ public class CurrentWeatherDisplay
     public string FeelsLikeText { get; set; } = "Cảm giác: --°C";
     public string ConditionText { get; set; } = "Đang tải dữ liệu...";
     public string IconGlyph { get; set; } = "\uf185";
+    public string NothingGlyph { get; set; } = string.Empty;
     public string SvgIconPath { get; set; } = string.Empty;
     public string SvgIconFullPath { get; set; } = string.Empty;
     public Uri? SvgIconUri { get; set; }
@@ -191,6 +192,7 @@ public class HourlyForecastItem : CommunityToolkit.Mvvm.ComponentModel.Observabl
     public string TempDisplay { get; set; } = string.Empty;
     public double TempValue { get; set; }
     public string IconGlyph { get; set; } = "\uf185";
+    public string NothingGlyph { get; set; } = string.Empty;
     public string SvgIconPath { get; set; } = string.Empty;
     public string ConditionText { get; set; } = string.Empty;
     public string RainProbabilityText { get; set; } = "0%";
@@ -264,6 +266,7 @@ public class DailyForecastItem
     public string DayName { get; set; } = string.Empty;
     public string DateDisplay { get; set; } = string.Empty;
     public string IconGlyph { get; set; } = "\uf185";
+    public string NothingGlyph { get; set; } = string.Empty;
     public string SvgIconPath { get; set; } = string.Empty;
     public string ConditionText { get; set; } = string.Empty;
     public string TempMaxDisplay { get; set; } = "--°";

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -926,6 +926,8 @@ public sealed partial class WidgetWindow : Window
 
         if (NothingBentoCityText != null) NothingBentoCityText.Text = nothingCity;
         if (NothingBentoTempText != null) NothingBentoTempText.Text = tempOnly;
+        if (NothingBentoWeatherIcon != null && !string.IsNullOrEmpty(_currentWeather.NothingGlyph))
+            NothingBentoWeatherIcon.Glyph = _currentWeather.NothingGlyph;
         if (NothingBentoConditionText != null) NothingBentoConditionText.Text = _currentWeather.ConditionText.ToUpperInvariant();
         if (NothingBentoRangeText != null) NothingBentoRangeText.Text = rangeStr;
         if (NothingBentoAqiText != null) NothingBentoAqiText.Text = $"AQI {aqiVal}";
@@ -939,6 +941,8 @@ public sealed partial class WidgetWindow : Window
         if (NothingGlyph5 != null) NothingGlyph5.Opacity = humVal >= 90 ? 1.0 : 0.2;
 
         if (NothingSquareCityText != null) NothingSquareCityText.Text = nothingCity;
+        if (NothingSquareWeatherIcon != null && !string.IsNullOrEmpty(_currentWeather.NothingGlyph))
+            NothingSquareWeatherIcon.Glyph = _currentWeather.NothingGlyph;
         if (NothingSquareTempText != null) NothingSquareTempText.Text = $"{tempOnly}\u00B0";
         if (NothingSquareConditionText != null) NothingSquareConditionText.Text = _currentWeather.ConditionText.ToUpperInvariant();
         if (NothingSquareAqiText != null) NothingSquareAqiText.Text = $"{aqiVal}";

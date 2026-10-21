@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.UI.Xaml;
@@ -771,6 +771,18 @@ public sealed partial class OverviewTab : UserControl
         {
             MiniWeatherPill.Background = cardBg;
             MiniWeatherPill.BorderBrush = cardBorder;
+        }
+
+        if (NothingHeroIcon != null && ViewModel?.CurrentWeather != null)
+        {
+            if (App.Current.Resources.TryGetValue("NdotFontFamily", out var nf) && nf is Microsoft.UI.Xaml.Media.FontFamily ndot)
+            {
+                NothingHeroIcon.FontFamily = ndot;
+            }
+            if (!string.IsNullOrEmpty(ViewModel.CurrentWeather.NothingGlyph))
+            {
+                NothingHeroIcon.Glyph = ViewModel.CurrentWeather.NothingGlyph;
+            }
         }
 
         // Update static pills & borders

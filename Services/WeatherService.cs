@@ -121,6 +121,7 @@ public class WeatherService : IWeatherService
         var (desc, glyph) = WeatherCodeHelper.GetConditionInfo(cur.WeatherCode, isDay);
         display.ConditionText = desc;
         display.IconGlyph = glyph;
+        display.NothingGlyph = WeatherCodeHelper.GetNothingWeatherGlyph(cur.WeatherCode, isDay);
 
         double uvIndex = 0;
         if (data.Daily?.UvIndexMax?.Count > 0)
@@ -444,6 +445,7 @@ public class WeatherService : IWeatherService
                 TempDisplay = tempDisplay,
                 TempValue = Math.Round(t, 1),
                 IconGlyph = glyph,
+                NothingGlyph = WeatherCodeHelper.GetNothingWeatherGlyph(code, isDayHour),
                 SvgIconPath = svgPath,
                 ConditionText = desc,
                 RainProbabilityText = rainProb > 0 ? $"{rainProb}%" : "0%",
@@ -577,6 +579,7 @@ public class WeatherService : IWeatherService
                 DayName = dayName,
                 DateDisplay = dateDisplay,
                 IconGlyph = glyph,
+                NothingGlyph = WeatherCodeHelper.GetNothingWeatherGlyph(code, isDay: true),
                 SvgIconPath = svgPath,
                 ConditionText = desc,
                 TempMaxDisplay = $"{Math.Round(max)}{unit}",

@@ -814,6 +814,25 @@ public sealed partial class MainPage : Page
                 if (NavWidgetBadgeBorder != null) NavWidgetBadgeBorder.Background = nBadgeBgBrush;
                 if (NavWidgetBadgeText != null) NavWidgetBadgeText.Foreground = nBadgeFgBrush;
 
+                var ndotFont = App.Current.Resources.TryGetValue("NdotFontFamily", out var nf) ? (Microsoft.UI.Xaml.Media.FontFamily)nf : new Microsoft.UI.Xaml.Media.FontFamily("Assets/Fonts/Ndot77JPExtended.ttf#Ndot77JPExtended, Cascadia Mono");
+                var textPrimaryBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
+
+                // Cập nhật biểu tượng thanh điều hướng Navigation View sang Nothing Dot Glyphs
+                if (NavOverviewIcon != null) { NavOverviewIcon.FontFamily = ndotFont; NavOverviewIcon.Glyph = NothingGlyphs.House; NavOverviewIcon.Foreground = textPrimaryBrush; }
+                if (NavFloodIcon != null) { NavFloodIcon.FontFamily = ndotFont; NavFloodIcon.Glyph = NothingGlyphs.Waves; NavFloodIcon.Foreground = textPrimaryBrush; }
+                if (NavRadarIcon != null) { NavRadarIcon.FontFamily = ndotFont; NavRadarIcon.Glyph = NothingGlyphs.RadarTarget; NavRadarIcon.Foreground = textPrimaryBrush; }
+                if (NavLifestyleIcon != null) { NavLifestyleIcon.FontFamily = ndotFont; NavLifestyleIcon.Glyph = NothingGlyphs.Smiley; NavLifestyleIcon.Foreground = textPrimaryBrush; }
+                if (NavCalendarIcon != null) { NavCalendarIcon.FontFamily = ndotFont; NavCalendarIcon.Glyph = NothingGlyphs.Clock; NavCalendarIcon.Foreground = textPrimaryBrush; }
+                if (NavWidgetIcon != null) { NavWidgetIcon.FontFamily = ndotFont; NavWidgetIcon.Glyph = NothingGlyphs.WidgetRobot; NavWidgetIcon.Foreground = textPrimaryBrush; }
+                if (NavSettingsIcon != null) { NavSettingsIcon.FontFamily = ndotFont; NavSettingsIcon.Glyph = NothingGlyphs.SettingsDial; NavSettingsIcon.Foreground = textPrimaryBrush; }
+
+                // Cập nhật biểu tượng nút chức năng Floating Header sang Nothing Dot Glyphs
+                if (GpsButtonIcon != null) { GpsButtonIcon.FontFamily = ndotFont; GpsButtonIcon.Glyph = NothingGlyphs.GpsTarget; }
+                if (ZenButtonIcon != null) { ZenButtonIcon.FontFamily = ndotFont; ZenButtonIcon.Glyph = NothingGlyphs.ZenSun; }
+                if (RefreshButtonIcon != null) { RefreshButtonIcon.FontFamily = ndotFont; RefreshButtonIcon.Glyph = NothingGlyphs.AdvanceRefresh; }
+                if (UnitButtonIcon != null) { UnitButtonIcon.FontFamily = ndotFont; UnitButtonIcon.Glyph = NothingGlyphs.Percent; }
+                if (DesktopWidgetButtonIcon != null) { DesktopWidgetButtonIcon.FontFamily = ndotFont; DesktopWidgetButtonIcon.Glyph = NothingGlyphs.WidgetDropdown; }
+
                 foreach (var tab in tabs)
                 {
                     if (tab != null)
@@ -898,6 +917,24 @@ public sealed partial class MainPage : Page
                 if (NavCalendarBadgeText != null) NavCalendarBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 167, 139, 250) : Windows.UI.Color.FromArgb(255, 124, 58, 237));
                 if (NavWidgetBadgeBorder != null) NavWidgetBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 30, 41, 59) : Windows.UI.Color.FromArgb(255, 241, 245, 249));
                 if (NavWidgetBadgeText != null) NavWidgetBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 148, 163, 184) : Windows.UI.Color.FromArgb(255, 100, 116, 139));
+
+                var faFont = App.Current.Resources.TryGetValue("FontAwesomeSolid", out var ff) ? (Microsoft.UI.Xaml.Media.FontFamily)ff : new Microsoft.UI.Xaml.Media.FontFamily("Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid");
+
+                // Khôi phục biểu tượng thanh điều hướng Navigation View sang Fluent 2 FontAwesome
+                if (NavOverviewIcon != null) { NavOverviewIcon.FontFamily = faFont; NavOverviewIcon.Glyph = "\uf185"; NavOverviewIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 245, 158, 11)); }
+                if (NavFloodIcon != null) { NavFloodIcon.FontFamily = faFont; NavFloodIcon.Glyph = "\uf773"; NavFloodIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 2, 132, 199)); }
+                if (NavRadarIcon != null) { NavRadarIcon.FontFamily = faFont; NavRadarIcon.Glyph = "\uf57d"; NavRadarIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 16, 185, 129)); }
+                if (NavLifestyleIcon != null) { NavLifestyleIcon.FontFamily = faFont; NavLifestyleIcon.Glyph = "\uf553"; NavLifestyleIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 236, 72, 153)); }
+                if (NavCalendarIcon != null) { NavCalendarIcon.FontFamily = faFont; NavCalendarIcon.Glyph = "\uf073"; NavCalendarIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 139, 92, 246)); }
+                if (NavWidgetIcon != null) { NavWidgetIcon.FontFamily = faFont; NavWidgetIcon.Glyph = "\uf2d0"; NavWidgetIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248)); }
+                if (NavSettingsIcon != null) { NavSettingsIcon.FontFamily = faFont; NavSettingsIcon.Glyph = "\uf013"; NavSettingsIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 148, 163, 184)); }
+
+                // Khôi phục biểu tượng nút chức năng Floating Header sang Fluent 2 FontAwesome
+                if (GpsButtonIcon != null) { GpsButtonIcon.FontFamily = faFont; GpsButtonIcon.Glyph = "\uf3c5"; }
+                if (ZenButtonIcon != null) { ZenButtonIcon.FontFamily = faFont; ZenButtonIcon.Glyph = "\uf6c4"; }
+                if (RefreshButtonIcon != null) { RefreshButtonIcon.FontFamily = faFont; RefreshButtonIcon.Glyph = "\uf2f1"; }
+                if (UnitButtonIcon != null) { UnitButtonIcon.FontFamily = faFont; UnitButtonIcon.Glyph = "\uf2c9"; }
+                if (DesktopWidgetButtonIcon != null) { DesktopWidgetButtonIcon.FontFamily = faFont; DesktopWidgetButtonIcon.Glyph = "\uf2d0"; }
 
                 foreach (var tab in tabs)
                 {

@@ -31,16 +31,16 @@ public partial class App : Application
     private const uint WM_FONTCHANGE = 0x001D;
     private const uint SMTO_ABORTIFHUNG = 0x0002;
 
-    private static void EnsureFontAwesomeRegistered()
+    private static void EnsureFontRegistered(string fontFileName, string[] fontRegistryNames)
     {
         try
         {
             // 1. Xác định file font gốc trong thư mục ứng dụng
             string baseDir = AppContext.BaseDirectory;
-            string sourceFontPath = Path.Combine(baseDir, "Assets", "Fonts", "fa-solid-900.ttf");
+            string sourceFontPath = Path.Combine(baseDir, "Assets", "Fonts", fontFileName);
             if (!File.Exists(sourceFontPath))
             {
-                sourceFontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Fonts", "fa-solid-900.ttf");
+                sourceFontPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Fonts", fontFileName);
             }
 
             if (!File.Exists(sourceFontPath))
@@ -58,7 +58,7 @@ public partial class App : Application
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Microsoft", "Windows", "Fonts");
             Directory.CreateDirectory(userFontsFolder);
-            string userFontPath = Path.Combine(userFontsFolder, "fa-solid-900.ttf");
+            string userFontPath = Path.Combine(userFontsFolder, fontFileName);
 
             bool needsRegistration = false;
             if (!File.Exists(userFontPath))
@@ -82,15 +82,7 @@ public partial class App : Application
             {
                 if (fontsKey != null)
                 {
-                    string[] fontNames =
-                    [
-                        "Font Awesome 6 Free Solid (TrueType)",
-                        "Font Awesome 6 Free (TrueType)",
-                        "Font Awesome 6 Free Solid",
-                        "Font Awesome 6 Free"
-                    ];
-
-                    foreach (var name in fontNames)
+                    foreach (var name in fontRegistryNames)
                     {
                         object? existingVal = fontsKey.GetValue(name);
                         if (existingVal == null || string.IsNullOrEmpty(existingVal.ToString()))
@@ -118,6 +110,21 @@ public partial class App : Application
         }
     }
 
+    private static void EnsureAppFontsRegistered()
+    {
+        EnsureFontRegistered("fa-solid-900.ttf", [
+            "Font Awesome 6 Free Solid (TrueType)",
+            "Font Awesome 6 Free (TrueType)",
+            "Font Awesome 6 Free Solid",
+            "Font Awesome 6 Free"
+        ]);
+
+        EnsureFontRegistered("Ndot77JPExtended.ttf", [
+            "Ndot77JPExtended (TrueType)",
+            "Ndot77JPExtended"
+        ]);
+    }
+
     public App()
     {
         try
@@ -125,8 +132,8 @@ public partial class App : Application
             // Đảm bảo thư mục làm việc luôn trỏ về thư mục cài đặt ứng dụng để nạp font và assets unpackaged
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            // Đăng ký font Font Awesome đa tầng cho Windows 10 & 11
-            EnsureFontAwesomeRegistered();
+            // Đăng ký toàn bộ font tự host (Font Awesome & Nothing Ndot) đa tầng cho Windows 10 & 11
+            EnsureAppFontsRegistered();
         }
         catch { }
 
@@ -167,6 +174,9 @@ public partial class App : Application
         {
             const string fontDefinition = "Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, Font Awesome 6 Free Solid, ms-appx:///Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid, Font Awesome 6 Free";
             Resources["FontAwesomeSolid"] = new Microsoft.UI.Xaml.Media.FontFamily(fontDefinition);
+
+            const string ndotDefinition = "Assets/Fonts/Ndot77JPExtended.ttf#Ndot77JPExtended, ms-appx:///Assets/Fonts/Ndot77JPExtended.ttf#Ndot77JPExtended, Ndot77JPExtended, Cascadia Mono, Consolas";
+            Resources["NdotFontFamily"] = new Microsoft.UI.Xaml.Media.FontFamily(ndotDefinition);
         }
         catch { }
     }
