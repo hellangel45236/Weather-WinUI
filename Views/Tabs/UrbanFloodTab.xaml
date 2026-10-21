@@ -94,7 +94,7 @@
                         <Border Grid.Column="0" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="10" Padding="12,10">
                             <StackPanel Spacing="4">
                                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf773;" FontSize="11" Foreground="#0284C7"/>
+                                    <FontIcon x:Name="FloodPod1Icon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf773;" FontSize="11" Foreground="#0284C7"/>
                                     <TextBlock Text="{x:Bind ViewModel.Loc.CurrentTidePod, Mode=OneWay}" FontSize="10.5" FontWeight="SemiBold" Opacity="0.75"/>
                                 </StackPanel>
                                 <TextBlock Text="{x:Bind ViewModel.UrbanFloodWarning.CurrentTideLevelDisplay, Mode=OneWay}"
@@ -146,7 +146,7 @@
                         <Border Grid.Column="3" Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="10" Padding="12,10">
                             <StackPanel Spacing="4">
                                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf018;" FontSize="11" Foreground="#EC4899"/>
+                                    <FontIcon x:Name="FloodPod4Icon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf018;" FontSize="11" Foreground="#EC4899"/>
                                     <TextBlock Text="{x:Bind ViewModel.Loc.TrackedSpotsPod, Mode=OneWay}" FontSize="10.5" FontWeight="SemiBold" Opacity="0.75"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">

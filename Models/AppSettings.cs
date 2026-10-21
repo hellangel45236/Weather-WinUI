@@ -77,6 +77,9 @@ public class AppSettings
     public bool AutoCheckForUpdates { get; set; } = true;
     public bool EnableBatterySaverOptimization { get; set; } = true;
 
+    // 14. Am thanh co hoc Nothing Tech (Mechanical Tactile SFX - v3.5.2)
+    public bool EnableMechanicalSound { get; set; } = true;
+
     // 13. Tính năng mới v1.7
     public List<FavoriteLocationItem> FavoriteLocations { get; set; } = new()
     {

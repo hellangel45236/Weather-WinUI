@@ -203,13 +203,13 @@ public class LocalizationService : INotifyPropertyChanged
 
     #region Settings Tab Strings
 
-    public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.5.1)" : "Settings & Personalization Center (Version 3.5.1)";
+    public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.5.2)" : "Settings & Personalization Center (Version 3.5.2)";
     public string SettingsSubtitle => IsVietnamese ? "Quản lý giao diện, ngôn ngữ, biểu tượng, đơn vị, hình nền và hiệu năng hệ thống" : "Manage appearance, language, icons, units, wallpapers and system performance";
     public string SettingsHeaderTitle => SettingsTitle;
     public string SettingsHeaderSubtitle => SettingsSubtitle;
     public string SaveAndApply => IsVietnamese ? "Lưu & Áp Dụng" : "Save & Apply";
     public string SaveApplyButton => SaveAndApply;
-    public string VersionOfficial => IsVietnamese ? "Version 3.5.1 (Chính Thức)" : "Version 3.5.1 (Official)";
+    public string VersionOfficial => IsVietnamese ? "Version 3.5.2 (Chính Thức)" : "Version 3.5.2 (Official)";
     public string VersionBadge => VersionOfficial;
     public string AppDescription => IsVietnamese ? "Ứng dụng thời tiết hiện đại, siêu nhẹ, tương thích hoàn hảo Windows 10 & 11" : "Modern, lightweight weather application, perfectly compatible with Windows 10 & 11";
 
@@ -622,6 +622,10 @@ public class LocalizationService : INotifyPropertyChanged
     public string WidgetStudioNothingBentoDesc => IsVietnamese ? "Phong c\u00E1ch Nothing OS v\u1EDBi th\u1EDDi ti\u1EBFt ma tr\u1EADn \u0111i\u1EC3m, \u0111\u1ED3ng h\u1ED3 Nothing Clock, \u00F4 ho\u00E0ng h\u00F4n ch\u1EA5m \u0111\u1ECF v\u00E0 th\u01B0\u1EDBc \u0111o \u0111\u1ED9 \u1EA9m d\u1EA1ng v\u1EA1ch Glyph LED" : "Nothing OS aesthetic capsule with dot-matrix weather, Nothing Clock, red sun sunset tile and Glyph LED humidity bar";
     public string WidgetStudioNothingSquareTitle => "\u25FD Nothing Square (Minimal 1:1)";
     public string WidgetStudioNothingSquareDesc => IsVietnamese ? "Widget vu\u00F4ng t\u1ED1i gi\u1EA3n 1:1 phong c\u00E1ch Nothing Tech v\u1EDBi s\u1ED1 nhi\u1EC7t \u0111\u1ED9 l\u1EDBn, m\u00E3 th\u00E0nh ph\u1ED1 IATA v\u00E0 thanh \u0111o ch\u1EC9 s\u1ED1 m\u00F4i tr\u01B0\u1EDDng" : "Minimalist 1:1 square Nothing Tech widget with oversized dot-matrix temperature, IATA airport code and environmental telemetry";
+    public string WidgetStudioNothingCircularTitle => "⭕ Nothing Circular (Dial 1:1)";
+    public string WidgetStudioNothingCircularDesc => IsVietnamese ? "Mặt số tròn Nothing Dial với vòng cự ly Glyph, chấm đỏ tâm điểm, số nhiệt độ Ndot lớn và cảm biến vi khí hậu" : "Nothing Circular Dial with dotted compass track, red origin beacon, huge Ndot temperature and telemetry pill";
+    public string WidgetStudioNothingPillTitle => "💊 Nothing Glance (Pill Bar)";
+    public string WidgetStudioNothingPillDesc => IsVietnamese ? "Viên nang tối giản Nothing Glance siêu gọn gàng, chấm đỏ Nothing Red, glyph nhiệt độ và mã trạm đo" : "Compact Nothing Glance pill with red status dot, Ndot temperature glyph and station telemetry";
     public string WidgetStudio4DayForecast => IsVietnamese ? "Dự báo 4 ngày" : "4-Day Forecast";
     public string WidgetStudioAqiGood => IsVietnamese ? "AQI Chuẩn" : "AQI Good";
     public string WidgetStudioControlsHeader => IsVietnamese ? "Tùy Biến & Điều Khiển Widget" : "Widget Controls & Customization";

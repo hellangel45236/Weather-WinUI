@@ -113,7 +113,7 @@ public sealed partial class WidgetStudioTab : UserControl
                 GalleryGrid.ColumnDefinitions.Clear();
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.RowDefinitions.Clear();
-                for (int r = 0; r < 9; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                for (int r = 0; r < 11; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
                 if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
                 if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 0); Grid.SetRow(CardWidgetGlassCard, 1); }
@@ -124,6 +124,8 @@ public sealed partial class WidgetStudioTab : UserControl
                 if (CardWidgetRetroLcd != null) { Grid.SetColumn(CardWidgetRetroLcd, 0); Grid.SetRow(CardWidgetRetroLcd, 6); Grid.SetColumnSpan(CardWidgetRetroLcd, 1); }
                 if (CardWidgetNothingBento != null) { Grid.SetColumn(CardWidgetNothingBento, 0); Grid.SetRow(CardWidgetNothingBento, 7); }
                 if (CardWidgetNothingSquare != null) { Grid.SetColumn(CardWidgetNothingSquare, 0); Grid.SetRow(CardWidgetNothingSquare, 8); }
+                if (CardWidgetNothingCircular != null) { Grid.SetColumn(CardWidgetNothingCircular, 0); Grid.SetRow(CardWidgetNothingCircular, 9); }
+                if (CardWidgetNothingPill != null) { Grid.SetColumn(CardWidgetNothingPill, 0); Grid.SetRow(CardWidgetNothingPill, 10); }
             }
 
             else
@@ -132,7 +134,7 @@ public sealed partial class WidgetStudioTab : UserControl
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.RowDefinitions.Clear();
-                for (int r = 0; r < 5; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                for (int r = 0; r < 6; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
                 if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
                 if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 1); Grid.SetRow(CardWidgetGlassCard, 0); }
@@ -143,6 +145,8 @@ public sealed partial class WidgetStudioTab : UserControl
                 if (CardWidgetRetroLcd != null) { Grid.SetColumn(CardWidgetRetroLcd, 0); Grid.SetRow(CardWidgetRetroLcd, 3); Grid.SetColumnSpan(CardWidgetRetroLcd, 2); }
                 if (CardWidgetNothingBento != null) { Grid.SetColumn(CardWidgetNothingBento, 0); Grid.SetRow(CardWidgetNothingBento, 4); }
                 if (CardWidgetNothingSquare != null) { Grid.SetColumn(CardWidgetNothingSquare, 1); Grid.SetRow(CardWidgetNothingSquare, 4); }
+                if (CardWidgetNothingCircular != null) { Grid.SetColumn(CardWidgetNothingCircular, 0); Grid.SetRow(CardWidgetNothingCircular, 5); }
+                if (CardWidgetNothingPill != null) { Grid.SetColumn(CardWidgetNothingPill, 1); Grid.SetRow(CardWidgetNothingPill, 5); }
             }
         }
 
@@ -279,6 +283,16 @@ public sealed partial class WidgetStudioTab : UserControl
         SelectWidgetStyle("NothingSquare");
     }
 
+    private void CardWidgetNothingCircular_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        SelectWidgetStyle("NothingCircular");
+    }
+
+    private void CardWidgetNothingPill_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        SelectWidgetStyle("NothingPill");
+    }
+
     private void SelectWidgetStyle(string styleTag)
     {
         if (ViewModel == null) return;
@@ -378,6 +392,18 @@ public sealed partial class WidgetStudioTab : UserControl
             CardWidgetNothingSquare.BorderBrush = selectedTag == "NothingSquare" ? accentBrush : subtleBorderBrush;
             CardWidgetNothingSquare.BorderThickness = selectedTag == "NothingSquare" ? new Thickness(2) : new Thickness(1);
             if (BadgeWidgetNothingSquare != null) BadgeWidgetNothingSquare.Visibility = selectedTag == "NothingSquare" ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (CardWidgetNothingCircular != null)
+        {
+            CardWidgetNothingCircular.BorderBrush = selectedTag == "NothingCircular" ? accentBrush : subtleBorderBrush;
+            CardWidgetNothingCircular.BorderThickness = selectedTag == "NothingCircular" ? new Thickness(2) : new Thickness(1);
+            if (BadgeWidgetNothingCircular != null) BadgeWidgetNothingCircular.Visibility = selectedTag == "NothingCircular" ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (CardWidgetNothingPill != null)
+        {
+            CardWidgetNothingPill.BorderBrush = selectedTag == "NothingPill" ? accentBrush : subtleBorderBrush;
+            CardWidgetNothingPill.BorderThickness = selectedTag == "NothingPill" ? new Thickness(2) : new Thickness(1);
+            if (BadgeWidgetNothingPill != null) BadgeWidgetNothingPill.Visibility = selectedTag == "NothingPill" ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 

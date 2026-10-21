@@ -138,11 +138,14 @@ public sealed partial class QuickPeekWindow : Window
 
             SetWindowPos(hWnd, IntPtr.Zero, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 
-            int noBorderColor = DWMWA_COLOR_NONE;
-            DwmSetWindowAttribute(hWnd, DWMWA_BORDER_COLOR, ref noBorderColor, sizeof(int));
+            if (Environment.OSVersion.Version.Build >= 22000)
+            {
+                int noBorderColor = DWMWA_COLOR_NONE;
+                DwmSetWindowAttribute(hWnd, DWMWA_BORDER_COLOR, ref noBorderColor, sizeof(int));
 
-            int roundPref = DWMWCP_DONOTROUND;
-            DwmSetWindowAttribute(hWnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref roundPref, sizeof(int));
+                int roundPref = DWMWCP_DONOTROUND;
+                DwmSetWindowAttribute(hWnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref roundPref, sizeof(int));
+            }
         }
         catch { }
     }
@@ -150,42 +153,96 @@ public sealed partial class QuickPeekWindow : Window
     public void UpdateContent()
     {
         LocationText.Text = _viewModel.LocationTitle;
+
+        bool isNothing = _viewModel.Settings?.DesignLanguage == "Nothing";
+        bool isDark = _viewModel.Settings?.ThemeMode == "Dark" || (_viewModel.Settings?.ThemeMode != "Light" && Helpers.ThemeHelper.IsDarkTheme());
+
+        if (isNothing)
+        {
+            if (NothingRedDot != null) NothingRedDot.Visibility = Visibility.Visible;
+            if (LocationIcon != null) LocationIcon.Visibility = Visibility.Collapsed;
+            if (SubHeaderTitle != null) SubHeaderTitle.Text = "// QUICK PEEK // 3-DAY";
+
+            var bgBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? 
+                Windows.UI.Color.FromArgb(0xF8, 0x0A, 0x0A, 0x0C) : 
+                Windows.UI.Color.FromArgb(0xF8, 0xF5, 0xF5, 0xF7));
+            var borderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? 
+                Windows.UI.Color.FromArgb(0x55, 0x33, 0x33, 0x38) : 
+                Windows.UI.Color.FromArgb(0x55, 0xD0, 0xD0, 0xD4));
+            var cardBg = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? 
+                Windows.UI.Color.FromArgb(0x30, 0xFF, 0xFF, 0xFF) : 
+                Windows.UI.Color.FromArgb(0x18, 0x00, 0x00, 0x00));
+            var fgBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? 
+                Windows.UI.Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF) : 
+                Windows.UI.Color.FromArgb(0xFF, 0x11, 0x11, 0x11));
+
+            FlyoutRoot.Background = bgBrush;
+            FlyoutRoot.BorderBrush = borderBrush;
+            if (SummaryCard != null) SummaryCard.Background = cardBg;
+
+            LocationText.Foreground = fgBrush;
+            CurrentTempText.Foreground = fgBrush;
+            CurrentConditionText.Foreground = fgBrush;
+
+            try
+            {
+                if (Application.Current.Resources.TryGetValue("NdotFontFamily", out var fontObj) && fontObj is Microsoft.UI.Xaml.Media.FontFamily ndot)
+                {
+                    CurrentTempText.FontFamily = ndot;
+                    LocationText.FontFamily = ndot;
+                }
+            }
+            catch { }
+        }
+
         if (_viewModel.CurrentWeather != null)
         {
             CurrentTempText.Text = _viewModel.CurrentWeather.TemperatureText;
             CurrentConditionText.Text = _viewModel.CurrentWeather.ConditionText;
             CurrentFeelsLikeText.Text = _viewModel.CurrentWeather.FeelsLikeText;
 
-            // Nạp icon SVG
-            bool svgLoaded = false;
-            try
-            {
-                string? iconPath = _viewModel.CurrentWeather.SvgIconPath;
-                if (!string.IsNullOrEmpty(iconPath))
-                {
-                    var svgSource = new Microsoft.UI.Xaml.Media.Imaging.SvgImageSource(new Uri(iconPath))
-                    {
-                        RasterizePixelWidth = 72,
-                        RasterizePixelHeight = 72
-                    };
-                    svgSource.OpenFailed += (s, e) =>
-                    {
-                        CurrentSvgImage.Visibility = Visibility.Collapsed;
-                        CurrentFallbackIcon.Visibility = Visibility.Visible;
-                    };
-                    CurrentSvgImage.Source = svgSource;
-                    CurrentSvgImage.Visibility = Visibility.Visible;
-                    CurrentFallbackIcon.Visibility = Visibility.Collapsed;
-                    svgLoaded = true;
-                }
-            }
-            catch { }
-
-            if (!svgLoaded)
+            if (isNothing && !string.IsNullOrEmpty(_viewModel.CurrentWeather.NothingGlyph))
             {
                 CurrentSvgImage.Visibility = Visibility.Collapsed;
-                CurrentFallbackIcon.Glyph = string.IsNullOrEmpty(_viewModel.CurrentWeather.IconGlyph) ? "\uf185" : _viewModel.CurrentWeather.IconGlyph;
-                CurrentFallbackIcon.Visibility = Visibility.Visible;
+                CurrentFallbackIcon.Visibility = Visibility.Collapsed;
+                CurrentNothingIcon.Glyph = _viewModel.CurrentWeather.NothingGlyph;
+                CurrentNothingIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF) : Windows.UI.Color.FromArgb(0xFF, 0x11, 0x11, 0x11));
+                CurrentNothingIcon.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                CurrentNothingIcon.Visibility = Visibility.Collapsed;
+                // Nạp icon SVG
+                bool svgLoaded = false;
+                try
+                {
+                    string? iconPath = _viewModel.CurrentWeather.SvgIconPath;
+                    if (!string.IsNullOrEmpty(iconPath))
+                    {
+                        var svgSource = new Microsoft.UI.Xaml.Media.Imaging.SvgImageSource(new Uri(iconPath))
+                        {
+                            RasterizePixelWidth = 72,
+                            RasterizePixelHeight = 72
+                        };
+                        svgSource.OpenFailed += (s, e) =>
+                        {
+                            CurrentSvgImage.Visibility = Visibility.Collapsed;
+                            CurrentFallbackIcon.Visibility = Visibility.Visible;
+                        };
+                        CurrentSvgImage.Source = svgSource;
+                        CurrentSvgImage.Visibility = Visibility.Visible;
+                        CurrentFallbackIcon.Visibility = Visibility.Collapsed;
+                        svgLoaded = true;
+                    }
+                }
+                catch { }
+
+                if (!svgLoaded)
+                {
+                    CurrentSvgImage.Visibility = Visibility.Collapsed;
+                    CurrentFallbackIcon.Glyph = string.IsNullOrEmpty(_viewModel.CurrentWeather.IconGlyph) ? "\uf185" : _viewModel.CurrentWeather.IconGlyph;
+                    CurrentFallbackIcon.Visibility = Visibility.Visible;
+                }
             }
         }
 

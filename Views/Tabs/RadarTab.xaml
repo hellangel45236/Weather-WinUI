@@ -209,7 +209,7 @@
                     <StackPanel Spacing="6">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
                             <Border Grid.Column="0" Width="30" Height="30" CornerRadius="8" Background="#20059669" BorderBrush="#40059669" BorderThickness="1">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" Foreground="#10B981" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <FontIcon x:Name="RadarPod1Icon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf72e;" Foreground="#10B981" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.RadarWindBeaufort, Mode=OneWay}" FontSize="12" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap"/>
                         </Grid>
@@ -223,7 +223,7 @@
                     <StackPanel Spacing="6">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
                             <Border Grid.Column="0" Width="30" Height="30" CornerRadius="8" Background="#207C3AED" BorderBrush="#407C3AED" BorderThickness="1">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf14e;" Foreground="#A78BFA" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <FontIcon x:Name="RadarPod2Icon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf14e;" Foreground="#A78BFA" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.RadarAtmPressure, Mode=OneWay}" FontSize="12" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap"/>
                         </Grid>
@@ -237,7 +237,7 @@
                     <StackPanel Spacing="6">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
                             <Border Grid.Column="0" Width="30" Height="30" CornerRadius="8" Background="#200284C7" BorderBrush="#400284C7" BorderThickness="1">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" Foreground="#38BDF8" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <FontIcon x:Name="RadarPod3Icon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" Foreground="#38BDF8" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.RadarMaxReflectivity, Mode=OneWay}" FontSize="12" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap"/>
                         </Grid>
@@ -251,7 +251,7 @@
                     <StackPanel Spacing="6">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
                             <Border Grid.Column="0" Width="30" Height="30" CornerRadius="8" Background="#2010B981" BorderBrush="#4010B981" BorderThickness="1">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e7;" Foreground="#10B981" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <FontIcon x:Name="RadarPod4Icon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e7;" Foreground="#10B981" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Loc.RadarDisasterRisk, Mode=OneWay}" FontSize="12" Opacity="0.8" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap"/>
                         </Grid>

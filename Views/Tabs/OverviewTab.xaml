@@ -767,7 +767,7 @@
                                                 </Border>
                                                 <TextBlock Text="{x:Bind ViewModel.Loc.AiBriefingHeader, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold" Foreground="#38BDF8" TextTrimming="CharacterEllipsis"/>
                                             </StackPanel>
-                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.SmartSummaryText, Mode=OneWay}" FontSize="12.5" Foreground="White" TextWrapping="Wrap" MaxLines="3" TextTrimming="CharacterEllipsis" LineHeight="18"/>
+                                            <TextBlock x:Name="AiBriefingSummaryText" Text="{x:Bind ViewModel.CurrentWeather.SmartSummaryText, Mode=OneWay}" FontSize="12.5" Foreground="White" TextWrapping="Wrap" MaxLines="3" TextTrimming="CharacterEllipsis" LineHeight="18"/>
 
                                             <!-- Hàng 3 Smart Action Pills trực quan (Quick Scannable Intelligence) -->
                                             <ItemsControl ItemsSource="{x:Bind ViewModel.QuickAdvicePills, Mode=OneWay}" Margin="0,3,0,0">

@@ -172,7 +172,7 @@ public partial class MainViewModel : ObservableObject
     private readonly PowerManagementService _powerService = new();
 
     [ObservableProperty]
-    private string _appVersionDisplay = "v3.5.1 Official";
+    private string _appVersionDisplay = "v3.5.2 Official";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(GpsButtonBackground))]
@@ -2574,6 +2574,7 @@ public partial class MainViewModel : ObservableObject
 
             var (condText, glyph) = WeatherCodeHelper.GetConditionInfo(code, true);
             item.WeatherIconGlyph = glyph;
+            item.NothingGlyph = WeatherCodeHelper.GetNothingWeatherGlyph(code, true);
             item.WeatherCondition = condText;
             item.TempMax = displayMax;
             item.TempMin = displayMin;

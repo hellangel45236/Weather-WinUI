@@ -232,11 +232,14 @@ public sealed partial class WidgetWindow : Window
 
             SetWindowPos(hWnd, IntPtr.Zero, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 
-            int noBorderColor = DWMWA_COLOR_NONE;
-            DwmSetWindowAttribute(hWnd, DWMWA_BORDER_COLOR, ref noBorderColor, sizeof(int));
+            if (Environment.OSVersion.Version.Build >= 22000)
+            {
+                int noBorderColor = DWMWA_COLOR_NONE;
+                DwmSetWindowAttribute(hWnd, DWMWA_BORDER_COLOR, ref noBorderColor, sizeof(int));
 
-            int roundPref = DWMWCP_DONOTROUND;
-            DwmSetWindowAttribute(hWnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref roundPref, sizeof(int));
+                int roundPref = DWMWCP_DONOTROUND;
+                DwmSetWindowAttribute(hWnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref roundPref, sizeof(int));
+            }
         }
         catch { }
     }
@@ -370,8 +373,10 @@ public sealed partial class WidgetWindow : Window
         bool isRetroLcd = style == "RetroLcd";
         bool isNothingBento = style == "NothingBento";
         bool isNothingSquare = style == "NothingSquare";
+        bool isNothingCircular = style == "NothingCircular";
+        bool isNothingPill = style == "NothingPill";
 
-        if (!isBryanC && !isIsland && !isCompact && !isGlass && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare)
+        if (!isBryanC && !isIsland && !isCompact && !isGlass && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare && !isNothingCircular && !isNothingPill)
         {
             isBryanC = true;
             _currentStyle = "BryanCDynamic";
@@ -387,8 +392,19 @@ public sealed partial class WidgetWindow : Window
         if (RetroLcdView != null) RetroLcdView.Visibility = isRetroLcd ? Visibility.Visible : Visibility.Collapsed;
         if (NothingBentoView != null) NothingBentoView.Visibility = isNothingBento ? Visibility.Visible : Visibility.Collapsed;
         if (NothingSquareView != null) NothingSquareView.Visibility = isNothingSquare ? Visibility.Visible : Visibility.Collapsed;
+        if (NothingCircularView != null) NothingCircularView.Visibility = isNothingCircular ? Visibility.Visible : Visibility.Collapsed;
+        if (NothingPillView != null) NothingPillView.Visibility = isNothingPill ? Visibility.Visible : Visibility.Collapsed;
 
-        int cornerRadiusDip = (isNothingBento) ? 24 : (isNothingSquare ? 22 : ((isBryanC || isIsland || isSeasonal || isBentoVivid || isBentoTactical) ? 20 : (isRetroLcd ? 16 : 14)));
+        int cornerRadiusDip = style switch
+        {
+            "NothingCircular" => 98,
+            "NothingPill" => 22,
+            "NothingBento" => 24,
+            "NothingSquare" => 22,
+            "RetroLcd" => 16,
+            "GlassCard" => 14,
+            _ => 20
+        };
         WidgetRoot.CornerRadius = new CornerRadius(cornerRadiusDip);
 
         IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
@@ -396,8 +412,35 @@ public sealed partial class WidgetWindow : Window
         if (dpi == 0) dpi = 96;
         double scale = dpi / 96.0;
 
-        int widthDip = (isNothingBento) ? 320 : (isNothingSquare ? 190 : ((isBentoVivid || isBentoTactical) ? 365 : (isRetroLcd ? 265 : (isSeasonal ? 385 : (isBryanC ? 340 : (isIsland ? 290 : (isCompact ? 300 : 385)))))));
-        int heightDip = (isNothingBento) ? 160 : (isNothingSquare ? 190 : ((isBentoVivid || isBentoTactical) ? 175 : (isRetroLcd ? 295 : (isSeasonal ? 215 : (isBryanC ? 200 : (isIsland ? 40 : (isCompact ? 54 : 230)))))));
+        int widthDip = style switch
+        {
+            "NothingCircular" => 196,
+            "NothingPill" => 250,
+            "NothingBento" => 320,
+            "NothingSquare" => 190,
+            "BentoVivid" or "BentoTactical" => 365,
+            "RetroLcd" => 265,
+            "SeasonalCard" => 385,
+            "BryanCDynamic" => 340,
+            "MiniIsland" => 290,
+            "Compact" => 300,
+            _ => 385
+        };
+
+        int heightDip = style switch
+        {
+            "NothingCircular" => 196,
+            "NothingPill" => 48,
+            "NothingBento" => 160,
+            "NothingSquare" => 190,
+            "BentoVivid" or "BentoTactical" => 175,
+            "RetroLcd" => 295,
+            "SeasonalCard" => 215,
+            "BryanCDynamic" => 200,
+            "MiniIsland" => 40,
+            "Compact" => 54,
+            _ => 230
+        };
 
         int physicalWidth = (int)Math.Round(widthDip * scale);
         int physicalHeight = (int)Math.Round(heightDip * scale);
@@ -422,13 +465,13 @@ public sealed partial class WidgetWindow : Window
         {
             ApplyBryanCWeatherTheme(_currentWeather.WeatherEffect, _currentWeather.IsDay);
         }
-        else if (isBentoVivid || isBentoTactical || isRetroLcd || isNothingBento || isNothingSquare)
+        else if (isBentoVivid || isBentoTactical || isRetroLcd || isNothingBento || isNothingSquare || isNothingCircular || isNothingPill)
         {
             WidgetRoot.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
             WidgetRoot.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
             UpdateWidgetData();
         }
-        else if (!isBryanC && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare)
+        else if (!isBryanC && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare && !isNothingCircular && !isNothingPill)
         {
             // Khôi phục background kính tối chuẩn cho GlassCard/Compact
             var brush = new Microsoft.UI.Xaml.Media.LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
@@ -454,7 +497,9 @@ public sealed partial class WidgetWindow : Window
             "BentoTactical" => "RetroLcd",
             "RetroLcd" => "NothingBento",
             "NothingBento" => "NothingSquare",
-            "NothingSquare" => "SeasonalCard",
+            "NothingSquare" => "NothingCircular",
+            "NothingCircular" => "NothingPill",
+            "NothingPill" => "SeasonalCard",
             _ => "BryanCDynamic"
         };
 
@@ -948,6 +993,20 @@ public sealed partial class WidgetWindow : Window
         if (NothingSquareAqiText != null) NothingSquareAqiText.Text = $"{aqiVal}";
         if (NothingSquareHumText != null) NothingSquareHumText.Text = $"{humVal}%";
         if (NothingSquareWindText != null) NothingSquareWindText.Text = $"{_currentWeather.WindSpeedValue:F0}k";
+
+        if (NothingCircularCityText != null) NothingCircularCityText.Text = nothingCity;
+        if (NothingCircularWeatherIcon != null && !string.IsNullOrEmpty(_currentWeather.NothingGlyph))
+            NothingCircularWeatherIcon.Glyph = _currentWeather.NothingGlyph;
+        if (NothingCircularTempText != null) NothingCircularTempText.Text = tempOnly;
+        if (NothingCircularConditionText != null) NothingCircularConditionText.Text = _currentWeather.ConditionText.ToUpperInvariant();
+        if (NothingCircularAqiText != null) NothingCircularAqiText.Text = $"AQI {aqiVal}";
+        if (NothingCircularWindText != null) NothingCircularWindText.Text = $"{_currentWeather.WindSpeedValue:F0} km/h";
+
+        if (NothingPillCityText != null) NothingPillCityText.Text = nothingCity;
+        if (NothingPillWeatherIcon != null && !string.IsNullOrEmpty(_currentWeather.NothingGlyph))
+            NothingPillWeatherIcon.Glyph = _currentWeather.NothingGlyph;
+        if (NothingPillTempText != null) NothingPillTempText.Text = tempOnly;
+        if (NothingPillAqiText != null) NothingPillAqiText.Text = $"AQI {aqiVal}";
 
         double windMs = 8.0;
         if (_currentWeather.WindSpeedValue > 0) windMs = _currentWeather.WindSpeedValue / 3.6;

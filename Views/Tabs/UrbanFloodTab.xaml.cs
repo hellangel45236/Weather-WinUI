@@ -569,4 +569,27 @@ public sealed partial class UrbanFloodTab : UserControl
     }
 
     #endregion
+
+    public void UpdateNothingVisuals()
+    {
+        bool isNothing = ViewModel?.IsNothingDesign == true;
+        var ndotFont = Application.Current.Resources.TryGetValue("NdotFontFamily", out var nf)
+            ? (FontFamily)nf
+            : new FontFamily("Assets/Fonts/Ndot77JPExtended.ttf#Ndot77JPExtended, Cascadia Mono");
+        var faFont = Application.Current.Resources.TryGetValue("FontAwesomeSolid", out var ff)
+            ? (FontFamily)ff
+            : new FontFamily("ms-appx:///Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid");
+
+        if (isNothing)
+        {
+            if (FloodPod1Icon != null) { FloodPod1Icon.FontFamily = ndotFont; FloodPod1Icon.Glyph = Helpers.NothingGlyphs.Waves; }
+            if (FloodPod4Icon != null) { FloodPod4Icon.FontFamily = ndotFont; FloodPod4Icon.Glyph = Helpers.NothingGlyphs.House; }
+        }
+        else
+        {
+            if (FloodPod1Icon != null) { FloodPod1Icon.FontFamily = faFont; FloodPod1Icon.Glyph = "\uf773"; }
+            if (FloodPod4Icon != null) { FloodPod4Icon.FontFamily = faFont; FloodPod4Icon.Glyph = "\uf018"; }
+        }
+        RenderTidalSineWave();
+    }
 }

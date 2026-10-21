@@ -917,4 +917,31 @@ public sealed partial class RadarTab : UserControl
     }
 
     #endregion
+
+    public void UpdateNothingVisuals()
+    {
+        bool isNothing = ViewModel?.IsNothingDesign == true;
+        var ndotFont = Application.Current.Resources.TryGetValue("NdotFontFamily", out var nf)
+            ? (Microsoft.UI.Xaml.Media.FontFamily)nf
+            : new Microsoft.UI.Xaml.Media.FontFamily("Assets/Fonts/Ndot77JPExtended.ttf#Ndot77JPExtended, Cascadia Mono");
+        var faFont = Application.Current.Resources.TryGetValue("FontAwesomeSolid", out var ff)
+            ? (Microsoft.UI.Xaml.Media.FontFamily)ff
+            : new Microsoft.UI.Xaml.Media.FontFamily("ms-appx:///Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid");
+
+        if (isNothing)
+        {
+            if (RadarPod1Icon != null) { RadarPod1Icon.FontFamily = ndotFont; RadarPod1Icon.Glyph = Helpers.NothingGlyphs.GpsTarget; }
+            if (RadarPod2Icon != null) { RadarPod2Icon.FontFamily = ndotFont; RadarPod2Icon.Glyph = Helpers.NothingGlyphs.RadarTarget; }
+            if (RadarPod3Icon != null) { RadarPod3Icon.FontFamily = ndotFont; RadarPod3Icon.Glyph = Helpers.NothingGlyphs.EyeVisibility; }
+            if (RadarPod4Icon != null) { RadarPod4Icon.FontFamily = ndotFont; RadarPod4Icon.Glyph = Helpers.NothingGlyphs.RainCluster; }
+        }
+        else
+        {
+            if (RadarPod1Icon != null) { RadarPod1Icon.FontFamily = faFont; RadarPod1Icon.Glyph = "\uf72e"; }
+            if (RadarPod2Icon != null) { RadarPod2Icon.FontFamily = faFont; RadarPod2Icon.Glyph = "\uf14e"; }
+            if (RadarPod3Icon != null) { RadarPod3Icon.FontFamily = faFont; RadarPod3Icon.Glyph = "\uf57d"; }
+            if (RadarPod4Icon != null) { RadarPod4Icon.FontFamily = faFont; RadarPod4Icon.Glyph = "\uf0e7"; }
+        }
+        RenderRadarSimulation();
+    }
 }

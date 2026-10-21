@@ -39,7 +39,7 @@
                         </StackPanel>
                         <Border Visibility="{x:Bind ViewModel.IsNothingDesign, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                 Background="#D71921" CornerRadius="6" Padding="6,2" VerticalAlignment="Center" Margin="4,0,0,0">
-                            <TextBlock Text="NOTHING EDITION // v3.5.1" FontSize="9" FontWeight="Bold" Foreground="White" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
+                            <TextBlock Text="NOTHING EDITION // v3.5.2" FontSize="9" FontWeight="Bold" Foreground="White" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
                         </Border>
                     </StackPanel>
 

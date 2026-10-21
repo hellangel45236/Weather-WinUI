@@ -51,12 +51,68 @@ public sealed partial class MainPage : Page
             if (e.Key == Windows.System.VirtualKey.F11)
             {
                 ViewModel.ToggleZenModeCommand.Execute(null);
+                Helpers.MechanicalSoundHelper.PlayClick();
                 e.Handled = true;
+                return;
             }
-            else if (e.Key == Windows.System.VirtualKey.Escape && ViewModel.IsZenModeOpen)
+            if (e.Key == Windows.System.VirtualKey.Escape && ViewModel.IsZenModeOpen)
             {
                 ViewModel.CloseZenModeCommand.Execute(null);
+                Helpers.MechanicalSoundHelper.PlayClick();
                 e.Handled = true;
+                return;
+            }
+
+            // Neu dang go chu trong o nhap lieu thi bo qua phim tat
+            if (IsTextInputActive()) return;
+
+            switch (e.Key)
+            {
+                case Windows.System.VirtualKey.Number1:
+                case Windows.System.VirtualKey.NumberPad1:
+                    SelectNavigationTabByTag("overview");
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Number2:
+                case Windows.System.VirtualKey.NumberPad2:
+                    SelectNavigationTabByTag("flood");
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Number3:
+                case Windows.System.VirtualKey.NumberPad3:
+                    SelectNavigationTabByTag("radar");
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Number4:
+                case Windows.System.VirtualKey.NumberPad4:
+                    SelectNavigationTabByTag("lifestyle");
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Number5:
+                case Windows.System.VirtualKey.NumberPad5:
+                    SelectNavigationTabByTag("calendar");
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Number6:
+                case Windows.System.VirtualKey.NumberPad6:
+                    SelectNavigationTabByTag("widget");
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Number7:
+                case Windows.System.VirtualKey.NumberPad7:
+                    SelectNavigationTabByTag("settings");
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.R:
+                    ViewModel.RefreshCommand.Execute(null);
+                    Helpers.MechanicalSoundHelper.PlayShutter();
+                    e.Handled = true;
+                    break;
+                case Windows.System.VirtualKey.Z:
+                    ViewModel.ToggleZenModeCommand.Execute(null);
+                    Helpers.MechanicalSoundHelper.PlayClick();
+                    e.Handled = true;
+                    break;
             }
         };
 
@@ -76,6 +132,8 @@ public sealed partial class MainPage : Page
                     ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
                     UpdateSeasonalThemeButtonStyle();
                     TabOverview?.UpdateNothingThemeVisuals();
+                (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
+                (FindName(nameof(TabFlood)) as Views.Tabs.UrbanFloodTab)?.UpdateNothingVisuals();
                     TabOverview?.UpdateWeatherVisuals();
                     TabOverview?.RedrawCanvases();
                 });
@@ -85,6 +143,8 @@ public sealed partial class MainPage : Page
                 ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
                 UpdateSeasonalThemeButtonStyle();
                 TabOverview?.UpdateNothingThemeVisuals();
+                (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
+                (FindName(nameof(TabFlood)) as Views.Tabs.UrbanFloodTab)?.UpdateNothingVisuals();
                 TabOverview?.UpdateWeatherVisuals();
                 TabOverview?.RedrawCanvases();
             };
@@ -98,6 +158,8 @@ public sealed partial class MainPage : Page
                     ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
                     UpdateSeasonalThemeButtonStyle();
                     TabOverview?.UpdateNothingThemeVisuals();
+                (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
+                (FindName(nameof(TabFlood)) as Views.Tabs.UrbanFloodTab)?.UpdateNothingVisuals();
                     TabOverview?.UpdateWeatherVisuals();
                     TabOverview?.RedrawCanvases();
                 });
@@ -106,6 +168,8 @@ public sealed partial class MainPage : Page
             {
                 ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
                 TabOverview?.UpdateNothingThemeVisuals();
+                (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
+                (FindName(nameof(TabFlood)) as Views.Tabs.UrbanFloodTab)?.UpdateNothingVisuals();
                 TabOverview?.UpdateWeatherVisuals();
                 TabOverview?.RedrawCanvases();
             };
@@ -133,6 +197,8 @@ public sealed partial class MainPage : Page
                     UpdateZenGradientColor();
                     UpdateSeasonalThemeButtonStyle();
                     TabOverview?.UpdateNothingThemeVisuals();
+                (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
+                (FindName(nameof(TabFlood)) as Views.Tabs.UrbanFloodTab)?.UpdateNothingVisuals();
                     TabOverview?.UpdateWeatherVisuals();
                     TabOverview?.RedrawCanvases();
                     if (_zenEffectRenderer != null && skin != null)
@@ -573,6 +639,31 @@ public sealed partial class MainPage : Page
         }
     }
 
+    private bool IsTextInputActive()
+    {
+        try
+        {
+            if (this.XamlRoot == null) return false;
+            var focused = Microsoft.UI.Xaml.Input.FocusManager.GetFocusedElement(this.XamlRoot);
+            return focused is TextBox || focused is AutoSuggestBox || focused is PasswordBox;
+        }
+        catch { return false; }
+    }
+
+    public void SelectNavigationTabByTag(string targetTab)
+    {
+        if (MainNavView == null) return;
+        var allItems = MainNavView.MenuItems.OfType<NavigationViewItem>().Concat(MainNavView.FooterMenuItems.OfType<NavigationViewItem>());
+        foreach (var item in allItems)
+        {
+            if (string.Equals(item.Tag?.ToString(), targetTab, StringComparison.OrdinalIgnoreCase))
+            {
+                MainNavView.SelectedItem = item;
+                break;
+            }
+        }
+    }
+
     #region Tab Navigation & Lazy Realization
 
     private void MainNavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -857,6 +948,8 @@ public sealed partial class MainPage : Page
                     }
                 }
                 TabOverview?.UpdateNothingThemeVisuals();
+                (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
+                (FindName(nameof(TabFlood)) as Views.Tabs.UrbanFloodTab)?.UpdateNothingVisuals();
             }
             else
             {

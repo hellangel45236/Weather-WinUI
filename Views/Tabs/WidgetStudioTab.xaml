@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="WeatherApp.Views.Tabs.WidgetStudioTab"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -39,7 +39,7 @@
             </Border>
 
             <!-- ==================== BỘ SƯU TẬP 4 KIỂU DÁNG WIDGET TRỰC QUAN ==================== -->
-            <Grid x:Name="GalleryGrid" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="16">
+            <Grid x:Name="GalleryGrid" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="16">
                 <!-- 1. BRYAN C DYNAMIC CARD -->
                 <Border x:Name="CardWidgetBryanC" Grid.Row="0" Grid.Column="0"
                         PointerPressed="CardWidgetBryanC_PointerPressed"
@@ -351,6 +351,41 @@
                             <Border x:Name="BadgeWidgetRetroLcd" Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="10" Padding="8,2" Visibility="Collapsed">
                                 <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioSelected, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
                             </Border>
+                        </Grid>
+
+                        <!-- Mockup Box -->
+                        <Border Height="148" CornerRadius="14" Background="#6E826F" BorderBrush="#506151" BorderThickness="2" Padding="14,10">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                                <!-- Left Primary LCD Mockup -->
+                                <Border Grid.Column="0" CornerRadius="10" Background="#A2B79E" BorderBrush="#5E725F" BorderThickness="1.5" Padding="12,8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="WEATHER COMPUTER" FontSize="8.5" FontWeight="Bold" Foreground="#19231B" Opacity="0.7"/>
+                                            <TextBlock Text="22&#176;C" FontSize="36" FontWeight="ExtraBold" Foreground="#19231B"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Spacing="2">
+                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c2;" FontSize="24" Foreground="#19231B"/>
+                                            <TextBlock Text="///" FontSize="14" FontWeight="Bold" Foreground="#19231B" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Right Secondary LCD & Telemetry -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6" Width="140">
+                                    <Border CornerRadius="8" Background="#A2B79E" BorderBrush="#5E725F" BorderThickness="1.5" Padding="8,4">
+                                        <TextBlock Text="WIND - 8 M/S" FontSize="12" FontWeight="ExtraBold" Foreground="#19231B" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="UF INDEX: 3" FontSize="10" FontWeight="Bold" Foreground="#E2E8F0"/>
+                                        <TextBlock Text="PRESSURE: 1013 HPA" FontSize="10" FontWeight="Bold" Foreground="#E2E8F0"/>
+                                        <TextBlock Text="FALLOUT: CLEAR" FontSize="10" FontWeight="Bold" Foreground="#34D399"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioRetroLcdDesc, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
+                    </StackPanel>
+                </Border>
 
                 <!-- 8. NOTHING BENTO CAPSULE CARD -->
                 <Border x:Name="CardWidgetNothingBento" Grid.Row="4" Grid.Column="0"
@@ -454,39 +489,81 @@
                         <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioNothingSquareDesc, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
                     </StackPanel>
                 </Border>
+                <!-- 10. NOTHING CIRCULAR DIAL CARD (v3.5.2) -->
+                <Border x:Name="CardWidgetNothingCircular" Grid.Row="5" Grid.Column="0"
+                        PointerPressed="CardWidgetNothingCircular_PointerPressed"
+                        PointerEntered="Card_PointerEntered"
+                        PointerExited="Card_PointerExited"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="16">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioNothingCircularTitle, Mode=OneWay}" FontWeight="Bold" FontSize="14"/>
+                            </StackPanel>
+                            <Border x:Name="BadgeWidgetNothingCircular" Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="10" Padding="8,2" Visibility="Collapsed">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioSelected, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                            </Border>
                         </Grid>
 
                         <!-- Mockup Box -->
-                        <Border Height="148" CornerRadius="14" Background="#6E826F" BorderBrush="#506151" BorderThickness="2" Padding="14,10">
-                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                                <!-- Left Primary LCD Mockup -->
-                                <Border Grid.Column="0" CornerRadius="10" Background="#A2B79E" BorderBrush="#5E725F" BorderThickness="1.5" Padding="12,8">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="WEATHER COMPUTER" FontSize="8.5" FontWeight="Bold" Foreground="#19231B" Opacity="0.7"/>
-                                            <TextBlock Text="22&#176;C" FontSize="36" FontWeight="ExtraBold" Foreground="#19231B"/>
+                        <Border Height="148" CornerRadius="14" Background="#0C0C0E" BorderBrush="#252529" BorderThickness="1.5" Padding="14,10">
+                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Border Width="120" Height="120" CornerRadius="60" Background="#141417" BorderBrush="#26262A" BorderThickness="1.5">
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="2">
+                                        <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
+                                            <Ellipse Width="4" Height="4" Fill="#D71921"/>
+                                            <TextBlock Text="DIAL 1:1" FontSize="8.5" FontWeight="Bold" Foreground="#888888" FontFamily="Consolas"/>
                                         </StackPanel>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Spacing="2">
-                                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c2;" FontSize="24" Foreground="#19231B"/>
-                                            <TextBlock Text="///" FontSize="14" FontWeight="Bold" Foreground="#19231B" HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-
-                                <!-- Right Secondary LCD & Telemetry -->
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6" Width="140">
-                                    <Border CornerRadius="8" Background="#A2B79E" BorderBrush="#5E725F" BorderThickness="1.5" Padding="8,4">
-                                        <TextBlock Text="WIND - 8 M/S" FontSize="12" FontWeight="ExtraBold" Foreground="#19231B" HorizontalAlignment="Center"/>
-                                    </Border>
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Text="UF INDEX: 3" FontSize="10" FontWeight="Bold" Foreground="#E2E8F0"/>
-                                        <TextBlock Text="PRESSURE: 1013 HPA" FontSize="10" FontWeight="Bold" Foreground="#E2E8F0"/>
-                                        <TextBlock Text="FALLOUT: CLEAR" FontSize="10" FontWeight="Bold" Foreground="#34D399"/>
+                                        <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource NdotFontFamily}" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="AQI 42" FontSize="8" FontWeight="Bold" Foreground="#00FF66" FontFamily="Consolas" HorizontalAlignment="Center"/>
                                     </StackPanel>
-                                </StackPanel>
+                                </Border>
                             </Grid>
                         </Border>
-                        <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioRetroLcdDesc, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
+                        <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioNothingCircularDesc, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 11. NOTHING GLANCE PILL CARD (v3.5.2) -->
+                <Border x:Name="CardWidgetNothingPill" Grid.Row="5" Grid.Column="1"
+                        PointerPressed="CardWidgetNothingPill_PointerPressed"
+                        PointerEntered="Card_PointerEntered"
+                        PointerExited="Card_PointerExited"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="16">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioNothingPillTitle, Mode=OneWay}" FontWeight="Bold" FontSize="14"/>
+                            </StackPanel>
+                            <Border x:Name="BadgeWidgetNothingPill" Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="10" Padding="8,2" Visibility="Collapsed">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioSelected, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                            </Border>
+                        </Grid>
+
+                        <!-- Mockup Box -->
+                        <Border Height="148" CornerRadius="14" Background="#0C0C0E" BorderBrush="#252529" BorderThickness="1.5" Padding="14,10">
+                            <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Border Width="220" Height="40" CornerRadius="20" Background="#141417" BorderBrush="#26262A" BorderThickness="1" Padding="12,0">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                            <Ellipse Width="5" Height="5" Fill="#D71921"/>
+                                            <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="15" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource NdotFontFamily}"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="GLANCE" FontSize="9" FontWeight="Bold" Foreground="#888888" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="AQI 42" FontSize="8.5" FontWeight="Bold" Foreground="#00FF66" FontFamily="Consolas"/>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioNothingPillDesc, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -994,6 +1071,8 @@
                                 <ComboBoxItem Content="&#x1F4DF; Retro Cyber LCD Computer" Tag="RetroLcd"/>
                                 <ComboBoxItem Content="&#x26AB; Nothing Bento (Capsule 2:1)" Tag="NothingBento"/>
                                 <ComboBoxItem Content="&#x25FD; Nothing Square (Minimal 1:1)" Tag="NothingSquare"/>
+                                <ComboBoxItem Content="&#x2B55; Nothing Circular (Dial 1:1)" Tag="NothingCircular"/>
+                                <ComboBoxItem Content="&#x1F48A; Nothing Glance (Pill Bar)" Tag="NothingPill"/>
                             </ComboBox>
                         </StackPanel>
 

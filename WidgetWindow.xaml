@@ -1222,6 +1222,73 @@
                         </Grid>
                     </Border>
                 </Grid>
+
+                <!-- ==================== STYLE 11: NOTHING CIRCULAR DIAL (v3.5.2) ==================== -->
+                <Grid x:Name="NothingCircularView" Visibility="Collapsed" Padding="6">
+                    <Border Width="184" Height="184" CornerRadius="92" Background="#0C0C0E" BorderBrush="#252529" BorderThickness="1.5"
+                            PointerPressed="WidgetRoot_PointerPressed">
+                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <!-- Vong tron kim cu ly / Track -->
+                            <Ellipse Width="170" Height="170" Stroke="#1E1E22" StrokeThickness="1" StrokeDashArray="2,3"/>
+
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="1">
+                                <!-- Location & Red Dot -->
+                                <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
+                                    <Ellipse Width="5" Height="5" Fill="#D71921"/>
+                                    <TextBlock x:Name="NothingCircularCityText" Text="HANOI [HAN]" FontSize="9" FontWeight="Bold" Foreground="#888888" FontFamily="Consolas"/>
+                                </StackPanel>
+
+                                <!-- Weather Icon & Huge Temp -->
+                                <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center" Margin="0,2,0,0">
+                                    <FontIcon x:Name="NothingCircularWeatherIcon" FontFamily="{StaticResource NdotFontFamily}" Glyph="&#xF1964;" FontSize="22" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="NothingCircularTempText" Text="31" FontSize="38" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource NdotFontFamily}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="&#176;" FontSize="20" FontWeight="Bold" Foreground="#D71921" FontFamily="{StaticResource NdotFontFamily}" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                                </StackPanel>
+
+                                <!-- Condition -->
+                                <TextBlock x:Name="NothingCircularConditionText" Text="THUNDERSTORM" FontSize="9" FontWeight="SemiBold" Foreground="#CCCCCC" HorizontalAlignment="Center" FontFamily="{StaticResource NdotFontFamily}" TextTrimming="CharacterEllipsis" MaxWidth="130"/>
+
+                                <!-- Telemetry Pill: AQI & Wind -->
+                                <Border Background="#161619" BorderBrush="#26262A" BorderThickness="1" CornerRadius="8" Padding="6,2" Margin="0,3,0,0" HorizontalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                        <TextBlock x:Name="NothingCircularAqiText" Text="AQI 42" FontSize="8.5" FontWeight="Bold" Foreground="#00FF66" FontFamily="Consolas"/>
+                                        <TextBlock Text="&#8226;" FontSize="8" Foreground="#555555"/>
+                                        <TextBlock x:Name="NothingCircularWindText" Text="12 km/h" FontSize="8.5" Foreground="#CCCCCC" FontFamily="Consolas"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- ==================== STYLE 12: NOTHING GLANCE PILL (v3.5.2) ==================== -->
+                <Grid x:Name="NothingPillView" Visibility="Collapsed" Padding="2">
+                    <Border Width="246" Height="44" CornerRadius="22" Background="#0C0C0E" BorderBrush="#252529" BorderThickness="1.5" Padding="12,0"
+                            PointerPressed="WidgetRoot_PointerPressed">
+                        <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
+                            <!-- Red dot + Icon -->
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <Ellipse Width="6" Height="6" Fill="#D71921"/>
+                                <FontIcon x:Name="NothingPillWeatherIcon" FontFamily="{StaticResource NdotFontFamily}" Glyph="&#xF1964;" FontSize="18" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <!-- Temperature -->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="1" VerticalAlignment="Center">
+                                <TextBlock x:Name="NothingPillTempText" Text="31" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource NdotFontFamily}" VerticalAlignment="Center"/>
+                                <TextBlock Text="&#176;C" FontSize="11" FontWeight="Bold" Foreground="#D71921" FontFamily="{StaticResource NdotFontFamily}" VerticalAlignment="Top" Margin="0,1,0,0"/>
+                            </StackPanel>
+
+                            <!-- Divider -->
+                            <Border Grid.Column="2" Width="1" Height="18" Background="#26262A" HorizontalAlignment="Center"/>
+
+                            <!-- Telemetry: City & AQI -->
+                            <StackPanel Grid.Column="3" VerticalAlignment="Center" Spacing="0">
+                                <TextBlock x:Name="NothingPillCityText" Text="HANOI" FontSize="9" FontWeight="Bold" Foreground="#888888" FontFamily="Consolas"/>
+                                <TextBlock x:Name="NothingPillAqiText" Text="AQI 42" FontSize="8.5" FontWeight="Bold" Foreground="#00FF66" FontFamily="Consolas"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
             </Grid>
         </Border>
     </Grid>

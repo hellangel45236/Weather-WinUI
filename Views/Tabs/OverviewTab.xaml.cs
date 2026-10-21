@@ -40,6 +40,9 @@ public sealed partial class OverviewTab : UserControl
     private Storyboard? _aqiDotStoryboard;
     private double _currentAqiX = -999;
 
+    private DispatcherTimer? _typewriterTimer;
+    private string _fullBriefingText = string.Empty;
+    private int _typewriterIndex = 0;
     private bool _hoverPhysicsInitialized = false;
 
     // Hiệu ứng thở hào quang Ambient Backlight Glow (v3.1.0)
@@ -312,6 +315,31 @@ public sealed partial class OverviewTab : UserControl
         _weatherEffectRenderer?.Pause();
         StopHeroIconAnimation();
         StopAmbientGlowAnimation();
+    }
+
+    public void StartBriefingTypewriter(string? text)
+    {
+        if (AiBriefingSummaryText == null || string.IsNullOrEmpty(text)) return;
+        _fullBriefingText = text;
+        _typewriterIndex = 0;
+        AiBriefingSummaryText.Text = "";
+
+        _typewriterTimer?.Stop();
+        _typewriterTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(18) };
+        _typewriterTimer.Tick += (s, e) =>
+        {
+            if (_typewriterIndex < _fullBriefingText.Length)
+            {
+                int charsToAdd = Math.Min(3, _fullBriefingText.Length - _typewriterIndex);
+                AiBriefingSummaryText.Text += _fullBriefingText.Substring(_typewriterIndex, charsToAdd);
+                _typewriterIndex += charsToAdd;
+            }
+            else
+            {
+                _typewriterTimer?.Stop();
+            }
+        };
+        _typewriterTimer.Start();
     }
 
     public void UpdateWeatherVisuals()

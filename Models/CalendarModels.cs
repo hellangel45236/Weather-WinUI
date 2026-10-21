@@ -95,6 +95,9 @@ public partial class CalendarDayItem : ObservableObject
     [ObservableProperty]
     private string _uvText = "--";
 
+    [ObservableProperty]
+    private string _nothingGlyph = string.Empty;
+
     // Ghi chú & Sự kiện cá nhân v1.9
     [ObservableProperty]
     private System.Collections.ObjectModel.ObservableCollection<CalendarUserEvent> _userEvents = new();

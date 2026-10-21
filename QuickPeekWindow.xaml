@@ -30,9 +30,10 @@
                 <!-- Header: Vị trí + Nút đóng -->
                 <Grid ColumnDefinitions="*,Auto">
                     <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="13" Foreground="#38BDF8"/>
+                        <Ellipse x:Name="NothingRedDot" Width="6" Height="6" Fill="#D71921" Visibility="Collapsed" VerticalAlignment="Center"/>
+                        <FontIcon x:Name="LocationIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf3c5;" FontSize="13" Foreground="#38BDF8"/>
                         <TextBlock x:Name="LocationText" Text="Đang tải..." FontSize="13" FontWeight="Bold" Foreground="White"/>
-                        <TextBlock Text="• Dự báo 3 ngày" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="SubHeaderTitle" Text="• Dự báo 3 ngày" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <Button x:Name="CloseButton" Click="CloseButton_Click" Background="Transparent" BorderThickness="0" Padding="6,4" CornerRadius="6" Grid.Column="1">
@@ -41,11 +42,12 @@
                 </Grid>
 
                 <!-- Thời tiết hôm nay tóm tắt -->
-                <Border Background="#20FFFFFF" CornerRadius="10" Padding="12,8">
+                <Border x:Name="SummaryCard" Background="#20FFFFFF" CornerRadius="10" Padding="12,8">
                     <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="10" VerticalAlignment="Center">
                         <Grid Grid.Column="0" Width="36" Height="36" VerticalAlignment="Center">
                             <Image x:Name="CurrentSvgImage" Width="36" Height="36" Stretch="Uniform"/>
                             <FontIcon x:Name="CurrentFallbackIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="20" Foreground="#F59E0B" Visibility="Collapsed"/>
+                            <FontIcon x:Name="CurrentNothingIcon" FontFamily="{StaticResource NdotFontFamily}" Glyph="&#xF1964;" FontSize="24" Foreground="#FFFFFF" Visibility="Collapsed"/>
                         </Grid>
                         <TextBlock Grid.Column="1" x:Name="CurrentTempText" Text="--°C" FontSize="26" FontWeight="ExtraBold" Foreground="White" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">

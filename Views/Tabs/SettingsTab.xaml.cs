@@ -108,6 +108,8 @@ public sealed partial class SettingsTab : UserControl
                 DesignLanguageComboBox.SelectedIndex = dl == "Nothing" ? 1 : 0;
             }
 
+            if (MechanicalSoundToggle != null) MechanicalSoundToggle.IsOn = s.EnableMechanicalSound;
+
             // Icon Packs
             UpdateIconPackVisuals(s.SelectedIconPack ?? "Meteocons");
 
@@ -365,6 +367,17 @@ public sealed partial class SettingsTab : UserControl
         if (SeasonalSkinComboBox?.SelectedItem is ComboBoxItem item && item.Tag is string tagStr)
         {
             ViewModel.ChangeSeasonalSkin(tagStr);
+        }
+    }
+
+    private void MechanicalSoundToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null) return;
+        ViewModel.Settings.EnableMechanicalSound = MechanicalSoundToggle?.IsOn ?? true;
+        new Services.SettingsService().SaveSettings(ViewModel.Settings);
+        if (ViewModel.Settings.EnableMechanicalSound)
+        {
+            Helpers.MechanicalSoundHelper.PlayClick();
         }
     }
 
