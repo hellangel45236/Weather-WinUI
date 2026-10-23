@@ -1039,7 +1039,7 @@ public sealed partial class OverviewTab : UserControl
                     Point3 = p2
                 };
                 strokeFigure.Segments.Add(segment);
-                fillFigure.Segments.Add(segment);
+                fillFigure.Segments.Add(new BezierSegment { Point1 = cp1, Point2 = cp2, Point3 = p2 });
             }
 
             fillFigure.Segments.Add(new LineSegment { Point = new Windows.Foundation.Point(points[count - 1].X, canvasHeight) });
@@ -1061,6 +1061,21 @@ public sealed partial class OverviewTab : UserControl
                 Data = fillGeo,
                 Fill = fillBrush
             };
+            foreach (double gy in new[] { topPadding, topPadding + usableHeight * 0.5, topPadding + usableHeight })
+            {
+                var guideLine = new Microsoft.UI.Xaml.Shapes.Line
+                {
+                    X1 = 12,
+                    Y1 = gy,
+                    X2 = totalWidth - 12,
+                    Y2 = gy,
+                    Stroke = new SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(26, 255, 255, 255) : Windows.UI.Color.FromArgb(26, 15, 23, 42)),
+                    StrokeThickness = 1,
+                    StrokeDashArray = new DoubleCollection { 2, 4 },
+                    IsHitTestVisible = false
+                };
+                HourlyTrendlineCanvas.Children.Add(guideLine);
+            }
             HourlyTrendlineCanvas.Children.Add(areaFill);
 
             var strokeGeo = new PathGeometry();

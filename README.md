@@ -1,7 +1,7 @@
-# 🌤️ Weather WinUI (Version 3.6.0)
+# 🌤️ Weather WinUI (Version 3.6.1)
 ### Hệ Điều Hành Vi Khí Hậu Cá Nhân Hóa & Trực Quan Hóa Đô Thị Dành Cho Windows 10 & 11
 > **Nền tảng:** Windows App SDK (WinUI 3) • .NET 8 • C# 12 • Fluent Design System 2.0 & Nothing Design System 3.6  
-> **Nhánh phát triển chính thức:** `main` | **Phiên bản:** `v3.6.0 (Bản Phát Hành Chính Thức)`  
+> **Nhánh phát triển chính thức:** `main` | **Phiên bản:** `v3.6.1 (Bản Phát Hành Chính Thức)`  
 > **Bản phát hành tiền nhiệm:** `v3.5.2` • `v3.5.1` • `v3.5.0` • `v3.4.1` • `v3.4.0` • `v3.3.1` • `v3.3.0` • `v3.0.0`
 
 ---
@@ -9,7 +9,7 @@
 ## 📑 Mục Lục
 1. [Giới Thiệu Tổng Quan & Tầm Nhìn Dự Án](#-1-giới-thiệu-tổng-quan--tầm-nhìn-dự-án)
 2. [Ngăn Xếp Công Nghệ (Tech Stack) & Kiến Trúc Phần Mềm](#-2-ngăn-xếp-công-nghệ-tech-stack--kiến-trúc-phần-mềm)
-3. [Điểm Mới Đột Phá Trên Phiên Bản 3.6.0](#-3-điểm-mới-đột-phá-trên-phiên-bản-360)
+3. [Điểm Mới Đột Phá Trên Phiên Bản 3.6.1](#-3-điểm-mới-đột-phá-trên-phiên-bản-360)
    - [Giao Diện Chính Zero-Chrome & Spatial Bento (Unified Command Header & Minimal Rail)](#1-giao-diện-chính-zero-chrome--spatial-bento)
    - [Trung Tâm Lệnh Nhanh Command Palette (`Ctrl + K`) & Bộ Đệm `0ms` Stale-While-Revalidate](#2-command-palette-ctrl--k--tối-ưu-hiệu-năng-0ms)
    - [Dự Báo Mưa 60 Phút Tới (60-Min Precipitation Nowcast) & Đường Cong Khí Tượng 24 Giờ Tương Tác](#3-60-minute-precipitation-nowcast--interactive-24h-telemetry-curve)
@@ -41,11 +41,11 @@
 
 ---
 
-## 🚀 3. Điểm Mới Đột Phá Trên Phiên Bản 3.6.0
+## 🚀 3. Điểm Mới Đột Phá Trên Phiên Bản 3.6.1
 
 ### 1. Giao Diện Chính Zero-Chrome & Spatial Bento
 - **Single-Row Unified Command Header**: Hợp nhất toàn bộ khung điều khiển phía trên thành 1 dải Header 50px duy nhất, tinh gọn và hiện đại:
-  - Cụm trái: Biểu tượng ứng dụng + Huy hiệu phiên bản `v3.6.0` / `NDOT // 3.6` + Dải **Smart Pinned Cities** (GPS + 4 thành phố ưu tiên + nút `📍 +12` mở bảng chọn nhanh 16 tỉnh thành).
+  - Cụm trái: Biểu tượng ứng dụng + Huy hiệu phiên bản `v3.6.1` / `NDOT // 3.6.1` + Dải **Smart Pinned Cities** (GPS + 4 thành phố ưu tiên + nút `📍 +12` mở bảng chọn nhanh 16 tỉnh thành).
   - Cụm giữa: **Command Capsule (`Ctrl + K`)** kết hợp tìm kiếm thành phố toàn cầu và bảng lệnh nhanh.
   - Cụm phải: Các nút hành động tinh gọn (So sánh đối kháng, Chia sẻ ảnh HD, Làm mới, Zen Mode).
 - **Minimal Navigation Rail**: Thu gọn thanh điều hướng bên trái (`OpenPaneLength="216"`, `CompactPaneLength="52"`), thay thế các hộp màu rườm rà bằng chỉ báo viền mảnh và chữ số thứ tự Monospace (`01`..`07`) chuẩn Nothing OS.
@@ -105,7 +105,7 @@ Nâng tổng số kiểu dáng trong **Widget Studio** lên **20 kiểu dáng**,
 
 ### Dành Cho Người Dùng (End Users)
 1. **Tải bộ cài đặt chính thức**:
-   - Tải về tệp cài đặt: `WeatherApp_Setup_v3.6.0.exe` từ thư mục phát hành.
+   - Tải về tệp cài đặt: `WeatherApp_Setup_v3.6.1.exe` từ thư mục phát hành.
    - Chạy tệp tin và làm theo hướng dẫn trên màn hình. Trình cài đặt sẽ tự động tạo Shortcut trên Desktop và Start Menu (tương thích hoàn toàn với cả Windows 10 và Windows 11).
 2. **Khởi chạy ứng dụng**:
    - Mở Weather WinUI từ màn hình chính, nhấn `Ctrl + K` bất kỳ lúc nào để mở nhanh Bảng Lệnh Thông Minh (Command Palette).
@@ -118,7 +118,7 @@ Nâng tổng số kiểu dáng trong **Widget Studio** lên **20 kiểu dáng**,
 # 2. Xuất bản phiên bản độc lập Self-Contained
 & 'C:\Users\LMT\AppData\Local\Microsoft\dotnet\dotnet.exe' publish "WeatherApp.csproj" -c Release -p:Platform=x64 -o "publish"
 
-# 3. Đóng gói bộ cài đặt Inno Setup (WeatherApp_Setup_v3.6.0.exe)
+# 3. Đóng gói bộ cài đặt Inno Setup (WeatherApp_Setup_v3.6.1.exe)
 & "C:\Users\LMT\AppData\Local\Programs\Inno Setup 6\ISCC.exe" "installer.iss"
 ```
 
@@ -126,7 +126,7 @@ Nâng tổng số kiểu dáng trong **Widget Studio** lên **20 kiểu dáng**,
 
 ## 📜 6. Biên Niên Sử Phát Triển Toàn Diện
 
-### Phiên Bản 3.6.0 (23/10/2026) — The Spatial, Command & Sanctuary Update
+### Phiên Bản 3.6.1 (23/10/2026) — The Spatial, Command & Sanctuary Update
 - **Single-Row Unified Command Header & Minimal Rail**: Hợp nhất thanh công cụ phía trên thành 1 hàng duy nhất với Smart Pinned Cities (4 thành phố ghim + menu 16 tỉnh thành) và Command Capsule (`Ctrl + K`).
 - **Command Palette (`Ctrl + K`) & `0ms` City Cache**: Hỗ trợ lệnh nhanh bàn phím (`> nothing`, `> fluent`, `> dark`, `> light`, `> zen`, `> focus`, `> widget`) và bộ đệm `Stale-While-Revalidate` chuyển thành phố tức thì `0ms`.
 - **60-Minute Precipitation Nowcast & Interactive 24h Curve Scrubber**: Thêm biểu đồ dự báo mưa 60 phút tới (mỗi mốc 5 phút) và đường cong nhiệt độ 24 giờ tương tác cho cả Fluent 2 và Nothing Design.

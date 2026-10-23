@@ -1585,7 +1585,7 @@ public sealed partial class MainPage : Page
 
     private void CheckAndShowChangelog()
     {
-        string currentVersion = "3.6.0";
+        string currentVersion = "3.6.1";
         string lastSeen = ViewModel.Settings.LastSeenVersion ?? string.Empty;
 
         if (string.IsNullOrEmpty(lastSeen) || lastSeen != currentVersion)
@@ -1645,7 +1645,7 @@ public sealed partial class MainPage : Page
     {
         var panels = new[]
         {
-            (ChangelogContent_v360, "3.6.0"),
+            (ChangelogContent_v360, "3.6.1"),
             (ChangelogContent_v350, "3.5.0"),
             (ChangelogContent_v306, "3.0.6"),
             (ChangelogContent_v305, "3.0.5"),
@@ -1684,7 +1684,7 @@ public sealed partial class MainPage : Page
         {
             ChangelogHeaderTitle.Text = versionTag switch
             {
-                "3.6.0" => isVi ? "Siêu Cập Nhật Weather WinUI v3.6.0" : "Official Release Notes v3.6.0",
+                "3.6.1" => isVi ? "Siêu Cập Nhật Weather WinUI v3.6.1" : "Official Release Notes v3.6.1",
                 "3.5.0" => isVi ? "Chi Ti\u1EBFt B\u1EA3n Ph\u00E1t H\u00E0nh Ch\u00EDnh Th\u1EE9c v3.5.0" : "Official Release Notes v3.5.0",
                 "3.4.1" => isVi ? "Chi Ti\u1EBFt B\u1EA3n Ph\u00E1t H\u00E0nh Ch\u00EDnh Th\u1EE9c v3.4.1" : "Official Release Notes v3.4.1",
                 "3.4.0" => isVi ? "Chi Ti\u1EBFt B\u1EA3n Ph\u00E1t H\u00E0nh Ch\u00EDnh Th\u1EE9c v3.4.0" : "Official Release Notes v3.4.0",
@@ -1709,9 +1709,9 @@ public sealed partial class MainPage : Page
 
         if (ChangelogHeaderBadge != null)
         {
-            if (versionTag == "3.6.0")
+            if (versionTag == "3.6.1")
             {
-                ChangelogHeaderBadge.Text = isVi ? "v3.6.0 BẢN CHÍNH THỨC" : "v3.6.0 OFFICIAL";
+                ChangelogHeaderBadge.Text = isVi ? "v3.6.1 BẢN CHÍNH THỨC" : "v3.6.1 OFFICIAL";
             }
             else if (versionTag == "3.5.0")
             {
@@ -1737,7 +1737,7 @@ public sealed partial class MainPage : Page
 
         if (ChangelogHeaderSubtitle != null)
         {
-            if (versionTag == "3.6.0")
+            if (versionTag == "3.6.1")
             {
                 ChangelogHeaderSubtitle.Text = isVi
                     ? "Đột phá toàn diện UI/UX Zero-Chrome & Spatial Bento, Command Palette (Ctrl+K), Radar Mưa 60 Phút Tới, Đồ Thị Nhiệt Độ 24h Tương Tác, Zen Mode 2.0 Nothing StandBy + Pomodoro, và Bộ 3 Widget 3.0 (Dynamic Island, Field Deck, Pure Typo HUD + Ghost Mode)."

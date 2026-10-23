@@ -178,7 +178,7 @@ public partial class MainViewModel : ObservableObject
     private readonly PowerManagementService _powerService = new();
 
     [ObservableProperty]
-    private string _appVersionDisplay = "v3.6.0 Official";
+    private string _appVersionDisplay = "v3.6.1 Official";
     private readonly Dictionary<string, (OpenMeteoResponse Data, AirQualityData Aqi, DateTime Timestamp)> _cityWeatherCache = new();
     private static string GetCityCacheKey(double lat, double lon) => $"{lat:F2}_{lon:F2}";
 
@@ -536,7 +536,7 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(IsZenClockNothingStandBy));
     }
 
-    // ==================== v3.6.0: POMODORO FOCUS TIMER & 60M NOWCAST ENGINE ====================
+    // ==================== v3.6.1: POMODORO FOCUS TIMER & 60M NOWCAST ENGINE ====================
     [ObservableProperty]
     private bool _isPomodoroRunning = false;
 
