@@ -1289,6 +1289,148 @@
                         </Grid>
                     </Border>
                 </Grid>
+
+                <!-- ==================== STYLE 13: DYNAMIC ISLAND TOP CAPSULE (v3.6.0) ==================== -->
+                <Grid x:Name="DynamicIslandView" Visibility="Collapsed" Padding="2"
+                      PointerEntered="DynamicIsland_PointerEntered"
+                      PointerExited="DynamicIsland_PointerExited">
+                    <Border x:Name="DynamicIslandBorder" CornerRadius="23" Background="#070709" BorderBrush="#2AFFFFFF" BorderThickness="1.2" Padding="14,8"
+                            PointerPressed="WidgetRoot_PointerPressed">
+                        <StackPanel Spacing="10" VerticalAlignment="Center">
+                            <!-- Collapsed Row (Always Visible) -->
+                            <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <Ellipse Width="7" Height="7" Fill="#D71921"/>
+                                    <FontIcon x:Name="DynamicIslandWeatherIcon" FontFamily="{StaticResource NdotFontFamily}" Glyph="&#xF1964;" FontSize="18" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="1" VerticalAlignment="Center">
+                                    <TextBlock x:Name="DynamicIslandTempText" Text="31" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource NdotFontFamily}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="&#176;C" FontSize="11" FontWeight="Bold" Foreground="#D71921" FontFamily="{StaticResource NdotFontFamily}" VerticalAlignment="Top" Margin="0,1,0,0"/>
+                                </StackPanel>
+
+                                <TextBlock Grid.Column="2" x:Name="DynamicIslandCityText" Text="HANOI [HAN]" FontSize="9.5" FontWeight="Bold" Foreground="#A1A1AA" FontFamily="Consolas" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+
+                                <Border Grid.Column="3" Background="#16161B" BorderBrush="#2E2E36" BorderThickness="1" CornerRadius="10" Padding="7,2" VerticalAlignment="Center">
+                                    <TextBlock x:Name="DynamicIslandAqiText" Text="AQI 42" FontSize="8.5" FontWeight="Bold" Foreground="#00FF66" FontFamily="Consolas"/>
+                                </Border>
+                            </Grid>
+
+                            <!-- Expanded Drawer (Visible on Mouse Hover) -->
+                            <StackPanel x:Name="DynamicIslandExpandedPanel" Visibility="Collapsed" Spacing="8">
+                                <Border Height="1" Background="#1FFFFFFF"/>
+                                <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                    <TextBlock x:Name="DynamicIslandConditionText" Text="PARTLY CLOUDY" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource NdotFontFamily}"/>
+                                    <TextBlock x:Name="DynamicIslandTelemetryText" Grid.Column="1" Text="HUM 74% • WIND 12 KM/H" FontSize="9" Foreground="#888888" FontFamily="Consolas"/>
+                                </Grid>
+                                <!-- 4-Hour Mini Strip -->
+                                <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="6">
+                                    <Border Grid.Column="0" Background="#121216" BorderBrush="#222228" BorderThickness="1" CornerRadius="10" Padding="6,5">
+                                        <StackPanel Spacing="2" HorizontalAlignment="Center">
+                                            <TextBlock x:Name="DynHTime0" Text="NOW" FontSize="8.5" Foreground="#888888" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="DynHTemp0" Text="31°" FontSize="12" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource NdotFontFamily}" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Grid.Column="1" Background="#121216" BorderBrush="#222228" BorderThickness="1" CornerRadius="10" Padding="6,5">
+                                        <StackPanel Spacing="2" HorizontalAlignment="Center">
+                                            <TextBlock x:Name="DynHTime1" Text="+1H" FontSize="8.5" Foreground="#888888" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="DynHTemp1" Text="30°" FontSize="12" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource NdotFontFamily}" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Grid.Column="2" Background="#121216" BorderBrush="#222228" BorderThickness="1" CornerRadius="10" Padding="6,5">
+                                        <StackPanel Spacing="2" HorizontalAlignment="Center">
+                                            <TextBlock x:Name="DynHTime2" Text="+2H" FontSize="8.5" Foreground="#888888" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="DynHTemp2" Text="29°" FontSize="12" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource NdotFontFamily}" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Grid.Column="3" Background="#121216" BorderBrush="#222228" BorderThickness="1" CornerRadius="10" Padding="6,5">
+                                        <StackPanel Spacing="2" HorizontalAlignment="Center">
+                                            <TextBlock x:Name="DynHTime3" Text="+3H" FontSize="8.5" Foreground="#888888" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="DynHTemp3" Text="28°" FontSize="12" FontWeight="Bold" Foreground="#D71921" FontFamily="{StaticResource NdotFontFamily}" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- ==================== STYLE 14: TEENAGE ENGINEERING FIELD DECK (v3.6.0) ==================== -->
+                <Grid x:Name="TeenageDeckView" Visibility="Collapsed" Padding="4">
+                    <Border CornerRadius="16" Background="#18181C" BorderBrush="#34343C" BorderThickness="2" Padding="14,10"
+                            PointerPressed="WidgetRoot_PointerPressed">
+                        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="8">
+                            <!-- Top Industrial Header + Scale Ruler -->
+                            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                <Border Background="#FF5500" CornerRadius="4" Padding="6,1.5">
+                                    <TextBlock Text="TX-WX // OP-36" FontSize="8.5" FontWeight="Bold" Foreground="#0A0A0C" FontFamily="Consolas"/>
+                                </Border>
+                                <Canvas Grid.Column="1" Height="10" Margin="10,0" VerticalAlignment="Center">
+                                    <Line X1="0" Y1="5" X2="110" Y2="5" Stroke="#3F3F46" StrokeThickness="1" StrokeDashArray="1,3"/>
+                                </Canvas>
+                                <TextBlock Grid.Column="2" x:Name="TeenageDeckCityText" Text="HAN // 21.0N" FontSize="9.5" FontWeight="Bold" Foreground="#A1A1AA" FontFamily="Consolas"/>
+                            </Grid>
+
+                            <!-- Center OLED Field Display -->
+                            <Border Grid.Row="1" Background="#0B0B0E" BorderBrush="#27272A" BorderThickness="1.5" CornerRadius="10" Padding="12,8">
+                                <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                    <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <FontIcon x:Name="TeenageDeckWeatherIcon" FontFamily="{StaticResource NdotFontFamily}" Glyph="&#xF1964;" FontSize="22" Foreground="#FF5500" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="TeenageDeckTempText" Text="31°C" FontSize="34" FontWeight="Bold" Foreground="#FAFAFA" FontFamily="{StaticResource NdotFontFamily}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="TeenageDeckConditionText" Text="CLEAR SKY // NOMINAL" FontSize="9.5" FontWeight="Bold" Foreground="#A1A1AA" FontFamily="Consolas" TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+
+                                    <!-- Rotary Encoder Dial Aesthetic -->
+                                    <Grid Grid.Column="1" Width="48" Height="48" VerticalAlignment="Center">
+                                        <Ellipse Width="48" Height="48" Fill="#16161A" Stroke="#3F3F46" StrokeThickness="1.5"/>
+                                        <Ellipse Width="34" Height="34" Fill="#222228" Stroke="#FF5500" StrokeThickness="1.5" StrokeDashArray="2,2"/>
+                                        <Ellipse Width="6" Height="6" Fill="#FF5500" VerticalAlignment="Top" Margin="0,6,0,0"/>
+                                        <TextBlock x:Name="TeenageDeckAqiText" Text="42" FontSize="9.5" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="Consolas" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+
+                            <!-- Bottom Mechanical Telemetry Keys -->
+                            <Grid Grid.Row="2" ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                                <Border Grid.Column="0" Background="#222227" BorderBrush="#32323A" BorderThickness="1" CornerRadius="6" Padding="6,3">
+                                    <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
+                                        <Ellipse Width="5" Height="5" Fill="#FF5500" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="TeenageDeckWindText" Text="12 KM/H" FontSize="8.5" FontWeight="Bold" Foreground="#E4E4E7" FontFamily="Consolas"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="1" Background="#222227" BorderBrush="#32323A" BorderThickness="1" CornerRadius="6" Padding="6,3">
+                                    <TextBlock x:Name="TeenageDeckHumText" Text="HUM 74%" FontSize="8.5" FontWeight="Bold" Foreground="#E4E4E7" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                </Border>
+                                <Border Grid.Column="2" Background="#222227" BorderBrush="#32323A" BorderThickness="1" CornerRadius="6" Padding="6,3">
+                                    <TextBlock x:Name="TeenageDeckPressText" Text="1013 HPA" FontSize="8.5" FontWeight="Bold" Foreground="#00FF66" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- ==================== STYLE 15: PURE TYPOGRAPHY WALLPAPER HUD (v3.6.0) ==================== -->
+                <Grid x:Name="PureTypoHudView" Visibility="Collapsed" Padding="8" Background="#01000000"
+                      PointerPressed="WidgetRoot_PointerPressed">
+                    <StackPanel Spacing="2" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <Ellipse Width="7" Height="7" Fill="#D71921" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="PureTypoCityText" Text="HANOI [HAN]" FontSize="11" FontWeight="Bold" Foreground="#E4E4E7" FontFamily="Consolas"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,-4,0,-2">
+                            <TextBlock x:Name="PureTypoTempText" Text="31°" FontSize="54" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource NdotFontFamily}"/>
+                            <StackPanel VerticalAlignment="Center" Spacing="2">
+                                <FontIcon x:Name="PureTypoWeatherIcon" FontFamily="{StaticResource NdotFontFamily}" Glyph="&#xF1964;" FontSize="22" Foreground="#FFFFFF" HorizontalAlignment="Left"/>
+                                <TextBlock x:Name="PureTypoConditionText" Text="CLEAR SKY" FontSize="10.5" FontWeight="Bold" Foreground="#D71921" FontFamily="{StaticResource NdotFontFamily}" MaxWidth="130" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <TextBlock x:Name="PureTypoTelemetryText" Text="AQI 42 // HUM 74% // WIND 12 KM/H" FontSize="9.5" FontWeight="Bold" Foreground="#A1A1AA" FontFamily="Consolas"/>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Border>
     </Grid>

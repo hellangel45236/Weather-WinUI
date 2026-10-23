@@ -48,6 +48,7 @@ public class AppSettings
     public int WidgetLastX { get; set; } = -1;
     public int WidgetLastY { get; set; } = -1;
     public bool WidgetAlwaysOnTop { get; set; } = true;
+    public bool WidgetGhostClickThrough { get; set; } = false;
 
     // 9. Cấu hình Hình nền Thành phố (City Picture)
     public bool EnableCityBackground { get; set; } = true;
@@ -215,4 +216,17 @@ public partial class QuickLocationChipItem : ObservableObject
 
     public string ChipFontWeight => IsSelected ? "Bold" : "SemiBold";
     public bool ActiveIndicatorVisibility => IsSelected;
+}
+
+public class NowcastBarItem
+{
+    public string TimeLabel { get; set; } = string.Empty;
+    public double BarHeight { get; set; } = 8;
+    public string BarColorHex { get; set; } = "#D71921";
+    public string TooltipText { get; set; } = string.Empty;
+    public double Opacity { get; set; } = 0.85;
+    public string MinuteLabel => TimeLabel;
+    public string IntensityLabel => TooltipText;
+    public string FluentColorHex => BarColorHex;
+    public string NothingColorHex => BarColorHex;
 }

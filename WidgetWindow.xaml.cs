@@ -114,6 +114,8 @@ public sealed partial class WidgetWindow : Window
     private const uint WS_EX_CLIENTEDGE = 0x00000200;
     private const uint WS_EX_STATICEDGE = 0x00020000;
     private const uint WS_EX_DLGMODALFRAME = 0x00000001;
+    private const uint WS_EX_TRANSPARENT = 0x00000020;
+    private const uint WS_EX_LAYERED = 0x00080000;
 
     private const uint SWP_NOMOVE = 0x0002;
     private const uint SWP_NOSIZE = 0x0001;
@@ -228,6 +230,14 @@ public sealed partial class WidgetWindow : Window
 
             long exStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE).ToInt64();
             exStyle &= ~(WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE | WS_EX_DLGMODALFRAME);
+            if (_settings.WidgetGhostClickThrough)
+            {
+                exStyle |= (WS_EX_TRANSPARENT | WS_EX_LAYERED);
+            }
+            else
+            {
+                exStyle &= ~WS_EX_TRANSPARENT;
+            }
             SetWindowLongPtr(hWnd, GWL_EXSTYLE, new IntPtr(exStyle));
 
             SetWindowPos(hWnd, IntPtr.Zero, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
@@ -375,8 +385,11 @@ public sealed partial class WidgetWindow : Window
         bool isNothingSquare = style == "NothingSquare";
         bool isNothingCircular = style == "NothingCircular";
         bool isNothingPill = style == "NothingPill";
+        bool isDynamicIsland = style == "DynamicIsland";
+        bool isTeenageDeck = style == "TeenageDeck";
+        bool isPureTypo = style == "PureTypoHud";
 
-        if (!isBryanC && !isIsland && !isCompact && !isGlass && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare && !isNothingCircular && !isNothingPill)
+        if (!isBryanC && !isIsland && !isCompact && !isGlass && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare && !isNothingCircular && !isNothingPill && !isDynamicIsland && !isTeenageDeck && !isPureTypo)
         {
             isBryanC = true;
             _currentStyle = "BryanCDynamic";
@@ -394,11 +407,18 @@ public sealed partial class WidgetWindow : Window
         if (NothingSquareView != null) NothingSquareView.Visibility = isNothingSquare ? Visibility.Visible : Visibility.Collapsed;
         if (NothingCircularView != null) NothingCircularView.Visibility = isNothingCircular ? Visibility.Visible : Visibility.Collapsed;
         if (NothingPillView != null) NothingPillView.Visibility = isNothingPill ? Visibility.Visible : Visibility.Collapsed;
+        if (DynamicIslandView != null) DynamicIslandView.Visibility = isDynamicIsland ? Visibility.Visible : Visibility.Collapsed;
+        if (TeenageDeckView != null) TeenageDeckView.Visibility = isTeenageDeck ? Visibility.Visible : Visibility.Collapsed;
+        if (PureTypoHudView != null) PureTypoHudView.Visibility = isPureTypo ? Visibility.Visible : Visibility.Collapsed;
+        if (DynamicIslandExpandedPanel != null) DynamicIslandExpandedPanel.Visibility = Visibility.Collapsed;
 
         int cornerRadiusDip = style switch
         {
             "NothingCircular" => 98,
             "NothingPill" => 22,
+            "DynamicIsland" => 24,
+            "TeenageDeck" => 16,
+            "PureTypoHud" => 0,
             "NothingBento" => 24,
             "NothingSquare" => 22,
             "RetroLcd" => 16,
@@ -416,6 +436,9 @@ public sealed partial class WidgetWindow : Window
         {
             "NothingCircular" => 196,
             "NothingPill" => 250,
+            "DynamicIsland" => 254,
+            "TeenageDeck" => 286,
+            "PureTypoHud" => 272,
             "NothingBento" => 320,
             "NothingSquare" => 190,
             "BentoVivid" or "BentoTactical" => 365,
@@ -431,6 +454,9 @@ public sealed partial class WidgetWindow : Window
         {
             "NothingCircular" => 196,
             "NothingPill" => 48,
+            "DynamicIsland" => 50,
+            "TeenageDeck" => 172,
+            "PureTypoHud" => 136,
             "NothingBento" => 160,
             "NothingSquare" => 190,
             "BentoVivid" or "BentoTactical" => 175,
@@ -465,13 +491,13 @@ public sealed partial class WidgetWindow : Window
         {
             ApplyBryanCWeatherTheme(_currentWeather.WeatherEffect, _currentWeather.IsDay);
         }
-        else if (isBentoVivid || isBentoTactical || isRetroLcd || isNothingBento || isNothingSquare || isNothingCircular || isNothingPill)
+        else if (isBentoVivid || isBentoTactical || isRetroLcd || isNothingBento || isNothingSquare || isNothingCircular || isNothingPill || isDynamicIsland || isTeenageDeck || isPureTypo)
         {
             WidgetRoot.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
             WidgetRoot.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
             UpdateWidgetData();
         }
-        else if (!isBryanC && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare && !isNothingCircular && !isNothingPill)
+        else if (!isBryanC && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare && !isNothingCircular && !isNothingPill && !isDynamicIsland && !isTeenageDeck && !isPureTypo)
         {
             // Khôi phục background kính tối chuẩn cho GlassCard/Compact
             var brush = new Microsoft.UI.Xaml.Media.LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
@@ -499,7 +525,10 @@ public sealed partial class WidgetWindow : Window
             "NothingBento" => "NothingSquare",
             "NothingSquare" => "NothingCircular",
             "NothingCircular" => "NothingPill",
-            "NothingPill" => "SeasonalCard",
+            "NothingPill" => "DynamicIsland",
+            "DynamicIsland" => "TeenageDeck",
+            "TeenageDeck" => "PureTypoHud",
+            "PureTypoHud" => "SeasonalCard",
             _ => "BryanCDynamic"
         };
 
@@ -513,6 +542,49 @@ public sealed partial class WidgetWindow : Window
         }
 
         ApplyWidgetStyle(newStyle);
+    }
+
+    public void SetGhostClickThrough(bool enabled)
+    {
+        _settings.WidgetGhostClickThrough = enabled;
+        try
+        {
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            StripWindowBorders(hWnd);
+        }
+        catch { }
+    }
+
+    private void DynamicIsland_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (_currentStyle != "DynamicIsland" || _appWindow == null) return;
+        try
+        {
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            uint dpi = GetDpiForWindow(hWnd);
+            if (dpi == 0) dpi = 96;
+            double scale = dpi / 96.0;
+            if (DynamicIslandExpandedPanel != null) DynamicIslandExpandedPanel.Visibility = Visibility.Visible;
+            if (DynamicIslandBorder != null) DynamicIslandBorder.CornerRadius = new CornerRadius(22);
+            _appWindow.Resize(new Windows.Graphics.SizeInt32((int)Math.Round(324 * scale), (int)Math.Round(152 * scale)));
+        }
+        catch { }
+    }
+
+    private void DynamicIsland_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (_currentStyle != "DynamicIsland" || _appWindow == null) return;
+        try
+        {
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            uint dpi = GetDpiForWindow(hWnd);
+            if (dpi == 0) dpi = 96;
+            double scale = dpi / 96.0;
+            if (DynamicIslandExpandedPanel != null) DynamicIslandExpandedPanel.Visibility = Visibility.Collapsed;
+            if (DynamicIslandBorder != null) DynamicIslandBorder.CornerRadius = new CornerRadius(23);
+            _appWindow.Resize(new Windows.Graphics.SizeInt32((int)Math.Round(254 * scale), (int)Math.Round(50 * scale)));
+        }
+        catch { }
     }
 
     private void CloseWidgetButton_Click(object sender, RoutedEventArgs e)
@@ -1007,6 +1079,44 @@ public sealed partial class WidgetWindow : Window
             NothingPillWeatherIcon.Glyph = _currentWeather.NothingGlyph;
         if (NothingPillTempText != null) NothingPillTempText.Text = tempOnly;
         if (NothingPillAqiText != null) NothingPillAqiText.Text = $"AQI {aqiVal}";
+
+        // Style 13: Dynamic Island (v3.6.0)
+        if (DynamicIslandCityText != null) DynamicIslandCityText.Text = nothingCity;
+        if (DynamicIslandWeatherIcon != null && !string.IsNullOrEmpty(_currentWeather.NothingGlyph))
+            DynamicIslandWeatherIcon.Glyph = _currentWeather.NothingGlyph;
+        if (DynamicIslandTempText != null) DynamicIslandTempText.Text = tempOnly.TrimEnd('°');
+        if (DynamicIslandAqiText != null) DynamicIslandAqiText.Text = $"AQI {aqiVal}";
+        if (DynamicIslandConditionText != null) DynamicIslandConditionText.Text = _currentWeather.ConditionText.ToUpperInvariant();
+        if (DynamicIslandTelemetryText != null) DynamicIslandTelemetryText.Text = $"HUM {humVal}% • WIND {_currentWeather.WindSpeedValue:F0} KM/H";
+        var dynTimes = new[] { DynHTime0, DynHTime1, DynHTime2, DynHTime3 };
+        var dynTemps = new[] { DynHTemp0, DynHTemp1, DynHTemp2, DynHTemp3 };
+        for (int i = 0; i < 4; i++)
+        {
+            if (_hourlyForecast != null && i < _hourlyForecast.Count)
+            {
+                if (dynTimes[i] != null) dynTimes[i].Text = i == 0 ? "NOW" : _hourlyForecast[i].TimeDisplay;
+                if (dynTemps[i] != null) dynTemps[i].Text = _hourlyForecast[i].TempDisplay;
+            }
+        }
+
+        // Style 14: Teenage Engineering Field Deck (v3.6.0)
+        if (TeenageDeckCityText != null) TeenageDeckCityText.Text = $"{cityCode} // {Latitude:0.0}N";
+        if (TeenageDeckWeatherIcon != null && !string.IsNullOrEmpty(_currentWeather.NothingGlyph))
+            TeenageDeckWeatherIcon.Glyph = _currentWeather.NothingGlyph;
+        if (TeenageDeckTempText != null) TeenageDeckTempText.Text = _currentWeather.TemperatureText;
+        if (TeenageDeckConditionText != null) TeenageDeckConditionText.Text = $"{_currentWeather.ConditionText.ToUpperInvariant()} // NOMINAL";
+        if (TeenageDeckAqiText != null) TeenageDeckAqiText.Text = $"{aqiVal}";
+        if (TeenageDeckWindText != null) TeenageDeckWindText.Text = $"{_currentWeather.WindSpeedValue:F0} KM/H";
+        if (TeenageDeckHumText != null) TeenageDeckHumText.Text = $"HUM {humVal}%";
+        if (TeenageDeckPressText != null) TeenageDeckPressText.Text = $"{pressHpa:0} HPA";
+
+        // Style 15: Pure Typography Wallpaper HUD (v3.6.0)
+        if (PureTypoCityText != null) PureTypoCityText.Text = nothingCity;
+        if (PureTypoTempText != null) PureTypoTempText.Text = tempOnly;
+        if (PureTypoWeatherIcon != null && !string.IsNullOrEmpty(_currentWeather.NothingGlyph))
+            PureTypoWeatherIcon.Glyph = _currentWeather.NothingGlyph;
+        if (PureTypoConditionText != null) PureTypoConditionText.Text = _currentWeather.ConditionText.ToUpperInvariant();
+        if (PureTypoTelemetryText != null) PureTypoTelemetryText.Text = $"AQI {aqiVal} // HUM {humVal}% // WIND {_currentWeather.WindSpeedValue:F0} KM/H";
 
         double windMs = 8.0;
         if (_currentWeather.WindSpeedValue > 0) windMs = _currentWeather.WindSpeedValue / 3.6;

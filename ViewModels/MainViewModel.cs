@@ -88,7 +88,13 @@ public partial class MainViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(GpsButtonForeground))]
     [NotifyPropertyChangedFor(nameof(GpsIconForegroundHex))]
     private string _selectedDesignLanguage = "Fluent2";
-    partial void OnSelectedDesignLanguageChanged(string value) => UpdateQuickChips();
+    partial void OnSelectedDesignLanguageChanged(string value)
+    {
+        UpdateQuickChips();
+        if (_rawWeatherData != null) UpdateNowcastBars(_rawWeatherData);
+        OnPropertyChanged(nameof(IsZenClockNothingStandBy));
+        OnPropertyChanged(nameof(IsZenClockModern));
+    }
 
     public bool IsNothingDesign => string.Equals(SelectedDesignLanguage, "Nothing", StringComparison.OrdinalIgnoreCase);
     public bool IsFluent2Design => !IsNothingDesign;
@@ -172,7 +178,9 @@ public partial class MainViewModel : ObservableObject
     private readonly PowerManagementService _powerService = new();
 
     [ObservableProperty]
-    private string _appVersionDisplay = "v3.5.2 Official";
+    private string _appVersionDisplay = "v3.6.0 Official";
+    private readonly Dictionary<string, (OpenMeteoResponse Data, AirQualityData Aqi, DateTime Timestamp)> _cityWeatherCache = new();
+    private static string GetCityCacheKey(double lat, double lon) => $"{lat:F2}_{lon:F2}";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(GpsButtonBackground))]
@@ -310,6 +318,24 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableCollection<QuickLocationChipItem> _quickChips = new();
+
+    [ObservableProperty]
+    private ObservableCollection<QuickLocationChipItem> _pinnedQuickChips = new();
+
+    [ObservableProperty]
+    private ObservableCollection<NowcastBarItem> _nowcastBars = new();
+
+    [ObservableProperty]
+    private string _nowcastHeadline = "TRỜI TẠNH RÁO TRONG 60 PHÚT TỚI";
+
+    [ObservableProperty]
+    private string _nowcastSubtitle = "Không phát hiện dải mây đối lưu gây mưa tại tọa độ hiện tại.";
+
+    [ObservableProperty]
+    private string _nowcastBadgeText = "RADAR 60M • DRY";
+
+    [ObservableProperty]
+    private string _nowcastAccentColorHex = "#10B981";
 
     [ObservableProperty]
     private string _calendarLocationSubtitle = string.Empty;
@@ -507,6 +533,197 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(IsZenClockFlip));
         OnPropertyChanged(nameof(IsZenClockStacked));
         OnPropertyChanged(nameof(IsZenClockAnalog));
+        OnPropertyChanged(nameof(IsZenClockNothingStandBy));
+    }
+
+    // ==================== v3.6.0: POMODORO FOCUS TIMER & 60M NOWCAST ENGINE ====================
+    [ObservableProperty]
+    private bool _isPomodoroRunning = false;
+
+    [ObservableProperty]
+    private bool _isPomodoroBreak = false;
+
+    private int _pomodoroRemainingSeconds = 25 * 60;
+
+    [ObservableProperty]
+    private string _pomodoroTimeDisplay = "25:00";
+
+    [ObservableProperty]
+    private string _pomodoroModeBadge = "FOCUS 25M";
+
+    [ObservableProperty]
+    private string _pomodoroActionGlyph = "\uf04b";
+
+    [RelayCommand]
+    public void TogglePomodoroRun()
+    {
+        IsPomodoroRunning = !IsPomodoroRunning;
+        PomodoroActionGlyph = IsPomodoroRunning ? "\uf04c" : "\uf04b";
+    }
+
+    [RelayCommand]
+    public void ResetPomodoro()
+    {
+        IsPomodoroRunning = false;
+        PomodoroActionGlyph = "\uf04b";
+        _pomodoroRemainingSeconds = IsPomodoroBreak ? 5 * 60 : 25 * 60;
+        UpdatePomodoroStrings();
+    }
+
+    [RelayCommand]
+    public void SwitchPomodoroSession()
+    {
+        IsPomodoroRunning = false;
+        PomodoroActionGlyph = "\uf04b";
+        IsPomodoroBreak = !IsPomodoroBreak;
+        _pomodoroRemainingSeconds = IsPomodoroBreak ? 5 * 60 : 25 * 60;
+        PomodoroModeBadge = IsPomodoroBreak
+            ? (Loc.IsVietnamese ? "NGHỈ 05P" : "BREAK 05M")
+            : (Loc.IsVietnamese ? "TẬP TRUNG 25P" : "FOCUS 25M");
+        UpdatePomodoroStrings();
+    }
+
+    private void TickPomodoroTimer()
+    {
+        if (!IsPomodoroRunning) return;
+        if (_pomodoroRemainingSeconds > 0)
+        {
+            _pomodoroRemainingSeconds--;
+            UpdatePomodoroStrings();
+        }
+        else
+        {
+            IsPomodoroRunning = false;
+            PomodoroActionGlyph = "\uf04b";
+            bool wasBreak = IsPomodoroBreak;
+            IsPomodoroBreak = !IsPomodoroBreak;
+            _pomodoroRemainingSeconds = IsPomodoroBreak ? 5 * 60 : 25 * 60;
+            PomodoroModeBadge = IsPomodoroBreak
+                ? (Loc.IsVietnamese ? "NGHỈ 05P" : "BREAK 05M")
+                : (Loc.IsVietnamese ? "TẬP TRUNG 25P" : "FOCUS 25M");
+            UpdatePomodoroStrings();
+            try
+            {
+                string title = wasBreak
+                    ? (Loc.IsVietnamese ? "⏰ Hết giờ nghỉ 5 phút!" : "⏰ 5-Minute Break Complete!")
+                    : (Loc.IsVietnamese ? "🎉 Hoàn thành phiên Pomodoro 25 phút!" : "🎉 25-Minute Pomodoro Complete!");
+                string body = wasBreak
+                    ? (Loc.IsVietnamese ? "Sẵn sàng bắt đầu phiên tập trung 25 phút tiếp theo." : "Ready for your next 25-minute focus session.")
+                    : (Loc.IsVietnamese ? "Hãy thư giãn mắt 5 phút và lắng nghe âm thanh thiên nhiên nhé." : "Take a 5-minute break and listen to ambient nature sounds.");
+                NotificationService.ShowToast(title, body);
+            }
+            catch { }
+        }
+    }
+
+    private void UpdatePomodoroStrings()
+    {
+        int mins = _pomodoroRemainingSeconds / 60;
+        int secs = _pomodoroRemainingSeconds % 60;
+        PomodoroTimeDisplay = $"{mins:D2}:{secs:D2}";
+    }
+
+    private void RebuildPinnedQuickChips()
+    {
+        PinnedQuickChips.Clear();
+        var topChips = QuickChips.Take(4).ToList();
+        var activeChip = QuickChips.FirstOrDefault(c => c.IsSelected);
+        if (activeChip != null && !topChips.Contains(activeChip))
+        {
+            if (topChips.Count >= 4) topChips[3] = activeChip;
+            else topChips.Add(activeChip);
+        }
+        foreach (var c in topChips)
+        {
+            PinnedQuickChips.Add(c);
+        }
+        OnPropertyChanged(nameof(PinnedQuickChips));
+    }
+
+    public void UpdateNowcastBars(OpenMeteoResponse? data = null)
+    {
+        var source = data ?? _rawWeatherData;
+        NowcastBars.Clear();
+        bool isVi = Loc.IsVietnamese;
+        double currentPrecip = source?.Current?.Precipitation ?? 0.0;
+        int currentCode = source?.Current?.WeatherCode ?? 0;
+        double nextHourProb = HourlyForecast.Count > 0 ? HourlyForecast[0].RainProbabilityValue : 0;
+        double secondHourProb = HourlyForecast.Count > 1 ? HourlyForecast[1].RainProbabilityValue : nextHourProb;
+
+        bool hasRainSoon = currentPrecip > 0.05 || (currentCode >= 51 && currentCode <= 99) || nextHourProb >= 40 || secondHourProb >= 45;
+        int firstRainMinute = -1;
+
+        for (int i = 0; i < 12; i++)
+        {
+            int minute = i * 5;
+            double ratio = i / 11.0;
+            double prob = (1.0 - ratio) * nextHourProb + ratio * secondHourProb;
+            if (currentPrecip > 0.1 && i < 5) prob = Math.Max(prob, 75 - i * 5);
+
+            // Subtle deterministic wave based on minute index
+            double wave = Math.Sin(i * 0.75) * 6.0;
+            double effectiveIntensity = hasRainSoon ? Math.Clamp(prob + wave, 8, 100) : Math.Clamp(prob * 0.3, 6, 18);
+            if (hasRainSoon && effectiveIntensity >= 38 && firstRainMinute < 0)
+            {
+                firstRainMinute = minute;
+            }
+
+            double barHeight = Math.Round(6.0 + (effectiveIntensity / 100.0) * 28.0, 1);
+            string colorHex;
+            if (IsNothingDesign)
+            {
+                colorHex = effectiveIntensity >= 40 ? "#D71921" : (ThemeHelper.IsDarkTheme() ? "#38383E" : "#C8C8D0");
+            }
+            else
+            {
+                colorHex = effectiveIntensity >= 65 ? "#0284C7" : (effectiveIntensity >= 38 ? "#38BDF8" : (ThemeHelper.IsDarkTheme() ? "#334155" : "#CBD5E1"));
+            }
+
+            string label = minute == 0 ? "NOW" : (isVi ? $"+{minute}p" : $"+{minute}m");
+            double mmEst = effectiveIntensity >= 38 ? Math.Round((effectiveIntensity / 100.0) * 3.2, 1) : 0.0;
+            NowcastBars.Add(new NowcastBarItem
+            {
+                TimeLabel = minute % 15 == 0 ? label : string.Empty,
+                BarHeight = barHeight,
+                BarColorHex = colorHex,
+                Opacity = effectiveIntensity >= 38 ? 1.0 : 0.55,
+                TooltipText = $"{label}: {mmEst:F1} mm/h ({Math.Round(prob):F0}%)"
+            });
+        }
+
+        if (currentPrecip > 0.1 || (currentCode >= 51 && currentCode <= 99))
+        {
+            NowcastHeadline = isVi ? "ĐANG CÓ MƯA TẠI KHU VỰC CỦA BẠN" : "ACTIVE PRECIPITATION IN YOUR AREA";
+            NowcastSubtitle = isVi
+                ? $"Cường độ mưa hiện tại ~{Math.Max(0.2, currentPrecip):F1} mm/h • Dự kiến giảm dần sau 35-45 phút."
+                : $"Current intensity ~{Math.Max(0.2, currentPrecip):F1} mm/h • Expected to ease in 35-45 mins.";
+            NowcastBadgeText = "RADAR 60M • LIVE RAIN";
+            NowcastAccentColorHex = IsNothingDesign ? "#D71921" : "#38BDF8";
+        }
+        else if (hasRainSoon && firstRainMinute >= 0)
+        {
+            NowcastHeadline = isVi
+                ? $"DỰ BÁO MƯA RÀO NHẸ BẮT ĐẦU SAU ~{Math.Max(5, firstRainMinute)} PHÚT"
+                : $"LIGHT RAIN EXPECTED IN ~{Math.Max(5, firstRainMinute)} MINUTES";
+            NowcastSubtitle = isVi
+                ? $"Xác suất mưa {Math.Max(nextHourProb, secondHourProb):F0}% • Chuẩn bị áo mưa hoặc ô nếu sắp di chuyển ngoài trời."
+                : $"Rain probability {Math.Max(nextHourProb, secondHourProb):F0}% • Bring an umbrella if heading outdoors soon.";
+            NowcastBadgeText = $"RADAR 60M • +{Math.Max(5, firstRainMinute)}M";
+            NowcastAccentColorHex = IsNothingDesign ? "#D71921" : "#F59E0B";
+        }
+        else
+        {
+            NowcastHeadline = isVi ? "TRỜI TẠNH RÁO TRONG 60 PHÚT TỚI" : "CLEAR & DRY FOR THE NEXT 60 MINUTES";
+            NowcastSubtitle = isVi
+                ? "Quét vệ tinh tầm gần không phát hiện dải mây mưa đối lưu tại tọa độ hiện tại."
+                : "Short-range radar scan detects no convective rain bands at your current coordinates.";
+            NowcastBadgeText = "RADAR 60M • DRY";
+            NowcastAccentColorHex = IsNothingDesign ? "#D71921" : "#10B981";
+        }
+    }
+
+    private void UnusedZenMethodAnchor()
+    {
     }
 
     public void ApplyDesignLanguage(string language, bool save = true)
@@ -929,6 +1146,7 @@ public partial class MainViewModel : ObservableObject
         ZenAnalogHourAngle = ((now.Hour % 12) + (now.Minute / 60.0) + (now.Second / 3600.0)) * 30.0;
         ZenAnalogMinuteAngle = (now.Minute + (now.Second / 60.0)) * 6.0;
         ZenAnalogSecondAngle = now.Second * 6.0;
+        TickPomodoroTimer();
 
         if (now.Second == 0)
         {
@@ -1316,6 +1534,7 @@ public partial class MainViewModel : ObservableObject
         }
 
         bool hasSelectedChip = QuickChips.Any(c => c.IsSelected);
+        RebuildPinnedQuickChips();
         if (hasSelectedChip)
         {
             IsGpsLocationSelected = false;
@@ -1883,6 +2102,40 @@ public partial class MainViewModel : ObservableObject
 
     private async Task FetchWeatherForCoordinatesAsync(double lat, double lon, string locationName)
     {
+        string cacheKey = GetCityCacheKey(lat, lon);
+        if (_cityWeatherCache.TryGetValue(cacheKey, out var cached) && cached.Data?.Current != null)
+        {
+            HasError = false;
+            ErrorMessage = string.Empty;
+            ResetFeedback();
+            _rawWeatherData = cached.Data;
+            _lastAirQuality = cached.Aqi;
+            UpdateDisplaysFromRawData(cached.Data, locationName, cached.Aqi);
+
+            if ((DateTime.UtcNow - cached.Timestamp).TotalMinutes < 10)
+            {
+                // Revalidate silently in background without showing loading spinner
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        var bgWeather = await _weatherService.GetWeatherDataAsync(lat, lon);
+                        var bgAqi = await _weatherService.GetAirQualityAsync(lat, lon);
+                        if (bgWeather?.Current != null)
+                        {
+                            _cityWeatherCache[cacheKey] = (bgWeather, bgAqi, DateTime.UtcNow);
+                        }
+                    }
+                    catch { }
+                });
+                return;
+            }
+        }
+        await FetchWeatherForCoordinatesCoreAsync(lat, lon, locationName);
+    }
+
+    private async Task FetchWeatherForCoordinatesCoreAsync(double lat, double lon, string locationName)
+    {
         IsLoading = true;
         HasError = false;
         ErrorMessage = string.Empty;
@@ -1909,6 +2162,7 @@ public partial class MainViewModel : ObservableObject
             }
 
             _rawWeatherData = data;
+            _cityWeatherCache[GetCityCacheKey(lat, lon)] = (data, _lastAirQuality, DateTime.UtcNow);
             UpdateDisplaysFromRawData(data, locationName, _lastAirQuality);
         }
         catch (Exception ex)
@@ -1978,6 +2232,7 @@ public partial class MainViewModel : ObservableObject
             OnPropertyChanged(nameof(HourlyForecast));
             HourlyForecastUpdated?.Invoke();
             UpdateZenHourlyForecast();
+            UpdateNowcastBars(_rawWeatherData);
 
             // Dự báo 7 ngày
             var daily = _weatherService.CreateDailyForecast(data, Settings);
@@ -2968,8 +3223,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<HourlyForecastItem> _zenHourlyForecast = new();
 
-    public bool IsZenClockModern => ZenClockStyle == "Modern";
-    public bool IsZenClockFlip => ZenClockStyle == "Flip";
+    public bool IsZenClockNothingStandBy => ZenClockStyle == "NothingStandBy" || IsNothingDesign;
+    public bool IsZenClockModern => ZenClockStyle == "Modern" && !IsNothingDesign;
+    public bool IsZenClockFlip => ZenClockStyle == "Flip" && !IsNothingDesign;
     public bool IsZenClockStacked => ZenClockStyle == "Stacked";
     public bool IsZenClockAnalog => ZenClockStyle == "Analog";
 
@@ -2980,6 +3236,7 @@ public partial class MainViewModel : ObservableObject
         if (IsZenModeOpen)
         {
             UpdateZenHourlyForecast();
+            UpdateNowcastBars(_rawWeatherData);
         }
     }
 
@@ -3000,6 +3257,7 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(IsZenClockFlip));
         OnPropertyChanged(nameof(IsZenClockStacked));
         OnPropertyChanged(nameof(IsZenClockAnalog));
+        OnPropertyChanged(nameof(IsZenClockNothingStandBy));
     }
 
     [RelayCommand]

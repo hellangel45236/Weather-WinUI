@@ -203,13 +203,13 @@ public class LocalizationService : INotifyPropertyChanged
 
     #region Settings Tab Strings
 
-    public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.5.2)" : "Settings & Personalization Center (Version 3.5.2)";
+    public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.6.0)" : "Settings & Personalization Center (Version 3.6.0)";
     public string SettingsSubtitle => IsVietnamese ? "Quản lý giao diện, ngôn ngữ, biểu tượng, đơn vị, hình nền và hiệu năng hệ thống" : "Manage appearance, language, icons, units, wallpapers and system performance";
     public string SettingsHeaderTitle => SettingsTitle;
     public string SettingsHeaderSubtitle => SettingsSubtitle;
     public string SaveAndApply => IsVietnamese ? "Lưu & Áp Dụng" : "Save & Apply";
     public string SaveApplyButton => SaveAndApply;
-    public string VersionOfficial => IsVietnamese ? "Version 3.5.2 (Chính Thức)" : "Version 3.5.2 (Official)";
+    public string VersionOfficial => IsVietnamese ? "Version 3.6.0 (Chính Thức)" : "Version 3.6.0 (Official)";
     public string VersionBadge => VersionOfficial;
     public string AppDescription => IsVietnamese ? "Ứng dụng thời tiết hiện đại, siêu nhẹ, tương thích hoàn hảo Windows 10 & 11" : "Modern, lightweight weather application, perfectly compatible with Windows 10 & 11";
 
@@ -626,6 +626,14 @@ public class LocalizationService : INotifyPropertyChanged
     public string WidgetStudioNothingCircularDesc => IsVietnamese ? "Mặt số tròn Nothing Dial với vòng cự ly Glyph, chấm đỏ tâm điểm, số nhiệt độ Ndot lớn và cảm biến vi khí hậu" : "Nothing Circular Dial with dotted compass track, red origin beacon, huge Ndot temperature and telemetry pill";
     public string WidgetStudioNothingPillTitle => "💊 Nothing Glance (Pill Bar)";
     public string WidgetStudioNothingPillDesc => IsVietnamese ? "Viên nang tối giản Nothing Glance siêu gọn gàng, chấm đỏ Nothing Red, glyph nhiệt độ và mã trạm đo" : "Compact Nothing Glance pill with red status dot, Ndot temperature glyph and station telemetry";
+    public string WidgetStudioDynamicIslandTitle => "🏝️ Dynamic Island (Hover Capsule)";
+    public string WidgetStudioDynamicIslandDesc => IsVietnamese ? "Viên thuốc thông minh 240×44 ở viền trên màn hình, tự động bung rộng 320×168 khi rê chuột vào xem dự báo 4 giờ" : "Smart 240×44 top capsule that smoothly expands to 320×168 on mouse hover to reveal 4-hour forecast & telemetry";
+    public string WidgetStudioTeenageDeckTitle => "🎛️ Field Deck (OP-1 Industrial)";
+    public string WidgetStudioTeenageDeckDesc => IsVietnamese ? "Trạm đo công nghiệp lấy cảm hứng từ Teenage Engineering OP-1 với vỏ xám titan, cam #FF5500 và thước đo cơ khí" : "Industrial field instrument inspired by Teenage Engineering OP-1 with titanium slate housing, #FF5500 orange accents & scale ruler";
+    public string WidgetStudioPureTypoTitle => "✨ Pure Typo HUD (100% Trong Suốt)";
+    public string WidgetStudioPureTypoDesc => IsVietnamese ? "Khung chữ nghệ thuật trong suốt 100% không viền hộp, hòa quyện trực tiếp lên hình nền Wallpaper của bạn" : "100% transparent borderless typographic HUD that blends directly onto your desktop wallpaper like Rainmeter";
+    public string WidgetStudioGhostMode => IsVietnamese ? "Chế độ Xuyên Thấu Chuột (Ghost Click-Through)" : "Ghost Click-Through Mode (WS_EX_TRANSPARENT)";
+    public string WidgetStudioGhostModeSub => IsVietnamese ? "Cho phép click chuột xuyên qua Widget xuống icon hoặc cửa sổ bên dưới mà không bị vướng" : "Allow mouse clicks to pass right through the widget to desktop icons or windows underneath";
     public string WidgetStudio4DayForecast => IsVietnamese ? "Dự báo 4 ngày" : "4-Day Forecast";
     public string WidgetStudioAqiGood => IsVietnamese ? "AQI Chuẩn" : "AQI Good";
     public string WidgetStudioControlsHeader => IsVietnamese ? "Tùy Biến & Điều Khiển Widget" : "Widget Controls & Customization";
@@ -702,6 +710,8 @@ public class LocalizationService : INotifyPropertyChanged
     public string ZenClockFlip => IsVietnamese ? "Thẻ Lật Cổ Điển" : "Retro Flip";
     public string ZenClockStacked => IsVietnamese ? "Nghệ Thuật Chữ Số" : "Stacked Typography";
     public string ZenClockAnalog => IsVietnamese ? "Kim Quét Chuẩn Xác" : "Precision Analog";
+    public string ZenClockNothingStandBy => IsVietnamese ? "Nothing StandBy Matrix" : "Nothing StandBy Matrix";
+    public string ZenPomodoroTooltip => IsVietnamese ? "Đồng hồ tập trung Pomodoro (25 phút làm việc / 5 phút nghỉ)" : "Pomodoro Focus Timer (25m Work / 5m Break)";
     public string ZenSettingsTitle => IsVietnamese ? "Tùy Biến Chế Độ Zen" : "Zen Customization";
     public string ZenShowSecondsLabel => IsVietnamese ? "Hiện kim / số giây" : "Show Seconds";
     public string ZenShowWeatherInfoLabel => IsVietnamese ? "Nhiệt độ & Trạng thái" : "Weather Info & Condition";

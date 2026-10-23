@@ -48,6 +48,14 @@ public sealed partial class MainPage : Page
 
         this.KeyDown += (s, e) =>
         {
+            if (e.Key == Windows.System.VirtualKey.K &&
+                Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Control).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down))
+            {
+                LocationSearchBox?.Focus(FocusState.Programmatic);
+                Helpers.MechanicalSoundHelper.PlayClick();
+                e.Handled = true;
+                return;
+            }
             if (e.Key == Windows.System.VirtualKey.F11)
             {
                 ViewModel.ToggleZenModeCommand.Execute(null);
@@ -195,6 +203,7 @@ public sealed partial class MainPage : Page
                 ViewModel.SeasonalSkinChanged += (s, skin) =>
                 {
                     UpdateZenGradientColor();
+                StartZenChromeAutoHideTimer();
                     UpdateSeasonalThemeButtonStyle();
                     TabOverview?.UpdateNothingThemeVisuals();
                 (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
@@ -383,6 +392,7 @@ public sealed partial class MainPage : Page
                         }
                         _widgetWindow.Activate();
                     }
+                    
                 }
                 catch { }
             }
@@ -434,6 +444,30 @@ public sealed partial class MainPage : Page
     private bool _isShareDialogOpen = false;
 
     private WeatherEffectRenderer? _zenEffectRenderer;
+    private DispatcherTimer? _zenChromeTimer;
+
+    private void StartZenChromeAutoHideTimer()
+    {
+        if (_zenChromeTimer == null)
+        {
+            _zenChromeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(2600) };
+            _zenChromeTimer.Tick += (s, e) =>
+            {
+                _zenChromeTimer.Stop();
+                if (ZenTopChrome != null) ZenTopChrome.Opacity = 0.08;
+                if (ZenBottomChrome != null) ZenBottomChrome.Opacity = 0.08;
+            };
+        }
+        if (ZenTopChrome != null) ZenTopChrome.Opacity = 1.0;
+        if (ZenBottomChrome != null) ZenBottomChrome.Opacity = 1.0;
+        _zenChromeTimer.Stop();
+        _zenChromeTimer.Start();
+    }
+
+    private void ZenOverlay_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        StartZenChromeAutoHideTimer();
+    }
 
     private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
@@ -452,6 +486,7 @@ public sealed partial class MainPage : Page
                     _zenEffectRenderer.SetSeasonalParticleType(ViewModel.CurrentSeasonalSkin.ParticleType, ViewModel.EnableSeasonalParticles);
                 }
                 UpdateZenGradientColor();
+                StartZenChromeAutoHideTimer();
             }
         }
         else if (e.PropertyName == nameof(MainViewModel.SelectedDesignLanguage))
@@ -469,6 +504,7 @@ public sealed partial class MainPage : Page
                 catch { }
 
                 UpdateZenGradientColor();
+                StartZenChromeAutoHideTimer();
                 ViewModel?.UpdateZenHourlyForecast();
                 _zenEffectRenderer ??= new WeatherEffectRenderer(ZenWeatherCanvas, ZenLightningOverlay);
                 if (ViewModel?.CurrentWeather != null && _zenEffectRenderer != null)
@@ -490,6 +526,7 @@ public sealed partial class MainPage : Page
                 }
                 catch { }
                 _zenEffectRenderer?.Pause();
+                _zenChromeTimer?.Stop();
             }
         }
         else if (e.PropertyName == nameof(MainViewModel.CurrentSeasonalSkin) ||
@@ -502,6 +539,7 @@ public sealed partial class MainPage : Page
             {
                 _zenEffectRenderer.SetSeasonalParticleType(ViewModel.CurrentSeasonalSkin.ParticleType, ViewModel.EnableSeasonalParticles);
                 UpdateZenGradientColor();
+                StartZenChromeAutoHideTimer();
             }
         }
     }
@@ -755,6 +793,8 @@ public sealed partial class MainPage : Page
         }
     }
 
+    private void HeaderChangelogButton_Click(object sender, RoutedEventArgs e) => OpenChangelogDialog();
+
     private void SettingsTab_OpenChangelogRequested(object? sender, EventArgs e)
     {
         OpenChangelogDialog();
@@ -807,6 +847,13 @@ public sealed partial class MainPage : Page
         }
         else if (!string.IsNullOrWhiteSpace(args.QueryText))
         {
+            string rawCmd = args.QueryText.Trim();
+            if (rawCmd.StartsWith(">") || TryMatchDirectCommand(rawCmd))
+            {
+                ExecuteQuickCommand(rawCmd.TrimStart('>').Trim());
+                sender.Text = string.Empty;
+                return;
+            }
             await ViewModel.SearchLocationsCommand.ExecuteAsync(args.QueryText);
             if (ViewModel.SearchResults.Count > 0)
             {
@@ -888,7 +935,7 @@ public sealed partial class MainPage : Page
                     MainNavView.Resources["NavigationViewTopPaneBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(paneBg);
                 }
 
-                var nBadgeBgBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(badgeBg);
+                var nBadgeBgBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
                 var nBadgeFgBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
                 var nBadgeRedBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
 
@@ -998,17 +1045,18 @@ public sealed partial class MainPage : Page
                     MainNavView.Resources.Remove("NavigationViewTopPaneBackground");
                 }
 
-                if (NavOverviewBadgeBorder != null) NavOverviewBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 12, 74, 110) : Windows.UI.Color.FromArgb(255, 224, 242, 254));
+                var transparentBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
+                if (NavOverviewBadgeBorder != null) NavOverviewBadgeBorder.Background = transparentBrush;
                 if (NavOverviewBadgeText != null) NavOverviewBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 56, 189, 248) : Windows.UI.Color.FromArgb(255, 2, 132, 199));
-                if (NavFloodBadgeBorder != null) NavFloodBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 12, 74, 110) : Windows.UI.Color.FromArgb(255, 224, 242, 254));
+                if (NavFloodBadgeBorder != null) NavFloodBadgeBorder.Background = transparentBrush;
                 if (NavFloodBadgeText != null) NavFloodBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 56, 189, 248) : Windows.UI.Color.FromArgb(255, 2, 132, 199));
-                if (NavRadarBadgeBorder != null) NavRadarBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 6, 78, 59) : Windows.UI.Color.FromArgb(255, 220, 252, 231));
+                if (NavRadarBadgeBorder != null) NavRadarBadgeBorder.Background = transparentBrush;
                 if (NavRadarBadgeText != null) NavRadarBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 52, 211, 153) : Windows.UI.Color.FromArgb(255, 22, 163, 74));
-                if (NavLifestyleBadgeBorder != null) NavLifestyleBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 112, 26, 117) : Windows.UI.Color.FromArgb(255, 252, 231, 243));
+                if (NavLifestyleBadgeBorder != null) NavLifestyleBadgeBorder.Background = transparentBrush;
                 if (NavLifestyleBadgeText != null) NavLifestyleBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 244, 114, 182) : Windows.UI.Color.FromArgb(255, 219, 39, 119));
-                if (NavCalendarBadgeBorder != null) NavCalendarBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 76, 29, 149) : Windows.UI.Color.FromArgb(255, 237, 233, 254));
+                if (NavCalendarBadgeBorder != null) NavCalendarBadgeBorder.Background = transparentBrush;
                 if (NavCalendarBadgeText != null) NavCalendarBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 167, 139, 250) : Windows.UI.Color.FromArgb(255, 124, 58, 237));
-                if (NavWidgetBadgeBorder != null) NavWidgetBadgeBorder.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 30, 41, 59) : Windows.UI.Color.FromArgb(255, 241, 245, 249));
+                if (NavWidgetBadgeBorder != null) NavWidgetBadgeBorder.Background = transparentBrush;
                 if (NavWidgetBadgeText != null) NavWidgetBadgeText.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(isDark ? Windows.UI.Color.FromArgb(255, 148, 163, 184) : Windows.UI.Color.FromArgb(255, 100, 116, 139));
 
                 var faFont = App.Current.Resources.TryGetValue("FontAwesomeSolid", out var ff) ? (Microsoft.UI.Xaml.Media.FontFamily)ff : new Microsoft.UI.Xaml.Media.FontFamily("Assets/Fonts/fa-solid-900.ttf#Font Awesome 6 Free Solid");
@@ -1058,7 +1106,78 @@ public sealed partial class MainPage : Page
     {
         if (sender is Button btn && btn.Tag is QuickLocationChipItem chip && ViewModel != null)
         {
+            Helpers.MechanicalSoundHelper.PlayClick();
+            if (AllCitiesFlyoutBtn?.Flyout != null) AllCitiesFlyoutBtn.Flyout.Hide();
             await ViewModel.SelectQuickChipAsync(chip);
+        }
+    }
+
+    private static bool TryMatchDirectCommand(string input)
+    {
+        string c = input.Trim().ToLowerInvariant();
+        return c == "nothing" || c == "fluent" || c == "dark" || c == "light" ||
+               c == "zen" || c == "pomodoro" || c == "focus" || c == "widget" ||
+               c == "duel" || c == "compare";
+    }
+
+    private void QuickCommand_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is string cmd)
+        {
+            CommandPaletteFlyout?.Hide();
+            ExecuteQuickCommand(cmd);
+        }
+    }
+
+    private void ExecuteQuickCommand(string cmd)
+    {
+        if (ViewModel == null || string.IsNullOrWhiteSpace(cmd)) return;
+        Helpers.MechanicalSoundHelper.PlayClick();
+        string norm = cmd.Trim().ToLowerInvariant();
+        switch (norm)
+        {
+            case "nothing":
+                ViewModel.ApplyDesignLanguage("Nothing");
+                (App.MainWindow as MainWindow)?.UpdateWindowTheme();
+                break;
+            case "fluent":
+            case "fluent2":
+                ViewModel.ApplyDesignLanguage("Fluent2");
+                (App.MainWindow as MainWindow)?.UpdateWindowTheme();
+                break;
+            case "dark":
+                ViewModel.ChangeTheme("Dark");
+                ApplyDesignLanguageVisuals(ViewModel.SelectedDesignLanguage);
+                (App.MainWindow as MainWindow)?.UpdateWindowTheme();
+                break;
+            case "light":
+                ViewModel.ChangeTheme("Light");
+                ApplyDesignLanguageVisuals(ViewModel.SelectedDesignLanguage);
+                (App.MainWindow as MainWindow)?.UpdateWindowTheme();
+                break;
+            case "zen":
+            case "standby":
+                ViewModel.ToggleZenModeCommand.Execute(null);
+                break;
+            case "pomodoro":
+            case "focus":
+                if (!ViewModel.IsZenModeOpen) ViewModel.ToggleZenModeCommand.Execute(null);
+                if (!ViewModel.IsPomodoroRunning) ViewModel.TogglePomodoroRunCommand.Execute(null);
+                break;
+            case "widget":
+                SelectNavigationTabByTag("widget");
+                break;
+            case "radar":
+                SelectNavigationTabByTag("radar");
+                break;
+            case "flood":
+                SelectNavigationTabByTag("flood");
+                break;
+            case "duel":
+            case "compare":
+                SelectNavigationTabByTag("overview");
+                _ = ViewModel.OpenWeatherComparisonAsync();
+                break;
         }
     }
 
@@ -1282,6 +1401,7 @@ public sealed partial class MainPage : Page
     {
         if (_isRenderingShareCard) return;
         _isRenderingShareCard = true;
+        if (OffscreenExportHost != null) OffscreenExportHost.Visibility = Visibility.Visible;
         try
         {
             if (SharePreviewProgressRing != null)
@@ -1332,6 +1452,7 @@ public sealed partial class MainPage : Page
         finally
         {
             _isRenderingShareCard = false;
+            if (OffscreenExportHost != null) OffscreenExportHost.Visibility = Visibility.Collapsed;
             if (SharePreviewProgressRing != null)
             {
                 SharePreviewProgressRing.IsActive = false;
@@ -1464,7 +1585,7 @@ public sealed partial class MainPage : Page
 
     private void CheckAndShowChangelog()
     {
-        string currentVersion = "3.5.0";
+        string currentVersion = "3.6.0";
         string lastSeen = ViewModel.Settings.LastSeenVersion ?? string.Empty;
 
         if (string.IsNullOrEmpty(lastSeen) || lastSeen != currentVersion)
@@ -1524,6 +1645,7 @@ public sealed partial class MainPage : Page
     {
         var panels = new[]
         {
+            (ChangelogContent_v360, "3.6.0"),
             (ChangelogContent_v350, "3.5.0"),
             (ChangelogContent_v306, "3.0.6"),
             (ChangelogContent_v305, "3.0.5"),
@@ -1562,6 +1684,7 @@ public sealed partial class MainPage : Page
         {
             ChangelogHeaderTitle.Text = versionTag switch
             {
+                "3.6.0" => isVi ? "Siêu Cập Nhật Weather WinUI v3.6.0" : "Official Release Notes v3.6.0",
                 "3.5.0" => isVi ? "Chi Ti\u1EBFt B\u1EA3n Ph\u00E1t H\u00E0nh Ch\u00EDnh Th\u1EE9c v3.5.0" : "Official Release Notes v3.5.0",
                 "3.4.1" => isVi ? "Chi Ti\u1EBFt B\u1EA3n Ph\u00E1t H\u00E0nh Ch\u00EDnh Th\u1EE9c v3.4.1" : "Official Release Notes v3.4.1",
                 "3.4.0" => isVi ? "Chi Ti\u1EBFt B\u1EA3n Ph\u00E1t H\u00E0nh Ch\u00EDnh Th\u1EE9c v3.4.0" : "Official Release Notes v3.4.0",
@@ -1586,7 +1709,11 @@ public sealed partial class MainPage : Page
 
         if (ChangelogHeaderBadge != null)
         {
-            if (versionTag == "3.5.0")
+            if (versionTag == "3.6.0")
+            {
+                ChangelogHeaderBadge.Text = isVi ? "v3.6.0 BẢN CHÍNH THỨC" : "v3.6.0 OFFICIAL";
+            }
+            else if (versionTag == "3.5.0")
             {
                 ChangelogHeaderBadge.Text = isVi ? "v3.5.0 B\u1EA2N CH\u00CDNH TH\u1EE8C" : "v3.5.0 OFFICIAL";
             }
@@ -1610,7 +1737,13 @@ public sealed partial class MainPage : Page
 
         if (ChangelogHeaderSubtitle != null)
         {
-            if (versionTag == "3.5.0")
+            if (versionTag == "3.6.0")
+            {
+                ChangelogHeaderSubtitle.Text = isVi
+                    ? "Đột phá toàn diện UI/UX Zero-Chrome & Spatial Bento, Command Palette (Ctrl+K), Radar Mưa 60 Phút Tới, Đồ Thị Nhiệt Độ 24h Tương Tác, Zen Mode 2.0 Nothing StandBy + Pomodoro, và Bộ 3 Widget 3.0 (Dynamic Island, Field Deck, Pure Typo HUD + Ghost Mode)."
+                    : "Comprehensive overhaul featuring Zero-Chrome Command Header (Ctrl+K), 60-Min Precipitation Nowcast, Interactive 24h Curve Scrubber, Zen Mode 2.0 Nothing StandBy + Pomodoro, and Desktop Widgets 3.0.";
+            }
+            else if (versionTag == "3.5.0")
             {
                 ChangelogHeaderSubtitle.Text = isVi
                     ? "B\u1EA3n c\u1EADp nh\u1EADt v3.5.0 gi\u1EDBi thi\u1EC7u phong c\u00E1ch thi\u1EBFt k\u1EBF Nothing Design \u0111\u1ED9t ph\u00E1 (Nothing OS Glyph Interface, ph\u00F4ng ch\u1EEF ma tr\u1EADn \u0111i\u1EC3m NDot, t\u01B0\u01A1ng ph\u1EA3n cao Monochrome Stealth & CMF Chalk), b\u1ED5 sung 2 m\u1EABu Desktop Widget Nothing Bento & Nothing Square, c\u00F9ng vi\u1EC7c kh\u1EAFc ph\u1EE5c tri\u1EC7t \u0111\u1EC3 l\u1ED7i m\u00E3 h\u00F3a ph\u00F4ng ch\u1EEF."

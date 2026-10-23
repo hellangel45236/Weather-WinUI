@@ -292,6 +292,7 @@ public sealed partial class OverviewTab : UserControl
         DispatcherQueue.TryEnqueue(() =>
         {
             RenderHourlyTemperatureTrendline();
+            RenderNothingHourlyCurve();
             RenderSunArc();
             RenderPressureSparkline();
             RenderVisualGauges();
@@ -759,6 +760,9 @@ public sealed partial class OverviewTab : UserControl
         if (NothingGlyphBoxBorder != null) { NothingGlyphBoxBorder.Background = glyphBoxBg; NothingGlyphBoxBorder.BorderBrush = subCardBorder; }
         if (NothingAqiBorder != null) { NothingAqiBorder.Background = cardBg; NothingAqiBorder.BorderBrush = cardBorder; }
         if (NothingSunsetBorder != null) { NothingSunsetBorder.Background = cardBg; NothingSunsetBorder.BorderBrush = cardBorder; }
+        if (NothingNowcastBorder != null) { NothingNowcastBorder.Background = cardBg; NothingNowcastBorder.BorderBrush = cardBorder; }
+        if (NothingNowcastHeadlineText != null) { NothingNowcastHeadlineText.Foreground = textPrimary; }
+        if (NothingNowcastSubText != null) { NothingNowcastSubText.Foreground = textSecondary; }
         if (NothingHourlyBorder != null)
         {
             NothingHourlyBorder.Background = cardBg;
@@ -866,6 +870,7 @@ public sealed partial class OverviewTab : UserControl
         if (NothingCompassNeedle != null) { NothingCompassNeedle.Background = textPrimary; }
         if (NothingCompassDial != null) { NothingCompassDial.BorderBrush = textSecondary; }
         if (NothingSunProgressBar != null) { NothingSunProgressBar.Background = subCardBorder; }
+        RenderNothingHourlyCurve();
     }
 
     public void RenderHourlyTemperatureTrendline() => RenderHourlyTrendline();
@@ -1366,6 +1371,233 @@ public sealed partial class OverviewTab : UserControl
         {
             var item = _cachedHourlyItems[_hoveredHourlyIndex];
             ViewModel?.ScrubToItem(item);
+        }
+    }
+
+    // ---------------------------------------------------------------------------------
+    // v3.6.0: NOTHING OS DOT-MATRIX 24-HOUR INTERACTIVE TELEMETRY CURVE SCRUBBER
+    // ---------------------------------------------------------------------------------
+    private readonly List<Windows.Foundation.Point> _nothingCurvePoints = new();
+    private readonly List<HourlyForecastItem> _nothingCurveItems = new();
+    private int _nothingHoveredIndex = -1;
+    private Microsoft.UI.Xaml.Shapes.Line? _nothingHoverNeedle;
+    private Microsoft.UI.Xaml.Shapes.Ellipse? _nothingHoverRing;
+    private Microsoft.UI.Xaml.Shapes.Ellipse? _nothingHoverDot;
+
+    public void RenderNothingHourlyCurve()
+    {
+        if (NothingHourlyCurveCanvas == null || ViewModel?.HourlyForecast == null || ViewModel.HourlyForecast.Count == 0)
+            return;
+
+        try
+        {
+            NothingHourlyCurveCanvas.Children.Clear();
+            _nothingCurvePoints.Clear();
+            _nothingCurveItems.Clear();
+
+            var items = ViewModel.HourlyForecast.ToList();
+            int count = items.Count;
+            if (count == 0) return;
+
+            const double cardWidth = 96.0;
+            const double cardSpacing = 12.0;
+            double totalWidth = count * cardWidth + (count - 1) * cardSpacing;
+            double canvasHeight = 72.0;
+
+            NothingHourlyCurveCanvas.Width = totalWidth;
+            NothingHourlyCurveCanvas.Height = canvasHeight;
+
+            bool isDark = ThemeHelper.IsDarkTheme(this);
+            var primaryColor = isDark ? Windows.UI.Color.FromArgb(255, 255, 255, 255) : Windows.UI.Color.FromArgb(255, 17, 17, 17);
+            var redColor = Windows.UI.Color.FromArgb(255, 215, 25, 33);
+            var gridColor = isDark ? Windows.UI.Color.FromArgb(30, 255, 255, 255) : Windows.UI.Color.FromArgb(30, 0, 0, 0);
+
+            // Subtle technical reference lines
+            foreach (double gy in new[] { 18.0, 38.0, 58.0 })
+            {
+                NothingHourlyCurveCanvas.Children.Add(new Microsoft.UI.Xaml.Shapes.Line
+                {
+                    X1 = 0, Y1 = gy, X2 = totalWidth, Y2 = gy,
+                    Stroke = new SolidColorBrush(gridColor),
+                    StrokeThickness = 1,
+                    StrokeDashArray = new DoubleCollection { 2, 4 }
+                });
+            }
+
+            var temps = items.Select(x => x.TempValue).ToList();
+            double minT = temps.Min();
+            double maxT = temps.Max();
+            double range = Math.Max(2.0, maxT - minT);
+
+            for (int i = 0; i < count; i++)
+            {
+                double x = i * (cardWidth + cardSpacing) + (cardWidth / 2.0);
+                double norm = (temps[i] - minT) / range;
+                double y = 56.0 - norm * 36.0;
+                _nothingCurvePoints.Add(new Windows.Foundation.Point(x, y));
+                _nothingCurveItems.Add(items[i]);
+            }
+
+            // Smooth technical bezier spline
+            if (_nothingCurvePoints.Count > 1)
+            {
+                var pathGeo = new PathGeometry();
+                var fig = new PathFigure { StartPoint = _nothingCurvePoints[0], IsClosed = false };
+                for (int i = 0; i < _nothingCurvePoints.Count - 1; i++)
+                {
+                    var p0 = _nothingCurvePoints[i];
+                    var p1 = _nothingCurvePoints[i + 1];
+                    double midX = (p0.X + p1.X) / 2.0;
+                    fig.Segments.Add(new BezierSegment
+                    {
+                        Point1 = new Windows.Foundation.Point(midX, p0.Y),
+                        Point2 = new Windows.Foundation.Point(midX, p1.Y),
+                        Point3 = p1
+                    });
+                }
+                pathGeo.Figures.Add(fig);
+
+                NothingHourlyCurveCanvas.Children.Add(new Microsoft.UI.Xaml.Shapes.Path
+                {
+                    Data = pathGeo,
+                    Stroke = new SolidColorBrush(redColor),
+                    StrokeThickness = 1.8,
+                    StrokeDashArray = new DoubleCollection { 3, 2 }
+                });
+            }
+
+            // Matrix nodes + temperature labels
+            for (int i = 0; i < _nothingCurvePoints.Count; i++)
+            {
+                var pt = _nothingCurvePoints[i];
+                bool isNow = items[i].IsNow;
+
+                var node = new Microsoft.UI.Xaml.Shapes.Ellipse
+                {
+                    Width = isNow ? 9 : 6,
+                    Height = isNow ? 9 : 6,
+                    Fill = new SolidColorBrush(isNow ? redColor : primaryColor),
+                    Stroke = new SolidColorBrush(redColor),
+                    StrokeThickness = isNow ? 2.0 : 1.2
+                };
+                double r = (isNow ? 9 : 6) / 2.0;
+                Canvas.SetLeft(node, pt.X - r);
+                Canvas.SetTop(node, pt.Y - r);
+                NothingHourlyCurveCanvas.Children.Add(node);
+
+                var lbl = new TextBlock
+                {
+                    Text = items[i].TempDisplay,
+                    FontSize = 10,
+                    FontWeight = Microsoft.UI.Text.FontWeights.Bold,
+                    FontFamily = new FontFamily("Cascadia Mono, Consolas, Segoe UI"),
+                    Foreground = new SolidColorBrush(isNow ? redColor : primaryColor),
+                    TextAlignment = TextAlignment.Center,
+                    Width = 48
+                };
+                Canvas.SetLeft(lbl, pt.X - 24);
+                Canvas.SetTop(lbl, Math.Max(1, pt.Y - 17));
+                NothingHourlyCurveCanvas.Children.Add(lbl);
+            }
+
+            // Create hover crosshair elements
+            _nothingHoverNeedle = new Microsoft.UI.Xaml.Shapes.Line
+            {
+                Stroke = new SolidColorBrush(redColor),
+                StrokeThickness = 1.5,
+                StrokeDashArray = new DoubleCollection { 2, 2 },
+                Visibility = Visibility.Collapsed,
+                IsHitTestVisible = false
+            };
+            _nothingHoverRing = new Microsoft.UI.Xaml.Shapes.Ellipse
+            {
+                Width = 18, Height = 18,
+                Stroke = new SolidColorBrush(redColor),
+                StrokeThickness = 1.5,
+                Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(45, 215, 25, 33)),
+                Visibility = Visibility.Collapsed,
+                IsHitTestVisible = false
+            };
+            _nothingHoverDot = new Microsoft.UI.Xaml.Shapes.Ellipse
+            {
+                Width = 7, Height = 7,
+                Fill = new SolidColorBrush(redColor),
+                Visibility = Visibility.Collapsed,
+                IsHitTestVisible = false
+            };
+
+            NothingHourlyCurveCanvas.Children.Add(_nothingHoverNeedle);
+            NothingHourlyCurveCanvas.Children.Add(_nothingHoverRing);
+            NothingHourlyCurveCanvas.Children.Add(_nothingHoverDot);
+        }
+        catch { }
+    }
+
+    private void NothingHourlyCurveCanvas_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (_nothingCurvePoints.Count == 0 || NothingHourlyCurveCanvas == null) return;
+        var pos = e.GetCurrentPoint(NothingHourlyCurveCanvas).Position;
+
+        int closest = -1;
+        double bestDist = double.MaxValue;
+        for (int i = 0; i < _nothingCurvePoints.Count; i++)
+        {
+            double d = Math.Abs(_nothingCurvePoints[i].X - pos.X);
+            if (d < bestDist)
+            {
+                bestDist = d;
+                closest = i;
+            }
+        }
+
+        if (closest >= 0 && closest < _nothingCurvePoints.Count && closest != _nothingHoveredIndex)
+        {
+            _nothingHoveredIndex = closest;
+            var pt = _nothingCurvePoints[closest];
+            var item = _nothingCurveItems[closest];
+
+            if (_nothingHoverNeedle != null)
+            {
+                _nothingHoverNeedle.X1 = pt.X;
+                _nothingHoverNeedle.Y1 = 2;
+                _nothingHoverNeedle.X2 = pt.X;
+                _nothingHoverNeedle.Y2 = 70;
+                _nothingHoverNeedle.Visibility = Visibility.Visible;
+            }
+            if (_nothingHoverRing != null)
+            {
+                Canvas.SetLeft(_nothingHoverRing, pt.X - 9);
+                Canvas.SetTop(_nothingHoverRing, pt.Y - 9);
+                _nothingHoverRing.Visibility = Visibility.Visible;
+            }
+            if (_nothingHoverDot != null)
+            {
+                Canvas.SetLeft(_nothingHoverDot, pt.X - 3.5);
+                Canvas.SetTop(_nothingHoverDot, pt.Y - 3.5);
+                _nothingHoverDot.Visibility = Visibility.Visible;
+            }
+            if (NothingCurveHoverPill != null && NothingCurveHoverText != null)
+            {
+                NothingCurveHoverText.Text = $"{item.TimeDisplay} // {item.TempDisplay} // RAIN {item.RainProbabilityText} // WIND {item.WindSpeedDisplay}";
+                NothingCurveHoverPill.Visibility = Visibility.Visible;
+            }
+        }
+    }
+
+    private void NothingHourlyCurveCanvas_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        _nothingHoveredIndex = -1;
+        if (_nothingHoverNeedle != null) _nothingHoverNeedle.Visibility = Visibility.Collapsed;
+        if (_nothingHoverRing != null) _nothingHoverRing.Visibility = Visibility.Collapsed;
+        if (_nothingHoverDot != null) _nothingHoverDot.Visibility = Visibility.Collapsed;
+        if (NothingCurveHoverPill != null) NothingCurveHoverPill.Visibility = Visibility.Collapsed;
+    }
+
+    private void NothingHourlyCurveCanvas_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (_nothingHoveredIndex >= 0 && _nothingHoveredIndex < _nothingCurveItems.Count)
+        {
+            ViewModel?.ScrubToItem(_nothingCurveItems[_nothingHoveredIndex]);
         }
     }
 

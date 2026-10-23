@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using WeatherApp.Models;
@@ -77,6 +77,7 @@ public sealed partial class WidgetStudioTab : UserControl
             if (AlwaysOnTopSwitch != null)
             {
                 AlwaysOnTopSwitch.IsOn = ViewModel.Settings.WidgetAlwaysOnTop;
+                if (GhostModeSwitch != null) GhostModeSwitch.IsOn = ViewModel.Settings.WidgetGhostClickThrough;
             }
 
             if (style == "SeasonalCard")
@@ -113,7 +114,7 @@ public sealed partial class WidgetStudioTab : UserControl
                 GalleryGrid.ColumnDefinitions.Clear();
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.RowDefinitions.Clear();
-                for (int r = 0; r < 11; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                for (int r = 0; r < 14; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
                 if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
                 if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 0); Grid.SetRow(CardWidgetGlassCard, 1); }
@@ -126,6 +127,9 @@ public sealed partial class WidgetStudioTab : UserControl
                 if (CardWidgetNothingSquare != null) { Grid.SetColumn(CardWidgetNothingSquare, 0); Grid.SetRow(CardWidgetNothingSquare, 8); }
                 if (CardWidgetNothingCircular != null) { Grid.SetColumn(CardWidgetNothingCircular, 0); Grid.SetRow(CardWidgetNothingCircular, 9); }
                 if (CardWidgetNothingPill != null) { Grid.SetColumn(CardWidgetNothingPill, 0); Grid.SetRow(CardWidgetNothingPill, 10); }
+                if (CardWidgetDynamicIsland != null) { Grid.SetColumn(CardWidgetDynamicIsland, 0); Grid.SetRow(CardWidgetDynamicIsland, 11); }
+                if (CardWidgetTeenageDeck != null) { Grid.SetColumn(CardWidgetTeenageDeck, 0); Grid.SetRow(CardWidgetTeenageDeck, 12); }
+                if (CardWidgetPureTypo != null) { Grid.SetColumn(CardWidgetPureTypo, 0); Grid.SetRow(CardWidgetPureTypo, 13); Grid.SetColumnSpan(CardWidgetPureTypo, 1); }
             }
 
             else
@@ -134,7 +138,7 @@ public sealed partial class WidgetStudioTab : UserControl
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.RowDefinitions.Clear();
-                for (int r = 0; r < 6; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                for (int r = 0; r < 8; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
                 if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
                 if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 1); Grid.SetRow(CardWidgetGlassCard, 0); }
@@ -147,6 +151,9 @@ public sealed partial class WidgetStudioTab : UserControl
                 if (CardWidgetNothingSquare != null) { Grid.SetColumn(CardWidgetNothingSquare, 1); Grid.SetRow(CardWidgetNothingSquare, 4); }
                 if (CardWidgetNothingCircular != null) { Grid.SetColumn(CardWidgetNothingCircular, 0); Grid.SetRow(CardWidgetNothingCircular, 5); }
                 if (CardWidgetNothingPill != null) { Grid.SetColumn(CardWidgetNothingPill, 1); Grid.SetRow(CardWidgetNothingPill, 5); }
+                if (CardWidgetDynamicIsland != null) { Grid.SetColumn(CardWidgetDynamicIsland, 0); Grid.SetRow(CardWidgetDynamicIsland, 6); }
+                if (CardWidgetTeenageDeck != null) { Grid.SetColumn(CardWidgetTeenageDeck, 1); Grid.SetRow(CardWidgetTeenageDeck, 6); }
+                if (CardWidgetPureTypo != null) { Grid.SetColumn(CardWidgetPureTypo, 0); Grid.SetRow(CardWidgetPureTypo, 7); Grid.SetColumnSpan(CardWidgetPureTypo, 2); }
             }
         }
 
@@ -288,7 +295,11 @@ public sealed partial class WidgetStudioTab : UserControl
         SelectWidgetStyle("NothingCircular");
     }
 
-    private void CardWidgetNothingPill_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void CardWidgetNothingPill_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("NothingPill");
+    private void CardWidgetDynamicIsland_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("DynamicIsland");
+    private void CardWidgetTeenageDeck_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("TeenageDeck");
+    private void CardWidgetPureTypo_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("PureTypoHud");
+    private void CardWidgetNothingPill_Unused(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         SelectWidgetStyle("NothingPill");
     }
@@ -404,6 +415,24 @@ public sealed partial class WidgetStudioTab : UserControl
             CardWidgetNothingPill.BorderBrush = selectedTag == "NothingPill" ? accentBrush : subtleBorderBrush;
             CardWidgetNothingPill.BorderThickness = selectedTag == "NothingPill" ? new Thickness(2) : new Thickness(1);
             if (BadgeWidgetNothingPill != null) BadgeWidgetNothingPill.Visibility = selectedTag == "NothingPill" ? Visibility.Visible : Visibility.Collapsed;
+            if (CardWidgetDynamicIsland != null)
+            {
+                CardWidgetDynamicIsland.BorderBrush = selectedTag == "DynamicIsland" ? accentBrush : subtleBorderBrush;
+                CardWidgetDynamicIsland.BorderThickness = selectedTag == "DynamicIsland" ? new Thickness(2) : new Thickness(1);
+                if (BadgeWidgetDynamicIsland != null) BadgeWidgetDynamicIsland.Visibility = selectedTag == "DynamicIsland" ? Visibility.Visible : Visibility.Collapsed;
+            }
+            if (CardWidgetTeenageDeck != null)
+            {
+                CardWidgetTeenageDeck.BorderBrush = selectedTag == "TeenageDeck" ? accentBrush : subtleBorderBrush;
+                CardWidgetTeenageDeck.BorderThickness = selectedTag == "TeenageDeck" ? new Thickness(2) : new Thickness(1);
+                if (BadgeWidgetTeenageDeck != null) BadgeWidgetTeenageDeck.Visibility = selectedTag == "TeenageDeck" ? Visibility.Visible : Visibility.Collapsed;
+            }
+            if (CardWidgetPureTypo != null)
+            {
+                CardWidgetPureTypo.BorderBrush = selectedTag == "PureTypoHud" ? accentBrush : subtleBorderBrush;
+                CardWidgetPureTypo.BorderThickness = selectedTag == "PureTypoHud" ? new Thickness(2) : new Thickness(1);
+                if (BadgeWidgetPureTypo != null) BadgeWidgetPureTypo.Visibility = selectedTag == "PureTypoHud" ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
     }
 
@@ -433,6 +462,20 @@ public sealed partial class WidgetStudioTab : UserControl
         foreach (var w in WidgetWindow.ActiveWidgets)
         {
             try { w.SetOpacity(normalizedOpacity); } catch { }
+        }
+    }
+
+    private void GhostModeSwitch_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null) return;
+        if (sender is ToggleSwitch ts)
+        {
+            ViewModel.Settings.WidgetGhostClickThrough = ts.IsOn;
+            ViewModel.ApplySettings();
+            foreach (var w in WidgetWindow.ActiveWidgets)
+            {
+                try { w.SetGhostClickThrough(ts.IsOn); } catch { }
+            }
         }
     }
 

@@ -1179,6 +1179,53 @@
             </Border>
 
             <!-- =================================================================================== -->
+            <!-- 2.5. DỰ BÁO MƯA 60 PHÚT TỚI (60-MINUTE PRECIPITATION NOWCAST — v3.6.0)              -->
+            <!-- =================================================================================== -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="20,16">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20" VerticalAlignment="Center">
+                    <StackPanel Grid.Column="0" Spacing="6" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Border Width="26" Height="26" CornerRadius="7" Background="#200EA5E9" BorderBrush="#400EA5E9" BorderThickness="1">
+                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf73d;" FontSize="11.5" Foreground="#0EA5E9" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="60-MINUTE PRECIPITATION NOWCAST" FontSize="11.5" FontWeight="Bold" Foreground="#0EA5E9" CharacterSpacing="40" VerticalAlignment="Center"/>
+                            <Border Background="#180EA5E9" BorderBrush="#400EA5E9" BorderThickness="1" CornerRadius="6" Padding="7,2" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.NowcastBadgeText, Mode=OneWay}" FontSize="9.5" FontWeight="Bold" Foreground="#38BDF8"/>
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="{x:Bind ViewModel.NowcastHeadline, Mode=OneWay}" FontSize="15" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{x:Bind ViewModel.NowcastSubtitle, Mode=OneWay}" FontSize="12" Opacity="0.72" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <!-- 12 Five-Minute Intensity Bars (+5m .. +60m) -->
+                    <ItemsControl Grid.Column="1" ItemsSource="{x:Bind ViewModel.NowcastBars, Mode=OneWay}" VerticalAlignment="Center">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:NowcastBarItem">
+                                <StackPanel Spacing="4" Width="26" VerticalAlignment="Bottom" ToolTipService.ToolTip="{x:Bind IntensityLabel}">
+                                    <Grid Height="44" VerticalAlignment="Bottom">
+                                        <Border Width="14" Height="44" CornerRadius="4" Background="#14FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                                        <Border Width="14" Height="{x:Bind BarHeight}" CornerRadius="4"
+                                                Background="{x:Bind FluentColorHex, Converter={StaticResource HexToBrushConverter}}"
+                                                HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                                    </Grid>
+                                    <TextBlock Text="{x:Bind MinuteLabel}" FontSize="9" Opacity="0.65" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+
+            <!-- =================================================================================== -->
             <!-- 3. DỰ BÁO & DÒNG THỜI GIAN 24 GIỜ (UNIFIED INTERACTIVE HOURLY FORECAST & TIMELINE)    -->
             <!-- =================================================================================== -->
             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -1463,7 +1510,7 @@
                                            FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="White"/>
                             </Border>
 
-                            <Border x:Name="NothingHeaderPill1" Background="{ThemeResource NothingPillBackgroundBrush}"
+                            <Border x:Name="NothingHeaderPill1" Visibility="Collapsed" Background="{ThemeResource NothingPillBackgroundBrush}"
                                     BorderBrush="{ThemeResource NothingPillBorderBrush}"
                                     BorderThickness="1" CornerRadius="6" Padding="6,2" VerticalAlignment="Center">
                                 <TextBlock x:Name="NothingHeaderStationSub" Text="ACTIVE STATION // METEO-NDOT" FontSize="10" FontWeight="Bold"
@@ -1774,6 +1821,56 @@
                     </StackPanel>
                 </Grid>
 
+                <!-- 2.5. 60-MINUTE PRECIPITATION NOWCAST: NOTHING GLYPH RADAR MATRIX (v3.6.0) -->
+                <Border x:Name="NothingNowcastBorder"
+                        Background="{ThemeResource NothingCardBackgroundBrush}"
+                        BorderBrush="{ThemeResource NothingCardBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="24"
+                        Padding="24,18">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24" VerticalAlignment="Center">
+                        <StackPanel Grid.Column="0" Spacing="6" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <Ellipse Width="7" Height="7" Fill="{ThemeResource NothingRedBrush}" VerticalAlignment="Center"/>
+                                <TextBlock Text="60-MIN NOWCAST // DỰ BÁO MƯA 60 PHÚT TỚI" FontSize="11.5" FontWeight="Bold"
+                                           FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
+                                <Border Background="#22D71921" BorderBrush="#55D71921" BorderThickness="1" CornerRadius="6" Padding="8,2">
+                                    <TextBlock Text="{x:Bind ViewModel.NowcastBadgeText, Mode=OneWay}" FontSize="9.5" FontWeight="Bold"
+                                               FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingRedBrush}"/>
+                                </Border>
+                            </StackPanel>
+                            <TextBlock x:Name="NothingNowcastHeadlineText" Text="{x:Bind ViewModel.NowcastHeadline, Mode=OneWay}"
+                                       FontSize="16" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
+                                       Foreground="{ThemeResource NothingTextPrimaryBrush}" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="NothingNowcastSubText" Text="{x:Bind ViewModel.NowcastSubtitle, Mode=OneWay}"
+                                       FontSize="11.5" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                       Foreground="{ThemeResource NothingTextSecondaryBrush}" TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <ItemsControl x:Name="NothingNowcastItemsControl" Grid.Column="1" ItemsSource="{x:Bind ViewModel.NowcastBars, Mode=OneWay}" VerticalAlignment="Center">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="7"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:NowcastBarItem">
+                                    <StackPanel Spacing="5" Width="28" VerticalAlignment="Bottom" ToolTipService.ToolTip="{x:Bind IntensityLabel}">
+                                        <Grid Height="46" VerticalAlignment="Bottom">
+                                            <Border Width="14" Height="46" CornerRadius="3" Background="#18888888" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                                            <Border Width="14" Height="{x:Bind BarHeight}" CornerRadius="3"
+                                                    Background="{x:Bind NothingColorHex, Converter={StaticResource HexToBrushConverter}}"
+                                                    HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                                        </Grid>
+                                        <TextBlock Text="{x:Bind MinuteLabel}" FontSize="9" FontFamily="Cascadia Mono, Consolas, Segoe UI"
+                                                   Foreground="#888888" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+
                 <!-- 3. 24-HOUR FORECAST: NOTHING DOT-MATRIX TIMELINE STRIP -->
                 <Border x:Name="NothingHourlyBorder"
                         Background="{ThemeResource NothingCardBackgroundBrush}"
@@ -1781,47 +1878,61 @@
                         BorderThickness="1"
                         CornerRadius="24"
                         Padding="24,20">
-                    <StackPanel Spacing="16">
+                    <StackPanel Spacing="14">
                         <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                                 <Ellipse Width="7" Height="7" Fill="{ThemeResource NothingRedBrush}" VerticalAlignment="Center"/>
-                                <TextBlock Text="24-HOUR FORECAST // D&#x1EF0; B&#x00C1;O 24 GI&#x1EDC;" FontSize="12" FontWeight="Bold"
+                                <TextBlock Text="24-HOUR TELEMETRY CURVE // DỰ BÁO 24 GIỜ" FontSize="12" FontWeight="Bold"
                                            FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingTextSecondaryBrush}"/>
                             </StackPanel>
-                            <TextBlock Grid.Column="1" Text="STEP: 1-HOUR INTERVAL // DOT MATRIX" FontSize="11"
-                                       FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingTextMutedBrush}"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <Border x:Name="NothingCurveHoverPill" Visibility="Collapsed"
+                                        Background="#22D71921" BorderBrush="#66D71921" BorderThickness="1" CornerRadius="6" Padding="8,2">
+                                    <TextBlock x:Name="NothingCurveHoverText" Text="14:00 // 31°C // RAIN 10%" FontSize="10" FontWeight="Bold"
+                                               FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingRedBrush}"/>
+                                </Border>
+                                <TextBlock Text="INTERACTIVE SCRUBBER // DOT MATRIX" FontSize="11" VerticalAlignment="Center"
+                                           FontFamily="Cascadia Mono, Consolas, Segoe UI" Foreground="{ThemeResource NothingTextMutedBrush}"/>
+                            </StackPanel>
                         </Grid>
 
-                        <!-- Hourly Horizontal Items -->
+                        <!-- Hourly Horizontal Items + Interactive Nothing Curve Scrubber (v3.6.0) -->
                         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" HorizontalScrollMode="Enabled">
-                            <ItemsControl x:Name="NothingHourlyItemsControl" ItemsSource="{x:Bind ViewModel.HourlyForecast, Mode=OneWay}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" Spacing="12"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="models:HourlyForecastItem">
-                                        <Border Background="{ThemeResource NothingSubCardBackgroundBrush}"
-                                                BorderBrush="{ThemeResource NothingSubCardBorderBrush}"
-                                                BorderThickness="1"
-                                                CornerRadius="16"
-                                                Width="96"
-                                                Padding="10,14">
-                                            <StackPanel Spacing="6" HorizontalAlignment="Center">
-                                                <TextBlock Text="{x:Bind TimeDisplay}" FontSize="11" FontFamily="{StaticResource NdotFontFamily}"
-                                                           Foreground="{ThemeResource NothingTextSecondaryBrush}" HorizontalAlignment="Center"/>
-                                                <FontIcon FontFamily="{StaticResource NdotFontFamily}" Glyph="{x:Bind NothingGlyph}"
-                                                          FontSize="20" Foreground="{ThemeResource NothingTextPrimaryBrush}" HorizontalAlignment="Center" Margin="0,2"/>
-                                                <TextBlock Text="{x:Bind TempDisplay}" FontSize="15" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
-                                                           Foreground="{ThemeResource NothingTextPrimaryBrush}" HorizontalAlignment="Center"/>
-                                                <TextBlock Text="{x:Bind RainProbabilityText}" FontSize="10.5" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
-                                                           Foreground="{ThemeResource NothingRedBrush}" HorizontalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                            <StackPanel Orientation="Vertical" Spacing="6">
+                                <Canvas x:Name="NothingHourlyCurveCanvas" Height="72" HorizontalAlignment="Left"
+                                        Background="Transparent"
+                                        PointerMoved="NothingHourlyCurveCanvas_PointerMoved"
+                                        PointerExited="NothingHourlyCurveCanvas_PointerExited"
+                                        PointerPressed="NothingHourlyCurveCanvas_PointerPressed"/>
+                                <ItemsControl x:Name="NothingHourlyItemsControl" ItemsSource="{x:Bind ViewModel.HourlyForecast, Mode=OneWay}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="12"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:HourlyForecastItem">
+                                            <Border Background="{ThemeResource NothingSubCardBackgroundBrush}"
+                                                    BorderBrush="{ThemeResource NothingSubCardBorderBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="16"
+                                                    Width="96"
+                                                    Padding="10,14">
+                                                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                                    <TextBlock Text="{x:Bind TimeDisplay}" FontSize="11" FontFamily="{StaticResource NdotFontFamily}"
+                                                               Foreground="{ThemeResource NothingTextSecondaryBrush}" HorizontalAlignment="Center"/>
+                                                    <FontIcon FontFamily="{StaticResource NdotFontFamily}" Glyph="{x:Bind NothingGlyph}"
+                                                              FontSize="20" Foreground="{ThemeResource NothingTextPrimaryBrush}" HorizontalAlignment="Center" Margin="0,2"/>
+                                                    <TextBlock Text="{x:Bind TempDisplay}" FontSize="15" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
+                                                               Foreground="{ThemeResource NothingTextPrimaryBrush}" HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="{x:Bind RainProbabilityText}" FontSize="10.5" FontWeight="Bold" FontFamily="{StaticResource NdotFontFamily}"
+                                                               Foreground="{ThemeResource NothingRedBrush}" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
                         </ScrollViewer>
                     </StackPanel>
                 </Border>
