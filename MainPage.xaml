@@ -13,11 +13,53 @@
     mc:Ignorable="d">
 
     <Grid>
-        <!-- N?I DUNG CHNH C?A ?NG D?NG -->
-        <Grid x:Name="MainContentGrid" RowDefinitions="Auto,Auto,Auto,*" Margin="24,12,24,24">
+        <!-- ==================== ATMOSPHERIC SPATIAL AURORA BACKDROP (VERSION 3.7.0 - 100% WIN10 & WIN11) ==================== -->
+        <Grid x:Name="SpatialAuroraBackdropGrid"
+              Visibility="{x:Bind ViewModel.IsSpatialGlassDesign, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+              IsHitTestVisible="False">
+            <Border x:Name="SpatialBackdropBaseBorder">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop x:Name="SpatialGradStop1" Color="#050914" Offset="0.0"/>
+                        <GradientStop x:Name="SpatialGradStop2" Color="#0C1938" Offset="0.48"/>
+                        <GradientStop x:Name="SpatialGradStop3" Color="#07223B" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <!-- Ambient Glowing Aurora Orbs (Cross-Version XAML Radial Gradients for Windows 10 & 11) -->
+            <Ellipse x:Name="SpatialOrbCyan" Width="760" Height="560" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-180,-140,0,0" Opacity="0.55">
+                <Ellipse.Fill>
+                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+                        <GradientStop Color="#4538BDF8" Offset="0.0"/>
+                        <GradientStop Color="#180EA5E9" Offset="0.55"/>
+                        <GradientStop Color="#000EA5E9" Offset="1.0"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+            <Ellipse x:Name="SpatialOrbViolet" Width="780" Height="620" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-200,-160" Opacity="0.5">
+                <Ellipse.Fill>
+                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+                        <GradientStop Color="#40A855F7" Offset="0.0"/>
+                        <GradientStop Color="#156366F1" Offset="0.55"/>
+                        <GradientStop Color="#006366F1" Offset="1.0"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+            <Ellipse x:Name="SpatialOrbEmerald" Width="620" Height="440" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="180,40,0,0" Opacity="0.4">
+                <Ellipse.Fill>
+                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+                        <GradientStop Color="#3210B981" Offset="0.0"/>
+                        <GradientStop Color="#1014B8A6" Offset="0.55"/>
+                        <GradientStop Color="#0014B8A6" Offset="1.0"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+        </Grid>
 
-        <!-- ==================== HNG 0: THANH I?U KHI?N & ?A I?M D?NG FLOATING ISLAND (VERSION 3.1.0) ==================== -->
-        <!-- ==================== HÀNG 0: UNIFIED SINGLE-ROW COMMAND HEADER (VERSION 3.6.1) ==================== -->
+        <!-- NỘI DUNG CHÍNH CỦA ỨNG DỤNG -->
+        <Grid x:Name="MainContentGrid" RowDefinitions="Auto,Auto,Auto,*" Margin="24,12,24,18">
+
+        <!-- ==================== HÀNG 0: UNIFIED SINGLE-ROW COMMAND HEADER (VERSION 3.7.0) ==================== -->
         <Border Grid.Row="0"
                 x:Name="FloatingIslandHeader"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -27,27 +69,82 @@
                 Padding="12,8"
                 Margin="0,0,0,10">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalAlignment="Center">
-                <!-- LEFT: App Emblem + v3.6 Badge + Smart Pinned Favorites Strip (GPS + 4 Pinned + All Flyout) -->
+                <!-- LEFT: App Emblem + v3.7 Badge + Smart Pinned Favorites Strip (GPS + 4 Pinned + All Flyout) -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                     <Border Width="30" Height="30" CornerRadius="8" VerticalAlignment="Center">
                         <Image Source="ms-appx:///Assets/Square44x44Logo.scale-200.png" Width="30" Height="30" Stretch="Uniform"/>
                     </Border>
                     <TextBlock x:Name="AppSubtitleText" Visibility="Collapsed"/>
 
-                    <!-- Clickable Version Badge (Opens v3.6.1 Changelog) -->
+                    <!-- Clickable Version Badge (Opens v3.7.0 Changelog) -->
                     <Button Click="HeaderChangelogButton_Click"
                             Visibility="{x:Bind ViewModel.IsFluent2Design, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                             Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1" CornerRadius="10" Padding="7,3" VerticalAlignment="Center"
-                            ToolTipService.ToolTip="Weather WinUI v3.6.1 — Bấm để xem tính năng mới">
-                        <TextBlock Text="v3.6.1" FontSize="10.5" FontWeight="Bold" Foreground="{ThemeResource AccentFillColorDefaultBrush}" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
+                            ToolTipService.ToolTip="Weather WinUI v3.7.0 — Bấm để xem tính năng mới">
+                        <TextBlock Text="{x:Bind ViewModel.DesignBadgeText, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="{ThemeResource AccentFillColorDefaultBrush}" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
                     </Button>
                     <Button Click="HeaderChangelogButton_Click"
                             Visibility="{x:Bind ViewModel.IsNothingDesign, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                             Background="#D71921" BorderThickness="0" CornerRadius="8" Padding="7,3" VerticalAlignment="Center"
-                            ToolTipService.ToolTip="NOTHING EDITION // v3.6.1 — Click for Release Notes">
-                        <TextBlock Text="NDOT // 3.6.1" FontSize="9.5" FontWeight="Bold" Foreground="White" FontFamily="{StaticResource NdotFontFamily}"/>
+                            ToolTipService.ToolTip="NOTHING EDITION // v3.7.0 — Click for Release Notes">
+                        <TextBlock Text="NDOT // 3.7.0" FontSize="9.5" FontWeight="Bold" Foreground="White" FontFamily="{StaticResource NdotFontFamily}"/>
+                    </Button>
+
+                    <!-- 3-Way Design Language Quick Switcher (Fluent 2 / Spatial Glass 3.7 / Nothing OS 3.7) -->
+                    <Button x:Name="DesignSwitcherBtn"
+                            Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1" CornerRadius="10" Padding="7,3" VerticalAlignment="Center"
+                            ToolTipService.ToolTip="Chuyển đổi nhanh 3 Hệ Ngôn Ngữ Thiết Kế (Fluent 2 • Spatial Vision 3.7 • Nothing OS 3.7)">
+                        <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf53f;" FontSize="10" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf107;" FontSize="8.5" Opacity="0.65"/>
+                        </StackPanel>
+                        <Button.Flyout>
+                            <Flyout x:Name="DesignSwitcherFlyout" Placement="BottomEdgeAlignedLeft">
+                                <Border Width="290" Padding="4">
+                                    <StackPanel Spacing="5">
+                                        <TextBlock Text="✨ NGÔN NGỮ THIẾT KẾ (DESIGN SYSTEM 3.7)" FontSize="10.5" FontWeight="Bold" Foreground="{ThemeResource AccentFillColorDefaultBrush}" Margin="6,2,6,4"/>
+                                        <Button Click="QuickCommand_Click" Tag="fluent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,7" CornerRadius="8">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="🌊" FontSize="13"/>
+                                                <StackPanel Spacing="1">
+                                                    <TextBlock Text="Fluent 2 (Mica &amp; Acrylic)" FontSize="12" FontWeight="Bold"/>
+                                                    <TextBlock Text="Giao diện chuẩn Windows 11 &amp; 4 Mùa Lễ Hội" FontSize="10.5" Opacity="0.65"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Click="QuickCommand_Click" Tag="spatial" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,7" CornerRadius="8">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="🔮" FontSize="13"/>
+                                                <StackPanel Spacing="1">
+                                                    <TextBlock Text="Spatial Vision (Aurora Glass 3.7)" FontSize="12" FontWeight="Bold" Foreground="#38BDF8"/>
+                                                    <TextBlock Text="Kính quang phổ đa lớp &amp; Viền Specular Rim" FontSize="10.5" Opacity="0.65"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Click="QuickCommand_Click" Tag="nothing" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,7" CornerRadius="8">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="⚫" FontSize="13"/>
+                                                <StackPanel Spacing="1">
+                                                    <TextBlock Text="Nothing OS 3.7 (Dot-Matrix &amp; Live LED)" FontSize="12" FontWeight="Bold" Foreground="#D71921"/>
+                                                    <TextBlock Text="Ma trận điểm 13×13 tương tác &amp; Ndot77" FontSize="10.5" Opacity="0.65"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Button>
+                                        <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" Opacity="0.35" Margin="4,2"/>
+                                        <Button Click="QuickCommand_Click" Tag="eink" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,6" CornerRadius="8">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="📄" FontSize="12"/>
+                                                <TextBlock Text="Nothing E-Ink Paper Mode (#F4F1EA)" FontSize="11.5" FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Border>
+                            </Flyout>
+                        </Button.Flyout>
                     </Button>
 
                     <Border Width="1" Height="16" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="2,0" Opacity="0.5"/>
@@ -192,12 +289,19 @@
                                     <StackPanel Spacing="5">
                                         <Grid ColumnDefinitions="*,Auto" Margin="4,2,4,4">
                                             <TextBlock Grid.Column="0" Text="⚡ COMMAND PALETTE (CTRL + K)" FontSize="11" FontWeight="Bold" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                                            <TextBlock Grid.Column="1" Text="v3.6.1" FontSize="10" Opacity="0.55" FontFamily="Cascadia Mono, Consolas"/>
+                                            <TextBlock Grid.Column="1" Text="v3.7.0" FontSize="10" Opacity="0.55" FontFamily="Cascadia Mono, Consolas"/>
                                         </Grid>
+                                        <Button Click="QuickCommand_Click" Tag="spatial" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="10,6" CornerRadius="8">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                                <TextBlock Grid.Column="0" Text="🔮" FontSize="12"/>
+                                                <TextBlock Grid.Column="1" Text="Giao diện Spatial Vision (Aurora Glass 3.7)" FontSize="12" FontWeight="SemiBold"/>
+                                                <TextBlock Grid.Column="2" Text="&gt; spatial" FontSize="10" Opacity="0.55" FontFamily="Cascadia Mono, Consolas"/>
+                                            </Grid>
+                                        </Button>
                                         <Button Click="QuickCommand_Click" Tag="nothing" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="10,6" CornerRadius="8">
                                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                                                 <TextBlock Grid.Column="0" Text="⚫" FontSize="12"/>
-                                                <TextBlock Grid.Column="1" Text="Chuyển giao diện Nothing OS (Dot-Matrix)" FontSize="12" FontWeight="SemiBold"/>
+                                                <TextBlock Grid.Column="1" Text="Chuyển giao diện Nothing OS 3.7 (Dot-Matrix)" FontSize="12" FontWeight="SemiBold"/>
                                                 <TextBlock Grid.Column="2" Text="&gt; nothing" FontSize="10" Opacity="0.55" FontFamily="Cascadia Mono, Consolas"/>
                                             </Grid>
                                         </Button>
@@ -206,6 +310,20 @@
                                                 <TextBlock Grid.Column="0" Text="🌊" FontSize="12"/>
                                                 <TextBlock Grid.Column="1" Text="Chuyển giao diện Fluent 2 (Mica Glass)" FontSize="12" FontWeight="SemiBold"/>
                                                 <TextBlock Grid.Column="2" Text="&gt; fluent" FontSize="10" Opacity="0.55" FontFamily="Cascadia Mono, Consolas"/>
+                                            </Grid>
+                                        </Button>
+                                        <Button Click="QuickCommand_Click" Tag="eink" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="10,6" CornerRadius="8">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                                <TextBlock Grid.Column="0" Text="📄" FontSize="12"/>
+                                                <TextBlock Grid.Column="1" Text="Nothing E-Ink Warm Paper Mode (#F4F1EA)" FontSize="12" FontWeight="SemiBold"/>
+                                                <TextBlock Grid.Column="2" Text="&gt; eink" FontSize="10" Opacity="0.55" FontFamily="Cascadia Mono, Consolas"/>
+                                            </Grid>
+                                        </Button>
+                                        <Button Click="QuickCommand_Click" Tag="dock" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="10,6" CornerRadius="8">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                                <TextBlock Grid.Column="0" Text="🧭" FontSize="12"/>
+                                                <TextBlock Grid.Column="1" Text="Đổi điều hướng: Floating Bottom Dock ⇄ Sidebar" FontSize="12" FontWeight="SemiBold"/>
+                                                <TextBlock Grid.Column="2" Text="&gt; dock" FontSize="10" Opacity="0.55" FontFamily="Cascadia Mono, Consolas"/>
                                             </Grid>
                                         </Button>
                                         <Button Click="QuickCommand_Click" Tag="dark" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="10,6" CornerRadius="8">
@@ -240,7 +358,7 @@
                                         <Button Click="QuickCommand_Click" Tag="widget" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="10,6" CornerRadius="8">
                                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                                                 <TextBlock Grid.Column="0" Text="🏝️" FontSize="12"/>
-                                                <TextBlock Grid.Column="1" Text="Mở Studio Widget 3.0 (Dynamic Island)" FontSize="12" FontWeight="SemiBold"/>
+                                                <TextBlock Grid.Column="1" Text="Mở Studio Widget 3.7 (Spatial &amp; Strip)" FontSize="12" FontWeight="SemiBold"/>
                                                 <TextBlock Grid.Column="2" Text="&gt; widget" FontSize="10" Opacity="0.55" FontFamily="Cascadia Mono, Consolas"/>
                                             </Grid>
                                         </Button>
@@ -328,20 +446,48 @@
                         </Button.Flyout>
                     </Button>
 
-                    <!-- Nothing OS Glyph Status Pill -->
-                    <Border Visibility="{x:Bind ViewModel.IsNothingDesign, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                            Background="{ThemeResource NothingPillBackgroundBrush}"
-                            BorderBrush="{ThemeResource NothingPillBorderBrush}"
+                    <!-- Nothing OS Glyph Status Pill + E-Ink Quick Toggle -->
+                    <StackPanel Orientation="Horizontal" Spacing="5" Visibility="{x:Bind ViewModel.IsNothingDesign, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center">
+                        <Button Click="HeaderEInkToggle_Click"
+                                Background="{ThemeResource NothingPillBackgroundBrush}"
+                                BorderBrush="{ThemeResource NothingPillBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="14"
+                                Padding="8,4"
+                                VerticalAlignment="Center"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Loc.NothingEInkToggleText, Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                <Ellipse Width="5" Height="5" Fill="#D71921"/>
+                                <TextBlock Text="E-INK" FontSize="9.5" FontWeight="Bold" Foreground="{ThemeResource NothingTextPrimaryBrush}" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
+                            </StackPanel>
+                        </Button>
+                        <Border Background="{ThemeResource NothingPillBackgroundBrush}"
+                                BorderBrush="{ThemeResource NothingPillBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="14"
+                                Padding="9,4"
+                                VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                <Ellipse Width="5.5" Height="5.5" Fill="{ThemeResource NothingGreenBrush}"/>
+                                <TextBlock Text="GLYPH // 3.7.0" FontSize="10" FontWeight="Bold"
+                                           Foreground="{ThemeResource NothingTextPrimaryBrush}" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Navigation Layout Toggle Pill (Floating Dock <-> Left Sidebar) -->
+                    <Button Click="HeaderNavLayoutToggle_Click"
+                            Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
-                            CornerRadius="14"
-                            Padding="10,5"
-                            VerticalAlignment="Center">
-                        <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
-                            <Ellipse Width="5.5" Height="5.5" Fill="{ThemeResource NothingGreenBrush}"/>
-                            <TextBlock Text="GLYPH // 3.6.1" FontSize="10" FontWeight="Bold"
-                                       Foreground="{ThemeResource NothingTextPrimaryBrush}" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
+                            CornerRadius="12"
+                            Padding="8,5"
+                            ToolTipService.ToolTip="{x:Bind ViewModel.Loc.DockToggleTooltip, Mode=OneWay}">
+                        <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0db;" FontSize="10.5" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="{x:Bind ViewModel.NavigationLayoutBadgeText, Mode=OneWay}" FontSize="9.5" FontWeight="Bold" Opacity="0.82" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
                         </StackPanel>
-                    </Border>
+                    </Button>
 
                     <!-- Desktop Widget Quick Menu -->
                     <DropDownButton x:Name="DesktopWidgetButton"
@@ -404,10 +550,11 @@
                      Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                      Margin="0,0,0,8"/>
 
-        <!-- ==================== HNG 3: THANH I?U HU?NG FLUENT NAVIGATION VIEW (VERSION 3.1.0) ==================== -->
+        <!-- ==================== HÀNG 3: THANH ĐIỀU HƯỚNG FLUENT NAVIGATION VIEW & FLOATING SPATIAL DOCK (VERSION 3.7.0) ==================== -->
+        <Grid Grid.Row="3">
         <NavigationView x:Name="MainNavView"
-                        Grid.Row="3"
                         PaneDisplayMode="Left"
+                        IsPaneVisible="{x:Bind ViewModel.IsLeftSidebarMode, Mode=OneWay}"
                         OpenPaneLength="216"
                         CompactPaneLength="52"
                         IsBackButtonVisible="Collapsed"
@@ -512,34 +659,33 @@
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>
 
-            <!-- N?I DUNG CHNH A PHN H? -->
-            <Grid Margin="12,0,0,0">
-                <!-- ==================== TAB 1: T?NG QUAN (OVERVIEW) ==================== -->
-                <!-- ==================== TAB 1: T?NG QUAN (OVERVIEW - Non-Lazy) ==================== -->
+            <!-- NỘI DUNG CHÍNH ĐA PHÂN HỆ -->
+            <Grid x:Name="NavContentRootGrid" Margin="0,0,0,58">
+                <!-- ==================== TAB 1: TỔNG QUAN (OVERVIEW - Non-Lazy) ==================== -->
                 <tabs:OverviewTab x:Name="TabOverview"
                                   ViewModel="{x:Bind ViewModel, Mode=OneWay}"
                                   Visibility="{x:Bind ViewModel.IsOverviewVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                   ShareRequested="OverviewTab_ShareRequested"/>
 
-                <!-- ==================== TAB 2: TRI?U CU?NG & NG?P L?T (URBAN FLOOD - Lazy) ==================== -->
+                <!-- ==================== TAB 2: TRIỀU CƯỜNG & NGẬP LỤT (URBAN FLOOD - Lazy) ==================== -->
                 <tabs:UrbanFloodTab x:Name="TabFlood"
                                     x:DeferLoadStrategy="Lazy"
                                     ViewModel="{x:Bind ViewModel, Mode=OneWay}"
                                     Visibility="{x:Bind ViewModel.IsFloodVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
-                <!-- ==================== TAB 3: RADAR TH?I TI?T DOPPLER 360 (RADAR - Lazy) ==================== -->
+                <!-- ==================== TAB 3: RADAR THỜI TIẾT DOPPLER 360 (RADAR - Lazy) ==================== -->
                 <tabs:RadarTab x:Name="TabRadar"
                                x:DeferLoadStrategy="Lazy"
                                ViewModel="{x:Bind ViewModel, Mode=OneWay}"
                                Visibility="{x:Bind ViewModel.IsRadarVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
-                <!-- ==================== TAB 4: ?I S?NG & OOTD (LIFESTYLE - Lazy) ==================== -->
+                <!-- ==================== TAB 4: ĐỜI SỐNG & OOTD (LIFESTYLE - Lazy) ==================== -->
                 <tabs:LifestyleTab x:Name="TabLifestyle"
                                    x:DeferLoadStrategy="Lazy"
                                    ViewModel="{x:Bind ViewModel, Mode=OneWay}"
                                    Visibility="{x:Bind ViewModel.IsLifestyleVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
-                <!-- ==================== TAB 5: L?CH M DUONG & S? KI?N (CALENDAR - Lazy) ==================== -->
+                <!-- ==================== TAB 5: LỊCH ÂM DƯƠNG & SỰ KIỆN (CALENDAR - Lazy) ==================== -->
                 <tabs:CalendarTab x:Name="TabCalendar"
                                   x:DeferLoadStrategy="Lazy"
                                   ViewModel="{x:Bind ViewModel, Mode=OneWay}"
@@ -551,7 +697,7 @@
                                       ViewModel="{x:Bind ViewModel, Mode=OneWay}"
                                       Visibility="{x:Bind ViewModel.IsWidgetVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
-                <!-- ==================== TAB 7: TRUNG TM CI ?T & GIAO DI?N (SETTINGS - Lazy) ==================== -->
+                <!-- ==================== TAB 7: TRUNG TÂM CÀI ĐẶT & GIAO DIỆN (SETTINGS - Lazy) ==================== -->
                 <tabs:SettingsTab x:Name="TabSettings"
                                   x:DeferLoadStrategy="Lazy"
                                   ViewModel="{x:Bind ViewModel, Mode=OneWay}"
@@ -560,6 +706,131 @@
                                   ReopenOnboardingRequested="SettingsTab_ReopenOnboardingRequested"/>
             </Grid>
         </NavigationView>
+
+        <!-- ==================== FLOATING BOTTOM SPATIAL DOCK (VERSION 3.7.0 - WIN10 & WIN11) ==================== -->
+        <Border x:Name="FloatingBottomDock"
+                Visibility="{x:Bind ViewModel.IsFloatingDockMode, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Margin="0,0,0,2"
+                Canvas.ZIndex="150"
+                Background="#E80F172A"
+                BorderBrush="#4538BDF8"
+                BorderThickness="1.2"
+                CornerRadius="24"
+                Padding="10,6">
+            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                <!-- 01. TỔNG QUAN -->
+                <Button x:Name="DockBtnOverview" Click="FloatingDockTab_Click" Tag="overview"
+                        Background="Transparent" BorderThickness="1" CornerRadius="16" Padding="11,6"
+                        ToolTipService.ToolTip="01 • Tổng quan Thời tiết (Phím tắt: 1)">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="2">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <FontIcon x:Name="DockIconOverview" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="12.5" Foreground="#F59E0B"/>
+                            <TextBlock x:Name="DockTextOverview" Text="{x:Bind ViewModel.Loc.NavOverview, Mode=OneWay}" FontSize="11.5" FontWeight="Bold"/>
+                            <Border Background="#2238BDF8" CornerRadius="6" Padding="5,1" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind ViewModel.NavOverviewTempText, Mode=OneWay}" FontSize="9.5" FontWeight="Bold" Foreground="#38BDF8" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
+                            </Border>
+                        </StackPanel>
+                        <Border x:Name="DockIndOverview" Grid.Row="1" Height="2.5" Width="22" CornerRadius="1.5" Background="#38BDF8" HorizontalAlignment="Center"/>
+                    </Grid>
+                </Button>
+
+                <!-- 02. TRIỀU CƯỜNG & NGẬP -->
+                <Button x:Name="DockBtnFlood" Click="FloatingDockTab_Click" Tag="flood"
+                        Background="Transparent" BorderThickness="1" CornerRadius="16" Padding="11,6"
+                        ToolTipService.ToolTip="02 • Triều cường &amp; Cảnh báo Ngập đô thị (Phím tắt: 2)">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="2">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <FontIcon x:Name="DockIconFlood" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf773;" FontSize="12.5" Foreground="#0284C7"/>
+                            <TextBlock x:Name="DockTextFlood" Text="{x:Bind ViewModel.Loc.NavFlood, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                            <TextBlock Text="{x:Bind ViewModel.NavFloodTideText, Mode=OneWay}" FontSize="9.5" Opacity="0.7" FontFamily="Cascadia Mono, Consolas, Segoe UI" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Border x:Name="DockIndFlood" Grid.Row="1" Height="2.5" Width="22" CornerRadius="1.5" Background="Transparent" HorizontalAlignment="Center"/>
+                    </Grid>
+                </Button>
+
+                <!-- 03. RADAR DOPPLER -->
+                <Button x:Name="DockBtnRadar" Click="FloatingDockTab_Click" Tag="radar"
+                        Background="Transparent" BorderThickness="1" CornerRadius="16" Padding="11,6"
+                        ToolTipService.ToolTip="03 • Radar Mây Mưa Doppler 360° (Phím tắt: 3)">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="2">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <FontIcon x:Name="DockIconRadar" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf57d;" FontSize="12.5" Foreground="#10B981"/>
+                            <TextBlock x:Name="DockTextRadar" Text="{x:Bind ViewModel.Loc.NavRadar, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                            <Ellipse Width="5.5" Height="5.5" Fill="#10B981" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Border x:Name="DockIndRadar" Grid.Row="1" Height="2.5" Width="22" CornerRadius="1.5" Background="Transparent" HorizontalAlignment="Center"/>
+                    </Grid>
+                </Button>
+
+                <!-- 04. ĐỜI SỐNG & OOTD -->
+                <Button x:Name="DockBtnLifestyle" Click="FloatingDockTab_Click" Tag="lifestyle"
+                        Background="Transparent" BorderThickness="1" CornerRadius="16" Padding="11,6"
+                        ToolTipService.ToolTip="04 • Đời sống &amp; Cố vấn Trang phục OOTD (Phím tắt: 4)">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="2">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <FontIcon x:Name="DockIconLifestyle" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf553;" FontSize="12.5" Foreground="#EC4899"/>
+                            <TextBlock x:Name="DockTextLifestyle" Text="{x:Bind ViewModel.Loc.NavLifestyle, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <Border x:Name="DockIndLifestyle" Grid.Row="1" Height="2.5" Width="22" CornerRadius="1.5" Background="Transparent" HorizontalAlignment="Center"/>
+                    </Grid>
+                </Button>
+
+                <!-- 05. LỊCH VẠN NIÊN -->
+                <Button x:Name="DockBtnCalendar" Click="FloatingDockTab_Click" Tag="calendar"
+                        Background="Transparent" BorderThickness="1" CornerRadius="16" Padding="11,6"
+                        ToolTipService.ToolTip="05 • Lịch Vạn Niên Âm Dương &amp; Sự kiện (Phím tắt: 5)">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="2">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <FontIcon x:Name="DockIconCalendar" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf073;" FontSize="12.5" Foreground="#8B5CF6"/>
+                            <TextBlock x:Name="DockTextCalendar" Text="{x:Bind ViewModel.Loc.NavCalendar, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                            <TextBlock Text="{x:Bind ViewModel.NavLunarDateText, Mode=OneWay}" FontSize="9.5" Opacity="0.7" FontFamily="Cascadia Mono, Consolas, Segoe UI" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Border x:Name="DockIndCalendar" Grid.Row="1" Height="2.5" Width="22" CornerRadius="1.5" Background="Transparent" HorizontalAlignment="Center"/>
+                    </Grid>
+                </Button>
+
+                <!-- 06. WIDGET STUDIO 3.7 -->
+                <Button x:Name="DockBtnWidget" Click="FloatingDockTab_Click" Tag="widget"
+                        Background="Transparent" BorderThickness="1" CornerRadius="16" Padding="11,6"
+                        ToolTipService.ToolTip="06 • Studio Widget 3.7 &amp; Ghim Desktop (Phím tắt: 6)">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="2">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <FontIcon x:Name="DockIconWidget" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf2d0;" FontSize="12.5" Foreground="#38BDF8"/>
+                            <TextBlock x:Name="DockTextWidget" Text="{x:Bind ViewModel.Loc.NavWidget, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                            <Border Background="#20D71921" CornerRadius="5" Padding="4,1" VerticalAlignment="Center">
+                                <TextBlock Text="3.7" FontSize="9" FontWeight="Bold" Foreground="#F43F5E" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
+                            </Border>
+                        </StackPanel>
+                        <Border x:Name="DockIndWidget" Grid.Row="1" Height="2.5" Width="22" CornerRadius="1.5" Background="Transparent" HorizontalAlignment="Center"/>
+                    </Grid>
+                </Button>
+
+                <!-- 07. CÀI ĐẶT -->
+                <Button x:Name="DockBtnSettings" Click="FloatingDockTab_Click" Tag="settings"
+                        Background="Transparent" BorderThickness="1" CornerRadius="16" Padding="11,6"
+                        ToolTipService.ToolTip="07 • Trung tâm Cài đặt &amp; Giao diện (Phím tắt: 7)">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="2">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <FontIcon x:Name="DockIconSettings" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf013;" FontSize="12.5" Foreground="#94A3B8"/>
+                            <TextBlock x:Name="DockTextSettings" Text="{x:Bind ViewModel.Loc.NavSettings, Mode=OneWay}" FontSize="11.5" FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <Border x:Name="DockIndSettings" Grid.Row="1" Height="2.5" Width="22" CornerRadius="1.5" Background="Transparent" HorizontalAlignment="Center"/>
+                    </Grid>
+                </Button>
+
+                <Border Width="1" Height="22" Background="#30FFFFFF" Margin="4,0"/>
+
+                <!-- Chuyển sang Left Sidebar -->
+                <Button Click="HeaderNavLayoutToggle_Click"
+                        Background="Transparent" BorderThickness="0" CornerRadius="14" Padding="8,6"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.Loc.DockToggleTooltip, Mode=OneWay}">
+                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0db;" FontSize="11.5" Opacity="0.72"/>
+                </Button>
+            </StackPanel>
+        </Border>
+        </Grid>
 
         <!-- Dummy hidden SettingsDialog for code-behind compatibility -->
         <ContentDialog x:Name="SettingsDialog" Visibility="Collapsed" PrimaryButtonClick="SettingsDialog_PrimaryButtonClick" />
@@ -917,6 +1188,8 @@
                               SelectionChanged="ChangelogVersionComboBox_SelectionChanged"
                               MinWidth="240"
                               CornerRadius="8">
+                        <ComboBoxItem Content="v3.7.0 (Atmospheric Spatial Canvas, Floating Bottom Dock, Spatial Vision Glass, Live 13×13 Matrix, Time-Machine &amp; Widgets 3.7)" Tag="3.7.0"/>
+                        <ComboBoxItem Content="v3.6.1 (Zero-Chrome Command Header, 24h Curve Scrubber, Zen 2.0 StandBy, Pomodoro &amp; Widgets 3.0)" Tag="3.6.1"/>
                         <ComboBoxItem Content="v3.5.0 (Nothing Design System, Red Dot Accents, Dynamic Glyph LED, Desktop Widgets &amp; Zero Mojibake)" Tag="3.5.0"/>
                         <ComboBoxItem Content="v3.4.1 (Bộ 3 Widget Desktop Bento Mới: Bento Pop, Tactical Slate &amp; Retro Cyber LCD)" Tag="3.4.1"/>
                         <ComboBoxItem Content="v3.4.0 (Đại Tu Engine 4 Mùa &amp; 4 Đại Lễ Hội, Dynamic Seasonal Themes, Festive Desktop Widgets)" Tag="3.4.0"/>
@@ -953,13 +1226,13 @@
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Siêu Cập Nhật Weather WinUI v3.6.1" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                                <TextBlock x:Name="ChangelogHeaderTitle" Text="Siêu Cập Nhật Weather WinUI v3.7.0" FontSize="16" FontWeight="Bold" Foreground="White"/>
                                 <Border Background="#10B981" CornerRadius="6" Padding="6,2">
-                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.6.1 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock x:Name="ChangelogHeaderBadge" Text="v3.7.0 BẢN CHÍNH THỨC" FontSize="10" FontWeight="Bold" Foreground="White"/>
                                 </Border>
                             </StackPanel>
                             <TextBlock x:Name="ChangelogHeaderSubtitle"
-                                       Text="Đột phá toàn diện UI/UX Zero-Chrome &amp; Spatial Bento, Command Palette (Ctrl+K), Radar Mưa 60 Phút Tới, Đồ Thị Nhiệt Độ 24h Tương Tác, Zen Mode 2.0 Nothing StandBy + Pomodoro, và Bộ 3 Widget 3.0 (Dynamic Island, Field Deck, Pure Typo HUD + Ghost Mode)."
+                                       Text="Đột phá diện mạo v3.7.0: Thanh Dock Nổi Không Gian (Floating Bottom Spatial Dock), Ngôn Ngữ Thiết Kế thứ 3 'Spatial Vision (Aurora Glass)', Ma Trận Đèn LED 13×13 Tương Tác &amp; Chế Độ Giấy E-Ink cho Nothing OS, Dải Thời Gian 7 Ngày Time-Machine Ribbon và Bộ Đôi Widget 3.7 (Taskbar Strip &amp; Spatial Glass Cube)."
                                        FontSize="12" Foreground="#CBD5E1" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Grid>
@@ -967,7 +1240,37 @@
 
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">
                     <Grid>
-                        <StackPanel x:Name="ChangelogContent_v360" Spacing="10" Visibility="Visible">
+                        <StackPanel x:Name="ChangelogContent_v370" Spacing="10" Visibility="Visible">
+                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="14">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="1. Thanh Điều Hướng Nổi (Floating Bottom Spatial Dock) &amp; Edge-to-Edge Canvas" FontSize="13.5" FontWeight="Bold" Foreground="#38BDF8"/>
+                                    <TextBlock Text="• Thay thế thanh Sidebar dọc truyền thống bằng thanh Floating Bottom Spatial Dock lơ lửng ở đáy màn hình, giải phóng 100% chiều ngang cho toàn bộ 7 phân hệ." FontSize="12" TextWrapping="Wrap" Opacity="0.88"/>
+                                    <TextBlock Text="• Tích hợp nút chuyển đổi nhanh Dock Nổi ⇄ Left Sidebar ngay trên thanh điều khiển hoặc qua lệnh &gt; dock / &gt; sidebar." FontSize="12" TextWrapping="Wrap" Opacity="0.88"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="14">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="2. Ngôn Ngữ Thiết Kế Thứ 3: 'Spatial Vision (Aurora Glass 3.7)' (100% Win10 &amp; Win11)" FontSize="13.5" FontWeight="Bold" Foreground="#A855F7"/>
+                                    <TextBlock Text="• Bổ sung hệ giao diện Spatial Vision bên cạnh Fluent 2 và Nothing OS với nền cực quang đa lớp (Atmospheric Aurora Mesh Backdrop) và thẻ kính viền sáng chéo (Specular Glass Cards) hoạt động mượt mà đồng nhất trên cả Windows 10 và Windows 11." FontSize="12" TextWrapping="Wrap" Opacity="0.88"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="14">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="3. Nothing OS 3.7: Ma Trận LED 13×13 Tương Tác &amp; Chế Độ Giấy E-Ink (#F4F1EA)" FontSize="13.5" FontWeight="Bold" Foreground="#D71921"/>
+                                    <TextBlock Text="• Tích hợp màn hình phụ 13×13 Live Glyph Matrix ngay trên thẻ Hero Nothing OS với hiệu ứng hạt mưa rơi, mặt trời xoay và gợn sóng đỏ #D71921 khi rê chuột qua." FontSize="12" TextWrapping="Wrap" Opacity="0.88"/>
+                                    <TextBlock Text="• Bổ sung chế độ Giấy Điện Tử (E-Ink Warm Paper Mode #F4F1EA) dịu mắt tuyệt đối cho người dùng yêu thích phong cách tối giản." FontSize="12" TextWrapping="Wrap" Opacity="0.88"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="14">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="4. Dải Thời Gian Time-Machine Ribbon &amp; Bộ Đôi Desktop Widgets 3.7" FontSize="13.5" FontWeight="Bold" Foreground="#10B981"/>
+                                    <TextBlock Text="• Nhấp vào bất kỳ ngày nào trong bảng Dự Báo 7 Ngày để nạp tức thì đồ thị đường cong 24 giờ của ngày hôm đó (Time-Machine 24h Inspector)." FontSize="12" TextWrapping="Wrap" Opacity="0.88"/>
+                                    <TextBlock Text="• Bổ sung 2 mẫu Desktop Widget mới: Taskbar Weather Strip (236×42 siêu mảnh) và Spatial Glass Cube (276×220 có đồ thị 12h trực tiếp trên Widget)." FontSize="12" TextWrapping="Wrap" Opacity="0.88"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel x:Name="ChangelogContent_v360" Spacing="10" Visibility="Collapsed">
                             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="14">
                                 <StackPanel Spacing="6">
                                     <TextBlock Text="1. UI/UX Zero-Chrome &amp; Command Palette (Ctrl + K)" FontSize="13.5" FontWeight="Bold" Foreground="#D71921"/>

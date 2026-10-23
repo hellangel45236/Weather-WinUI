@@ -114,7 +114,7 @@ public sealed partial class WidgetStudioTab : UserControl
                 GalleryGrid.ColumnDefinitions.Clear();
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.RowDefinitions.Clear();
-                for (int r = 0; r < 14; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                for (int r = 0; r < 16; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
                 if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
                 if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 0); Grid.SetRow(CardWidgetGlassCard, 1); }
@@ -130,6 +130,8 @@ public sealed partial class WidgetStudioTab : UserControl
                 if (CardWidgetDynamicIsland != null) { Grid.SetColumn(CardWidgetDynamicIsland, 0); Grid.SetRow(CardWidgetDynamicIsland, 11); }
                 if (CardWidgetTeenageDeck != null) { Grid.SetColumn(CardWidgetTeenageDeck, 0); Grid.SetRow(CardWidgetTeenageDeck, 12); }
                 if (CardWidgetPureTypo != null) { Grid.SetColumn(CardWidgetPureTypo, 0); Grid.SetRow(CardWidgetPureTypo, 13); Grid.SetColumnSpan(CardWidgetPureTypo, 1); }
+                if (CardWidgetTaskbarStrip != null) { Grid.SetColumn(CardWidgetTaskbarStrip, 0); Grid.SetRow(CardWidgetTaskbarStrip, 14); }
+                if (CardWidgetSpatialCube != null) { Grid.SetColumn(CardWidgetSpatialCube, 0); Grid.SetRow(CardWidgetSpatialCube, 15); }
             }
 
             else
@@ -138,7 +140,7 @@ public sealed partial class WidgetStudioTab : UserControl
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.RowDefinitions.Clear();
-                for (int r = 0; r < 8; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                for (int r = 0; r < 9; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
                 if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
                 if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 1); Grid.SetRow(CardWidgetGlassCard, 0); }
@@ -154,6 +156,8 @@ public sealed partial class WidgetStudioTab : UserControl
                 if (CardWidgetDynamicIsland != null) { Grid.SetColumn(CardWidgetDynamicIsland, 0); Grid.SetRow(CardWidgetDynamicIsland, 6); }
                 if (CardWidgetTeenageDeck != null) { Grid.SetColumn(CardWidgetTeenageDeck, 1); Grid.SetRow(CardWidgetTeenageDeck, 6); }
                 if (CardWidgetPureTypo != null) { Grid.SetColumn(CardWidgetPureTypo, 0); Grid.SetRow(CardWidgetPureTypo, 7); Grid.SetColumnSpan(CardWidgetPureTypo, 2); }
+                if (CardWidgetTaskbarStrip != null) { Grid.SetColumn(CardWidgetTaskbarStrip, 0); Grid.SetRow(CardWidgetTaskbarStrip, 8); }
+                if (CardWidgetSpatialCube != null) { Grid.SetColumn(CardWidgetSpatialCube, 1); Grid.SetRow(CardWidgetSpatialCube, 8); }
             }
         }
 
@@ -299,6 +303,8 @@ public sealed partial class WidgetStudioTab : UserControl
     private void CardWidgetDynamicIsland_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("DynamicIsland");
     private void CardWidgetTeenageDeck_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("TeenageDeck");
     private void CardWidgetPureTypo_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("PureTypoHud");
+    private void CardWidgetTaskbarStrip_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("TaskbarStrip");
+    private void CardWidgetSpatialCube_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("SpatialCube");
     private void CardWidgetNothingPill_Unused(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         SelectWidgetStyle("NothingPill");
@@ -432,6 +438,18 @@ public sealed partial class WidgetStudioTab : UserControl
                 CardWidgetPureTypo.BorderBrush = selectedTag == "PureTypoHud" ? accentBrush : subtleBorderBrush;
                 CardWidgetPureTypo.BorderThickness = selectedTag == "PureTypoHud" ? new Thickness(2) : new Thickness(1);
                 if (BadgeWidgetPureTypo != null) BadgeWidgetPureTypo.Visibility = selectedTag == "PureTypoHud" ? Visibility.Visible : Visibility.Collapsed;
+            }
+            if (CardWidgetTaskbarStrip != null)
+            {
+                CardWidgetTaskbarStrip.BorderBrush = selectedTag == "TaskbarStrip" ? accentBrush : subtleBorderBrush;
+                CardWidgetTaskbarStrip.BorderThickness = selectedTag == "TaskbarStrip" ? new Thickness(2) : new Thickness(1);
+                if (BadgeWidgetTaskbarStrip != null) BadgeWidgetTaskbarStrip.Visibility = selectedTag == "TaskbarStrip" ? Visibility.Visible : Visibility.Collapsed;
+            }
+            if (CardWidgetSpatialCube != null)
+            {
+                CardWidgetSpatialCube.BorderBrush = selectedTag == "SpatialCube" ? accentBrush : subtleBorderBrush;
+                CardWidgetSpatialCube.BorderThickness = selectedTag == "SpatialCube" ? new Thickness(2) : new Thickness(1);
+                if (BadgeWidgetSpatialCube != null) BadgeWidgetSpatialCube.Visibility = selectedTag == "SpatialCube" ? Visibility.Visible : Visibility.Collapsed;
             }
         }
     }

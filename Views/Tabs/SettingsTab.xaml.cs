@@ -105,7 +105,12 @@ public sealed partial class SettingsTab : UserControl
             if (DesignLanguageComboBox != null)
             {
                 string dl = s.DesignLanguage ?? "Fluent2";
-                DesignLanguageComboBox.SelectedIndex = dl == "Nothing" ? 1 : 0;
+                DesignLanguageComboBox.SelectedIndex = dl switch
+                {
+                    "SpatialGlass" => 1,
+                    "Nothing" => 2,
+                    _ => 0
+                };
             }
 
             if (MechanicalSoundToggle != null) MechanicalSoundToggle.IsOn = s.EnableMechanicalSound;

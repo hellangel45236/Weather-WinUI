@@ -1,20 +1,21 @@
-# 🌤️ Weather WinUI (Version 3.6.1)
-### Hệ Điều Hành Vi Khí Hậu Cá Nhân Hóa & Trực Quan Hóa Đô Thị Dành Cho Windows 10 & 11
-> **Nền tảng:** Windows App SDK (WinUI 3) • .NET 8 • C# 12 • Fluent Design System 2.0 & Nothing Design System 3.6  
-> **Nhánh phát triển chính thức:** `main` | **Phiên bản:** `v3.6.1 (Bản Phát Hành Chính Thức)`  
-> **Bản phát hành tiền nhiệm:** `v3.5.2` • `v3.5.1` • `v3.5.0` • `v3.4.1` • `v3.4.0` • `v3.3.1` • `v3.3.0` • `v3.0.0`
+# 🌤️ Weather WinUI (Version 3.7.0)
+### Hệ Điều Hành Không Gian Khí Quyển (Atmospheric Spatial Canvas & Modular Dock OS) Dành Cho Windows 10 & 11
+> **Nền tảng:** Windows App SDK (WinUI 3) • .NET 8 • C# 12 • Tri-Design Engine (Fluent 2 • Spatial Vision 3.7 • Nothing OS 3.7)  
+> **Nhánh phát triển chính thức:** `main` | **Phiên bản:** `v3.7.0 (Bản Phát Hành Chính Thức)`  
+> **Bản phát hành tiền nhiệm:** `v3.6.1` • `v3.5.2` • `v3.5.1` • `v3.5.0` • `v3.4.1` • `v3.4.0` • `v3.3.1` • `v3.3.0` • `v3.0.0`
 
 ---
 
 ## 📑 Mục Lục
 1. [Giới Thiệu Tổng Quan & Tầm Nhìn Dự Án](#-1-giới-thiệu-tổng-quan--tầm-nhìn-dự-án)
 2. [Ngăn Xếp Công Nghệ (Tech Stack) & Kiến Trúc Phần Mềm](#-2-ngăn-xếp-công-nghệ-tech-stack--kiến-trúc-phần-mềm)
-3. [Điểm Mới Đột Phá Trên Phiên Bản 3.6.1](#-3-điểm-mới-đột-phá-trên-phiên-bản-360)
-   - [Giao Diện Chính Zero-Chrome & Spatial Bento (Unified Command Header & Minimal Rail)](#1-giao-diện-chính-zero-chrome--spatial-bento)
-   - [Trung Tâm Lệnh Nhanh Command Palette (`Ctrl + K`) & Bộ Đệm `0ms` Stale-While-Revalidate](#2-command-palette-ctrl--k--tối-ưu-hiệu-năng-0ms)
-   - [Dự Báo Mưa 60 Phút Tới (60-Min Precipitation Nowcast) & Đường Cong Khí Tượng 24 Giờ Tương Tác](#3-60-minute-precipitation-nowcast--interactive-24h-telemetry-curve)
-   - [Zen Mode 2.0: Nothing OS StandBy Dual-Matrix, Auto-Hide Chrome & Pomodoro Focus Timer](#4-zen-mode-20-standby-dual-matrix--pomodoro-focus-sanctuary)
-   - [Desktop Widgets 3.0: Dynamic Island, Teenage Engineering Field Deck, Pure Typo HUD & Ghost Mode](#5-desktop-widgets-30-dynamic-island-field-deck-pure-typo--ghost-mode)
+3. [6 Trụ Cột Đột Phá Trên Phiên Bản 3.7.0](#-3-6-trụ-cột-đột-phá-trên-phiên-bản-370)
+   - [Floating Bottom Spatial Dock & Không Gian Tràn Viền Edge-to-Edge](#1-floating-bottom-spatial-dock--không-gian-tràn-viền-edge-to-edge)
+   - [Ngôn Ngữ Thiết Kế Thứ 3: Spatial Vision 3.7 (Aurora Glass)](#2-ngôn-ngữ-thiết-kế-thứ-3-spatial-vision-37-aurora-glass)
+   - [Nothing OS 3.7: Ma Trận Điểm Động 13×13 (`NothingLiveMatrixCanvas`) & Chế Độ Giấy Điện Tử E-Ink (`#F4F1EA`)](#3-nothing-os-37-ma-trận-điểm-động-1313--chế-độ-giấy-điện-tử-e-ink-f4f1ea)
+   - [Cỗ Máy Thời Gian 24 Giờ (24h + 7-Day Time-Machine Ribbon)](#4-cỗ-máy-thời-gian-24-giờ-24h--7-day-time-machine-ribbon)
+   - [Desktop Widgets 3.7: Thanh Taskbar Siêu Mỏng (`TaskbarStrip`) & Khối Kính Không Gian (`SpatialCube`)](#5-desktop-widgets-37-taskbar-strip--spatial-aurora-cube)
+   - [Tương Thích Tuyệt Đối 100% Windows 10 & Windows 11](#6-tương-thích-tuyệt-đối-100-windows-10--windows-11)
 4. [Khám Phá Chi Tiết 7 Phân Hệ Chính (7 Core Modules)](#-4-khám-phá-chi-tiết-7-phân-hệ-chính-7-core-modules)
 5. [Hướng Dẫn Cài Đặt & Khởi Chạy](#-5-hướng-dẫn-cài-đặt--khởi-chạy)
 6. [Biên Niên Sử Phát Triển Toàn Diện (Changelog)](#-6-biên-niên-sử-phát-triển-toàn-diện)
@@ -22,9 +23,12 @@
 ---
 
 ## 🌟 1. Giới Thiệu Tổng Quan & Tầm Nhìn Dự Án
-**Weather WinUI** là ứng dụng thời tiết hiện đại, được xây dựng hoàn toàn trên nền tảng **Windows App SDK (WinUI 3)** và **.NET 8**. Ứng dụng mang sứ mệnh tái định nghĩa trải nghiệm theo dõi thời tiết trên hệ điều hành Windows 10 & Windows 11: không dừng lại ở việc xem nhiệt độ đơn thuần, mà trở thành một **trợ lý vi khí hậu toàn diện** bảo vệ sức khỏe, tối ưu hóa trang phục đời thường, cảnh báo ngập úng đô thị và đồng hành cùng không gian làm việc tập trung của người dùng.
+**Weather WinUI** là ứng dụng thời tiết hiện đại, được xây dựng hoàn toàn trên nền tảng **Windows App SDK (WinUI 3)** và **.NET 8**. Ở cột mốc **Version 3.7.0**, ứng dụng lột xác hoàn toàn khỏi bố cục Sidebar truyền thống để trở thành một **Hệ Điều Hành Không Gian Khí Quyển (Atmospheric Spatial Canvas & Modular Dock OS)** trên cả **Windows 10** và **Windows 11**.
 
-Ứng dụng đáp ứng chuẩn mực thẩm mỹ cao cấp với khả năng chuyển đổi tức thì giữa **Microsoft Fluent Design System 2.0** (vật liệu Mica Alt, Acrylic mờ, chuyển động Fluent Motion) và **Nothing Design System 3.6** (ngôn ngữ thiết kế tối giản biểu tượng của Nothing Tech & Teenage Engineering: ma trận điểm `Ndot77JPExtended` tự đóng gói, tương phản cao Monochrome Stealth & CMF Chalk, Glyph Interface LED).
+Ứng dụng tiên phong trang bị **Bộ Ba Ngôn Ngữ Thiết Kế (Tri-Design Engine)** chuyển đổi tức thì `0ms`:
+- **Microsoft Fluent Design System 2.0**: Vật liệu Mica Alt, Acrylic mờ và chuyển động Fluent Motion.
+- **Spatial Vision 3.7 (Aurora Glass)**: Cảm hứng từ Apple visionOS & Raycast với vầng hào quang cực quang đa tầng và viền kính phản quang chéo (Specular Border Highlight) hoạt động đồng nhất trên cả Windows 10 và Windows 11.
+- **Nothing Design System 3.7**: Thẩm mỹ tối giản cơ học của Nothing Tech & Teenage Engineering với phông chữ ma trận điểm `Ndot77JPExtended`, **Ma Trận LED 13×13 Tương Tác Trực Tiếp** và chế độ **Giấy Điện Tử E-Ink (`#F4F1EA`)**.
 
 ---
 
@@ -35,69 +39,64 @@
 | **Giao diện (UI)** | **WinUI 3 (Windows App SDK 1.8+)** | XAML gốc hiện đại, tối ưu đồ họa DirectX 12 Compositor, tương thích 100% Windows 10 & 11 |
 | **Nền tảng chạy** | **.NET 8 (C# 12)** | Biên dịch Self-Contained, tự đóng gói phông chữ `Ndot77JPExtended`, không đòi hỏi cài đặt trước .NET Runtime |
 | **Kiến trúc mã** | **MVVM (CommunityToolkit.Mvvm)** | Phân tách ObservableObject, RelayCommand, bộ nhớ đệm `0ms` Stale-While-Revalidate |
-| **Đồ họa động** | **Win2D & Canvas GPU Composition** | Hệ thống hạt khí quyển, đường cong Bézier 24h tương tác, la bàn số, biểu đồ thủy văn |
+| **Đồ họa động** | **Win2D & Canvas GPU Composition** | Hệ thống hạt khí quyển, đường cong Bézier 24h đa ngày, ma trận LED 13×13, la bàn số, biểu đồ thủy văn |
 | **Nguồn dữ liệu** | **Open-Meteo & WMO Meteorological API** | Cập nhật vi khí hậu độ trễ mili-giây, miễn phí vĩnh viễn, không cần API Key |
 | **Đóng gói** | **Inno Setup 6 (Self-Contained Installer)** | Tự động tạo Shortcut, biểu tượng AppUserModelId, tích hợp gỡ cài đặt sạch |
 
 ---
 
-## 🚀 3. Điểm Mới Đột Phá Trên Phiên Bản 3.6.1
+## 🚀 3. 6 Trụ Cột Đột Phá Trên Phiên Bản 3.7.0
 
-### 1. Giao Diện Chính Zero-Chrome & Spatial Bento
-- **Single-Row Unified Command Header**: Hợp nhất toàn bộ khung điều khiển phía trên thành 1 dải Header 50px duy nhất, tinh gọn và hiện đại:
-  - Cụm trái: Biểu tượng ứng dụng + Huy hiệu phiên bản `v3.6.1` / `NDOT // 3.6.1` + Dải **Smart Pinned Cities** (GPS + 4 thành phố ưu tiên + nút `📍 +12` mở bảng chọn nhanh 16 tỉnh thành).
-  - Cụm giữa: **Command Capsule (`Ctrl + K`)** kết hợp tìm kiếm thành phố toàn cầu và bảng lệnh nhanh.
-  - Cụm phải: Các nút hành động tinh gọn (So sánh đối kháng, Chia sẻ ảnh HD, Làm mới, Zen Mode).
-- **Minimal Navigation Rail**: Thu gọn thanh điều hướng bên trái (`OpenPaneLength="216"`, `CompactPaneLength="52"`), thay thế các hộp màu rườm rà bằng chỉ báo viền mảnh và chữ số thứ tự Monospace (`01`..`07`) chuẩn Nothing OS.
+### 1. Floating Bottom Spatial Dock & Không Gian Tràn Viền Edge-to-Edge
+- **Loại bỏ sự gò bó của Sidebar trái truyền thống**: Ở chế độ mặc định **Floating Dock**, thanh điều hướng bên trái được thu ẩn hoàn toàn, giải phóng **100% chiều ngang cửa sổ** cho bức tranh bầu trời khí quyển và lưới thẻ Bento.
+- **Thanh Dock Nổi Không Gian (`FloatingBottomDock`)**: Neo lơ lửng tại trung tâm đáy màn hình như macOS / visionOS / Nothing Launcher, tích hợp 7 viên thuốc điều hướng (`01 Tổng Quan` .. `07 Cài Đặt`), huy hiệu vi khí hậu trực tiếp (`30°C`, `LIVE`, `3.7`) và nút chuyển đổi 1 chạm giữa **Dock Nổi (Floating Dock)** và **Sidebar Trái (Left Sidebar)**.
 
-### 2. Command Palette (`Ctrl + K`) & Tối Ưu Hiệu Năng `0ms`
-- **Quick Command Palette (`Ctrl + K`)**: Bấm `Ctrl + K` từ bất kỳ đâu hoặc gõ lệnh `> nothing`, `> fluent`, `> dark`, `> light`, `> zen`, `> focus`, `> widget`, `> radar`, `> flood`, `> duel` ngay trên thanh tìm kiếm để thực thi lệnh tức thì mà không cần rời bàn phím.
-- **`0ms` Stale-While-Revalidate City Cache**: Lưu trữ dữ liệu thời tiết & AQI trong bộ nhớ đệm thông minh theo từng tọa độ giúp việc chuyển đổi qua lại giữa các thành phố diễn ra tức thì (`0ms`) không cần chờ tải lại.
-- **Lazy Offscreen Export & XAML De-bloating**: Tắt kết xuất cây giao diện `OffscreenExportHost` (`1920x1080`) khi không xuất ảnh và rút gọn hơn 1.240 dòng XAML dư thừa trong `MainPage.xaml`, giảm mạnh dung lượng RAM và tăng tốc độ đổi chủ đề Sáng/Tối.
+### 2. Ngôn Ngữ Thiết Kế Thứ 3: Spatial Vision 3.7 (Aurora Glass)
+- **Hào Quang Cực Quang Đa Tầng (`SpatialAuroraBackdropGrid`)**: Kết xuất bầu trời đêm cực quang sâu thẳm với các khối cầu ánh sáng xanh băng (`#38BDF8`), tím tinh vân (`#A855F7`) và ngọc lục bảo (`#10B981`) chạy mượt 100% trên cả Windows 10 và Windows 11 mà không phụ thuộc vào DWM Mica của hệ điều hành.
+- **Thẻ Kính Phản Quang (Specular Glass Cards)**: Viền thẻ ánh sáng chéo mô phỏng khúc xạ ánh sáng trên mép kính vát 3D cao cấp.
 
-### 3. 60-Minute Precipitation Nowcast & Interactive 24h Telemetry Curve
-- **Dự Báo Mưa 60 Phút Tới (60-Min Precipitation Nowcast)**: Thanh biểu đồ 12 cột cường độ mưa theo từng mốc 5 phút (`+5m` đến `+60m`) kèm thông điệp cảnh báo mưa thời gian thực cho cả Fluent 2 và Nothing Design.
-- **Đường Cong Khí Tượng 24 Giờ Tương Tác (`NothingHourlyCurveCanvas`)**: Biểu đồ spline chấm nét đứt đỏ Nothing Red `#D71921` đồng bộ 1:1 với 24 thẻ dự báo giờ; di chuột để xem con trỏ ngắm (crosshair) và thông số `GIỜ // NHIỆT ĐỘ // MƯA // GIÓ` thời gian thực.
+### 3. Nothing OS 3.7: Ma Trận Điểm Động 13×13 & Chế Độ Giấy Điện Tử E-Ink (`#F4F1EA`)
+- **Interactive 13×13 Live Glyph Matrix (`NothingLiveMatrixCanvas`)**: Nằm ngay bên phải thẻ Hero của giao diện Nothing OS là cụm màn hình **169 bóng LED ma trận điểm (13×13)** hoạt họa thời gian thực theo thời tiết (hạt mưa rơi chéo, mặt trời xoay vòng với tâm đỏ `#D71921`, tia chớp giông bão) và tạo **gợn sóng đỏ Nothing Red** tương tác trực tiếp khi người dùng rê chuột lướt qua.
+- **Chế Độ Giấy Điện Tử Monochrome E-Ink Paper Mode (`#F4F1EA`)**: Bấm nút `E-INK` trên thanh Header hoặc gõ lệnh `> eink` để chuyển toàn bộ giao diện Nothing OS sang chất liệu giấy đọc sách Kindle / Teenage Engineering ấm áp (`#F4F1EA`) với mực in đen tuyền (`#141413`), dịu mắt tuyệt đối khi làm việc lâu.
 
-### 4. Zen Mode 2.0: StandBy Dual-Matrix & Pomodoro Focus Sanctuary
-- **Nothing OS StandBy Dual-Matrix**: Chế độ màn hình chờ lấy cảm hứng từ iOS 17 StandBy & Nothing OS với nền đen OLED tuyệt đối `#000000`, đồng hồ Ma Trận Điểm `Ndot77JPExtended` khổng lồ bên trái và cụm đồng hồ tròn khí tượng bên phải.
-- **Auto-Hide Chrome (2.6s)**: Tự động làm mờ thanh điều khiển trên và dưới xuống `8%` sau 2.6 giây không di chuột để tôn vinh trọn vẹn không gian thiên nhiên và tránh lưu ảnh màn hình OLED.
-- **Tích Hợp Đồng Hồ Tập Trung Pomodoro (`25:00` / `05:00`)**: Biến Zen Mode thành không gian làm việc sâu (Deep Work Sanctuary) kết hợp tiếng mưa rơi / gió rừng ASMR cùng bộ đếm Pomodoro 25 phút tập trung / 5 phút nghỉ ngơi ngay trên thanh dock.
+### 4. Cỗ Máy Thời Gian 24 Giờ (24h + 7-Day Time-Machine Ribbon)
+- **Liên kết trực tiếp Dự báo 7 ngày và Đường cong 24 giờ**: Bấm vào **bất kỳ ngày nào** trong bảng Dự báo 7 ngày tới (ở cả Fluent 2, Spatial Vision và Nothing OS), biểu đồ đường cong 24 giờ phía trên sẽ lập tức chuyển sang **nhá trước trọn vẹn 24 khung giờ (`00:00` – `23:00`)** của ngày hôm đó.
+- **Huy hiệu `TIME-MACHINE 24H` & Nút Quay Về Hiện Tại**: Hiển thị rõ ngày đang khám phá cùng nút **"Quay về 24h hiện tại"** chỉ với 1 cú nhấp chuột.
 
-### 5. Desktop Widgets 3.0: Dynamic Island, Field Deck, Pure Typo & Ghost Mode
-Nâng tổng số kiểu dáng trong **Widget Studio** lên **20 kiểu dáng**, bổ sung 3 siêu phẩm mới và chế độ xuyên thấu chuột:
-1. **`Dynamic Island Capsule` (`DynamicIsland`)**: Viên thuốc đen tuyền nhỏ gọn (`254×50 px`) ở trạng thái nghỉ, tự động bung rộng mượt mà (`324×152 px`) khi rê chuột vào để lộ diện dự báo 4 giờ tới và chỉ số độ ẩm/gió.
-2. **`Teenage Engineering Field Deck` (`TeenageDeck`)**: Cảm hứng thiết bị âm thanh công nghiệp OP-1 Field với khung vỏ Titanium xám đen `#18181C`, thước đo kỹ thuật, núm xoay cam `#FF5500` và màn hình OLED sắc nét.
-3. **`Pure Typography Wallpaper HUD` (`PureTypoHud`)**: Giao diện chữ nghệ thuật trong suốt 100% không khung viền, hòa quyện trực tiếp vào hình nền Desktop như một tác phẩm Rainmeter hiện đại.
-4. **Ghost Mode (Click-Through `WS_EX_TRANSPARENT`)**: Công tắc cho phép chuột bấm xuyên hoàn toàn qua mọi Widget trên màn hình Desktop, không bao giờ che khuất hay cản trở thao tác làm việc.
+### 5. Desktop Widgets 3.7: Taskbar Strip & Spatial Aurora Cube
+Nâng tổng số kiểu dáng trong **Widget Studio** lên **22 kiểu dáng**, bổ sung 2 thiết kế đột phá cho phiên bản 3.7.0:
+1. **`Taskbar Weather Strip 3.7` (`TaskbarStrip` — `236×42 px`)**: Thanh trạng thái siêu mảnh nằm gọn sát mép Taskbar hoặc cạnh màn hình (`[Chấm Xanh Live] [Icon] 30°C | TP.HCM | AQI 42`), kết hợp hoàn hảo với **Ghost Mode (Click-Through)**.
+2. **`Spatial Aurora Glass Cube 3.7` (`SpatialCube` — `276×220 px`)**: Khối kính không gian 3D mang phong cách visionOS với viền kính phát sáng và **đường cong nhiệt độ Bezier 12 giờ tới (`WidgetSpatialCurveCanvas`)** được vẽ trực tiếp ngay bên trong Desktop Widget.
+
+### 6. Tương Thích Tuyệt Đối 100% Windows 10 & Windows 11
+- Tự động nhận diện phiên bản hệ điều hành và hỗ trợ cờ kiểm thử `--win10`.
+- Trên **Windows 10**: Tự động kích hoạt lớp nền `SpatialAuroraBackdropGrid` đa sắc, bo góc cửa sổ thông minh và sử dụng `SetWindowLongPtr` (`WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT`) chuẩn Win32 giúp mọi tính năng từ Spatial Vision 3.7, Floating Dock đến Ghost Mode Widget hoạt động mượt mà không một lỗi nhỏ.
 
 ---
 
 ## 🧭 4. Khám Phá Chi Tiết 7 Phân Hệ Chính (7 Core Modules)
 
-### Tab 1: Tổng Quan Vi Khí Hậu, 60-Min Nowcast & 24h Interactive Scrubber
+### Tab 1 (`01`): Tổng Quan Vi Khí Hậu, Time-Machine 24h & Live Glyph Matrix
 - Cấu trúc Spatial Bento kết hợp thời tiết trực tiếp, chỉ số cảm nhận, độ ẩm, áp suất, UV, tốc độ gió và chất lượng không khí AQI/PM2.5.
-- Biểu đồ dự báo lượng mưa 60 phút tới (60-Minute Precipitation Nowcast) và đường cong nhiệt độ 24 giờ tương tác kéo thả mượt mà.
+- Biểu đồ dự báo mưa 60 phút tới (60-Min Precipitation Nowcast), đường cong Bézier 24 giờ tương tác đa ngày (Time-Machine 24h) và màn hình LED ma trận 13×13 trên Nothing OS.
 
-### Tab 2: Cảnh Báo Ngập Úng & Triều Cường Đô Thị (Urban Flood Hub)
-- Theo dõi mực nước triều sông Sài Gòn, sông Hồng thời gian thực và biểu đồ sóng triều hình sin 24h.
-- Đánh giá nguy cơ ngập úng các tuyến đường đô thị trọng yếu theo lượng mưa tích lũy và mực nước triều dâng.
+### Tab 2 (`02`): Cảnh Báo Ngập Úng & Triều Cường Đô Thị (Urban Flood Hub)
+- Theo dõi mực nước triều sông Sài Gòn, sông Hồng thời gian thực và biểu đồ sóng triều hình sin 24h cùng hơn 40 tuyến đường cảnh báo ngập.
 
-### Tab 3: Bản Đồ & Radar Khí Tượng 360° Realtime (Radar Hub)
+### Tab 3 (`03`): Bản Đồ & Radar Khí Tượng 360° Realtime (Radar Hub)
 - Mô phỏng chùm tia quét Radar Doppler 360 độ chân thực cùng bản đồ tương tác nhiều lớp (Lượng mưa, Gió, Nhiệt độ, Mây, Áp suất).
 
-### Tab 4: Trợ Lý Trang Phục "Hôm Nay Mặc Gì?" & Đời Sống (OOTD Hub)
-- Phân tích kết hợp nhiệt độ, độ ẩm, gió và tia UV để gợi ý trang phục đi làm, đi chơi, thể thao và chỉ số hoạt động ngoài trời.
-
-### Tab 5: Lịch Vạn Niên Âm Dương & Kế Hoạch Cá Nhân (Calendar Hub)
+### Tab 4 (`04`): Lịch Vạn Niên Âm Dương & Kế Hoạch Cá Nhân (Calendar Hub)
 - Tính toán lịch Âm thiên văn chuẩn xác theo múi giờ Việt Nam (UTC+7), Can Chi ngày/tháng/năm, Giờ Hoàng Đạo và 24 Tiết khí.
 
-### Tab 6: Widget Studio — Bộ Sưu Tập 20 Kiểu Dáng Desktop Widget & Ghost Mode
-- Ghim ngay lập tức 20 kiểu dáng widget ra màn hình Desktop (bao gồm Dynamic Island, Teenage Engineering Field Deck, Pure Typography HUD, bộ tứ Nothing OS Widgets, Bento Pop/Pilot, Retro LCD và 8 mẫu Lễ Hội 4 Mùa).
-- Tùy chỉnh độ mờ đục (20%–100%), Always on Top và **Ghost Mode (Click-Through)**.
+### Tab 5 (`05`): Trợ Lý Trang Phục "Hôm Nay Mặc Gì?" & Thẻ Thời Tiết HD (OOTD Hub)
+- Phân tích nhiệt độ, độ ẩm, gió và tia UV để gợi ý trang phục đi làm, đi chơi, thể thao và xuất ảnh thẻ thời tiết Full HD.
 
-### Tab 7: Trung Tâm Cài Đặt & Cá Nhân Hóa Toàn Trang (Settings Hub)
-- Chuyển đổi tức thì giữa **Fluent 2 (Mặc định)** và **Nothing Design (OS)** cùng chế độ Sáng / Tối / Theo hệ thống hợp nhất.
+### Tab 6 (`06`): Widget Studio — Bộ Sưu Tập 22 Kiểu Dáng Desktop Widget & Ghost Mode
+- Ghim ngay lập tức 22 kiểu dáng widget ra màn hình Desktop (bao gồm **Taskbar Strip 3.7**, **Spatial Aurora Cube 3.7**, Dynamic Island, Teenage Engineering Field Deck, Pure Typography HUD, bộ tứ Nothing OS Widgets, Bento Pop/Pilot, Retro LCD và 8 mẫu Lễ Hội 4 Mùa).
+
+### Tab 7 (`07`): Trung Tâm Cài Đặt & Bộ Ba Ngôn Ngữ Thiết Kế (Settings Hub)
+- Chuyển đổi tức thì giữa **Fluent 2**, **Spatial Vision 3.7 (Aurora Glass)** và **Nothing Design (OS)**, bật/tắt **Chế độ giấy điện tử E-Ink (`#F4F1EA`)** và lựa chọn giữa **Thanh Dock Nổi (Floating Dock)** hoặc **Sidebar Trái**.
 
 ---
 
@@ -105,10 +104,10 @@ Nâng tổng số kiểu dáng trong **Widget Studio** lên **20 kiểu dáng**,
 
 ### Dành Cho Người Dùng (End Users)
 1. **Tải bộ cài đặt chính thức**:
-   - Tải về tệp cài đặt: `WeatherApp_Setup_v3.6.1.exe` từ thư mục phát hành.
-   - Chạy tệp tin và làm theo hướng dẫn trên màn hình. Trình cài đặt sẽ tự động tạo Shortcut trên Desktop và Start Menu (tương thích hoàn toàn với cả Windows 10 và Windows 11).
-2. **Khởi chạy ứng dụng**:
-   - Mở Weather WinUI từ màn hình chính, nhấn `Ctrl + K` bất kỳ lúc nào để mở nhanh Bảng Lệnh Thông Minh (Command Palette).
+   - Tải về tệp cài đặt: `WeatherApp_Setup_v3.7.0.exe` từ thư mục `Output/`.
+   - Chạy tệp tin và làm theo hướng dẫn trên màn hình. Trình cài đặt tự động tạo Shortcut trên Desktop và Start Menu, tương thích hoàn toàn với cả **Windows 10** và **Windows 11**.
+2. **Phím tắt & Lệnh nhanh (`Ctrl + K`)**:
+   - Nhấn `Ctrl + K` bất kỳ lúc nào để mở Command Palette và gõ nhanh: `> spatial`, `> nothing`, `> fluent`, `> eink`, `> dock`, `> sidebar`, `> zen`, `> focus`, `> widget`.
 
 ### Dành Cho Lập Trình Viên (Developers)
 ```powershell
@@ -118,7 +117,7 @@ Nâng tổng số kiểu dáng trong **Widget Studio** lên **20 kiểu dáng**,
 # 2. Xuất bản phiên bản độc lập Self-Contained
 & 'C:\Users\LMT\AppData\Local\Microsoft\dotnet\dotnet.exe' publish "WeatherApp.csproj" -c Release -p:Platform=x64 -o "publish"
 
-# 3. Đóng gói bộ cài đặt Inno Setup (WeatherApp_Setup_v3.6.1.exe)
+# 3. Đóng gói bộ cài đặt Inno Setup (WeatherApp_Setup_v3.7.0.exe)
 & "C:\Users\LMT\AppData\Local\Programs\Inno Setup 6\ISCC.exe" "installer.iss"
 ```
 
@@ -126,19 +125,20 @@ Nâng tổng số kiểu dáng trong **Widget Studio** lên **20 kiểu dáng**,
 
 ## 📜 6. Biên Niên Sử Phát Triển Toàn Diện
 
+### Phiên Bản 3.7.0 (23/10/2026) — Atmospheric Spatial Canvas & Modular Dock OS
+- **Floating Bottom Spatial Dock & Sidebar-Free Canvas**: Thay thế Sidebar trái truyền thống bằng thanh Dock nổi hiện đại dưới đáy màn hình với 7 viên thuốc điều hướng và huy hiệu nhiệt độ trực tiếp; hỗ trợ chuyển đổi 1 chạm về Sidebar trái bất kỳ lúc nào.
+- **Ngôn Ngữ Thiết Kế Thứ 3 — Spatial Vision 3.7 (Aurora Glass)**: Bổ sung chủ đề kính không gian cực quang lấy cảm hứng từ Apple visionOS & Raycast, hoạt động mượt mà 100% trên cả Windows 10 và Windows 11.
+- **Nothing OS 3.7 — Interactive 13×13 Live Glyph Matrix & E-Ink Paper Mode**: Tích hợp màn hình 169 điểm LED hoạt họa thời tiết và phản hồi gợn sóng đỏ khi di chuột (`NothingLiveMatrixCanvas`), cùng chế độ giấy điện tử **Monochrome E-Ink (`#F4F1EA`)** chống mỏi mắt.
+- **24h + 7-Day Time-Machine Ribbon**: Cho phép bấm vào bất kỳ ngày nào trong bảng Dự báo 7 ngày để xem đường cong nhiệt độ/mưa 24 giờ chi tiết của ngày tương lai đó.
+- **Desktop Widgets 3.7**: Ra mắt 2 mẫu widget mới — **Taskbar Weather Strip (`236×42`)** siêu mảnh và **Spatial Aurora Glass Cube (`276×220`)** tích hợp đường cong nhiệt độ Bezier 12 giờ ngay trên Desktop.
+
 ### Phiên Bản 3.6.1 (23/10/2026) — The Spatial, Command & Sanctuary Update
-- **Single-Row Unified Command Header & Minimal Rail**: Hợp nhất thanh công cụ phía trên thành 1 hàng duy nhất với Smart Pinned Cities (4 thành phố ghim + menu 16 tỉnh thành) và Command Capsule (`Ctrl + K`).
-- **Command Palette (`Ctrl + K`) & `0ms` City Cache**: Hỗ trợ lệnh nhanh bàn phím (`> nothing`, `> fluent`, `> dark`, `> light`, `> zen`, `> focus`, `> widget`) và bộ đệm `Stale-While-Revalidate` chuyển thành phố tức thì `0ms`.
-- **60-Minute Precipitation Nowcast & Interactive 24h Curve Scrubber**: Thêm biểu đồ dự báo mưa 60 phút tới (mỗi mốc 5 phút) và đường cong nhiệt độ 24 giờ tương tác cho cả Fluent 2 và Nothing Design.
-- **Zen Mode 2.0**: Bổ sung chế độ **Nothing OS StandBy Dual-Matrix**, tự động ẩn khung điều khiển sau 2.6 giây và đồng hồ tập trung **Pomodoro Focus Timer (`25:00` / `05:00`)**.
-- **Desktop Widgets 3.0**: Ra mắt 3 kiểu widget mới (`Dynamic Island Capsule`, `Teenage Engineering Field Deck`, `Pure Typography Wallpaper HUD`) và chế độ **Ghost Mode (Click-Through `WS_EX_TRANSPARENT`)**.
+- **Single-Row Unified Command Header & Command Palette (`Ctrl + K`)**: Hợp nhất thanh công cụ phía trên thành 1 hàng duy nhất với Smart Pinned Cities và bộ đệm `0ms` Stale-While-Revalidate.
+- **60-Minute Precipitation Nowcast & Interactive 24h Curve Scrubber**: Thêm biểu đồ dự báo mưa 60 phút tới và đường cong nhiệt độ 24 giờ tương tác cho cả Fluent 2 và Nothing Design.
+- **Zen Mode 2.0 & Desktop Widgets 3.0**: Bổ sung chế độ **Nothing OS StandBy Dual-Matrix**, đồng hồ **Pomodoro Focus Timer (`25:00` / `05:00`)**, 3 kiểu widget (`Dynamic Island Capsule`, `Teenage Engineering Field Deck`, `Pure Typography Wallpaper HUD`) và **Ghost Mode (Click-Through)**.
 
 ### Phiên Bản 3.5.2 (21/10/2026)
 - Tích hợp phông chữ tự đóng gói `Ndot77JPExtended` cùng bộ đôi widget `Nothing Circular Dial` và `Nothing Glance Pill`.
-- Chuẩn hóa tương thích đa nền tảng Windows 10 & Windows 11.
-
-### Phiên Bản 3.5.1 (21/10/2026)
-- Hợp nhất bộ chọn giao diện Sáng/Tối duy nhất tại Cài đặt, sửa triệt để xung đột resource brush khi chuyển đổi giữa Nothing Design và Fluent 2.
 
 ---
-*Bản quyền (C) 2026 Weather WinUI Team. Phát triển với đam mê dành cho cộng đồng Windows.*
+*Bản quyền (C) 2026 Weather WinUI Team. Phát triển với đam mê dành cho cộng đồng Windows 10 & Windows 11.*

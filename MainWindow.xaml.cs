@@ -106,14 +106,27 @@ public sealed partial class MainWindow : Window
         try
         {
             var settings = new Services.SettingsService().LoadSettings();
+            string cmd = Environment.CommandLine;
             bool isDark = ThemeHelper.IsDarkTheme(RootWindowGrid);
             bool isWindows11 = Environment.OSVersion.Version.Build >= 22000 && !_forceWin10Mode;
-            bool isNothing = string.Equals(settings.DesignLanguage, "Nothing", StringComparison.OrdinalIgnoreCase);
+            string dl = settings.DesignLanguage ?? "Fluent2";
+            if (cmd.Contains("--design=nothing", StringComparison.OrdinalIgnoreCase)) dl = "Nothing";
+            else if (cmd.Contains("--design=spatial", StringComparison.OrdinalIgnoreCase)) dl = "SpatialGlass";
+            else if (cmd.Contains("--design=fluent", StringComparison.OrdinalIgnoreCase)) dl = "Fluent2";
+
+            bool isNothing = string.Equals(dl, "Nothing", StringComparison.OrdinalIgnoreCase);
+            bool isEInk = settings.EnableNothingEInkMode || cmd.Contains("--eink", StringComparison.OrdinalIgnoreCase);
 
             if (isNothing)
             {
                 // SystemBackdrop remains active; opaque background cleanly covers the window
-                if (isDark)
+                if (isEInk)
+                {
+                    RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                        Windows.UI.Color.FromArgb(255, 244, 241, 234)); // Warm E-Ink Paper #F4F1EA
+                    isDark = false;
+                }
+                else if (isDark)
                 {
                     RootWindowGrid.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
                         Windows.UI.Color.FromArgb(255, 10, 10, 12));

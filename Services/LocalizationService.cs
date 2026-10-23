@@ -722,5 +722,10 @@ public class LocalizationService : INotifyPropertyChanged
     public string ZenForecastNow => IsVietnamese ? "Hiện tại" : "Now";
     public string ZenHeroButtonTooltip => IsVietnamese ? "Mở Chế Độ Thư Giãn Toàn Cảnh (Zen Mode - F11)" : "Open Zen Immersive Mode (F11)";
     public string ZenHeroButtonText => IsVietnamese ? "Toàn cảnh Zen" : "Zen Mode";
+    public string SpatialVisionBadge => IsVietnamese ? "SPATIAL // 3.7" : "SPATIAL // 3.7";
+    public string DockToggleTooltip => IsVietnamese ? "Chuyển đổi thanh điều hướng: Floating Bottom Dock ⇄ Left Sidebar" : "Switch Navigation: Floating Bottom Dock ⇄ Left Sidebar";
+    public string TimeMachineHintText => IsVietnamese ? "Nhấp vào một ngày để xem đường cong 24h của ngày đó" : "Click any day row to inspect its 24h forecast curve";
+    public string TimeMachineResetText => IsVietnamese ? "Quay về 24h hiện tại" : "Reset to Live 24h";
+    public string NothingEInkToggleText => IsVietnamese ? "Chế độ Giấy Điện Tử E-Ink" : "E-Ink Warm Paper Mode";
     #endregion
 }

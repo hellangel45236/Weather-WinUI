@@ -340,12 +340,28 @@ public sealed partial class MainPage : Page
                     }
 
                     string fullCmd = Environment.CommandLine;
+                    if (fullCmd.Contains("--eink", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ViewModel.IsNothingEInkMode = true;
+                        ViewModel.Settings.EnableNothingEInkMode = true;
+                    }
+                    if (fullCmd.Contains("--dock", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ViewModel.NavigationLayoutMode = "FloatingDock";
+                    }
+                    else if (fullCmd.Contains("--sidebar", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ViewModel.NavigationLayoutMode = "LeftSidebar";
+                    }
                     if (fullCmd.Contains("--design=", StringComparison.OrdinalIgnoreCase))
                     {
                         int dIdx = fullCmd.IndexOf("--design=", StringComparison.OrdinalIgnoreCase);
                         int endIdx = fullCmd.IndexOf(" ", dIdx);
                         string dMode = (endIdx > dIdx ? fullCmd.Substring(dIdx + 9, endIdx - dIdx - 9) : fullCmd.Substring(dIdx + 9)).Trim().Trim('"');
+                        if (dMode.Equals("spatial", StringComparison.OrdinalIgnoreCase) || dMode.Equals("aurora", StringComparison.OrdinalIgnoreCase))
+                            dMode = "SpatialGlass";
                         ViewModel.ApplyDesignLanguage(dMode, save: false);
+                        ApplyDesignLanguageVisuals(ViewModel.SelectedDesignLanguage);
                         (App.MainWindow as MainWindow)?.UpdateWindowTheme();
                     }
                     if (fullCmd.Contains("--theme=", StringComparison.OrdinalIgnoreCase))
@@ -356,6 +372,16 @@ public sealed partial class MainPage : Page
                         ViewModel.ChangeTheme(tMode);
                         ApplyDesignLanguageVisuals(ViewModel.SelectedDesignLanguage);
                         (App.MainWindow as MainWindow)?.UpdateWindowTheme();
+                    }
+                    if (fullCmd.Contains("--timemachine=", StringComparison.OrdinalIgnoreCase))
+                    {
+                        int tmIdx = fullCmd.IndexOf("--timemachine=", StringComparison.OrdinalIgnoreCase);
+                        int endIdx = fullCmd.IndexOf(" ", tmIdx);
+                        string tmVal = (endIdx > tmIdx ? fullCmd.Substring(tmIdx + 14, endIdx - tmIdx - 14) : fullCmd.Substring(tmIdx + 14)).Trim().Trim('"');
+                        if (int.TryParse(tmVal, out int dayIdx) && ViewModel.DailyForecast != null && dayIdx >= 0 && dayIdx < ViewModel.DailyForecast.Count)
+                        {
+                            ViewModel.SelectDailyForecastForHourly(ViewModel.DailyForecast[dayIdx]);
+                        }
                     }
                     if (fullCmd.Contains("--openwidget", StringComparison.OrdinalIgnoreCase))
                     {
@@ -391,6 +417,47 @@ public sealed partial class MainPage : Page
                             _widgetWindow.ApplySeasonalTheme(skin);
                         }
                         _widgetWindow.Activate();
+                    }
+
+                    if (fullCmd.Contains("--screenshot=", StringComparison.OrdinalIgnoreCase))
+                    {
+                        int ssIdx = fullCmd.IndexOf("--screenshot=", StringComparison.OrdinalIgnoreCase) + 13;
+                        string ssPath;
+                        if (ssIdx < fullCmd.Length && fullCmd[ssIdx] == '"')
+                        {
+                            int endQ = fullCmd.IndexOf('"', ssIdx + 1);
+                            ssPath = endQ > ssIdx ? fullCmd.Substring(ssIdx + 1, endQ - ssIdx - 1) : fullCmd.Substring(ssIdx + 1).Trim('"');
+                        }
+                        else
+                        {
+                            int endS = fullCmd.IndexOf(' ', ssIdx);
+                            ssPath = (endS > ssIdx ? fullCmd.Substring(ssIdx, endS - ssIdx) : fullCmd.Substring(ssIdx)).Trim().Trim('"');
+                        }
+
+                        await Task.Delay(1800);
+                        TabOverview?.RedrawCanvases();
+                        await Task.Delay(400);
+
+                        UIElement targetEl = (_widgetWindow?.Content as UIElement) ?? this;
+                        var rtb = new RenderTargetBitmap();
+                        await rtb.RenderAsync(targetEl);
+                        var pixelBuffer = await rtb.GetPixelsAsync();
+                        byte[] pixels = pixelBuffer.ToArray();
+
+                        Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ssPath)!);
+                        using (var fs = new FileStream(ssPath, FileMode.Create, FileAccess.Write))
+                        {
+                            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, fs.AsRandomAccessStream());
+                            encoder.SetPixelData(
+                                BitmapPixelFormat.Bgra8,
+                                BitmapAlphaMode.Premultiplied,
+                                (uint)rtb.PixelWidth,
+                                (uint)rtb.PixelHeight,
+                                96, 96,
+                                pixels);
+                            await encoder.FlushAsync();
+                        }
+                        Application.Current.Exit();
                     }
                     
                 }
@@ -688,8 +755,36 @@ public sealed partial class MainPage : Page
         catch { return false; }
     }
 
+    private string _currentActiveTabTag = "overview";
+
+    private void FloatingDockTab_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is string tag)
+        {
+            Helpers.MechanicalSoundHelper.PlayClick();
+            SelectNavigationTabByTag(tag);
+        }
+    }
+
+    private void HeaderNavLayoutToggle_Click(object sender, RoutedEventArgs e)
+    {
+        Helpers.MechanicalSoundHelper.PlayClick();
+        ViewModel?.ToggleNavigationLayoutCommand.Execute(null);
+        UpdateFloatingDockVisuals(_currentActiveTabTag);
+    }
+
+    private void HeaderEInkToggle_Click(object sender, RoutedEventArgs e)
+    {
+        Helpers.MechanicalSoundHelper.PlayClick();
+        ViewModel?.ToggleNothingEInkModeCommand.Execute(null);
+        ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
+        (App.MainWindow as MainWindow)?.UpdateWindowTheme();
+    }
+
     public void SelectNavigationTabByTag(string targetTab)
     {
+        _currentActiveTabTag = targetTab;
+        UpdateFloatingDockVisuals(targetTab);
         if (MainNavView == null) return;
         var allItems = MainNavView.MenuItems.OfType<NavigationViewItem>().Concat(MainNavView.FooterMenuItems.OfType<NavigationViewItem>());
         foreach (var item in allItems)
@@ -710,7 +805,9 @@ public sealed partial class MainPage : Page
         {
             if (args.SelectedItem is NavigationViewItem item && item.Tag is string tag)
             {
+                _currentActiveTabTag = tag;
                 ViewModel?.SwitchNav(tag);
+                UpdateFloatingDockVisuals(tag);
 
                 switch (tag)
                 {
@@ -873,26 +970,65 @@ public sealed partial class MainPage : Page
         {
             string dl = designLanguage ?? ViewModel?.SelectedDesignLanguage ?? "Fluent2";
             bool isNothing = string.Equals(dl, "Nothing", StringComparison.OrdinalIgnoreCase);
-            bool isDark = ThemeHelper.IsDarkTheme(this);
+            bool isSpatialGlass = string.Equals(dl, "SpatialGlass", StringComparison.OrdinalIgnoreCase);
+            bool isEInk = isNothing && (ViewModel?.IsNothingEInkMode == true);
+            bool isDark = isEInk ? false : ThemeHelper.IsDarkTheme(this);
 
             var tabs = new Microsoft.UI.Xaml.FrameworkElement?[] { TabOverview, TabFlood, TabRadar, TabLifestyle, TabCalendar, TabWidgetStudio, TabSettings };
 
             if (isNothing)
             {
-                var cardBg = isDark ? Windows.UI.Color.FromArgb(255, 18, 18, 20) : Windows.UI.Color.FromArgb(255, 255, 255, 255);
-                var cardBorder = isDark ? Windows.UI.Color.FromArgb(255, 36, 36, 40) : Windows.UI.Color.FromArgb(255, 226, 226, 230);
-                var subtleBg = isDark ? Windows.UI.Color.FromArgb(255, 24, 24, 27) : Windows.UI.Color.FromArgb(255, 245, 245, 247);
-                var subCardBorder = isDark ? Windows.UI.Color.FromArgb(255, 38, 38, 43) : Windows.UI.Color.FromArgb(255, 229, 229, 232);
-                var paneBg = isDark ? Windows.UI.Color.FromArgb(255, 10, 10, 12) : Windows.UI.Color.FromArgb(255, 240, 240, 242);
-                var glyphBoxBg = isDark ? Windows.UI.Color.FromArgb(255, 10, 10, 12) : Windows.UI.Color.FromArgb(255, 249, 249, 250);
+                if (isEInk && this.RequestedTheme != ElementTheme.Light)
+                {
+                    this.RequestedTheme = ElementTheme.Light;
+                }
+                else if (!isEInk)
+                {
+                    string savedTheme = ViewModel?.Settings?.ThemeMode ?? "Dark";
+                    if (savedTheme.Equals("Dark", StringComparison.OrdinalIgnoreCase) && this.RequestedTheme != ElementTheme.Dark)
+                        this.RequestedTheme = ElementTheme.Dark;
+                    else if (savedTheme.Equals("Light", StringComparison.OrdinalIgnoreCase) && this.RequestedTheme != ElementTheme.Light)
+                        this.RequestedTheme = ElementTheme.Light;
+                }
+                isDark = isEInk ? false : (this.RequestedTheme == ElementTheme.Dark || ThemeHelper.IsDarkTheme(this));
+
+                var cardBg = isEInk
+                    ? Windows.UI.Color.FromArgb(255, 250, 247, 240)
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 18, 18, 20) : Windows.UI.Color.FromArgb(255, 255, 255, 255));
+                var cardBorder = isEInk
+                    ? Windows.UI.Color.FromArgb(255, 214, 209, 196)
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 36, 36, 40) : Windows.UI.Color.FromArgb(255, 226, 226, 230));
+                var subtleBg = isEInk
+                    ? Windows.UI.Color.FromArgb(255, 238, 234, 224)
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 24, 24, 27) : Windows.UI.Color.FromArgb(255, 245, 245, 247));
+                var subCardBorder = isEInk
+                    ? Windows.UI.Color.FromArgb(255, 210, 204, 190)
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 38, 38, 43) : Windows.UI.Color.FromArgb(255, 229, 229, 232));
+                var paneBg = isEInk
+                    ? Windows.UI.Color.FromArgb(255, 244, 241, 234)
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 10, 10, 12) : Windows.UI.Color.FromArgb(255, 240, 240, 242));
+                this.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(paneBg);
+                var glyphBoxBg = isEInk
+                    ? Windows.UI.Color.FromArgb(255, 242, 238, 229)
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 10, 10, 12) : Windows.UI.Color.FromArgb(255, 249, 249, 250));
 
                 var redAccent = Windows.UI.Color.FromArgb(255, 215, 25, 33);
-                var textPrimary = isDark ? Windows.UI.Color.FromArgb(255, 255, 255, 255) : Windows.UI.Color.FromArgb(255, 10, 10, 12);
-                var textSecondary = isDark ? Windows.UI.Color.FromArgb(255, 136, 136, 136) : Windows.UI.Color.FromArgb(255, 102, 102, 102);
-                var textMuted = isDark ? Windows.UI.Color.FromArgb(255, 82, 82, 91) : Windows.UI.Color.FromArgb(255, 161, 161, 170);
+                var textPrimary = isEInk
+                    ? Windows.UI.Color.FromArgb(255, 20, 20, 19)
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 255, 255, 255) : Windows.UI.Color.FromArgb(255, 10, 10, 12));
+                var textSecondary = isEInk
+                    ? Windows.UI.Color.FromArgb(255, 87, 85, 78)
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 136, 136, 136) : Windows.UI.Color.FromArgb(255, 102, 102, 102));
+                var textMuted = isEInk
+                    ? Windows.UI.Color.FromArgb(255, 138, 134, 124)
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 82, 82, 91) : Windows.UI.Color.FromArgb(255, 161, 161, 170));
                 var badgeBg = isDark ? Windows.UI.Color.FromArgb(255, 30, 30, 34) : Windows.UI.Color.FromArgb(255, 240, 240, 242);
-                var pillBg = isDark ? Windows.UI.Color.FromArgb(255, 31, 31, 35) : Windows.UI.Color.FromArgb(255, 238, 238, 240);
-                var pillBorder = isDark ? Windows.UI.Color.FromArgb(255, 51, 51, 51) : Windows.UI.Color.FromArgb(255, 225, 225, 228);
+                var pillBg = isEInk
+                    ? Windows.UI.Color.FromArgb(255, 236, 231, 220)
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 31, 31, 35) : Windows.UI.Color.FromArgb(255, 238, 238, 240));
+                var pillBorder = isEInk
+                    ? Windows.UI.Color.FromArgb(255, 206, 200, 186)
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 51, 51, 51) : Windows.UI.Color.FromArgb(255, 225, 225, 228));
 
                 this.Resources["CardBackgroundFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
                 this.Resources["CardStrokeColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
@@ -1000,6 +1136,7 @@ public sealed partial class MainPage : Page
             }
             else
             {
+                this.Background = null;
                 var fluentKeys = new string[]
                 {
                     "CardBackgroundFillColorDefaultBrush",
@@ -1088,9 +1225,81 @@ public sealed partial class MainPage : Page
                     }
                 }
 
+                // ==================== SPATIAL VISION (AURORA GLASS 3.7) OVERLAYS ====================
+                if (isSpatialGlass)
+                {
+                    if (SpatialGradStop1 != null && SpatialGradStop2 != null && SpatialGradStop3 != null)
+                    {
+                        if (isDark)
+                        {
+                            SpatialGradStop1.Color = Windows.UI.Color.FromArgb(255, 5, 9, 20);
+                            SpatialGradStop2.Color = Windows.UI.Color.FromArgb(255, 12, 25, 56);
+                            SpatialGradStop3.Color = Windows.UI.Color.FromArgb(255, 7, 34, 59);
+                        }
+                        else
+                        {
+                            SpatialGradStop1.Color = Windows.UI.Color.FromArgb(255, 224, 242, 254);
+                            SpatialGradStop2.Color = Windows.UI.Color.FromArgb(255, 237, 233, 254);
+                            SpatialGradStop3.Color = Windows.UI.Color.FromArgb(255, 240, 253, 250);
+                        }
+                    }
+
+                    Microsoft.UI.Xaml.Media.LinearGradientBrush CreateSpecularBorderBrush()
+                    {
+                        var b = new Microsoft.UI.Xaml.Media.LinearGradientBrush
+                        {
+                            StartPoint = new Windows.Foundation.Point(0, 0),
+                            EndPoint = new Windows.Foundation.Point(1, 1)
+                        };
+                        if (isDark)
+                        {
+                            b.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(125, 255, 255, 255), Offset = 0.0 });
+                            b.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(55, 56, 189, 248), Offset = 0.5 });
+                            b.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(95, 168, 85, 247), Offset = 1.0 });
+                        }
+                        else
+                        {
+                            b.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(245, 255, 255, 255), Offset = 0.0 });
+                            b.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(110, 56, 189, 248), Offset = 0.5 });
+                            b.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(110, 139, 92, 246), Offset = 1.0 });
+                        }
+                        return b;
+                    }
+
+                    var glassFillColor = isDark
+                        ? Windows.UI.Color.FromArgb(46, 15, 23, 42)
+                        : Windows.UI.Color.FromArgb(195, 255, 255, 255);
+                    var subtleGlassColor = isDark
+                        ? Windows.UI.Color.FromArgb(36, 255, 255, 255)
+                        : Windows.UI.Color.FromArgb(165, 241, 245, 249);
+
+                    this.Resources["CardBackgroundFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(glassFillColor);
+                    this.Resources["CardStrokeColorDefaultBrush"] = CreateSpecularBorderBrush();
+                    this.Resources["SubtleFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleGlassColor);
+
+                    if (FloatingIslandHeader != null)
+                    {
+                        FloatingIslandHeader.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                            isDark ? Windows.UI.Color.FromArgb(160, 8, 15, 32) : Windows.UI.Color.FromArgb(215, 255, 255, 255));
+                        FloatingIslandHeader.BorderBrush = CreateSpecularBorderBrush();
+                    }
+
+                    foreach (var tab in tabs)
+                    {
+                        if (tab != null)
+                        {
+                            tab.Resources["CardBackgroundFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(glassFillColor);
+                            tab.Resources["CardStrokeColorDefaultBrush"] = CreateSpecularBorderBrush();
+                            tab.Resources["SubtleFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleGlassColor);
+                        }
+                    }
+                }
+
                 TabOverview?.UpdateWeatherVisuals();
                 TabOverview?.RedrawCanvases();
             }
+
+            UpdateFloatingDockVisuals(_currentActiveTabTag);
         }
         catch (Exception ex)
         {
@@ -1100,6 +1309,113 @@ public sealed partial class MainPage : Page
         {
             _isApplyingVisuals = false;
         }
+    }
+
+    public void UpdateFloatingDockVisuals(string? activeTag = null)
+    {
+        try
+        {
+            string tag = (activeTag ?? _currentActiveTabTag ?? "overview").ToLowerInvariant();
+            bool isFloatingDock = ViewModel?.IsFloatingDockMode ?? true;
+            if (NavContentRootGrid != null)
+            {
+                NavContentRootGrid.Margin = isFloatingDock ? new Thickness(0, 0, 0, 58) : new Thickness(12, 0, 0, 0);
+            }
+
+            if (FloatingBottomDock == null) return;
+
+            string dl = ViewModel?.SelectedDesignLanguage ?? "Fluent2";
+            bool isNothing = string.Equals(dl, "Nothing", StringComparison.OrdinalIgnoreCase);
+            bool isSpatialGlass = string.Equals(dl, "SpatialGlass", StringComparison.OrdinalIgnoreCase);
+            bool isEInk = isNothing && (ViewModel?.IsNothingEInkMode == true);
+            bool isDark = isEInk ? false : ThemeHelper.IsDarkTheme(this);
+
+            if (isNothing)
+            {
+                var dockBg = isEInk
+                    ? Windows.UI.Color.FromArgb(248, 250, 247, 240)
+                    : (isDark ? Windows.UI.Color.FromArgb(244, 12, 12, 15) : Windows.UI.Color.FromArgb(246, 246, 246, 248));
+                var dockBorder = isEInk
+                    ? Windows.UI.Color.FromArgb(255, 200, 194, 180)
+                    : (isDark ? Windows.UI.Color.FromArgb(255, 46, 46, 52) : Windows.UI.Color.FromArgb(255, 212, 212, 218));
+                FloatingBottomDock.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(dockBg);
+                FloatingBottomDock.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(dockBorder);
+            }
+            else if (isSpatialGlass)
+            {
+                var dockBg = isDark
+                    ? Windows.UI.Color.FromArgb(215, 7, 14, 30)
+                    : Windows.UI.Color.FromArgb(230, 245, 250, 255);
+                var specBorder = new Microsoft.UI.Xaml.Media.LinearGradientBrush
+                {
+                    StartPoint = new Windows.Foundation.Point(0, 0),
+                    EndPoint = new Windows.Foundation.Point(1, 1)
+                };
+                specBorder.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(180, 255, 255, 255), Offset = 0.0 });
+                specBorder.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(140, 56, 189, 248), Offset = 0.5 });
+                specBorder.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(150, 168, 85, 247), Offset = 1.0 });
+                FloatingBottomDock.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(dockBg);
+                FloatingBottomDock.BorderBrush = specBorder;
+            }
+            else
+            {
+                var dockBg = isDark
+                    ? Windows.UI.Color.FromArgb(236, 15, 23, 42)
+                    : Windows.UI.Color.FromArgb(242, 255, 255, 255);
+                var dockBorder = isDark
+                    ? Windows.UI.Color.FromArgb(90, 56, 189, 248)
+                    : Windows.UI.Color.FromArgb(140, 148, 163, 184);
+                FloatingBottomDock.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(dockBg);
+                FloatingBottomDock.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(dockBorder);
+            }
+
+            var activeColor = isNothing
+                ? Windows.UI.Color.FromArgb(255, 215, 25, 33)
+                : (isDark ? Windows.UI.Color.FromArgb(255, 56, 189, 248) : Windows.UI.Color.FromArgb(255, 2, 132, 199));
+            var activePillBg = isNothing
+                ? (isDark ? Windows.UI.Color.FromArgb(55, 215, 25, 33) : Windows.UI.Color.FromArgb(32, 215, 25, 33))
+                : (isDark ? Windows.UI.Color.FromArgb(48, 56, 189, 248) : Windows.UI.Color.FromArgb(35, 2, 132, 199));
+            var activePillBorder = isNothing
+                ? Windows.UI.Color.FromArgb(160, 215, 25, 33)
+                : (isDark ? Windows.UI.Color.FromArgb(140, 56, 189, 248) : Windows.UI.Color.FromArgb(120, 2, 132, 199));
+
+            var dockItems = new (Button? Btn, Border? Ind, TextBlock? Txt, string ItemTag)[]
+            {
+                (DockBtnOverview, DockIndOverview, DockTextOverview, "overview"),
+                (DockBtnFlood, DockIndFlood, DockTextFlood, "flood"),
+                (DockBtnRadar, DockIndRadar, DockTextRadar, "radar"),
+                (DockBtnLifestyle, DockIndLifestyle, DockTextLifestyle, "lifestyle"),
+                (DockBtnCalendar, DockIndCalendar, DockTextCalendar, "calendar"),
+                (DockBtnWidget, DockIndWidget, DockTextWidget, "widget"),
+                (DockBtnSettings, DockIndSettings, DockTextSettings, "settings")
+            };
+
+            var transparent = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
+            var activeIndBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(activeColor);
+            var activeBgBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(activePillBg);
+            var activeBorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(activePillBorder);
+
+            foreach (var (btn, ind, txt, itemTag) in dockItems)
+            {
+                bool isSel = itemTag == tag;
+                if (btn != null)
+                {
+                    btn.Background = isSel ? activeBgBrush : transparent;
+                    btn.BorderBrush = isSel ? activeBorderBrush : transparent;
+                }
+                if (ind != null)
+                {
+                    ind.Background = isSel ? activeIndBrush : transparent;
+                }
+                if (txt != null)
+                {
+                    txt.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                        isDark ? Windows.UI.Color.FromArgb(255, 248, 250, 252) : Windows.UI.Color.FromArgb(255, 20, 20, 19));
+                    txt.Opacity = isSel ? 1.0 : 0.78;
+                }
+            }
+        }
+        catch { }
     }
 
     private async void QuickLocationChip_Click(object sender, RoutedEventArgs e)
@@ -1115,7 +1431,8 @@ public sealed partial class MainPage : Page
     private static bool TryMatchDirectCommand(string input)
     {
         string c = input.Trim().ToLowerInvariant();
-        return c == "nothing" || c == "fluent" || c == "dark" || c == "light" ||
+        return c == "nothing" || c == "fluent" || c == "spatial" || c == "aurora" ||
+               c == "eink" || c == "dock" || c == "sidebar" || c == "dark" || c == "light" ||
                c == "zen" || c == "pomodoro" || c == "focus" || c == "widget" ||
                c == "duel" || c == "compare";
     }
@@ -1125,6 +1442,7 @@ public sealed partial class MainPage : Page
         if (sender is Button btn && btn.Tag is string cmd)
         {
             CommandPaletteFlyout?.Hide();
+            DesignSwitcherFlyout?.Hide();
             ExecuteQuickCommand(cmd);
         }
     }
@@ -1138,12 +1456,32 @@ public sealed partial class MainPage : Page
         {
             case "nothing":
                 ViewModel.ApplyDesignLanguage("Nothing");
+                ApplyDesignLanguageVisuals("Nothing");
+                (App.MainWindow as MainWindow)?.UpdateWindowTheme();
+                break;
+            case "spatial":
+            case "aurora":
+            case "spatialglass":
+                ViewModel.ApplyDesignLanguage("SpatialGlass");
+                ApplyDesignLanguageVisuals("SpatialGlass");
                 (App.MainWindow as MainWindow)?.UpdateWindowTheme();
                 break;
             case "fluent":
             case "fluent2":
                 ViewModel.ApplyDesignLanguage("Fluent2");
+                ApplyDesignLanguageVisuals("Fluent2");
                 (App.MainWindow as MainWindow)?.UpdateWindowTheme();
+                break;
+            case "eink":
+                ViewModel.ApplyDesignLanguage("Nothing");
+                ViewModel.ToggleNothingEInkModeCommand.Execute(null);
+                ApplyDesignLanguageVisuals("Nothing");
+                (App.MainWindow as MainWindow)?.UpdateWindowTheme();
+                break;
+            case "dock":
+            case "sidebar":
+                ViewModel.ToggleNavigationLayoutCommand.Execute(null);
+                UpdateFloatingDockVisuals(_currentActiveTabTag);
                 break;
             case "dark":
                 ViewModel.ChangeTheme("Dark");
@@ -1585,7 +1923,7 @@ public sealed partial class MainPage : Page
 
     private void CheckAndShowChangelog()
     {
-        string currentVersion = "3.6.1";
+        string currentVersion = "3.7.0";
         string lastSeen = ViewModel.Settings.LastSeenVersion ?? string.Empty;
 
         if (string.IsNullOrEmpty(lastSeen) || lastSeen != currentVersion)
@@ -1645,6 +1983,7 @@ public sealed partial class MainPage : Page
     {
         var panels = new[]
         {
+            (ChangelogContent_v370, "3.7.0"),
             (ChangelogContent_v360, "3.6.1"),
             (ChangelogContent_v350, "3.5.0"),
             (ChangelogContent_v306, "3.0.6"),
@@ -1684,6 +2023,7 @@ public sealed partial class MainPage : Page
         {
             ChangelogHeaderTitle.Text = versionTag switch
             {
+                "3.7.0" => isVi ? "Siêu Cập Nhật Weather WinUI v3.7.0" : "Official Release Notes v3.7.0",
                 "3.6.1" => isVi ? "Siêu Cập Nhật Weather WinUI v3.6.1" : "Official Release Notes v3.6.1",
                 "3.5.0" => isVi ? "Chi Ti\u1EBFt B\u1EA3n Ph\u00E1t H\u00E0nh Ch\u00EDnh Th\u1EE9c v3.5.0" : "Official Release Notes v3.5.0",
                 "3.4.1" => isVi ? "Chi Ti\u1EBFt B\u1EA3n Ph\u00E1t H\u00E0nh Ch\u00EDnh Th\u1EE9c v3.4.1" : "Official Release Notes v3.4.1",

@@ -38,8 +38,8 @@
                 </Grid>
             </Border>
 
-            <!-- ==================== BỘ SƯU TẬP 4 KIỂU DÁNG WIDGET TRỰC QUAN ==================== -->
-            <Grid x:Name="GalleryGrid" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="16">
+            <!-- ==================== BỘ SƯU TẬP KIỂU DÁNG WIDGET TRỰC QUAN ==================== -->
+            <Grid x:Name="GalleryGrid" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="16">
                 <!-- 1. BRYAN C DYNAMIC CARD -->
                 <Border x:Name="CardWidgetBryanC" Grid.Row="0" Grid.Column="0"
                         PointerPressed="CardWidgetBryanC_PointerPressed"
@@ -690,6 +690,86 @@
                         <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioPureTypoDesc, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
                     </StackPanel>
                 </Border>
+
+                <!-- 15. ULTRA-SLIM TASKBAR STRIP (v3.7.0) -->
+                <Border x:Name="CardWidgetTaskbarStrip" Grid.Row="8" Grid.Column="0"
+                        PointerPressed="CardWidgetTaskbarStrip_PointerPressed"
+                        PointerEntered="Card_PointerEntered"
+                        PointerExited="Card_PointerExited"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="16">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="➖ Taskbar Strip (v3.7.0)" FontWeight="Bold" FontSize="14"/>
+                            </StackPanel>
+                            <Border x:Name="BadgeWidgetTaskbarStrip" Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="10" Padding="8,2" Visibility="Collapsed">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioSelected, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                            </Border>
+                        </Grid>
+
+                        <Border Height="124" CornerRadius="14" Background="#0A0F1D" BorderBrush="#25FFFFFF" BorderThickness="1" Padding="14">
+                            <Border Height="36" CornerRadius="18" Background="#E60D1424" BorderBrush="#4838BDF8" BorderThickness="1.2" Padding="12,0" VerticalAlignment="Center">
+                                <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto" ColumnSpacing="7" VerticalAlignment="Center">
+                                    <Ellipse Grid.Column="0" Width="6" Height="6" Fill="#10B981" VerticalAlignment="Center"/>
+                                    <FontIcon Grid.Column="1" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="13" Foreground="#FBBF24" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="14" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="3" Text="{x:Bind ViewModel.CurrentWeather.LocationName, Mode=OneWay}" FontSize="11" FontWeight="SemiBold" Foreground="#CBD5E1" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    <Border Grid.Column="4" Background="#2538BDF8" BorderBrush="#5038BDF8" BorderThickness="1" CornerRadius="9" Padding="6,1.5" VerticalAlignment="Center">
+                                        <TextBlock Text="AQI 42" FontSize="9.5" FontWeight="Bold" Foreground="#38BDF8"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </Border>
+                        <TextBlock Text="Thanh siêu mảnh 236×42px đặt sát Taskbar hoặc mép màn hình với tín hiệu Live Dot, nhiệt độ và AQI tức thì." FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 16. SPATIAL AURORA GLASS CUBE + 12H SPLINE (v3.7.0) -->
+                <Border x:Name="CardWidgetSpatialCube" Grid.Row="8" Grid.Column="1"
+                        PointerPressed="CardWidgetSpatialCube_PointerPressed"
+                        PointerEntered="Card_PointerEntered"
+                        PointerExited="Card_PointerExited"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="16">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="✨ Spatial Aurora Cube (v3.7.0)" FontWeight="Bold" FontSize="14"/>
+                            </StackPanel>
+                            <Border x:Name="BadgeWidgetSpatialCube" Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="10" Padding="8,2" Visibility="Collapsed">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioSelected, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                            </Border>
+                        </Grid>
+
+                        <Border Height="124" CornerRadius="14" BorderBrush="#6638BDF8" BorderThickness="1.5" Padding="14,10">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#E80B1325" Offset="0.0"/>
+                                    <GradientStop Color="#E81E1B3A" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <StackPanel Spacing="6" VerticalAlignment="Center">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="26" FontWeight="Bold" Foreground="White"/>
+                                    <Border Grid.Column="1" Background="#24A855F7" BorderBrush="#55A855F7" BorderThickness="1" CornerRadius="6" Padding="6,2" VerticalAlignment="Center">
+                                        <TextBlock Text="12H SPLINE" FontSize="9" FontWeight="Bold" Foreground="#C084FC"/>
+                                    </Border>
+                                </Grid>
+                                <Canvas Height="32" Width="210" HorizontalAlignment="Left">
+                                    <Path Data="M 0,24 C 35,8 70,28 105,14 C 140,2 175,20 210,8" Stroke="#38BDF8" StrokeThickness="2.2"/>
+                                </Canvas>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Text="Khối kính không gian Spatial Vision 3.7 kèm viền phản quang Specular và đường cong dự báo 12h Bezier Spline trực tiếp trên Desktop." FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
+                    </StackPanel>
+                </Border>
                 <Border Visibility="Collapsed"><StackPanel>
                     </StackPanel>
                 </Border>
@@ -1203,6 +1283,8 @@
                                 <ComboBoxItem Content="🏝️ Dynamic Island Capsule (v3.6.0)" Tag="DynamicIsland"/>
                                 <ComboBoxItem Content="🎛️ Teenage Engineering Field Deck (v3.6.0)" Tag="TeenageDeck"/>
                                 <ComboBoxItem Content="🔤 Pure Typography Wallpaper HUD (v3.6.0)" Tag="PureTypoHud"/>
+                                <ComboBoxItem Content="➖ Taskbar Strip Ultra-Slim (v3.7.0)" Tag="TaskbarStrip"/>
+                                <ComboBoxItem Content="✨ Spatial Aurora Glass Cube + 12h Spline (v3.7.0)" Tag="SpatialCube"/>
                             </ComboBox>
                         </StackPanel>
 

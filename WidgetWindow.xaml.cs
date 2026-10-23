@@ -388,8 +388,10 @@ public sealed partial class WidgetWindow : Window
         bool isDynamicIsland = style == "DynamicIsland";
         bool isTeenageDeck = style == "TeenageDeck";
         bool isPureTypo = style == "PureTypoHud";
+        bool isTaskbarStrip = style == "TaskbarStrip";
+        bool isSpatialCube = style == "SpatialCube";
 
-        if (!isBryanC && !isIsland && !isCompact && !isGlass && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare && !isNothingCircular && !isNothingPill && !isDynamicIsland && !isTeenageDeck && !isPureTypo)
+        if (!isBryanC && !isIsland && !isCompact && !isGlass && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare && !isNothingCircular && !isNothingPill && !isDynamicIsland && !isTeenageDeck && !isPureTypo && !isTaskbarStrip && !isSpatialCube)
         {
             isBryanC = true;
             _currentStyle = "BryanCDynamic";
@@ -410,6 +412,8 @@ public sealed partial class WidgetWindow : Window
         if (DynamicIslandView != null) DynamicIslandView.Visibility = isDynamicIsland ? Visibility.Visible : Visibility.Collapsed;
         if (TeenageDeckView != null) TeenageDeckView.Visibility = isTeenageDeck ? Visibility.Visible : Visibility.Collapsed;
         if (PureTypoHudView != null) PureTypoHudView.Visibility = isPureTypo ? Visibility.Visible : Visibility.Collapsed;
+        if (TaskbarStripView != null) TaskbarStripView.Visibility = isTaskbarStrip ? Visibility.Visible : Visibility.Collapsed;
+        if (SpatialCubeView != null) SpatialCubeView.Visibility = isSpatialCube ? Visibility.Visible : Visibility.Collapsed;
         if (DynamicIslandExpandedPanel != null) DynamicIslandExpandedPanel.Visibility = Visibility.Collapsed;
 
         int cornerRadiusDip = style switch
@@ -419,6 +423,8 @@ public sealed partial class WidgetWindow : Window
             "DynamicIsland" => 24,
             "TeenageDeck" => 16,
             "PureTypoHud" => 0,
+            "TaskbarStrip" => 20,
+            "SpatialCube" => 22,
             "NothingBento" => 24,
             "NothingSquare" => 22,
             "RetroLcd" => 16,
@@ -439,6 +445,8 @@ public sealed partial class WidgetWindow : Window
             "DynamicIsland" => 254,
             "TeenageDeck" => 286,
             "PureTypoHud" => 272,
+            "TaskbarStrip" => 236,
+            "SpatialCube" => 276,
             "NothingBento" => 320,
             "NothingSquare" => 190,
             "BentoVivid" or "BentoTactical" => 365,
@@ -457,6 +465,8 @@ public sealed partial class WidgetWindow : Window
             "DynamicIsland" => 50,
             "TeenageDeck" => 172,
             "PureTypoHud" => 136,
+            "TaskbarStrip" => 42,
+            "SpatialCube" => 220,
             "NothingBento" => 160,
             "NothingSquare" => 190,
             "BentoVivid" or "BentoTactical" => 175,
@@ -491,13 +501,13 @@ public sealed partial class WidgetWindow : Window
         {
             ApplyBryanCWeatherTheme(_currentWeather.WeatherEffect, _currentWeather.IsDay);
         }
-        else if (isBentoVivid || isBentoTactical || isRetroLcd || isNothingBento || isNothingSquare || isNothingCircular || isNothingPill || isDynamicIsland || isTeenageDeck || isPureTypo)
+        else if (isBentoVivid || isBentoTactical || isRetroLcd || isNothingBento || isNothingSquare || isNothingCircular || isNothingPill || isDynamicIsland || isTeenageDeck || isPureTypo || isTaskbarStrip || isSpatialCube)
         {
             WidgetRoot.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
             WidgetRoot.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
             UpdateWidgetData();
         }
-        else if (!isBryanC && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare && !isNothingCircular && !isNothingPill && !isDynamicIsland && !isTeenageDeck && !isPureTypo)
+        else
         {
             // Khôi phục background kính tối chuẩn cho GlassCard/Compact
             var brush = new Microsoft.UI.Xaml.Media.LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
@@ -528,7 +538,9 @@ public sealed partial class WidgetWindow : Window
             "NothingPill" => "DynamicIsland",
             "DynamicIsland" => "TeenageDeck",
             "TeenageDeck" => "PureTypoHud",
-            "PureTypoHud" => "SeasonalCard",
+            "PureTypoHud" => "TaskbarStrip",
+            "TaskbarStrip" => "SpatialCube",
+            "SpatialCube" => "SeasonalCard",
             _ => "BryanCDynamic"
         };
 
@@ -1118,6 +1130,21 @@ public sealed partial class WidgetWindow : Window
         if (PureTypoConditionText != null) PureTypoConditionText.Text = _currentWeather.ConditionText.ToUpperInvariant();
         if (PureTypoTelemetryText != null) PureTypoTelemetryText.Text = $"AQI {aqiVal} // HUM {humVal}% // WIND {_currentWeather.WindSpeedValue:F0} KM/H";
 
+        // Style 16: Ultra-Slim Taskbar Strip (v3.7.0)
+        if (TaskbarStripCityText != null) TaskbarStripCityText.Text = displayCity;
+        if (TaskbarStripTempText != null) TaskbarStripTempText.Text = _currentWeather.TemperatureText;
+        if (TaskbarStripWeatherIcon != null && !string.IsNullOrEmpty(_currentWeather.IconGlyph))
+            TaskbarStripWeatherIcon.Glyph = _currentWeather.IconGlyph;
+        if (TaskbarStripSubText != null) TaskbarStripSubText.Text = $"AQI {aqiVal}";
+
+        // Style 17: Spatial Aurora Glass Cube + Live 12h Spline Curve (v3.7.0)
+        if (SpatialCubeCityText != null) SpatialCubeCityText.Text = upperCity;
+        if (SpatialCubeAqiText != null) SpatialCubeAqiText.Text = $"AQI {aqiVal}";
+        if (SpatialCubeTempText != null) SpatialCubeTempText.Text = _currentWeather.TemperatureText;
+        if (SpatialCubeConditionText != null) SpatialCubeConditionText.Text = _currentWeather.ConditionText;
+        if (SpatialCubeRangeText != null) SpatialCubeRangeText.Text = $"{rangeStr} • Ẩm {humVal}%";
+        RenderWidgetSpatialCurve();
+
         double windMs = 8.0;
         if (_currentWeather.WindSpeedValue > 0) windMs = _currentWeather.WindSpeedValue / 3.6;
         if (RetroWindText != null) RetroWindText.Text = $"{windMs:0} M/S";
@@ -1137,6 +1164,116 @@ public sealed partial class WidgetWindow : Window
 
         // Cập nhật dự báo giờ
         UpdateHourlyForecastRow();
+    }
+
+    private void RenderWidgetSpatialCurve()
+    {
+        if (WidgetSpatialCurveCanvas == null) return;
+        try
+        {
+            WidgetSpatialCurveCanvas.Children.Clear();
+            var slice = (_hourlyForecast != null && _hourlyForecast.Count >= 4)
+                ? _hourlyForecast.Take(10).ToList()
+                : new List<HourlyForecastItem>();
+            if (slice.Count < 2) return;
+
+            double w = 222.0;
+            double h = 56.0;
+            var temps = slice.Select(x => x.TempValue).ToList();
+            double minT = temps.Min();
+            double maxT = temps.Max();
+            double range = Math.Max(2.0, maxT - minT);
+
+            var pts = new List<Windows.Foundation.Point>();
+            for (int i = 0; i < slice.Count; i++)
+            {
+                double x = 8.0 + (i / (double)(slice.Count - 1)) * (w - 16.0);
+                double norm = (temps[i] - minT) / range;
+                double y = 44.0 - norm * 28.0;
+                pts.Add(new Windows.Foundation.Point(x, y));
+            }
+
+            // Fill path (separate BezierSegment & LineSegment instances per WinUI 3 DependencyObject rule)
+            var fillGeo = new Microsoft.UI.Xaml.Media.PathGeometry();
+            var fillFig = new Microsoft.UI.Xaml.Media.PathFigure { StartPoint = pts[0], IsClosed = true };
+            var strokeGeo = new Microsoft.UI.Xaml.Media.PathGeometry();
+            var strokeFig = new Microsoft.UI.Xaml.Media.PathFigure { StartPoint = pts[0], IsClosed = false };
+
+            for (int i = 0; i < pts.Count - 1; i++)
+            {
+                var p0 = pts[i];
+                var p1 = pts[i + 1];
+                double midX = (p0.X + p1.X) / 2.0;
+                fillFig.Segments.Add(new Microsoft.UI.Xaml.Media.BezierSegment
+                {
+                    Point1 = new Windows.Foundation.Point(midX, p0.Y),
+                    Point2 = new Windows.Foundation.Point(midX, p1.Y),
+                    Point3 = p1
+                });
+                strokeFig.Segments.Add(new Microsoft.UI.Xaml.Media.BezierSegment
+                {
+                    Point1 = new Windows.Foundation.Point(midX, p0.Y),
+                    Point2 = new Windows.Foundation.Point(midX, p1.Y),
+                    Point3 = p1
+                });
+            }
+
+            fillFig.Segments.Add(new Microsoft.UI.Xaml.Media.LineSegment { Point = new Windows.Foundation.Point(pts[^1].X, h) });
+            fillFig.Segments.Add(new Microsoft.UI.Xaml.Media.LineSegment { Point = new Windows.Foundation.Point(pts[0].X, h) });
+            fillGeo.Figures.Add(fillFig);
+            strokeGeo.Figures.Add(strokeFig);
+
+            var fillBrush = new Microsoft.UI.Xaml.Media.LinearGradientBrush
+            {
+                StartPoint = new Windows.Foundation.Point(0, 0),
+                EndPoint = new Windows.Foundation.Point(0, 1)
+            };
+            fillBrush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(95, 56, 189, 248), Offset = 0.0 });
+            fillBrush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(5, 168, 85, 247), Offset = 1.0 });
+
+            WidgetSpatialCurveCanvas.Children.Add(new Microsoft.UI.Xaml.Shapes.Path
+            {
+                Data = fillGeo,
+                Fill = fillBrush
+            });
+
+            var strokeBrush = new Microsoft.UI.Xaml.Media.LinearGradientBrush
+            {
+                StartPoint = new Windows.Foundation.Point(0, 0),
+                EndPoint = new Windows.Foundation.Point(1, 0)
+            };
+            strokeBrush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(255, 56, 189, 248), Offset = 0.0 });
+            strokeBrush.GradientStops.Add(new Microsoft.UI.Xaml.Media.GradientStop { Color = Windows.UI.Color.FromArgb(255, 192, 132, 252), Offset = 1.0 });
+
+            WidgetSpatialCurveCanvas.Children.Add(new Microsoft.UI.Xaml.Shapes.Path
+            {
+                Data = strokeGeo,
+                Stroke = strokeBrush,
+                StrokeThickness = 2.2
+            });
+
+            for (int i = 0; i < pts.Count; i += 3)
+            {
+                var dot = new Microsoft.UI.Xaml.Shapes.Ellipse
+                {
+                    Width = i == 0 ? 7 : 5,
+                    Height = i == 0 ? 7 : 5,
+                    Fill = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                    Stroke = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248)),
+                    StrokeThickness = 1.5
+                };
+                double r = (i == 0 ? 7 : 5) / 2.0;
+                Canvas.SetLeft(dot, pts[i].X - r);
+                Canvas.SetTop(dot, pts[i].Y - r);
+                WidgetSpatialCurveCanvas.Children.Add(dot);
+            }
+
+            if (SpatialHTime0 != null && slice.Count > 0) SpatialHTime0.Text = "NOW";
+            if (SpatialHTime1 != null && slice.Count > 3) SpatialHTime1.Text = slice[3].TimeDisplay;
+            if (SpatialHTime2 != null && slice.Count > 6) SpatialHTime2.Text = slice[6].TimeDisplay;
+            if (SpatialHTime3 != null && slice.Count > 9) SpatialHTime3.Text = slice[9].TimeDisplay;
+        }
+        catch { }
     }
 
     private void UpdateBryanCForecastDock()

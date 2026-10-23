@@ -1431,6 +1431,77 @@
                         <TextBlock x:Name="PureTypoTelemetryText" Text="AQI 42 // HUM 74% // WIND 12 KM/H" FontSize="9.5" FontWeight="Bold" Foreground="#A1A1AA" FontFamily="Consolas"/>
                     </StackPanel>
                 </Grid>
+
+                <!-- ==================== STYLE 16: ULTRA-SLIM TASKBAR STRIP (v3.7.0) ==================== -->
+                <Grid x:Name="TaskbarStripView" Visibility="Collapsed" Padding="2">
+                    <Border Height="36" CornerRadius="18" Background="#E60D1424" BorderBrush="#4838BDF8" BorderThickness="1.2" Padding="12,0"
+                            PointerPressed="WidgetRoot_PointerPressed">
+                        <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto" ColumnSpacing="7" VerticalAlignment="Center">
+                            <Ellipse Grid.Column="0" Width="6" Height="6" Fill="#10B981" VerticalAlignment="Center"/>
+                            <FontIcon Grid.Column="1" x:Name="TaskbarStripWeatherIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="13" Foreground="#FBBF24" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" x:Name="TaskbarStripTempText" Text="30°C" FontSize="14" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="3" x:Name="TaskbarStripCityText" Text="TP.HCM" FontSize="11" FontWeight="SemiBold" Foreground="#CBD5E1" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                            <Border Grid.Column="4" Background="#2538BDF8" BorderBrush="#5038BDF8" BorderThickness="1" CornerRadius="9" Padding="6,1.5" VerticalAlignment="Center">
+                                <TextBlock x:Name="TaskbarStripSubText" Text="AQI 42" FontSize="9.5" FontWeight="Bold" Foreground="#38BDF8"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- ==================== STYLE 17: SPATIAL AURORA GLASS CUBE + 12H SPLINE (v3.7.0) ==================== -->
+                <Grid x:Name="SpatialCubeView" Visibility="Collapsed" Padding="4">
+                    <Border CornerRadius="22" BorderThickness="1.5" Padding="14,12"
+                            PointerPressed="WidgetRoot_PointerPressed">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#E80B1325" Offset="0.0"/>
+                                <GradientStop Color="#E8151F38" Offset="0.55"/>
+                                <GradientStop Color="#E81E1B3A" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.BorderBrush>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#80FFFFFF" Offset="0.0"/>
+                                <GradientStop Color="#6638BDF8" Offset="0.5"/>
+                                <GradientStop Color="#66A855F7" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
+                        <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="6">
+                            <!-- Row 0: Spatial Badge + City -->
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <Ellipse Width="6" Height="6" Fill="#38BDF8"/>
+                                    <TextBlock x:Name="SpatialCubeCityText" Text="HÀ NỘI" FontSize="11" FontWeight="Bold" Foreground="#E2E8F0" CharacterSpacing="30" MaxWidth="150" TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="#24A855F7" BorderBrush="#55A855F7" BorderThickness="1" CornerRadius="7" Padding="6,1.5">
+                                    <TextBlock x:Name="SpatialCubeAqiText" Text="AQI 42" FontSize="9" FontWeight="Bold" Foreground="#C084FC"/>
+                                </Border>
+                            </Grid>
+
+                            <!-- Row 1: Big Temp + Condition -->
+                            <Grid Grid.Row="1" ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
+                                <TextBlock x:Name="SpatialCubeTempText" Text="31°C" FontSize="34" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                                    <TextBlock x:Name="SpatialCubeConditionText" Text="Trời quang mây" FontSize="11.5" FontWeight="SemiBold" Foreground="#38BDF8" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock x:Name="SpatialCubeRangeText" Text="C:33° T:25° • Ẩm 72%" FontSize="9.5" Foreground="#94A3B8" TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Row 2: Live 12-Hour Wavy Bezier Spline Curve -->
+                            <Border Grid.Row="2" Background="#24000000" BorderBrush="#24FFFFFF" BorderThickness="1" CornerRadius="12" Padding="8,6">
+                                <Canvas x:Name="WidgetSpatialCurveCanvas" Width="222" Height="56" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <!-- Row 3: 4 Mini Time Labels under the Curve -->
+                            <Grid Grid.Row="3" ColumnDefinitions="*,*,*,*">
+                                <TextBlock x:Name="SpatialHTime0" Grid.Column="0" Text="NOW" FontSize="9" FontWeight="Bold" Foreground="#38BDF8" HorizontalAlignment="Left"/>
+                                <TextBlock x:Name="SpatialHTime1" Grid.Column="1" Text="+3H" FontSize="9" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="SpatialHTime2" Grid.Column="2" Text="+6H" FontSize="9" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="SpatialHTime3" Grid.Column="3" Text="+9H" FontSize="9" Foreground="#C084FC" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
             </Grid>
         </Border>
     </Grid>

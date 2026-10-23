@@ -261,8 +261,9 @@ public class HourlyForecastItem : CommunityToolkit.Mvvm.ComponentModel.Observabl
     public bool HasRainChance => !string.IsNullOrEmpty(RainProbabilityText) && RainProbabilityText != "0%";
 }
 
-public class DailyForecastItem
+public partial class DailyForecastItem : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
 {
+    public string DateIso { get; set; } = string.Empty;
     public string DayName { get; set; } = string.Empty;
     public string DateDisplay { get; set; } = string.Empty;
     public string IconGlyph { get; set; } = "\uf185";
@@ -283,6 +284,25 @@ public class DailyForecastItem
     public double CurrentTempIndicatorOffset { get; set; } = 0;
     public Microsoft.UI.Xaml.Thickness CurrentTempDotMargin => new Microsoft.UI.Xaml.Thickness(Math.Max(0, BarLeftMargin + CurrentTempIndicatorOffset - 3), 0, 0, 0);
     public bool ShowCurrentIndicator { get; set; } = false;
+
+    private bool _isSelectedDay = false;
+    public bool IsSelectedDay
+    {
+        get => _isSelectedDay;
+        set
+        {
+            if (SetProperty(ref _isSelectedDay, value))
+            {
+                OnPropertyChanged(nameof(SelectedDotOpacity));
+                OnPropertyChanged(nameof(RowBorderThickness));
+                OnPropertyChanged(nameof(TimeMachineBadgeVisibility));
+            }
+        }
+    }
+
+    public double SelectedDotOpacity => IsSelectedDay ? 1.0 : 0.0;
+    public Microsoft.UI.Xaml.Thickness RowBorderThickness => IsSelectedDay ? new Microsoft.UI.Xaml.Thickness(1.5) : new Microsoft.UI.Xaml.Thickness(0);
+    public Microsoft.UI.Xaml.Visibility TimeMachineBadgeVisibility => IsSelectedDay ? Microsoft.UI.Xaml.Visibility.Visible : Microsoft.UI.Xaml.Visibility.Collapsed;
 }
 
 public class LifestyleIndexItem

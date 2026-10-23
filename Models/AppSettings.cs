@@ -8,7 +8,9 @@ public class AppSettings
 {
     // 1. Giao diện (Theme) & Chủ đề Mùa/Lễ hội (Seasonal & Festival Skins)
     public string ThemeMode { get; set; } = "System"; // "System", "Light", "Dark"
-    public string DesignLanguage { get; set; } = "Fluent2"; // "Fluent2", "Nothing"
+    public string DesignLanguage { get; set; } = "Fluent2"; // "Fluent2", "Nothing", "SpatialGlass"
+    public string NavigationLayoutMode { get; set; } = "FloatingDock"; // "FloatingDock", "LeftSidebar"
+    public bool EnableNothingEInkMode { get; set; } = false; // Nothing OS E-Ink Warm Paper Mode (#F4F1EA)
     public string SeasonalSkinMode { get; set; } = "Auto"; // "Auto", "Spring", "Summer", "Autumn", "Winter", "Tet", "MidAutumn", "Christmas", "Halloween"
     public bool EnableSeasonalParticles { get; set; } = true;
     public string SeasonalWidgetTheme { get; set; } = "Auto";

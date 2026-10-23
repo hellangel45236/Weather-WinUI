@@ -83,6 +83,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsNothingDesign))]
     [NotifyPropertyChangedFor(nameof(IsFluent2Design))]
+    [NotifyPropertyChangedFor(nameof(IsSpatialGlassDesign))]
+    [NotifyPropertyChangedFor(nameof(IsPureFluent2Design))]
+    [NotifyPropertyChangedFor(nameof(DesignBadgeText))]
     [NotifyPropertyChangedFor(nameof(GpsButtonBackground))]
     [NotifyPropertyChangedFor(nameof(GpsButtonBorderBrush))]
     [NotifyPropertyChangedFor(nameof(GpsButtonForeground))]
@@ -98,6 +101,9 @@ public partial class MainViewModel : ObservableObject
 
     public bool IsNothingDesign => string.Equals(SelectedDesignLanguage, "Nothing", StringComparison.OrdinalIgnoreCase);
     public bool IsFluent2Design => !IsNothingDesign;
+    public bool IsSpatialGlassDesign => string.Equals(SelectedDesignLanguage, "SpatialGlass", StringComparison.OrdinalIgnoreCase);
+    public bool IsPureFluent2Design => !IsNothingDesign && !IsSpatialGlassDesign;
+    public string DesignBadgeText => IsNothingDesign ? "NDOT // 3.7" : (IsSpatialGlassDesign ? "SPATIAL // 3.7" : "v3.7.0");
 
     [ObservableProperty]
     private bool _feedbackSubmitted;
@@ -178,7 +184,7 @@ public partial class MainViewModel : ObservableObject
     private readonly PowerManagementService _powerService = new();
 
     [ObservableProperty]
-    private string _appVersionDisplay = "v3.6.1 Official";
+    private string _appVersionDisplay = "v3.7.0 Official";
     private readonly Dictionary<string, (OpenMeteoResponse Data, AirQualityData Aqi, DateTime Timestamp)> _cityWeatherCache = new();
     private static string GetCityCacheKey(double lat, double lon) => $"{lat:F2}_{lon:F2}";
 
@@ -507,6 +513,8 @@ public partial class MainViewModel : ObservableObject
     {
         UnitButtonText = Settings.TemperatureUnit == "F" ? "°F" : "°C";
         SelectedDesignLanguage = Settings.DesignLanguage ?? "Fluent2";
+        NavigationLayoutMode = string.IsNullOrWhiteSpace(Settings.NavigationLayoutMode) ? "FloatingDock" : Settings.NavigationLayoutMode;
+        IsNothingEInkMode = Settings.EnableNothingEInkMode;
         SelectedThemeIndex = Settings.ThemeMode switch
         {
             "Light" => 0,
@@ -736,6 +744,110 @@ public partial class MainViewModel : ObservableObject
         }
         OnPropertyChanged(nameof(IsNothingDesign));
         OnPropertyChanged(nameof(IsFluent2Design));
+        OnPropertyChanged(nameof(IsSpatialGlassDesign));
+        OnPropertyChanged(nameof(IsPureFluent2Design));
+        OnPropertyChanged(nameof(DesignBadgeText));
+    }
+
+    // ==================== v3.7.0: FLOATING SPATIAL DOCK, E-INK MODE & TIME-MACHINE RIBBON ====================
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFloatingDockMode))]
+    [NotifyPropertyChangedFor(nameof(IsLeftSidebarMode))]
+    [NotifyPropertyChangedFor(nameof(NavigationLayoutIconGlyph))]
+    [NotifyPropertyChangedFor(nameof(NavigationLayoutBadgeText))]
+    private string _navigationLayoutMode = "FloatingDock";
+
+    public bool IsFloatingDockMode => !string.Equals(NavigationLayoutMode, "LeftSidebar", StringComparison.OrdinalIgnoreCase);
+    public bool IsLeftSidebarMode => string.Equals(NavigationLayoutMode, "LeftSidebar", StringComparison.OrdinalIgnoreCase);
+    public string NavigationLayoutIconGlyph => IsFloatingDockMode ? "\uf0db" : "\uf2d0";
+    public string NavigationLayoutBadgeText => IsFloatingDockMode
+        ? (Loc.IsVietnamese ? "DOCK NỔI" : "DOCK")
+        : (Loc.IsVietnamese ? "SIDEBAR" : "SIDEBAR");
+
+    [RelayCommand]
+    public void ToggleNavigationLayout()
+    {
+        NavigationLayoutMode = IsFloatingDockMode ? "LeftSidebar" : "FloatingDock";
+        Settings.NavigationLayoutMode = NavigationLayoutMode;
+        _settingsService.SaveSettings(Settings);
+        NavigationLayoutChanged?.Invoke();
+    }
+
+    public event Action? NavigationLayoutChanged;
+
+    [ObservableProperty]
+    private bool _isNothingEInkMode = false;
+
+    [RelayCommand]
+    public void ToggleNothingEInkMode()
+    {
+        IsNothingEInkMode = !IsNothingEInkMode;
+        Settings.EnableNothingEInkMode = IsNothingEInkMode;
+        _settingsService.SaveSettings(Settings);
+        NothingEInkModeChanged?.Invoke();
+    }
+
+    public event Action? NothingEInkModeChanged;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TimeMachineBannerVisibility))]
+    private bool _isViewingFutureDayHourly = false;
+
+    [ObservableProperty]
+    private string _selectedFutureDayLabel = string.Empty;
+
+    public Visibility TimeMachineBannerVisibility => IsViewingFutureDayHourly ? Visibility.Visible : Visibility.Collapsed;
+
+    public void SelectDailyForecastForHourly(DailyForecastItem? item)
+    {
+        if (item == null || _rawWeatherData == null) return;
+
+        foreach (var d in DailyForecast)
+        {
+            d.IsSelectedDay = ReferenceEquals(d, item);
+        }
+
+        if (item.IsToday || string.IsNullOrWhiteSpace(item.DateIso))
+        {
+            ResetToLive24h();
+            return;
+        }
+
+        IsViewingFutureDayHourly = true;
+        SelectedFutureDayLabel = Loc.IsVietnamese
+            ? $"ĐANG XEM 24H: {item.DayName.ToUpperInvariant()} ({item.DateDisplay})"
+            : $"VIEWING 24H: {item.DayName.ToUpperInvariant()} ({item.DateDisplay})";
+
+        var slice = _weatherService.CreateHourlyForecast(_rawWeatherData, Settings, item.DateIso);
+        HourlyForecast.Clear();
+        foreach (var h in slice)
+        {
+            HourlyForecast.Add(h);
+        }
+        OnPropertyChanged(nameof(HourlyForecast));
+        HourlyForecastUpdated?.Invoke();
+    }
+
+    [RelayCommand]
+    public void ResetToLive24h()
+    {
+        if (_rawWeatherData == null) return;
+        IsViewingFutureDayHourly = false;
+        SelectedFutureDayLabel = string.Empty;
+
+        foreach (var d in DailyForecast)
+        {
+            d.IsSelectedDay = d.IsToday;
+        }
+
+        var liveHourly = _weatherService.CreateHourlyForecast(_rawWeatherData, Settings, null);
+        HourlyForecast.Clear();
+        foreach (var h in liveHourly)
+        {
+            HourlyForecast.Add(h);
+        }
+        OnPropertyChanged(nameof(HourlyForecast));
+        HourlyForecastUpdated?.Invoke();
     }
 
     public void UpdateOutfitAdvice()
@@ -2223,6 +2335,8 @@ public partial class MainViewModel : ObservableObject
             }
 
             // Dự báo theo giờ
+            IsViewingFutureDayHourly = false;
+            SelectedFutureDayLabel = string.Empty;
             var hourly = _weatherService.CreateHourlyForecast(data, Settings);
             HourlyForecast.Clear();
             foreach (var item in hourly)

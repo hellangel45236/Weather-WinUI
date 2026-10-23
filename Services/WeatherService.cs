@@ -347,7 +347,7 @@ public class WeatherService : IWeatherService
         return $"{greeting} {tempInfo} {advice}";
     }
 
-    public List<HourlyForecastItem> CreateHourlyForecast(OpenMeteoResponse data, AppSettings? settings = null)
+    public List<HourlyForecastItem> CreateHourlyForecast(OpenMeteoResponse data, AppSettings? settings = null, string? targetDateIso = null)
     {
         settings ??= new AppSettings();
         bool isFahrenheit = settings.TemperatureUnit == "F";
@@ -365,15 +365,31 @@ public class WeatherService : IWeatherService
         var uvs = data.Hourly.UvIndex;
         var pressures = data.Hourly.SurfacePressure;
 
+        bool isCustomDaySlice = !string.IsNullOrWhiteSpace(targetDateIso);
         DateTime now = DateTime.Now;
         int startIndex = 0;
-        for (int i = 0; i < times.Count; i++)
+        if (isCustomDaySlice)
         {
-            if ((DateTime.TryParse(times[i], CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt) ||
-                 DateTime.TryParse(times[i], out dt)) && dt >= now.AddMinutes(-30))
+            string prefix = targetDateIso!.Trim();
+            for (int i = 0; i < times.Count; i++)
             {
-                startIndex = i;
-                break;
+                if (times[i].StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    startIndex = i;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < times.Count; i++)
+            {
+                if ((DateTime.TryParse(times[i], CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt) ||
+                     DateTime.TryParse(times[i], out dt)) && dt >= now.AddMinutes(-30))
+                {
+                    startIndex = i;
+                    break;
+                }
             }
         }
 
@@ -392,7 +408,7 @@ public class WeatherService : IWeatherService
             if (DateTime.TryParse(times[idx], CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt) ||
                 DateTime.TryParse(times[idx], out dt))
             {
-                timeDisplay = i == 0 ? nowText : dt.ToString((settings?.Is24HourFormat ?? true) ? "HH:mm" : "hh:mm tt");
+                timeDisplay = (!isCustomDaySlice && i == 0) ? nowText : dt.ToString((settings?.Is24HourFormat ?? true) ? "HH:mm" : "hh:mm tt");
                 isDayHour = dt.Hour >= 6 && dt.Hour < 18;
                 hourNum = dt.Hour;
             }
@@ -437,6 +453,7 @@ public class WeatherService : IWeatherService
             string svgPath = WeatherCodeHelper.GetWeatherIconPath(code, isDayHour, iconPack);
 
             string tempDisplay = $"{Math.Round(t)}{unit}";
+            bool isNowItem = !isCustomDaySlice && i == 0;
 
             list.Add(new HourlyForecastItem
             {
@@ -459,11 +476,11 @@ public class WeatherService : IWeatherService
                 UvDisplay = uvDisplay,
                 UvLevelText = uvLevel,
                 SurfacePressure = (pressures != null && idx < pressures.Count) ? pressures[idx] : 1013.25,
-                IsNow = i == 0,
+                IsNow = isNowItem,
                 PrimaryMetricText = tempDisplay,
                 SecondaryMetricText = rainProb > 0 ? $"{rainProb}%" : (isVi ? "Tạnh ráo" : "Dry"),
-                BadgeText = i == 0 ? (isVi ? "Hiện tại" : "Now") : string.Empty,
-                BadgeColor = i == 0 ? "#0EA5E9" : string.Empty
+                BadgeText = isNowItem ? (isVi ? "Hiện tại" : "Now") : string.Empty,
+                BadgeColor = isNowItem ? "#0EA5E9" : string.Empty
             });
         }
 
@@ -576,6 +593,7 @@ public class WeatherService : IWeatherService
 
             list.Add(new DailyForecastItem
             {
+                DateIso = times[i],
                 DayName = dayName,
                 DateDisplay = dateDisplay,
                 IconGlyph = glyph,
@@ -590,6 +608,7 @@ public class WeatherService : IWeatherService
                 BarLeftMargin = left,
                 BarWidth = width,
                 IsToday = isToday,
+                IsSelectedDay = isToday,
                 CurrentTempIndicatorOffset = currentDotOffset,
                 ShowCurrentIndicator = showCurrentDot
             });

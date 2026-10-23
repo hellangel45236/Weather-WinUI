@@ -99,6 +99,9 @@ public sealed partial class OverviewTab : UserControl
             e.PropertyName == nameof(MainViewModel.EnableSeasonalParticles) ||
             e.PropertyName == nameof(MainViewModel.SeasonalGreetingText) ||
             e.PropertyName == nameof(MainViewModel.IsNothingDesign) ||
+            e.PropertyName == nameof(MainViewModel.IsSpatialGlassDesign) ||
+            e.PropertyName == nameof(MainViewModel.IsNothingEInkMode) ||
+            e.PropertyName == nameof(MainViewModel.IsViewingFutureDayHourly) ||
             e.PropertyName == nameof(MainViewModel.IsFluent2Design))
         {
             DispatcherQueue.TryEnqueue(() =>
@@ -730,17 +733,37 @@ public sealed partial class OverviewTab : UserControl
 
         public void UpdateNothingThemeVisuals()
     {
-        bool isDark = ThemeHelper.IsDarkTheme(this);
-        var cardBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 18, 18, 20)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255));
-        var cardBorder = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 36, 36, 40)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 226, 226, 230));
-        var subtleBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 24, 24, 27)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 245, 245, 247));
-        var subCardBorder = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 38, 38, 43)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 229, 229, 232));
-        var glyphBoxBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 10, 10, 12)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 249, 249, 250));
-        var textPrimary = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 10, 10, 12));
-        var textSecondary = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 136, 136, 136)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 102, 102, 102));
-        var textMuted = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 82, 82, 91)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 161, 161, 170));
-        var pillBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 31, 31, 35)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 234, 234, 234));
-        var pillBorder = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 51, 51, 51)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 221, 221, 221));
+        bool isEInk = ViewModel?.IsNothingEInkMode == true;
+        bool isDark = !isEInk && ThemeHelper.IsDarkTheme(this);
+
+        SolidColorBrush cardBg, cardBorder, subtleBg, subCardBorder, glyphBoxBg, textPrimary, textSecondary, textMuted, pillBg, pillBorder;
+        if (isEInk)
+        {
+            // v3.7.0: Nothing E-Ink Paper Mode (#F4F1EA warm e-paper canvas + #141413 carbon ink)
+            cardBg = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 239, 236, 228));
+            cardBorder = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 198, 192, 180));
+            subtleBg = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 230, 225, 214));
+            subCardBorder = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 186, 180, 166));
+            glyphBoxBg = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 226, 221, 210));
+            textPrimary = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 20, 20, 19));
+            textSecondary = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 74, 72, 67));
+            textMuted = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 120, 116, 108));
+            pillBg = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 222, 217, 205));
+            pillBorder = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 188, 182, 168));
+        }
+        else
+        {
+            cardBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 18, 18, 20)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255));
+            cardBorder = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 36, 36, 40)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 226, 226, 230));
+            subtleBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 24, 24, 27)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 245, 245, 247));
+            subCardBorder = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 38, 38, 43)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 229, 229, 232));
+            glyphBoxBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 10, 10, 12)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 249, 249, 250));
+            textPrimary = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 10, 10, 12));
+            textSecondary = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 136, 136, 136)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 102, 102, 102));
+            textMuted = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 82, 82, 91)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 161, 161, 170));
+            pillBg = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 31, 31, 35)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 234, 234, 234));
+            pillBorder = isDark ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 51, 51, 51)) : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 221, 221, 221));
+        }
 
         // Update local resources
         this.Resources["NothingCardBackgroundBrush"] = cardBg;
@@ -871,6 +894,8 @@ public sealed partial class OverviewTab : UserControl
         if (NothingCompassDial != null) { NothingCompassDial.BorderBrush = textSecondary; }
         if (NothingSunProgressBar != null) { NothingSunProgressBar.Background = subCardBorder; }
         RenderNothingHourlyCurve();
+        RenderNothingLiveMatrix();
+        StartNothingMatrixAnimation();
     }
 
     public void RenderHourlyTemperatureTrendline() => RenderHourlyTrendline();
@@ -1614,6 +1639,209 @@ public sealed partial class OverviewTab : UserControl
         {
             ViewModel?.ScrubToItem(_nothingCurveItems[_nothingHoveredIndex]);
         }
+    }
+
+    // ---------------------------------------------------------------------------------
+    // v3.7.0: 24H + 7-DAY TIME-MACHINE RIBBON HANDLER
+    // ---------------------------------------------------------------------------------
+    private void DailyForecastRow_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+    {
+        try
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is DailyForecastItem item && ViewModel != null)
+            {
+                ViewModel.SelectDailyForecastForHourly(item);
+                UpdateHourlyItemsForCurrentMetric();
+                RenderHourlyTrendline();
+                RenderNothingHourlyCurve();
+            }
+        }
+        catch { }
+    }
+
+    // ---------------------------------------------------------------------------------
+    // v3.7.0: NOTHING OS INTERACTIVE 13x13 LIVE GLYPH MATRIX
+    // ---------------------------------------------------------------------------------
+    private readonly Microsoft.UI.Xaml.Shapes.Ellipse[,] _nothingMatrixDots = new Microsoft.UI.Xaml.Shapes.Ellipse[13, 13];
+    private bool _nothingMatrixInitialized = false;
+    private DispatcherTimer? _nothingMatrixTimer;
+    private int _nothingMatrixTick = 0;
+    private Windows.Foundation.Point _nothingMatrixHoverPos = new(-999, -999);
+
+    private void EnsureNothingLiveMatrixInitialized()
+    {
+        if (NothingLiveMatrixCanvas == null) return;
+        if (_nothingMatrixInitialized && NothingLiveMatrixCanvas.Children.Count == 169) return;
+
+        NothingLiveMatrixCanvas.Children.Clear();
+        const int gridSize = 13;
+        const double cellW = 10.0;
+        const double cellH = 8.8;
+        const double dotDiameter = 5.4;
+
+        for (int r = 0; r < gridSize; r++)
+        {
+            for (int c = 0; c < gridSize; c++)
+            {
+                var dot = new Microsoft.UI.Xaml.Shapes.Ellipse
+                {
+                    Width = dotDiameter,
+                    Height = dotDiameter,
+                    Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(40, 255, 255, 255)),
+                    IsHitTestVisible = false
+                };
+                double x = c * cellW + (cellW - dotDiameter) / 2.0;
+                double y = r * cellH + (cellH - dotDiameter) / 2.0;
+                Canvas.SetLeft(dot, x);
+                Canvas.SetTop(dot, y);
+                NothingLiveMatrixCanvas.Children.Add(dot);
+                _nothingMatrixDots[r, c] = dot;
+            }
+        }
+        _nothingMatrixInitialized = true;
+    }
+
+    private void StartNothingMatrixAnimation()
+    {
+        if (ViewModel?.IsNothingDesign != true)
+        {
+            _nothingMatrixTimer?.Stop();
+            return;
+        }
+        if (_nothingMatrixTimer == null)
+        {
+            _nothingMatrixTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(220)
+            };
+            _nothingMatrixTimer.Tick += (s, e) =>
+            {
+                if (ViewModel?.IsNothingDesign != true)
+                {
+                    _nothingMatrixTimer.Stop();
+                    return;
+                }
+                _nothingMatrixTick++;
+                RenderNothingLiveMatrix();
+            };
+        }
+        if (!_nothingMatrixTimer.IsEnabled)
+        {
+            _nothingMatrixTimer.Start();
+        }
+    }
+
+    public void RenderNothingLiveMatrix()
+    {
+        if (NothingLiveMatrixCanvas == null) return;
+        try
+        {
+            EnsureNothingLiveMatrixInitialized();
+
+            bool isEInk = ViewModel?.IsNothingEInkMode == true;
+            bool isDark = !isEInk && ThemeHelper.IsDarkTheme(this);
+
+            var activeColor = isDark
+                ? Windows.UI.Color.FromArgb(245, 255, 255, 255)
+                : Windows.UI.Color.FromArgb(245, 20, 20, 19);
+            var redAccentColor = Windows.UI.Color.FromArgb(255, 215, 25, 33);
+            var dimColor = isDark
+                ? Windows.UI.Color.FromArgb(32, 255, 255, 255)
+                : Windows.UI.Color.FromArgb(34, 20, 20, 19);
+
+            var effect = ViewModel?.CurrentWeather?.WeatherEffect ?? WeatherEffectType.ClearSunny;
+            double center = 6.0;
+
+            for (int r = 0; r < 13; r++)
+            {
+                for (int c = 0; c < 13; c++)
+                {
+                    var dot = _nothingMatrixDots[r, c];
+                    if (dot == null) continue;
+
+                    double dx = c - center;
+                    double dy = r - center;
+                    double dist = Math.Sqrt(dx * dx + dy * dy);
+
+                    // Interactive hover ripple check
+                    double dotPixelX = c * 10.0 + 5.0;
+                    double dotPixelY = r * 8.8 + 4.4;
+                    double hoverDist = Math.Sqrt(
+                        Math.Pow(dotPixelX - _nothingMatrixHoverPos.X, 2) +
+                        Math.Pow(dotPixelY - _nothingMatrixHoverPos.Y, 2));
+
+                    if (hoverDist < 24.0)
+                    {
+                        dot.Fill = new SolidColorBrush(redAccentColor);
+                        continue;
+                    }
+
+                    bool isLit = false;
+                    bool isRed = false;
+
+                    if (effect == WeatherEffectType.HeavyRain || effect == WeatherEffectType.LightRain || effect == WeatherEffectType.Thunderstorm)
+                    {
+                        // Top cloud canopy + animated falling rain drops
+                        if (r >= 1 && r <= 3 && c >= 2 && c <= 10 && !(r == 1 && (c == 2 || c == 10)))
+                        {
+                            isLit = true;
+                        }
+                        else if (r >= 4 && c >= 2 && c <= 10 && (c % 2 == 0))
+                        {
+                            int dropRow = 4 + ((_nothingMatrixTick + c * 3) % 8);
+                            if (r == dropRow || r == dropRow - 1)
+                            {
+                                isLit = true;
+                                isRed = (r == dropRow && c == 6);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Solar / Atmospheric Glyph Ring + Pulsing Red Core
+                        if (dist <= 1.6)
+                        {
+                            isLit = true;
+                            isRed = true;
+                        }
+                        else if (Math.Abs(dist - 3.6) <= 0.68)
+                        {
+                            isLit = true;
+                        }
+                        else if (Math.Abs(dist - 5.4) <= 0.55)
+                        {
+                            double angle = Math.Atan2(dy, dx);
+                            int rayIdx = (int)Math.Round((angle + Math.PI) / (Math.PI / 4.0));
+                            if ((rayIdx + (_nothingMatrixTick % 2)) % 2 == 0)
+                            {
+                                isLit = true;
+                            }
+                        }
+                    }
+
+                    if (isRed)
+                        dot.Fill = new SolidColorBrush(redAccentColor);
+                    else if (isLit)
+                        dot.Fill = new SolidColorBrush(activeColor);
+                    else
+                        dot.Fill = new SolidColorBrush(dimColor);
+                }
+            }
+        }
+        catch { }
+    }
+
+    private void NothingLiveMatrixCanvas_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (NothingLiveMatrixCanvas == null) return;
+        _nothingMatrixHoverPos = e.GetCurrentPoint(NothingLiveMatrixCanvas).Position;
+        RenderNothingLiveMatrix();
+    }
+
+    private void NothingLiveMatrixCanvas_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        _nothingMatrixHoverPos = new Windows.Foundation.Point(-999, -999);
+        RenderNothingLiveMatrix();
     }
 
     private void RenderPressureSparkline()
