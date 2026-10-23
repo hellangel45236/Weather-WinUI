@@ -264,6 +264,7 @@ public sealed partial class MainPage : Page
                     {
                         ViewModel.IsNothingEInkMode = true;
                         ViewModel.Settings.EnableNothingEInkMode = true;
+                        ViewModel.ChangeTheme("light");
                     }
                     if (fullCmd.Contains("--dock", StringComparison.OrdinalIgnoreCase))
                     {
@@ -942,8 +943,18 @@ public sealed partial class MainPage : Page
             string dl = designLanguage ?? ViewModel?.SelectedDesignLanguage ?? "Fluent2";
             bool isNothing = string.Equals(dl, "Nothing", StringComparison.OrdinalIgnoreCase);
             bool isSpatialGlass = string.Equals(dl, "SpatialGlass", StringComparison.OrdinalIgnoreCase);
-            bool isEInk = isNothing && (ViewModel?.IsNothingEInkMode == true);
-            bool isDark = isEInk ? false : ThemeHelper.IsDarkTheme(this);
+            string savedTheme = ViewModel?.Settings?.ThemeMode ?? "Dark";
+            bool isDarkRequested = savedTheme.Equals("Dark", StringComparison.OrdinalIgnoreCase) ||
+                (!savedTheme.Equals("Light", StringComparison.OrdinalIgnoreCase) && ThemeHelper.IsDarkTheme());
+
+            if (isDarkRequested && ViewModel?.IsNothingEInkMode == true)
+            {
+                ViewModel.IsNothingEInkMode = false;
+                ViewModel.Settings.EnableNothingEInkMode = false;
+            }
+
+            bool isEInk = isNothing && (ViewModel?.IsNothingEInkMode == true) && !isDarkRequested;
+            bool isDark = isEInk ? false : (isDarkRequested || ThemeHelper.IsDarkTheme(this));
 
             if (isNothing)
             {
@@ -953,10 +964,9 @@ public sealed partial class MainPage : Page
                 }
                 else if (!isEInk)
                 {
-                    string savedTheme = ViewModel?.Settings?.ThemeMode ?? "Dark";
-                    if (savedTheme.Equals("Dark", StringComparison.OrdinalIgnoreCase) && this.RequestedTheme != ElementTheme.Dark)
+                    if (isDark && this.RequestedTheme != ElementTheme.Dark)
                         this.RequestedTheme = ElementTheme.Dark;
-                    else if (savedTheme.Equals("Light", StringComparison.OrdinalIgnoreCase) && this.RequestedTheme != ElementTheme.Light)
+                    else if (!isDark && this.RequestedTheme != ElementTheme.Light)
                         this.RequestedTheme = ElementTheme.Light;
                 }
                 isDark = isEInk ? false : (this.RequestedTheme == ElementTheme.Dark || ThemeHelper.IsDarkTheme(this));
