@@ -169,6 +169,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string _ootdCopiedMessage = string.Empty;
 
+    [ObservableProperty]
+    private string _selectedOutfitTimeSlot = "live";
+
     public bool IsWorkOccasionSelected => SelectedOutfitOccasion == "Work";
     public bool IsSchoolOccasionSelected => SelectedOutfitOccasion == "School";
     public bool IsCasualOccasionSelected => SelectedOutfitOccasion == "Casual";
@@ -896,6 +899,22 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    public void SelectOutfitTimeSlot(string slotKey)
+    {
+        if (string.IsNullOrWhiteSpace(slotKey)) return;
+        SelectedOutfitTimeSlot = slotKey;
+        if (CurrentOutfitAdvice?.TimeSlots != null)
+        {
+            foreach (var slot in CurrentOutfitAdvice.TimeSlots)
+            {
+                slot.IsActive = (slot.SlotKey == slotKey);
+            }
+        }
+        UpdateOutfitAdvice();
+        OnPropertyChanged(nameof(CurrentOutfitAdvice));
+    }
+
+    [RelayCommand]
     public void CopyOotdAdvice()
     {
         if (CurrentOutfitAdvice == null) return;
@@ -1166,14 +1185,12 @@ public partial class MainViewModel : ObservableObject
 
     private void StartRamMonitor()
     {
-        _ramMonitorTimer.Interval = TimeSpan.FromSeconds(15);
+        _ramMonitorTimer.Interval = TimeSpan.FromSeconds(20);
         _ramMonitorTimer.Tick += (s, e) =>
         {
-            MemoryOptimizer.TrimMemory();
             UpdateRamUsage();
         };
         _ramMonitorTimer.Start();
-        MemoryOptimizer.TrimMemory();
         UpdateRamUsage();
     }
 
@@ -1893,11 +1910,11 @@ public partial class MainViewModel : ObservableObject
         {
             if (Settings.EnableBatterySaverOptimization && IsBatterySavingActive)
             {
-                _ramMonitorTimer.Interval = TimeSpan.FromSeconds(10);
+                _ramMonitorTimer.Interval = TimeSpan.FromSeconds(30);
             }
             else
             {
-                _ramMonitorTimer.Interval = TimeSpan.FromSeconds(2);
+                _ramMonitorTimer.Interval = TimeSpan.FromSeconds(15);
             }
         }
         catch { }

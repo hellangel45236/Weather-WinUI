@@ -163,6 +163,113 @@ public class OutfitAdvisorService
         }
         advice.SuggestedColors = palette;
 
+        // 2.1 Chỉ số khoa học vật liệu & thân nhiệt (Climate Science Telemetry)
+        if (feelsLike >= 33)
+        {
+            advice.BreathabilityScore = 96;
+            advice.BreathabilityLabel = isVi ? "Thoát nhiệt tối đa (Vải siêu mát)" : "Max Cooling & Ventilation";
+            advice.UvDefenseRating = uv >= 8 ? "UPF 50+ (Cản 98% UV)" : "UPF 40+ (Bảo vệ cao)";
+            advice.WaterRepellency = isRaining ? "Chống mưa 100%" : "Thấm hút mồ hôi 1 chiều";
+            advice.ThermalReflectionRating = "92% phản xạ nhiệt";
+        }
+        else if (feelsLike < 18)
+        {
+            advice.BreathabilityScore = 80;
+            advice.BreathabilityLabel = isVi ? "Giữ ấm đa tầng (Cách nhiệt)" : "Multi-layer Thermal Lock";
+            advice.UvDefenseRating = "UPF 25+ (An toàn)";
+            advice.WaterRepellency = isRaining ? "Chống ướt & Chống gió" : "Kháng gió lạnh 100%";
+            advice.ThermalReflectionRating = "80% giữ thân nhiệt";
+        }
+        else
+        {
+            advice.BreathabilityScore = 90;
+            advice.BreathabilityLabel = isVi ? "Cân bằng thân nhiệt lý tưởng" : "Optimal Body Thermoregulation";
+            advice.UvDefenseRating = uv >= 6 ? "UPF 50+" : "UPF 30+";
+            advice.WaterRepellency = isRaining ? "Chống nước che phủ" : "Kháng ẩm tự nhiên";
+            advice.ThermalReflectionRating = "86% phản xạ";
+        }
+
+        // 2.2 Che chắn Đầu & Mắt (Headwear & Eyewear Defense)
+        if (uv >= 5.0 && current.IsDay)
+        {
+            advice.Headwear = isVi ? "Kính râm chống lóa UV400 & Mũ bucket vải dù chống nắng" : "UV400 Polarized Sunglasses & Sun Bucket Hat";
+            advice.HeadwearIcon = "\uf000";
+        }
+        else if (isRaining)
+        {
+            advice.Headwear = isVi ? "Mũ bảo hiểm có kính che nước mưa / Nón lưỡi trai trượt nước" : "Visor Helmet / Water-resistant Cap";
+            advice.HeadwearIcon = "\uf73d";
+        }
+        else
+        {
+            advice.Headwear = isVi ? "Mũ bảo hiểm có kính chắn gió bụi / Nón lưỡi trai thời trang" : "Commuter Visor Helmet / Classic Cap";
+            advice.HeadwearIcon = "\uf06e";
+        }
+
+        // 2.3 Phụ kiện mang theo & Vật dụng EDC (Carry & EDC Gear)
+        if (isRaining)
+        {
+            advice.CarryGear = isVi ? "Balo chống nước + Áo mưa bộ bỏ cốp xe máy + Bọc giày" : "Waterproof backpack + Raincoat in trunk + Shoe covers";
+            advice.CarryGearIcon = "\uf73d";
+        }
+        else if (uv >= 6.0 && current.IsDay)
+        {
+            advice.CarryGear = isVi ? "Túi vải canvas + Ô gấp mini chống UV + Bình nước giữ nhiệt 500ml" : "Canvas tote bag + Mini UV umbrella + 500ml water bottle";
+            advice.CarryGearIcon = "\uf290";
+        }
+        else
+        {
+            advice.CarryGear = isVi ? "Balo / Túi đeo chéo thường ngày + Ô gập dự phòng" : "Everyday backpack / Crossbody bag + Compact standby umbrella";
+            advice.CarryGearIcon = "\uf290";
+        }
+
+        // 2.4 Khung giờ mô phỏng trong ngày (Time Simulation Scrubber)
+        var slots = new List<OutfitTimeSlotItem>
+        {
+            new OutfitTimeSlotItem
+            {
+                SlotKey = "morning",
+                TimeDisplay = "07:00",
+                PeriodName = isVi ? "Sáng Dịu Mát" : "Morning Breeze",
+                TempDisplay = $"{Math.Round(temp - 3)}°C",
+                WeatherIconGlyph = "\uf185",
+                SummaryText = isVi ? "Sơ mi nhẹ + Khoác mỏng cản gió" : "Light shirt + Wind layer",
+                AccentColor = "#38BDF8",
+                IsActive = true
+            },
+            new OutfitTimeSlotItem
+            {
+                SlotKey = "noon",
+                TimeDisplay = "12:00",
+                PeriodName = isVi ? "Trưa Nắng Đỉnh" : "Midday Peak Sun",
+                TempDisplay = $"{Math.Round(temp + 2)}°C",
+                WeatherIconGlyph = "\uf185",
+                SummaryText = isVi ? "Áo chống nắng UPF50+ & Kính râm" : "UPF50+ Sun jacket & Glasses",
+                AccentColor = "#F59E0B"
+            },
+            new OutfitTimeSlotItem
+            {
+                SlotKey = "evening",
+                TimeDisplay = "17:30",
+                PeriodName = isVi ? "Chiều Tan Tầm" : "Evening Rush",
+                TempDisplay = $"{Math.Round(temp - 1)}°C",
+                WeatherIconGlyph = rainProb >= 30 ? "\uf73d" : "\uf0c2",
+                SummaryText = rainProb >= 30 ? (isVi ? "Sẵn sàng áo mưa & Bọc giày" : "Standby raincoat & Covers") : (isVi ? "Áo khoác gió nhẹ tan tầm" : "Light commuter windbreaker"),
+                AccentColor = rainProb >= 30 ? "#38BDF8" : "#8B5CF6"
+            },
+            new OutfitTimeSlotItem
+            {
+                SlotKey = "night",
+                TimeDisplay = "21:00",
+                PeriodName = isVi ? "Đêm Dạo Phố" : "Night Stroll",
+                TempDisplay = $"{Math.Round(temp - 4)}°C",
+                WeatherIconGlyph = "\uf186",
+                SummaryText = isVi ? "Trang phục thoáng mát dạo cà phê" : "Comfortable relaxed hangout",
+                AccentColor = "#10B981"
+            }
+        };
+        advice.TimeSlots = slots;
+
         // 3. Phân loại trang phục chi tiết theo Dịp & Giới tính
         ApplyOutfitDetails(advice, feelsLike, isRaining, uv, occasion, gender, isVi);
 

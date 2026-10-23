@@ -98,6 +98,19 @@ public sealed partial class QuickPeekWindow : Window
             presenter.SetBorderAndTitleBar(false, false);
         }
 
+        // Tự động đóng flyout khi mất focus (click ra ngoài màn hình / cửa sổ khác)
+        this.Activated += (s, e) =>
+        {
+            if (e.WindowActivationState == WindowActivationState.Deactivated)
+            {
+                try
+                {
+                    this.Close();
+                }
+                catch { }
+            }
+        };
+
         // Triệt tiêu 100% khung viền trắng của DWM & Win32 tương tự WidgetWindow
         StripWindowBorders(hWnd);
 

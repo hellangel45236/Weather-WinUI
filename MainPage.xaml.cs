@@ -180,8 +180,8 @@ public sealed partial class MainPage : Page
                 StartZenChromeAutoHideTimer();
                     UpdateSeasonalThemeButtonStyle();
                     TabOverview?.UpdateNothingThemeVisuals();
-                (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
-                (FindName(nameof(TabFlood)) as Views.Tabs.UrbanFloodTab)?.UpdateNothingVisuals();
+                    TabRadar?.UpdateNothingVisuals();
+                    TabFlood?.UpdateNothingVisuals();
                     TabOverview?.UpdateWeatherVisuals();
                     TabOverview?.RedrawCanvases();
                     if (_zenEffectRenderer != null && skin != null)
@@ -255,61 +255,7 @@ public sealed partial class MainPage : Page
                         }
                         else
                         {
-                            ViewModel.SwitchNav(targetTab);
-                            if (MainNavView != null)
-                            {
-                                var allItems = MainNavView.MenuItems.OfType<NavigationViewItem>().Concat(MainNavView.FooterMenuItems.OfType<NavigationViewItem>());
-                                foreach (var item in allItems)
-                                {
-                                    if (item.Tag is string t && t.Equals(targetTab, StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        MainNavView.SelectedItem = item;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            switch (targetTab)
-                            {
-                                case "flood":
-                                    var floodTab = FindName(nameof(TabFlood)) as UrbanFloodTab;
-                                    floodTab?.RenderTidalSineWave();
-                                    break;
-                                case "radar":
-                                    var radarTab = FindName(nameof(TabRadar)) as RadarTab;
-                                    radarTab?.StartRadarSweep();
-                                    break;
-                                case "lifestyle":
-                                    var lifestyleTab = FindName(nameof(TabLifestyle)) as LifestyleTab;
-                                    lifestyleTab?.UpdateOccasionButtonsVisual();
-                                    lifestyleTab?.UpdateGenderButtonsVisual();
-                                    break;
-                                case "calendar":
-                                    _ = FindName(nameof(TabCalendar)) as CalendarTab;
-                                    break;
-                                case "widget":
-                                    var wsTab = FindName(nameof(TabWidgetStudio)) as WidgetStudioTab;
-                                    if (Environment.CommandLine.Contains("--scroll=bento", StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
-                                        {
-                                            wsTab?.ScrollToBentoSection();
-                                        });
-                                    }
-                                    else if (Environment.CommandLine.Contains("--scroll=seasonal", StringComparison.OrdinalIgnoreCase) ||
-                                        Environment.CommandLine.Contains("--scroll=bottom", StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
-                                        {
-                                            wsTab?.ScrollToSeasonalSection();
-                                        });
-                                    }
-                                    break;
-                                case "settings":
-                                    var settingsTab = FindName(nameof(TabSettings)) as SettingsTab;
-                                    settingsTab?.SyncAllSettings();
-                                    break;
-                            }
+                            SelectNavigationTabByTag(targetTab);
                         }
                     }
 
@@ -808,13 +754,13 @@ public sealed partial class MainPage : Page
                         TabOverview?.UpdateWeatherVisuals();
                         TabOverview?.StartEffects();
                         TabOverview?.RedrawCanvases();
-                        (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();
+                        TabRadar?.StopRadarSweep();
                         AnimationHelper.SlideUpFadeIn(TabOverview);
                         break;
 
                     case "flood":
                         TabOverview?.StopEffects();
-                        (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();
+                        TabRadar?.StopRadarSweep();
                         var floodTab = FindName(nameof(TabFlood)) as UrbanFloodTab;
                         floodTab?.RenderTidalSineWave();
                         AnimationHelper.SlideUpFadeIn(floodTab);
@@ -829,7 +775,7 @@ public sealed partial class MainPage : Page
 
                     case "lifestyle":
                         TabOverview?.StopEffects();
-                        (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();
+                        TabRadar?.StopRadarSweep();
                         var lifestyleTab = FindName(nameof(TabLifestyle)) as LifestyleTab;
                         lifestyleTab?.UpdateOccasionButtonsVisual();
                         lifestyleTab?.UpdateGenderButtonsVisual();
@@ -838,21 +784,21 @@ public sealed partial class MainPage : Page
 
                     case "calendar":
                         TabOverview?.StopEffects();
-                        (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();
+                        TabRadar?.StopRadarSweep();
                         var calendarTab = FindName(nameof(TabCalendar)) as CalendarTab;
                         AnimationHelper.SlideUpFadeIn(calendarTab);
                         break;
 
                     case "widget":
                         TabOverview?.StopEffects();
-                        (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();
+                        TabRadar?.StopRadarSweep();
                         var widgetTab = FindName(nameof(TabWidgetStudio)) as WidgetStudioTab;
                         AnimationHelper.SlideUpFadeIn(widgetTab);
                         break;
 
                     case "settings":
                         TabOverview?.StopEffects();
-                        (FindName(nameof(TabRadar)) as RadarTab)?.StopRadarSweep();
+                        TabRadar?.StopRadarSweep();
                         var settingsTab = FindName(nameof(TabSettings)) as SettingsTab;
                         settingsTab?.SyncAllSettings();
                         AnimationHelper.SlideUpFadeIn(settingsTab);
@@ -922,22 +868,31 @@ public sealed partial class MainPage : Page
 
     #region Top Bar & Search Handlers
 
-    private async void LocationSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    private DispatcherTimer? _searchDebounceTimer;
+
+    private void LocationSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
     {
         if (ViewModel == null) return;
 
         if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
         {
+            _searchDebounceTimer?.Stop();
             string query = sender.Text;
-            if (!string.IsNullOrWhiteSpace(query) && query.Trim().Length >= 2)
-            {
-                await ViewModel.SearchLocationsCommand.ExecuteAsync(query);
-                sender.ItemsSource = ViewModel.SearchResults;
-            }
-            else
+            if (string.IsNullOrWhiteSpace(query) || query.Trim().Length < 2)
             {
                 sender.ItemsSource = null;
+                return;
             }
+
+            _searchDebounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(280) };
+            _searchDebounceTimer.Tick += async (s, e) =>
+            {
+                _searchDebounceTimer?.Stop();
+                if (ViewModel == null) return;
+                await ViewModel.SearchLocationsCommand.ExecuteAsync(query);
+                sender.ItemsSource = ViewModel.SearchResults;
+            };
+            _searchDebounceTimer.Start();
         }
     }
 

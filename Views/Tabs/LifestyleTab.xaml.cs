@@ -165,6 +165,14 @@ public sealed partial class LifestyleTab : UserControl
         }
     }
 
+    private void TimeSlotButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is string tag && ViewModel != null)
+        {
+            ViewModel.SelectOutfitTimeSlotCommand.Execute(tag);
+        }
+    }
+
     private void CopyOotdButton_Click(object sender, RoutedEventArgs e)
     {
         ViewModel?.CopyOotdAdviceCommand.Execute(null);

@@ -321,7 +321,8 @@ public sealed partial class OverviewTab : UserControl
 
     public void StartEffects()
     {
-        bool shouldRun = ViewModel?.Settings.EnableWeatherEffects == true &&
+        bool isNothing = ViewModel?.IsNothingDesign == true;
+        bool shouldRun = !isNothing && ViewModel?.Settings.EnableWeatherEffects == true &&
             !(ViewModel.Settings.EnableBatterySaverOptimization && ViewModel.IsBatterySavingActive);
         if (shouldRun)
         {
@@ -329,9 +330,18 @@ public sealed partial class OverviewTab : UserControl
             StartHeroIconAnimation();
             StartAmbientGlowAnimation();
         }
-        if (ViewModel?.IsNothingDesign == true && _nothingMatrixTimer != null && !_nothingMatrixTimer.IsEnabled)
+        else
         {
-            _nothingMatrixTimer.Start();
+            _weatherEffectRenderer?.Pause();
+        }
+
+        if (isNothing)
+        {
+            StartNothingMatrixAnimation();
+        }
+        else
+        {
+            _nothingMatrixTimer?.Stop();
         }
     }
 
@@ -1771,6 +1781,10 @@ public sealed partial class OverviewTab : UserControl
                 ? Windows.UI.Color.FromArgb(32, 255, 255, 255)
                 : Windows.UI.Color.FromArgb(34, 20, 20, 19);
 
+            var activeBrush = new SolidColorBrush(activeColor);
+            var redBrush = new SolidColorBrush(redAccentColor);
+            var dimBrush = new SolidColorBrush(dimColor);
+
             var effect = ViewModel?.CurrentWeather?.WeatherEffect ?? WeatherEffectType.ClearSunny;
             double center = 6.0;
 
@@ -1794,7 +1808,7 @@ public sealed partial class OverviewTab : UserControl
 
                     if (hoverDist < 24.0)
                     {
-                        dot.Fill = new SolidColorBrush(redAccentColor);
+                        dot.Fill = redBrush;
                         continue;
                     }
 
@@ -1842,11 +1856,11 @@ public sealed partial class OverviewTab : UserControl
                     }
 
                     if (isRed)
-                        dot.Fill = new SolidColorBrush(redAccentColor);
+                        dot.Fill = redBrush;
                     else if (isLit)
-                        dot.Fill = new SolidColorBrush(activeColor);
+                        dot.Fill = activeBrush;
                     else
-                        dot.Fill = new SolidColorBrush(dimColor);
+                        dot.Fill = dimBrush;
                 }
             }
         }
