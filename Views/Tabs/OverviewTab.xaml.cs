@@ -231,7 +231,7 @@ public sealed partial class OverviewTab : UserControl
         {
             UpdateResponsiveLayout(e.NewSize.Width);
             UpdateModalResponsiveSize();
-            RenderVisualGauges();
+            RequestDebouncedCanvasRedraw();
         };
 
         this.ActualThemeChanged += (s, e) =>
@@ -249,9 +249,9 @@ public sealed partial class OverviewTab : UserControl
         {
             SunArcCanvas.SizeChanged += (s, e) =>
             {
-                if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 1 || Math.Abs(e.NewSize.Height - e.PreviousSize.Height) > 1)
+                if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 2 || Math.Abs(e.NewSize.Height - e.PreviousSize.Height) > 2)
                 {
-                    DispatcherQueue.TryEnqueue(RenderSunArc);
+                    RequestDebouncedCanvasRedraw();
                 }
             };
         }
@@ -260,9 +260,9 @@ public sealed partial class OverviewTab : UserControl
         {
             UvGaugeCanvas.SizeChanged += (s, e) =>
             {
-                if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 1)
+                if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 2)
                 {
-                    DispatcherQueue.TryEnqueue(RenderVisualGauges);
+                    RequestDebouncedCanvasRedraw();
                 }
             };
         }
@@ -271,9 +271,9 @@ public sealed partial class OverviewTab : UserControl
         {
             AqiGaugeCanvas.SizeChanged += (s, e) =>
             {
-                if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 1)
+                if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 2)
                 {
-                    DispatcherQueue.TryEnqueue(RenderVisualGauges);
+                    RequestDebouncedCanvasRedraw();
                 }
             };
         }
@@ -282,12 +282,29 @@ public sealed partial class OverviewTab : UserControl
         {
             PressureSparklineCanvas.SizeChanged += (s, e) =>
             {
-                if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 1 || Math.Abs(e.NewSize.Height - e.PreviousSize.Height) > 1)
+                if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 2 || Math.Abs(e.NewSize.Height - e.PreviousSize.Height) > 2)
                 {
-                    DispatcherQueue.TryEnqueue(RenderPressureSparkline);
+                    RequestDebouncedCanvasRedraw();
                 }
             };
         }
+    }
+
+    private DispatcherTimer? _canvasResizeDebounceTimer;
+
+    private void RequestDebouncedCanvasRedraw()
+    {
+        if (_canvasResizeDebounceTimer == null)
+        {
+            _canvasResizeDebounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
+            _canvasResizeDebounceTimer.Tick += (s, e) =>
+            {
+                _canvasResizeDebounceTimer?.Stop();
+                RedrawCanvases();
+            };
+        }
+        _canvasResizeDebounceTimer.Stop();
+        _canvasResizeDebounceTimer.Start();
     }
 
     public void RedrawCanvases()
@@ -312,6 +329,10 @@ public sealed partial class OverviewTab : UserControl
             StartHeroIconAnimation();
             StartAmbientGlowAnimation();
         }
+        if (ViewModel?.IsNothingDesign == true && _nothingMatrixTimer != null && !_nothingMatrixTimer.IsEnabled)
+        {
+            _nothingMatrixTimer.Start();
+        }
     }
 
     public void StopEffects()
@@ -319,6 +340,7 @@ public sealed partial class OverviewTab : UserControl
         _weatherEffectRenderer?.Pause();
         StopHeroIconAnimation();
         StopAmbientGlowAnimation();
+        _nothingMatrixTimer?.Stop();
     }
 
     public void StartBriefingTypewriter(string? text)

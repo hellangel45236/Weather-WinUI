@@ -783,6 +783,10 @@ public partial class MainViewModel : ObservableObject
     {
         IsNothingEInkMode = !IsNothingEInkMode;
         Settings.EnableNothingEInkMode = IsNothingEInkMode;
+        if (IsNothingEInkMode)
+        {
+            ChangeTheme("light");
+        }
         _settingsService.SaveSettings(Settings);
         NothingEInkModeChanged?.Invoke();
     }
@@ -1770,6 +1774,12 @@ public partial class MainViewModel : ObservableObject
     public void ChangeTheme(string themeMode)
     {
         Settings.ThemeMode = themeMode;
+        if (string.Equals(themeMode, "dark", StringComparison.OrdinalIgnoreCase) && IsNothingEInkMode)
+        {
+            IsNothingEInkMode = false;
+            Settings.EnableNothingEInkMode = false;
+            OnPropertyChanged(nameof(IsNothingEInkMode));
+        }
         switch (themeMode?.ToLowerInvariant())
         {
             case "light":

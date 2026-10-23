@@ -132,7 +132,7 @@ public sealed partial class MainPage : Page
         try
         {
             ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
-            // Đồng bộ theme ngay khi ThemeHelper thay đổi hoặc hệ thống đổi Light/Dark
+            // Đồng bộ theme ngay khi ThemeHelper thay đổi hoặc hệ thống đổi Light/Dark (Chỉ đăng ký 1 lần duy nhất)
             ThemeHelper.ThemeChanged += (theme) =>
             {
                 DispatcherQueue.TryEnqueue(() =>
@@ -140,8 +140,8 @@ public sealed partial class MainPage : Page
                     ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
                     UpdateSeasonalThemeButtonStyle();
                     TabOverview?.UpdateNothingThemeVisuals();
-                (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
-                (FindName(nameof(TabFlood)) as Views.Tabs.UrbanFloodTab)?.UpdateNothingVisuals();
+                    TabRadar?.UpdateNothingVisuals();
+                    TabFlood?.UpdateNothingVisuals();
                     TabOverview?.UpdateWeatherVisuals();
                     TabOverview?.RedrawCanvases();
                 });
@@ -151,37 +151,11 @@ public sealed partial class MainPage : Page
                 ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
                 UpdateSeasonalThemeButtonStyle();
                 TabOverview?.UpdateNothingThemeVisuals();
-                (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
-                (FindName(nameof(TabFlood)) as Views.Tabs.UrbanFloodTab)?.UpdateNothingVisuals();
+                TabRadar?.UpdateNothingVisuals();
+                TabFlood?.UpdateNothingVisuals();
                 TabOverview?.UpdateWeatherVisuals();
                 TabOverview?.RedrawCanvases();
             };
-            
-            // Đồng bộ theme ngay khi ThemeHelper thay đổi hoặc hệ thống đổi Light/Dark
-            ThemeHelper.ThemeChanged += (theme) =>
-            {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    this.RequestedTheme = theme;
-                    ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
-                    UpdateSeasonalThemeButtonStyle();
-                    TabOverview?.UpdateNothingThemeVisuals();
-                (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
-                (FindName(nameof(TabFlood)) as Views.Tabs.UrbanFloodTab)?.UpdateNothingVisuals();
-                    TabOverview?.UpdateWeatherVisuals();
-                    TabOverview?.RedrawCanvases();
-                });
-            };
-            this.ActualThemeChanged += (s, e) =>
-            {
-                ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
-                TabOverview?.UpdateNothingThemeVisuals();
-                (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
-                (FindName(nameof(TabFlood)) as Views.Tabs.UrbanFloodTab)?.UpdateNothingVisuals();
-                TabOverview?.UpdateWeatherVisuals();
-                TabOverview?.RedrawCanvases();
-            };
-            ApplyDesignLanguageVisuals(ViewModel?.SelectedDesignLanguage);
 
         // Nạp dữ liệu thời tiết
             if (ViewModel != null)
@@ -471,36 +445,55 @@ public sealed partial class MainPage : Page
     {
         double width = e.NewSize.Width;
 
-        // 1. Tinh chỉnh Top Bar linh hoạt để thanh tìm kiếm luôn rộng rãi trên mọi độ phân giải
-        if (width < 1220)
+        // 1. Tinh chỉnh Top Bar thích ứng đa tầng (Responsive Command Header)
+        bool isCompactTop = width < 1400;
+        bool isUltraCompactTop = width < 1220;
+
+        if (ZenButtonText != null) ZenButtonText.Visibility = isCompactTop ? Visibility.Collapsed : Visibility.Visible;
+        if (SeasonalThemeBtnText != null) SeasonalThemeBtnText.Visibility = isCompactTop ? Visibility.Collapsed : Visibility.Visible;
+        if (BtnTextWidget != null) BtnTextWidget.Visibility = isCompactTop ? Visibility.Collapsed : Visibility.Visible;
+        if (DockToggleText != null) DockToggleText.Visibility = isCompactTop ? Visibility.Collapsed : Visibility.Visible;
+        if (NothingGlyphBadgeText != null) NothingGlyphBadgeText.Visibility = isCompactTop ? Visibility.Collapsed : Visibility.Visible;
+        if (NothingGlyphBadgeBorder != null) NothingGlyphBadgeBorder.Visibility = isUltraCompactTop ? Visibility.Collapsed : Visibility.Visible;
+
+        // Tinh chỉnh dải thành phố ghim nhanh (Pinned Cities Strip)
+        if (PinnedCitiesItemsControl != null)
         {
-            if (BtnTextWidget != null) BtnTextWidget.Visibility = Visibility.Collapsed;
-            if (SeasonalThemeBtnText != null) SeasonalThemeBtnText.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            if (BtnTextWidget != null) BtnTextWidget.Visibility = Visibility.Visible;
-            if (SeasonalThemeBtnText != null) SeasonalThemeBtnText.Visibility = Visibility.Visible;
+            if (isUltraCompactTop)
+            {
+                // Màn hình hẹp: Ẩn dải chip ghim, giữ nút GPS và nút Flyout "+ X" để mở danh sách 1 click
+                PinnedCitiesItemsControl.Visibility = Visibility.Collapsed;
+            }
+            else if (isCompactTop)
+            {
+                PinnedCitiesItemsControl.Visibility = Visibility.Visible;
+                PinnedCitiesItemsControl.MaxWidth = 220; // Giới hạn tối đa ~2 thành phố
+            }
+            else
+            {
+                PinnedCitiesItemsControl.Visibility = Visibility.Visible;
+                PinnedCitiesItemsControl.MaxWidth = double.PositiveInfinity;
+            }
         }
 
-        if (width < 1140)
-        {
-            if (AppSubtitleText != null) AppSubtitleText.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            if (AppSubtitleText != null) AppSubtitleText.Visibility = Visibility.Visible;
-        }
+        if (AppSubtitleText != null) AppSubtitleText.Visibility = width < 1140 ? Visibility.Collapsed : Visibility.Visible;
 
         if (LocationSearchBox != null)
         {
-            LocationSearchBox.MaxWidth = width < 950 ? 280 : (width < 1140 ? 380 : 520);
+            LocationSearchBox.MaxWidth = width < 1000 ? 250 : (width < 1250 ? 340 : 480);
+            LocationSearchBox.MinWidth = 160;
         }
 
-        // 2. Tinh chỉnh lề ngoài gọn gàng trên màn hình nhỏ (MainContentGrid)
+        // 2. Tinh chỉnh Floating Dock linh hoạt trên màn hình hẹp (< 1240px)
+        bool isCompactDock = width < 1240;
+        if (DockFloodBadgeText != null) DockFloodBadgeText.Visibility = isCompactDock ? Visibility.Collapsed : Visibility.Visible;
+        if (DockCalendarBadgeText != null) DockCalendarBadgeText.Visibility = isCompactDock ? Visibility.Collapsed : Visibility.Visible;
+        if (DockWidgetBadgeBorder != null) DockWidgetBadgeBorder.Visibility = isCompactDock ? Visibility.Collapsed : Visibility.Visible;
+
+        // 3. Tinh chỉnh lề ngoài gọn gàng trên màn hình nhỏ (MainContentGrid)
         if (MainContentGrid != null)
         {
-            var targetMargin = width < 1250 ? new Thickness(14, 10, 14, 14) : new Thickness(24, 12, 24, 24);
+            var targetMargin = width < 1250 ? new Thickness(14, 8, 14, 12) : new Thickness(24, 12, 24, 18);
             if (MainContentGrid.Margin != targetMargin)
             {
                 MainContentGrid.Margin = targetMargin;
@@ -902,6 +895,29 @@ public sealed partial class MainPage : Page
         Frame.Navigate(typeof(OnboardingPage));
     }
 
+    public void OnWindowStateChanged(bool isMinimized)
+    {
+        DispatcherQueue?.TryEnqueue(() =>
+        {
+            if (isMinimized)
+            {
+                TabOverview?.StopEffects();
+                TabRadar?.StopRadarSweep();
+            }
+            else
+            {
+                if (string.Equals(_currentActiveTabTag, "overview", StringComparison.OrdinalIgnoreCase))
+                {
+                    TabOverview?.StartEffects();
+                }
+                else if (string.Equals(_currentActiveTabTag, "radar", StringComparison.OrdinalIgnoreCase))
+                {
+                    TabRadar?.StartRadarSweep();
+                }
+            }
+        });
+    }
+
     #endregion
 
     #region Top Bar & Search Handlers
@@ -973,8 +989,6 @@ public sealed partial class MainPage : Page
             bool isSpatialGlass = string.Equals(dl, "SpatialGlass", StringComparison.OrdinalIgnoreCase);
             bool isEInk = isNothing && (ViewModel?.IsNothingEInkMode == true);
             bool isDark = isEInk ? false : ThemeHelper.IsDarkTheme(this);
-
-            var tabs = new Microsoft.UI.Xaml.FrameworkElement?[] { TabOverview, TabFlood, TabRadar, TabLifestyle, TabCalendar, TabWidgetStudio, TabSettings };
 
             if (isNothing)
             {
@@ -1107,32 +1121,9 @@ public sealed partial class MainPage : Page
                 if (UnitButtonIcon != null) { UnitButtonIcon.FontFamily = ndotFont; UnitButtonIcon.Glyph = NothingGlyphs.Percent; }
                 if (DesktopWidgetButtonIcon != null) { DesktopWidgetButtonIcon.FontFamily = ndotFont; DesktopWidgetButtonIcon.Glyph = NothingGlyphs.WidgetDropdown; }
 
-                foreach (var tab in tabs)
-                {
-                    if (tab != null)
-                    {
-                        tab.Resources["CardBackgroundFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
-                        tab.Resources["CardStrokeColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
-                        tab.Resources["SubtleFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
-                        tab.Resources["AccentFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
-                        tab.Resources["AccentButtonBackground"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(redAccent);
-                        tab.Resources["AccentButtonBackgroundPointerOver"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 235, 45, 52));
-                        tab.Resources["AccentButtonBackgroundPressed"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 180, 20, 25));
-                        tab.Resources["NothingCardBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBg);
-                        tab.Resources["NothingCardBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(cardBorder);
-                        tab.Resources["NothingSubCardBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleBg);
-                        tab.Resources["NothingSubCardBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subCardBorder);
-                        tab.Resources["NothingGlyphBoxBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(glyphBoxBg);
-                        tab.Resources["NothingTextPrimaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textPrimary);
-                        tab.Resources["NothingTextSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textSecondary);
-                        tab.Resources["NothingTextMutedBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(textMuted);
-                        tab.Resources["NothingPillBackgroundBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(pillBg);
-                        tab.Resources["NothingPillBorderBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(pillBorder);
-                    }
-                }
                 TabOverview?.UpdateNothingThemeVisuals();
-                (FindName(nameof(TabRadar)) as Views.Tabs.RadarTab)?.UpdateNothingVisuals();
-                (FindName(nameof(TabFlood)) as Views.Tabs.UrbanFloodTab)?.UpdateNothingVisuals();
+                TabRadar?.UpdateNothingVisuals();
+                TabFlood?.UpdateNothingVisuals();
             }
             else
             {
@@ -1214,16 +1205,9 @@ public sealed partial class MainPage : Page
                 if (UnitButtonIcon != null) { UnitButtonIcon.FontFamily = faFont; UnitButtonIcon.Glyph = "\uf2c9"; }
                 if (DesktopWidgetButtonIcon != null) { DesktopWidgetButtonIcon.FontFamily = faFont; DesktopWidgetButtonIcon.Glyph = "\uf2d0"; }
 
-                foreach (var tab in tabs)
-                {
-                    if (tab != null)
-                    {
-                        foreach (var k in fluentKeys)
-                        {
-                            if (tab.Resources.ContainsKey(k)) tab.Resources.Remove(k);
-                        }
-                    }
-                }
+                TabOverview?.UpdateNothingThemeVisuals();
+                TabRadar?.UpdateNothingVisuals();
+                TabFlood?.UpdateNothingVisuals();
 
                 // ==================== SPATIAL VISION (AURORA GLASS 3.7) OVERLAYS ====================
                 if (isSpatialGlass)
@@ -1283,16 +1267,6 @@ public sealed partial class MainPage : Page
                             isDark ? Windows.UI.Color.FromArgb(160, 8, 15, 32) : Windows.UI.Color.FromArgb(215, 255, 255, 255));
                         FloatingIslandHeader.BorderBrush = CreateSpecularBorderBrush();
                     }
-
-                    foreach (var tab in tabs)
-                    {
-                        if (tab != null)
-                        {
-                            tab.Resources["CardBackgroundFillColorDefaultBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(glassFillColor);
-                            tab.Resources["CardStrokeColorDefaultBrush"] = CreateSpecularBorderBrush();
-                            tab.Resources["SubtleFillColorSecondaryBrush"] = new Microsoft.UI.Xaml.Media.SolidColorBrush(subtleGlassColor);
-                        }
-                    }
                 }
 
                 TabOverview?.UpdateWeatherVisuals();
@@ -1319,7 +1293,7 @@ public sealed partial class MainPage : Page
             bool isFloatingDock = ViewModel?.IsFloatingDockMode ?? true;
             if (NavContentRootGrid != null)
             {
-                NavContentRootGrid.Margin = isFloatingDock ? new Thickness(0, 0, 0, 58) : new Thickness(12, 0, 0, 0);
+                NavContentRootGrid.Margin = isFloatingDock ? new Thickness(0, 0, 0, 80) : new Thickness(12, 0, 0, 0);
             }
 
             if (FloatingBottomDock == null) return;

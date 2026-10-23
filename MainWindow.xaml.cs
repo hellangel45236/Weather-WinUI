@@ -80,7 +80,10 @@ public sealed partial class MainWindow : Window
         {
             if (AppWindow.Presenter is Microsoft.UI.Windowing.OverlappedPresenter presenter)
             {
-                if (presenter.State == Microsoft.UI.Windowing.OverlappedPresenterState.Minimized)
+                bool isMinimized = presenter.State == Microsoft.UI.Windowing.OverlappedPresenterState.Minimized;
+                (RootFrame?.Content as MainPage)?.OnWindowStateChanged(isMinimized);
+
+                if (isMinimized)
                 {
                     var s = new Services.SettingsService().LoadSettings();
                     if (s.MinimizeToTray)
@@ -115,7 +118,7 @@ public sealed partial class MainWindow : Window
             else if (cmd.Contains("--design=fluent", StringComparison.OrdinalIgnoreCase)) dl = "Fluent2";
 
             bool isNothing = string.Equals(dl, "Nothing", StringComparison.OrdinalIgnoreCase);
-            bool isEInk = settings.EnableNothingEInkMode || cmd.Contains("--eink", StringComparison.OrdinalIgnoreCase);
+            bool isEInk = isNothing && (settings.EnableNothingEInkMode || cmd.Contains("--eink", StringComparison.OrdinalIgnoreCase)) && !isDark;
 
             if (isNothing)
             {

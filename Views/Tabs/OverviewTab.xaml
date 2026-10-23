@@ -60,7 +60,7 @@
 
     <Grid>
         <ScrollViewer x:Name="OverviewScrollViewer" VerticalScrollBarVisibility="Auto">
-            <StackPanel Spacing="16" Padding="0,0,16,24">
+            <StackPanel Spacing="16" Padding="0,0,16,84">
             <!-- =================================================================================== -->
             <!-- FLUENT 2 OVERVIEW CONTAINER (Active in Default/Fluent 2 Mode)                       -->
             <!-- =================================================================================== -->

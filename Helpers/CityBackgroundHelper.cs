@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -130,8 +130,11 @@ public static class CityBackgroundHelper
         return Path.Combine(AppContext.BaseDirectory, "Assets", "City Picture");
     }
 
+    private static List<string>? _cachedPresets;
+
     public static List<string> GetAvailablePresets()
     {
+        if (_cachedPresets != null) return _cachedPresets;
         var list = new List<string>();
         string dir = GetCityPictureDirectory();
         if (Directory.Exists(dir))
@@ -170,6 +173,7 @@ public static class CityBackgroundHelper
                 sorted.Add(item);
             }
         }
+        _cachedPresets = sorted;
         return sorted;
     }
 

@@ -39,6 +39,35 @@ public sealed partial class SettingsTab : UserControl
     {
         this.InitializeComponent();
         this.Loaded += (s, e) => SyncAllSettings();
+
+        // Lắng nghe sự kiện Theme thay đổi toàn cầu để đồng bộ giao diện ComboBox (chỉ đăng ký 1 lần duy nhất)
+        ThemeHelper.ThemeChanged += (t) =>
+        {
+            DispatcherQueue?.TryEnqueue(() =>
+            {
+                if (_isSyncing || AppearanceThemeComboBox == null) return;
+                _isSyncing = true;
+                try
+                {
+                    string mode = ViewModel?.Settings?.ThemeMode?.ToLowerInvariant() ?? "system";
+                    int targetIdx = mode switch
+                    {
+                        "light" => 1,
+                        "dark" => 2,
+                        _ => 0
+                    };
+                    if (AppearanceThemeComboBox.SelectedIndex != targetIdx)
+                    {
+                        AppearanceThemeComboBox.SelectedIndex = targetIdx;
+                    }
+                }
+                catch { }
+                finally
+                {
+                    _isSyncing = false;
+                }
+            });
+        };
     }
 
     public void SyncAllSettings()
@@ -76,30 +105,6 @@ public sealed partial class SettingsTab : UserControl
             {
                 _isSyncing = false;
             }
-
-            // Lắng nghe sự kiện Theme thay đổi toàn cầu để đồng bộ giao diện
-            ThemeHelper.ThemeChanged += (t) =>
-            {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    if (AppearanceThemeComboBox == null) return;
-                    _isSyncing = true;
-                    try
-                    {
-                        string mode = ViewModel?.Settings?.ThemeMode?.ToLowerInvariant() ?? "system";
-                        AppearanceThemeComboBox.SelectedIndex = mode switch
-                        {
-                            "light" => 1,
-                            "dark" => 2,
-                            _ => 0
-                        };
-                    }
-                    finally
-                    {
-                        _isSyncing = false;
-                    }
-                });
-            };
 
             // Design Language
             if (DesignLanguageComboBox != null)

@@ -145,43 +145,6 @@ public sealed partial class LifestyleTab : UserControl
             }
         }
 
-        // 4. AQI & Skin defense
-        if (AqiSkinDefenseGrid != null)
-        {
-            if (isNarrow)
-            {
-                AqiSkinDefenseGrid.ColumnDefinitions.Clear();
-                AqiSkinDefenseGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-                AqiSkinDefenseGrid.RowDefinitions.Clear();
-                AqiSkinDefenseGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                AqiSkinDefenseGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                AqiSkinDefenseGrid.RowSpacing = 12;
-
-                if (AqiSkinDefenseGrid.Children.Count >= 2)
-                {
-                    Grid.SetColumn((FrameworkElement)AqiSkinDefenseGrid.Children[0], 0);
-                    Grid.SetRow((FrameworkElement)AqiSkinDefenseGrid.Children[0], 0);
-                    Grid.SetColumn((FrameworkElement)AqiSkinDefenseGrid.Children[1], 0);
-                    Grid.SetRow((FrameworkElement)AqiSkinDefenseGrid.Children[1], 1);
-                }
-            }
-            else
-            {
-                AqiSkinDefenseGrid.RowDefinitions.Clear();
-                AqiSkinDefenseGrid.RowSpacing = 0;
-                AqiSkinDefenseGrid.ColumnDefinitions.Clear();
-                AqiSkinDefenseGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-                AqiSkinDefenseGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-
-                if (AqiSkinDefenseGrid.Children.Count >= 2)
-                {
-                    Grid.SetColumn((FrameworkElement)AqiSkinDefenseGrid.Children[0], 0);
-                    Grid.SetRow((FrameworkElement)AqiSkinDefenseGrid.Children[0], 0);
-                    Grid.SetColumn((FrameworkElement)AqiSkinDefenseGrid.Children[1], 1);
-                    Grid.SetRow((FrameworkElement)AqiSkinDefenseGrid.Children[1], 0);
-                }
-            }
-        }
     }
 
     private void OccasionButton_Click(object sender, RoutedEventArgs e)
