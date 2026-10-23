@@ -78,6 +78,7 @@ public sealed partial class WidgetStudioTab : UserControl
             {
                 AlwaysOnTopSwitch.IsOn = ViewModel.Settings.WidgetAlwaysOnTop;
                 if (GhostModeSwitch != null) GhostModeSwitch.IsOn = ViewModel.Settings.WidgetGhostClickThrough;
+                if (LockPositionSwitch != null) LockPositionSwitch.IsOn = ViewModel.Settings.WidgetLockPosition;
             }
 
             if (style == "SeasonalCard")
@@ -132,6 +133,7 @@ public sealed partial class WidgetStudioTab : UserControl
                 if (CardWidgetPureTypo != null) { Grid.SetColumn(CardWidgetPureTypo, 0); Grid.SetRow(CardWidgetPureTypo, 13); Grid.SetColumnSpan(CardWidgetPureTypo, 1); }
                 if (CardWidgetTaskbarStrip != null) { Grid.SetColumn(CardWidgetTaskbarStrip, 0); Grid.SetRow(CardWidgetTaskbarStrip, 14); }
                 if (CardWidgetSpatialCube != null) { Grid.SetColumn(CardWidgetSpatialCube, 0); Grid.SetRow(CardWidgetSpatialCube, 15); }
+                if (CardWidgetOotdCapsule != null) { Grid.SetColumn(CardWidgetOotdCapsule, 0); Grid.SetRow(CardWidgetOotdCapsule, 16); }
             }
 
             else
@@ -140,7 +142,7 @@ public sealed partial class WidgetStudioTab : UserControl
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 GalleryGrid.RowDefinitions.Clear();
-                for (int r = 0; r < 9; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                for (int r = 0; r < 10; r++) GalleryGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
                 if (CardWidgetBryanC != null) { Grid.SetColumn(CardWidgetBryanC, 0); Grid.SetRow(CardWidgetBryanC, 0); }
                 if (CardWidgetGlassCard != null) { Grid.SetColumn(CardWidgetGlassCard, 1); Grid.SetRow(CardWidgetGlassCard, 0); }
@@ -158,6 +160,7 @@ public sealed partial class WidgetStudioTab : UserControl
                 if (CardWidgetPureTypo != null) { Grid.SetColumn(CardWidgetPureTypo, 0); Grid.SetRow(CardWidgetPureTypo, 7); Grid.SetColumnSpan(CardWidgetPureTypo, 2); }
                 if (CardWidgetTaskbarStrip != null) { Grid.SetColumn(CardWidgetTaskbarStrip, 0); Grid.SetRow(CardWidgetTaskbarStrip, 8); }
                 if (CardWidgetSpatialCube != null) { Grid.SetColumn(CardWidgetSpatialCube, 1); Grid.SetRow(CardWidgetSpatialCube, 8); }
+                if (CardWidgetOotdCapsule != null) { Grid.SetColumn(CardWidgetOotdCapsule, 0); Grid.SetRow(CardWidgetOotdCapsule, 9); }
             }
         }
 
@@ -305,6 +308,7 @@ public sealed partial class WidgetStudioTab : UserControl
     private void CardWidgetPureTypo_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("PureTypoHud");
     private void CardWidgetTaskbarStrip_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("TaskbarStrip");
     private void CardWidgetSpatialCube_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("SpatialCube");
+    private void CardWidgetOotdCapsule_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => SelectWidgetStyle("OotdCapsule");
     private void CardWidgetNothingPill_Unused(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         SelectWidgetStyle("NothingPill");
@@ -451,6 +455,12 @@ public sealed partial class WidgetStudioTab : UserControl
                 CardWidgetSpatialCube.BorderThickness = selectedTag == "SpatialCube" ? new Thickness(2) : new Thickness(1);
                 if (BadgeWidgetSpatialCube != null) BadgeWidgetSpatialCube.Visibility = selectedTag == "SpatialCube" ? Visibility.Visible : Visibility.Collapsed;
             }
+            if (CardWidgetOotdCapsule != null)
+            {
+                CardWidgetOotdCapsule.BorderBrush = selectedTag == "OotdCapsule" ? accentBrush : subtleBorderBrush;
+                CardWidgetOotdCapsule.BorderThickness = selectedTag == "OotdCapsule" ? new Thickness(2) : new Thickness(1);
+                if (BadgeWidgetOotdCapsule != null) BadgeWidgetOotdCapsule.Visibility = selectedTag == "OotdCapsule" ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
     }
 
@@ -493,6 +503,20 @@ public sealed partial class WidgetStudioTab : UserControl
             foreach (var w in WidgetWindow.ActiveWidgets)
             {
                 try { w.SetGhostClickThrough(ts.IsOn); } catch { }
+            }
+        }
+    }
+
+    private void LockPositionSwitch_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null) return;
+        if (sender is ToggleSwitch ts)
+        {
+            ViewModel.Settings.WidgetLockPosition = ts.IsOn;
+            ViewModel.ApplySettings();
+            foreach (var w in WidgetWindow.ActiveWidgets)
+            {
+                try { w.SetLockPosition(ts.IsOn); } catch { }
             }
         }
     }

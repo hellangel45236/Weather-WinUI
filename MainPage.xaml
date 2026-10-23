@@ -76,20 +76,20 @@
                     </Border>
                     <TextBlock x:Name="AppSubtitleText" Visibility="Collapsed"/>
 
-                    <!-- Clickable Version Badge (Opens v3.7.0 Changelog) -->
+                    <!-- Clickable Version Badge (Opens v3.7.1 Changelog) -->
                     <Button Click="HeaderChangelogButton_Click"
                             Visibility="{x:Bind ViewModel.IsFluent2Design, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                             Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1" CornerRadius="10" Padding="7,3" VerticalAlignment="Center"
-                            ToolTipService.ToolTip="Weather WinUI v3.7.0 — Bấm để xem tính năng mới">
+                            ToolTipService.ToolTip="Weather WinUI v3.7.1 — Bấm để xem tính năng mới">
                         <TextBlock Text="{x:Bind ViewModel.DesignBadgeText, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="{ThemeResource AccentFillColorDefaultBrush}" FontFamily="Cascadia Mono, Consolas, Segoe UI"/>
                     </Button>
                     <Button Click="HeaderChangelogButton_Click"
                             Visibility="{x:Bind ViewModel.IsNothingDesign, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                             Background="#D71921" BorderThickness="0" CornerRadius="8" Padding="7,3" VerticalAlignment="Center"
-                            ToolTipService.ToolTip="NOTHING EDITION // v3.7.0 — Click for Release Notes">
-                        <TextBlock Text="NDOT // 3.7.0" FontSize="9.5" FontWeight="Bold" Foreground="White" FontFamily="{StaticResource NdotFontFamily}"/>
+                            ToolTipService.ToolTip="NOTHING EDITION // v3.7.1 — Click for Release Notes">
+                        <TextBlock Text="NDOT // 3.7.1" FontSize="9.5" FontWeight="Bold" Foreground="White" FontFamily="{StaticResource NdotFontFamily}"/>
                     </Button>
 
                     <!-- 3-Way Design Language Quick Switcher (Fluent 2 / Spatial Glass 3.7 / Nothing OS 3.7) -->

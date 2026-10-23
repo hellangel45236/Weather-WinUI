@@ -29,7 +29,25 @@ public sealed partial class UrbanFloodTab : UserControl
     {
         if (d is UrbanFloodTab tab)
         {
+            if (e.OldValue is MainViewModel oldVm)
+            {
+                oldVm.PropertyChanged -= tab.OnViewModelPropertyChanged;
+            }
+            if (e.NewValue is MainViewModel newVm)
+            {
+                newVm.PropertyChanged += tab.OnViewModelPropertyChanged;
+            }
             tab.RenderTidalSineWave();
+        }
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainViewModel.IsNothingEInkMode) ||
+            e.PropertyName == nameof(MainViewModel.IsNothingDesign) ||
+            e.PropertyName == nameof(MainViewModel.UrbanFloodWarning))
+        {
+            RenderTidalSineWave();
         }
     }
 
@@ -355,9 +373,23 @@ public sealed partial class UrbanFloodTab : UserControl
                 StartPoint = new Point(0, 0),
                 EndPoint = new Point(0, 1)
             };
-            fillBrush.GradientStops.Add(new GradientStop { Color = Color.FromArgb(100, 2, 132, 199), Offset = 0.0 });
-            fillBrush.GradientStops.Add(new GradientStop { Color = Color.FromArgb(40, 56, 189, 248), Offset = 0.5 });
-            fillBrush.GradientStops.Add(new GradientStop { Color = Color.FromArgb(8, 2, 132, 199), Offset = 1.0 });
+            bool isNothing = ViewModel?.IsNothingDesign == true;
+            bool isEInk = isNothing && (ViewModel?.IsNothingEInkMode == true);
+            if (isEInk)
+            {
+                fillBrush.GradientStops.Add(new GradientStop { Color = Color.FromArgb(40, 20, 20, 20), Offset = 0.0 });
+                fillBrush.GradientStops.Add(new GradientStop { Color = Color.FromArgb(10, 20, 20, 20), Offset = 1.0 });
+            }
+            else
+            {
+                fillBrush.GradientStops.Add(new GradientStop { Color = Color.FromArgb(100, 2, 132, 199), Offset = 0.0 });
+                fillBrush.GradientStops.Add(new GradientStop { Color = Color.FromArgb(40, 56, 189, 248), Offset = 0.5 });
+                fillBrush.GradientStops.Add(new GradientStop { Color = Color.FromArgb(8, 2, 132, 199), Offset = 1.0 });
+    
+    
+            }
+
+
             fillPolygon.Fill = fillBrush;
 
             fillPolygon.Points.Add(new Point(GetX(0), height - bottomMargin));
@@ -371,12 +403,12 @@ public sealed partial class UrbanFloodTab : UserControl
             // 5. Đường sóng chính (Glow Stroke + Crisp Line)
             var glowLine = new Polyline
             {
-                Stroke = new SolidColorBrush(Color.FromArgb(70, 56, 189, 248)),
+                Stroke = new SolidColorBrush(isEInk ? Color.FromArgb(0, 0, 0, 0) : Color.FromArgb(70, 56, 189, 248)),
                 StrokeThickness = 6.0
             };
             var mainLine = new Polyline
             {
-                Stroke = new SolidColorBrush(Color.FromArgb(255, 56, 189, 248)),
+                Stroke = new SolidColorBrush(isEInk ? Color.FromArgb(255, 20, 20, 20) : Color.FromArgb(255, 56, 189, 248)),
                 StrokeThickness = 2.6
             };
             foreach (var pt in smoothPoints)
@@ -532,7 +564,7 @@ public sealed partial class UrbanFloodTab : UserControl
             // 9. Cập nhật Trụ Đo Mực Nước Thủy Triều Kỹ Thuật Số bên cạnh (WaterLevelBar)
             if (WaterLevelBar != null)
             {
-                double curLevel = ViewModel.UrbanFloodWarning.CurrentTideLevel;
+                double curLevel = ViewModel?.UrbanFloodWarning?.CurrentTideLevel ?? 1.20;
                 double ratio = Math.Max(0.08, Math.Min(1.0, (curLevel - minLevel) / range));
                 WaterLevelBar.Height = Math.Max(12, ratio * 70);
 

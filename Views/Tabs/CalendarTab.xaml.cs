@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using WeatherApp.Models;
 using WeatherApp.ViewModels;
 
@@ -10,12 +11,57 @@ namespace WeatherApp.Views.Tabs;
 public sealed partial class CalendarTab : UserControl
 {
     public static readonly DependencyProperty ViewModelProperty =
-        DependencyProperty.Register(nameof(ViewModel), typeof(MainViewModel), typeof(CalendarTab), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(ViewModel), typeof(MainViewModel), typeof(CalendarTab), new PropertyMetadata(null, OnViewModelChanged));
 
     public MainViewModel? ViewModel
     {
         get => (MainViewModel?)GetValue(ViewModelProperty);
         set => SetValue(ViewModelProperty, value);
+    }
+
+    private static void OnViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is CalendarTab tab)
+        {
+            if (e.OldValue is MainViewModel oldVm)
+            {
+                oldVm.PropertyChanged -= tab.OnViewModelPropertyChanged;
+            }
+            if (e.NewValue is MainViewModel newVm)
+            {
+                newVm.PropertyChanged += tab.OnViewModelPropertyChanged;
+                tab.UpdateCalendarEInkVisuals();
+            }
+        }
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainViewModel.IsNothingEInkMode) ||
+            e.PropertyName == nameof(MainViewModel.IsNothingDesign) ||
+            e.PropertyName == nameof(MainViewModel.SelectedThemeIndex))
+        {
+            UpdateCalendarEInkVisuals();
+        }
+    }
+
+    private void UpdateCalendarEInkVisuals()
+    {
+        bool isNothing = ViewModel?.IsNothingDesign == true;
+        bool isEInk = isNothing && (ViewModel?.IsNothingEInkMode == true);
+
+        if (SelectedDayDetailPanel != null)
+        {
+            if (isEInk)
+            {
+                SelectedDayDetailPanel.BorderThickness = new Thickness(1.5);
+                SelectedDayDetailPanel.BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 30, 30, 30));
+            }
+            else
+            {
+                SelectedDayDetailPanel.BorderThickness = new Thickness(1.0);
+            }
+        }
     }
 
     public CalendarTab()

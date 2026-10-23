@@ -12,7 +12,13 @@ namespace WeatherApp.Services;
 /// </summary>
 public class OutfitAdvisorService
 {
-    public OutfitAdvice GenerateOutfitAdvice(CurrentWeatherDisplay current, OpenMeteoResponse? rawData, string occasion = "Work", string gender = "All")
+    public OutfitAdvice GenerateOutfitAdvice(
+        CurrentWeatherDisplay current,
+        OpenMeteoResponse? rawData,
+        string occasion = "Work",
+        string gender = "All",
+        string commuteMethod = "Motorbike",
+        string thermalPreference = "Normal")
     {
         bool isVi = LocalizationService.Instance.IsVietnamese;
         double temp = current.TemperatureValue;
@@ -25,6 +31,16 @@ public class OutfitAdvisorService
             {
                 feelsLike = parsedFeels;
             }
+        }
+
+        // Tùy chỉnh thân nhiệt cá nhân (Personal Thermal Sensitivity)
+        if (string.Equals(thermalPreference, "ColdSensitive", StringComparison.OrdinalIgnoreCase))
+        {
+            feelsLike -= 2.5; // Nhạy cảm lạnh -> cần ấm hơn
+        }
+        else if (string.Equals(thermalPreference, "HeatSensitive", StringComparison.OrdinalIgnoreCase))
+        {
+            feelsLike += 2.5; // Dễ nóng -> cần thoáng mát hơn
         }
 
         bool isRaining = current.WeatherEffect is WeatherEffectType.LightRain
@@ -57,10 +73,12 @@ public class OutfitAdvisorService
         var advice = new OutfitAdvice
         {
             Occasion = occasion,
-            GenderStyle = gender
+            GenderStyle = gender,
+            CommuteMethod = commuteMethod,
+            ThermalPreference = thermalPreference
         };
 
-        // Gán tiêu đề Dịp & Giới tính
+        // Gán tiêu đề Dịp, Giới tính & Phương tiện
         advice.OccasionTitle = occasion switch
         {
             "School" => isVi ? "Đi học / Giảng đường" : "Campus / School",
@@ -75,6 +93,14 @@ public class OutfitAdvisorService
             "Men" => isVi ? "Nam giới" : "Men's Style",
             "Women" => isVi ? "Nữ giới" : "Women's Style",
             _ => isVi ? "Tự do / Unisex" : "Unisex / Free"
+        };
+
+        advice.CommuteMethodTitle = commuteMethod switch
+        {
+            "Car" => isVi ? "Ô tô / Taxi" : "Car / Cab",
+            "Bus" => isVi ? "Xe buýt / Tàu điện" : "Transit / Bus",
+            "Walk" => isVi ? "Đi bộ" : "Walking",
+            _ => isVi ? "Xe máy" : "Motorbike"
         };
 
         // 1. Phân tích nhiệt độ cảm nhận & Tiêu đề nhiệt
@@ -409,54 +435,128 @@ public class OutfitAdvisorService
 
         advice.Accessories = accessories;
 
-        // 5. Cảnh báo xe máy & Trang bị đi mưa đặc thù Việt Nam
-        if (isRaining)
+        // 5. Cảnh báo giao thông & Di chuyển theo phương tiện cá nhân hóa
+        if (commuteMethod == "Car")
         {
-            advice.RaincoatAdvice = isVi
-                ? "Khuyên dùng áo mưa bộ 2 mảnh riêng biệt, chống gió tạt lật tà và an toàn khi lái xe tốc độ cao."
-                : "Recommend 2-piece split raincoat for safety against strong side winds and tyre catches.";
-
-            advice.MotorbikeWarning = isVi
-                ? "⚠️ Đường trơn trượt & bùn văng: Tránh mặc áo mưa cánh dơi trùm đầu xe máy vì dễ bị gió tạt làm loạng choạng. Cẩn thận các vạch kẻ sơn và nắp cống kim loại, giữ khoảng cách phanh gấp đôi."
-                : "⚠️ Slick roads & water spray: Avoid poncho-style raincoats that flap over handlebars. Watch out for road paint lines and metal drain covers, double your braking distance.";
-            advice.MotorbikeWarningIcon = "\uf73d";
-            advice.MotorbikeWarningColor = "#EF4444";
+            advice.MotorbikeWarningIcon = "\uf1b9"; // fa-car
+            advice.MotorbikeWarningColor = "#38BDF8";
+            if (isRaining)
+            {
+                advice.RaincoatAdvice = isVi ? "Mưa đường ướt: Để sẵn ô gập trong cửa xe khi bước ra ngoài." : "Wet roads: Keep umbrella ready in car door when exiting.";
+                advice.MotorbikeWarning = isVi
+                    ? "🚗 Di chuyển ô tô: Tầm nhìn giảm do mưa xối xả, đường trơn trượt. Hãy bật đèn sương mù, gạt mưa tốc độ cao và giữ khoảng cách an toàn."
+                    : "🚗 Car commute: Reduced visibility from rain, slick roads. Turn on fog lights, wipers and maintain safe following distance.";
+            }
+            else if (feelsLike >= 33)
+            {
+                advice.RaincoatAdvice = isVi ? "Thời tiết khô ráo, di chuyển ô tô thuận tiện." : "Dry and clear, smooth car commute.";
+                advice.MotorbikeWarning = isVi
+                    ? "🚗 Di chuyển ô tô: Cabin điều hòa mát mẻ, đề phòng sốc nhiệt khi bước ra ngoài trời nắng gắt. Chuẩn bị áo khoác mỏng hoặc kính râm."
+                    : "🚗 Car commute: AC cabin comfortable, prepare for temperature shock when exiting into sun. Keep sunglasses handy.";
+            }
+            else
+            {
+                advice.RaincoatAdvice = isVi ? "Khí hậu ôn hòa, điều kiện giao thông thuận lợi." : "Mild weather, great driving conditions.";
+                advice.MotorbikeWarning = isVi
+                    ? "🚗 Di chuyển ô tô: Khoang lái cách âm và cản gió hoàn toàn, trang phục tự do thoải mái suốt hành trình."
+                    : "🚗 Car commute: Cabin insulated from wind and dust, enjoy versatile comfortable outfit.";
+            }
         }
-        else if (wind >= 25)
+        else if (commuteMethod == "Bus")
         {
-            advice.RaincoatAdvice = isVi ? "Thời tiết khô ráo, gió giật mạnh." : "Dry conditions, strong gusts.";
-            advice.MotorbikeWarning = isVi
-                ? $"⚠️ Gió giật mạnh ({wind:F0} km/h): Cẩn thận lực cản gió mạnh khi qua các cầu cao hoặc đi cạnh xe tải lớn. Hãy giữ thật chắc tay lái và giảm tốc độ!"
-                : $"⚠️ Strong wind gusts ({wind:F0} km/h): Beware of heavy crosswinds when crossing high bridges or passing large trucks. Grip handlebars firmly!";
-            advice.MotorbikeWarningIcon = "\uf72e";
-            advice.MotorbikeWarningColor = "#F59E0B";
-        }
-        else if (feelsLike >= 33)
-        {
-            advice.RaincoatAdvice = isVi ? "Trời tạnh ráo, không cần mang áo mưa." : "Dry and clear, no raincoat needed.";
-            advice.MotorbikeWarning = isVi
-                ? "⚠️ Cảnh báo sốc nhiệt máy lạnh: Chênh lệch lớn giữa văn phòng máy lạnh (23°C) và mặt đường nhựa (trên 40°C). Hãy nghỉ chân ở sảnh 1-2 phút và khoác áo dài tay trước khi xuất phát."
-                : "⚠️ Heat shock caution: Big gap between AC indoor (23°C) and asphalt road (40°C+). Rest 1-2 minutes in the lobby before riding.";
-            advice.MotorbikeWarningIcon = "\uf185";
-            advice.MotorbikeWarningColor = "#F59E0B";
-        }
-        else if (feelsLike < 16)
-        {
-            advice.RaincoatAdvice = isVi ? "Trời khô lạnh, chuẩn bị áo ấm cản gió." : "Dry and chilly, prepare windproof layers.";
-            advice.MotorbikeWarning = isVi
-                ? "⚠️ Gió lạnh tạt buốt khi lái xe máy: Tốc độ xe làm nhiệt độ cảm nhận giảm thêm 3-5°C. Cài kín cổ áo khoác, đeo găng tay xe máy và nón bảo hiểm có kính chắn gió."
-                : "⚠️ Severe windchill on motorbikes: Moving speed drops perceived temp by 3-5°C. Zip up collar, wear riding gloves and visor helmet.";
-            advice.MotorbikeWarningIcon = "\uf2dc";
-            advice.MotorbikeWarningColor = "#3B82F6";
-        }
-        else
-        {
-            advice.RaincoatAdvice = isVi ? "Thời tiết đẹp, đường sá khô ráo." : "Fine weather, roads are dry.";
-            advice.MotorbikeWarning = isVi
-                ? "✅ Thời tiết lý tưởng: Đường sá khô thoáng, gió mát dịu. Rất thuận tiện để lái xe máy, dạo phố và di chuyển trong ngày."
-                : "✅ Ideal conditions: Clean dry roads, mild breeze. Highly pleasant for motorbike commuting and walking.";
-            advice.MotorbikeWarningIcon = "\uf21c";
+            advice.MotorbikeWarningIcon = "\uf207"; // fa-bus
             advice.MotorbikeWarningColor = "#10B981";
+            if (isRaining)
+            {
+                advice.RaincoatAdvice = isVi ? "Khuyên dùng ô gập bỏ túi hoặc áo mưa mỏng nhẹ khi chờ trạm." : "Compact umbrella or packable poncho for bus shelter.";
+                advice.MotorbikeWarning = isVi
+                    ? "🚌 Phương tiện công cộng: Đường đi bộ ra trạm xe buýt trơn trượt. Chuẩn bị ô gập và bọc giày chống ướt khi di chuyển giữa các trạm."
+                    : "🚌 Public transit: Wet pavement walking to stations. Keep compact umbrella and shoe covers in your bag.";
+            }
+            else
+            {
+                advice.RaincoatAdvice = isVi ? "Trời tạnh ráo, đi bộ đến trạm xe buýt thoải mái." : "Clear weather, pleasant walk to station.";
+                advice.MotorbikeWarning = isVi
+                    ? "🚌 Phương tiện công cộng: Không gian kín đông đúc giờ cao điểm, khuyến nghị đeo khẩu trang lọc kháng khuẩn và mặc trang phục thoáng mát."
+                    : "🚌 Public transit: Crowded during rush hours, breathable clothing and protective mask recommended.";
+            }
+        }
+        else if (commuteMethod == "Walk")
+        {
+            advice.MotorbikeWarningIcon = "\uf554"; // fa-walking
+            advice.MotorbikeWarningColor = "#F59E0B";
+            if (isRaining)
+            {
+                advice.RaincoatAdvice = isVi ? "Bắt buộc ô lớn chống lật gió hoặc áo mưa bọc kín kèm bọc giày." : "Heavy-duty windproof umbrella or full-body poncho required.";
+                advice.MotorbikeWarning = isVi
+                    ? "🚶 Đi bộ ngoài trời: Đường trơn trượt, vũng nước bẩn. Bắt buộc đi giày chống trượt hoặc bọc giày cao su chống thấm nước tuyệt đối."
+                    : "🚶 Walking outdoor: Slippery surfaces and puddles. Wear non-slip shoes or waterproof covers.";
+            }
+            else if (feelsLike >= 33 || uv >= 7)
+            {
+                advice.RaincoatAdvice = isVi ? "Bắt buộc mũ rộng vành, kính râm hoặc ô che tia UV." : "Wide-brim hat, sunglasses or UV umbrella essential.";
+                advice.MotorbikeWarning = isVi
+                    ? "🚶 Đi bộ ngoài trời: Nắng gắt và chỉ số UV cao, đi dưới bóng râm các tán cây, thoa kem chống nắng kỹ và mang theo bình nước bù khoáng."
+                    : "🚶 Walking outdoor: High heat & UV rays. Walk under tree shades, apply sunscreen and keep water bottle handy.";
+            }
+            else
+            {
+                advice.RaincoatAdvice = isVi ? "Thời tiết tuyệt vời để đi bộ vận động rèn luyện sức khỏe." : "Great weather for healthy walking commute.";
+                advice.MotorbikeWarning = isVi
+                    ? "🚶 Đi bộ ngoài trời: Không khí thoáng đãng, gió mát. Rất thích hợp đi bộ thể dục hoặc đi bộ nhẹ nhàng đến nơi làm việc."
+                    : "🚶 Walking outdoor: Fresh air and pleasant breeze. Perfect for pedestrian commuting.";
+            }
+        }
+        else // Motorbike (Mặc định xe máy Việt Nam)
+        {
+            if (isRaining)
+            {
+                advice.RaincoatAdvice = isVi
+                    ? "Khuyên dùng áo mưa bộ 2 mảnh riêng biệt, chống gió tạt lật tà và an toàn khi lái xe tốc độ cao."
+                    : "Recommend 2-piece split raincoat for safety against strong side winds and tyre catches.";
+
+                advice.MotorbikeWarning = isVi
+                    ? "⚠️ Đường trơn trượt & bùn văng: Tránh mặc áo mưa cánh dơi trùm đầu xe máy vì dễ bị gió tạt làm loạng choạng. Cẩn thận các vạch kẻ sơn và nắp cống kim loại, giữ khoảng cách phanh gấp đôi."
+                    : "⚠️ Slick roads & water spray: Avoid poncho-style raincoats that flap over handlebars. Watch out for road paint lines and metal drain covers, double your braking distance.";
+                advice.MotorbikeWarningIcon = "\uf73d";
+                advice.MotorbikeWarningColor = "#EF4444";
+            }
+            else if (wind >= 25)
+            {
+                advice.RaincoatAdvice = isVi ? "Thời tiết khô ráo, gió giật mạnh." : "Dry conditions, strong gusts.";
+                advice.MotorbikeWarning = isVi
+                    ? $"⚠️ Gió giật mạnh ({wind:F0} km/h): Cẩn thận lực cản gió mạnh khi qua các cầu cao hoặc đi cạnh xe tải lớn. Hãy giữ thật chắc tay lái và giảm tốc độ!"
+                    : $"⚠️ Strong wind gusts ({wind:F0} km/h): Beware of heavy crosswinds when crossing high bridges or passing large trucks. Grip handlebars firmly!";
+                advice.MotorbikeWarningIcon = "\uf72e";
+                advice.MotorbikeWarningColor = "#F59E0B";
+            }
+            else if (feelsLike >= 33)
+            {
+                advice.RaincoatAdvice = isVi ? "Trời tạnh ráo, không cần mang áo mưa." : "Dry and clear, no raincoat needed.";
+                advice.MotorbikeWarning = isVi
+                    ? "⚠️ Cảnh báo sốc nhiệt máy lạnh: Chênh lệch lớn giữa văn phòng máy lạnh (23°C) và mặt đường nhựa (trên 40°C). Hãy nghỉ chân ở sảnh 1-2 phút và khoác áo dài tay trước khi xuất phát."
+                    : "⚠️ Heat shock caution: Big gap between AC indoor (23°C) and asphalt road (40°C+). Rest 1-2 minutes in the lobby before riding.";
+                advice.MotorbikeWarningIcon = "\uf185";
+                advice.MotorbikeWarningColor = "#F59E0B";
+            }
+            else if (feelsLike < 16)
+            {
+                advice.RaincoatAdvice = isVi ? "Trời khô lạnh, chuẩn bị áo ấm cản gió." : "Dry and chilly, prepare windproof layers.";
+                advice.MotorbikeWarning = isVi
+                    ? "⚠️ Gió lạnh tạt buốt khi lái xe máy: Tốc độ xe làm nhiệt độ cảm nhận giảm thêm 3-5°C. Cài kín cổ áo khoác, đeo găng tay xe máy và nón bảo hiểm có kính chắn gió."
+                    : "⚠️ Severe windchill on motorbikes: Moving speed drops perceived temp by 3-5°C. Zip up collar, wear riding gloves and visor helmet.";
+                advice.MotorbikeWarningIcon = "\uf2dc";
+                advice.MotorbikeWarningColor = "#3B82F6";
+            }
+            else
+            {
+                advice.RaincoatAdvice = isVi ? "Thời tiết đẹp, đường sá khô ráo." : "Fine weather, roads are dry.";
+                advice.MotorbikeWarning = isVi
+                    ? "✅ Thời tiết lý tưởng: Đường sá khô thoáng, gió mát dịu. Rất thuận tiện để lái xe máy, dạo phố và di chuyển trong ngày."
+                    : "✅ Ideal conditions: Clean dry roads, mild breeze. Highly pleasant for motorbike commuting and walking.";
+                advice.MotorbikeWarningIcon = "\uf21c";
+                advice.MotorbikeWarningColor = "#10B981";
+            }
         }
 
         // 6. Tóm tắt nhanh & Chuỗi chia sẻ (Shareable Summary Text)

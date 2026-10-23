@@ -47,16 +47,29 @@
                             </StackPanel>
                         </StackPanel>
 
-                        <!-- Nút sao chép gợi ý OOTD -->
-                        <Button Grid.Column="1" x:Name="CopyOotdButton" Click="CopyOotdButton_Click"
-                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1" CornerRadius="10" Padding="12,6" VerticalAlignment="Center">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c5;" FontSize="11" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                                <TextBlock Text="{x:Bind ViewModel.Loc.OotdCopyBtn, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"/>
-                            </StackPanel>
-                        </Button>
+                        <!-- Nút xuất ảnh PNG & sao chép gợi ý OOTD -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Button x:Name="ExportLookbookButton" Click="ExportLookbookButton_Click"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="10" Padding="12,6" VerticalAlignment="Center"
+                                    ToolTipService.ToolTip="Xuất thẻ Lookbook thời trang thành file ảnh PNG">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf030;" FontSize="11" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                    <TextBlock Text="Xuất ảnh PNG" FontSize="11" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button x:Name="CopyOotdButton" Click="CopyOotdButton_Click"
+                                    Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="10" Padding="12,6" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c5;" FontSize="11" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                    <TextBlock Text="{x:Bind ViewModel.Loc.OotdCopyBtn, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                     </Grid>
 
                     <!-- Hàng 2: Bộ lọc phân loại Dịp & Giới tính (Chuẩn tương phản cao mọi chế độ) -->
@@ -66,7 +79,7 @@
                             BorderThickness="1"
                             CornerRadius="12"
                             Padding="6,4">
-                        <Grid ColumnDefinitions="*,Auto,Auto" VerticalAlignment="Center">
+                        <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" VerticalAlignment="Center">
                             <!-- Danh sách Dịp (Occasions) -->
                             <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                                           HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled">
@@ -113,7 +126,7 @@
                                 </StackPanel>
                             </ScrollViewer>
 
-                            <!-- Vạch phân cách -->
+                            <!-- Vạch phân cách 1 -->
                             <Border Grid.Column="1" Width="1" Height="18" Background="{ThemeResource DividerStrokeColorDefaultBrush}" Margin="6,0" Opacity="0.3"/>
 
                             <!-- Danh sách Giới tính -->
@@ -142,13 +155,52 @@
                                     </StackPanel>
                                 </Button>
                             </StackPanel>
+
+                            <!-- Vạch phân cách 2 -->
+                            <Border Grid.Column="3" Width="1" Height="18" Background="{ThemeResource DividerStrokeColorDefaultBrush}" Margin="6,0" Opacity="0.3"/>
+
+                            <!-- Danh sách Phương tiện Di chuyển (Commute Method) -->
+                            <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                <Button x:Name="CommuteMotorbikeButton" Click="CommuteButton_Click" Tag="Motorbike"
+                                        CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Xe máy">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf21c;" FontSize="10"/>
+                                        <TextBlock Text="Xe máy" FontSize="11" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button x:Name="CommuteCarButton" Click="CommuteButton_Click" Tag="Car"
+                                        CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Ô tô / Taxi">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf1b9;" FontSize="10"/>
+                                        <TextBlock Text="Ô tô" FontSize="11" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button x:Name="CommuteBusButton" Click="CommuteButton_Click" Tag="Bus"
+                                        CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Xe buýt / Tàu điện">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf207;" FontSize="10"/>
+                                        <TextBlock Text="Xe buýt" FontSize="11" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button x:Name="CommuteWalkButton" Click="CommuteButton_Click" Tag="Walk"
+                                        CornerRadius="8" Padding="9,5" ToolTipService.ToolTip="Đi bộ">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf554;" FontSize="10"/>
+                                        <TextBlock Text="Đi bộ" FontSize="11" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
                         </Grid>
                     </Border>
                 </Grid>
             </Border>
 
             <!-- ==================== KHỐI 2: THẺ HERO LOOKBOOK TRỌNG TÂM (SINGLE CANVAS LOOKBOOK) ==================== -->
-            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            <Border x:Name="HeroLookbookCard"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
                     CornerRadius="20"

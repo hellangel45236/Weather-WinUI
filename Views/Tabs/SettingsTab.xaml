@@ -441,6 +441,7 @@
                                                 <ComboBoxItem Content="🔤 Pure Typography Wallpaper HUD (v3.6.0)" Tag="PureTypoHud"/>
                                                 <ComboBoxItem Content="➖ Taskbar Strip Ultra-Slim (v3.7.0)" Tag="TaskbarStrip"/>
                                                 <ComboBoxItem Content="✨ Spatial Aurora Glass Cube (v3.7.0)" Tag="SpatialCube"/>
+                                                <ComboBoxItem Content="👗 Mini OOTD Capsule (v3.7.1)" Tag="OotdCapsule"/>
                                             </ComboBox>
                                         </Grid>
 
@@ -993,6 +994,18 @@
                                             <TextBlock Text="Phát âm thanh clicky cơ khí xúc giác khi chuyển tab, bấm nút và làm mới dữ liệu" FontSize="11" Opacity="0.7"/>
                                         </StackPanel>
                                         <ToggleSwitch Grid.Column="2" x:Name="MechanicalSoundToggle" IsOn="True" Toggled="MechanicalSoundToggle_Toggled" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- CHẾ ĐỘ GIẤY ĐIỆN TỬ E-INK PAPER (v3.7.1) -->
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="16,14">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <FontIcon Grid.Column="0" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf02d;" FontSize="15" Foreground="#10B981" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Chế độ Giấy Điện Tử E-Ink Paper (#F4F1EA)" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="Giao diện mô phỏng sách giấy điện tử mực in đơn sắc cao cấp, nền giấy ngà dịu mắt, chống mỏi" FontSize="11" Opacity="0.7"/>
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="2" x:Name="EInkPaperModeToggle" IsOn="{x:Bind ViewModel.IsNothingEInkMode, Mode=OneWay}" Toggled="EInkPaperModeToggle_Toggled" VerticalAlignment="Center"/>
                                     </Grid>
                                 </Border>
 

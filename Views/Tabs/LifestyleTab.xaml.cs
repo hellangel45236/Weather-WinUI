@@ -1,7 +1,11 @@
 using System;
+using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Graphics.Imaging;
 using Windows.UI;
 using WeatherApp.ViewModels;
 using WeatherApp.Helpers;
@@ -63,6 +67,10 @@ public sealed partial class LifestyleTab : UserControl
         {
             UpdateGenderButtonsVisual();
         }
+        else if (e.PropertyName == nameof(MainViewModel.SelectedOutfitCommuteMethod))
+        {
+            UpdateCommuteButtonsVisual();
+        }
         else if (e.PropertyName == nameof(MainViewModel.IsNothingEInkMode) ||
                  e.PropertyName == nameof(MainViewModel.IsNothingDesign) ||
                  e.PropertyName == nameof(MainViewModel.SelectedDesignLanguage))
@@ -106,6 +114,7 @@ public sealed partial class LifestyleTab : UserControl
     {
         UpdateOccasionButtonsVisual();
         UpdateGenderButtonsVisual();
+        UpdateCommuteButtonsVisual();
         UpdateCopyButtonVisual();
         UpdateIconAndBadgeVisuals();
     }
@@ -246,9 +255,63 @@ public sealed partial class LifestyleTab : UserControl
         }
     }
 
+    private void CommuteButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is string tag && ViewModel != null)
+        {
+            ViewModel.SelectOutfitCommuteMethod(tag);
+            UpdateCommuteButtonsVisual();
+        }
+    }
+
     private void CopyOotdButton_Click(object sender, RoutedEventArgs e)
     {
         ViewModel?.CopyOotdAdviceCommand.Execute(null);
+    }
+
+    private async void ExportLookbookButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (HeroLookbookCard == null || ViewModel == null) return;
+
+        try
+        {
+            var rtb = new RenderTargetBitmap();
+            await rtb.RenderAsync(HeroLookbookCard);
+            var pixelBuffer = await rtb.GetPixelsAsync();
+
+            string pictures = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            string appDir = Path.Combine(pictures, "WeatherApp");
+            Directory.CreateDirectory(appDir);
+
+            string fileName = $"OOTD_Lookbook_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+            string filePath = Path.Combine(appDir, fileName);
+
+            using (var fs = File.Create(filePath))
+            {
+                var encoder = await BitmapEncoder.CreateAsync(
+                    BitmapEncoder.PngEncoderId,
+                    fs.AsRandomAccessStream());
+
+                encoder.SetPixelData(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Premultiplied,
+                    (uint)rtb.PixelWidth,
+                    (uint)rtb.PixelHeight,
+                    96,
+                    96,
+                    pixelBuffer.ToArray());
+
+                await encoder.FlushAsync();
+            }
+
+            ViewModel.OotdCopiedMessage = $"📸 Đã xuất ảnh Lookbook thành công: {fileName}";
+            ViewModel.IsOotdCopiedOpen = true;
+        }
+        catch (Exception ex)
+        {
+            ViewModel.OotdCopiedMessage = $"Lỗi xuất ảnh: {ex.Message}";
+            ViewModel.IsOotdCopiedOpen = true;
+        }
     }
 
     public void UpdateOccasionButtonsVisual()
@@ -271,46 +334,61 @@ public sealed partial class LifestyleTab : UserControl
         SetButtonState(GenderWomenButton, current == "Women");
     }
 
+    public void UpdateCommuteButtonsVisual()
+    {
+        if (ViewModel == null) return;
+        string current = ViewModel.SelectedOutfitCommuteMethod;
+        SetButtonState(CommuteMotorbikeButton, current == "Motorbike");
+        SetButtonState(CommuteCarButton, current == "Car");
+        SetButtonState(CommuteBusButton, current == "Bus");
+        SetButtonState(CommuteWalkButton, current == "Walk");
+    }
+
     private void UpdateCopyButtonVisual()
     {
-        if (CopyOotdButton == null) return;
+        void FormatActionBtn(Button? btn, bool isEInk, bool isDark, bool isNothing)
+        {
+            if (btn == null) return;
+            btn.BorderThickness = new Thickness(1);
+
+            if (isEInk)
+            {
+                btn.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                btn.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
+                var black = new SolidColorBrush(Color.FromArgb(255, 17, 17, 17));
+                btn.Foreground = black;
+                ApplyContentColors(btn, black, black);
+            }
+            else if (isDark)
+            {
+                btn.Background = new SolidColorBrush(Color.FromArgb(32, 255, 255, 255));
+                btn.BorderBrush = new SolidColorBrush(Color.FromArgb(50, 255, 255, 255));
+                var white = new SolidColorBrush(Color.FromArgb(255, 248, 250, 252));
+                btn.Foreground = white;
+                var accentIcon = isNothing
+                    ? new SolidColorBrush(Color.FromArgb(255, 215, 25, 33))
+                    : new SolidColorBrush(Color.FromArgb(255, 236, 72, 153));
+                ApplyContentColors(btn, white, accentIcon);
+            }
+            else
+            {
+                btn.Background = new SolidColorBrush(Color.FromArgb(255, 241, 245, 249));
+                btn.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 203, 213, 225));
+                var deepCharcoal = new SolidColorBrush(Color.FromArgb(255, 15, 23, 42));
+                btn.Foreground = deepCharcoal;
+                var accentIcon = isNothing
+                    ? new SolidColorBrush(Color.FromArgb(255, 215, 25, 33))
+                    : new SolidColorBrush(Color.FromArgb(255, 219, 39, 119));
+                ApplyContentColors(btn, deepCharcoal, accentIcon);
+            }
+        }
 
         bool isNothing = ViewModel?.IsNothingDesign == true;
         bool isEInk = isNothing && (ViewModel?.IsNothingEInkMode == true);
         bool isDark = !isEInk && ThemeHelper.IsDarkTheme(this);
 
-        CopyOotdButton.BorderThickness = new Thickness(1);
-
-        if (isEInk)
-        {
-            CopyOotdButton.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-            CopyOotdButton.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 180, 180, 180));
-            var black = new SolidColorBrush(Color.FromArgb(255, 17, 17, 17));
-            CopyOotdButton.Foreground = black;
-            ApplyContentColors(CopyOotdButton, black, black);
-        }
-        else if (isDark)
-        {
-            CopyOotdButton.Background = new SolidColorBrush(Color.FromArgb(32, 255, 255, 255));
-            CopyOotdButton.BorderBrush = new SolidColorBrush(Color.FromArgb(50, 255, 255, 255));
-            var white = new SolidColorBrush(Color.FromArgb(255, 248, 250, 252));
-            CopyOotdButton.Foreground = white;
-            var accentIcon = isNothing
-                ? new SolidColorBrush(Color.FromArgb(255, 215, 25, 33))
-                : new SolidColorBrush(Color.FromArgb(255, 236, 72, 153));
-            ApplyContentColors(CopyOotdButton, white, accentIcon);
-        }
-        else
-        {
-            CopyOotdButton.Background = new SolidColorBrush(Color.FromArgb(255, 241, 245, 249));
-            CopyOotdButton.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 203, 213, 225));
-            var deepCharcoal = new SolidColorBrush(Color.FromArgb(255, 15, 23, 42));
-            CopyOotdButton.Foreground = deepCharcoal;
-            var accentIcon = isNothing
-                ? new SolidColorBrush(Color.FromArgb(255, 215, 25, 33))
-                : new SolidColorBrush(Color.FromArgb(255, 219, 39, 119));
-            ApplyContentColors(CopyOotdButton, deepCharcoal, accentIcon);
-        }
+        FormatActionBtn(CopyOotdButton, isEInk, isDark, isNothing);
+        FormatActionBtn(ExportLookbookButton, isEInk, isDark, isNothing);
     }
 
     private void UpdateIconAndBadgeVisuals()

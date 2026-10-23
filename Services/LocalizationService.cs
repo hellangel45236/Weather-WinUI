@@ -203,13 +203,13 @@ public class LocalizationService : INotifyPropertyChanged
 
     #region Settings Tab Strings
 
-    public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.7.0)" : "Settings & Personalization Center (Version 3.7.0)";
+    public string SettingsTitle => IsVietnamese ? "Trung Tâm Cài Đặt & Cá Nhân Hóa (Version 3.7.1)" : "Settings & Personalization Center (Version 3.7.1)";
     public string SettingsSubtitle => IsVietnamese ? "Quản lý giao diện, ngôn ngữ, biểu tượng, đơn vị, hình nền và hiệu năng hệ thống" : "Manage appearance, language, icons, units, wallpapers and system performance";
     public string SettingsHeaderTitle => SettingsTitle;
     public string SettingsHeaderSubtitle => SettingsSubtitle;
     public string SaveAndApply => IsVietnamese ? "Lưu & Áp Dụng" : "Save & Apply";
     public string SaveApplyButton => SaveAndApply;
-    public string VersionOfficial => IsVietnamese ? "Version 3.7.0 (Chính Thức)" : "Version 3.7.0 (Official)";
+    public string VersionOfficial => IsVietnamese ? "Version 3.7.1 (Chính Thức)" : "Version 3.7.1 (Official)";
     public string VersionBadge => VersionOfficial;
     public string AppDescription => IsVietnamese ? "Ứng dụng thời tiết hiện đại, siêu nhẹ, tương thích hoàn hảo Windows 10 & 11" : "Modern, lightweight weather application, perfectly compatible with Windows 10 & 11";
 
@@ -634,6 +634,8 @@ public class LocalizationService : INotifyPropertyChanged
     public string WidgetStudioPureTypoDesc => IsVietnamese ? "Khung chữ nghệ thuật trong suốt 100% không viền hộp, hòa quyện trực tiếp lên hình nền Wallpaper của bạn" : "100% transparent borderless typographic HUD that blends directly onto your desktop wallpaper like Rainmeter";
     public string WidgetStudioGhostMode => IsVietnamese ? "Chế độ Xuyên Thấu Chuột (Ghost Click-Through)" : "Ghost Click-Through Mode (WS_EX_TRANSPARENT)";
     public string WidgetStudioGhostModeSub => IsVietnamese ? "Cho phép click chuột xuyên qua Widget xuống icon hoặc cửa sổ bên dưới mà không bị vướng" : "Allow mouse clicks to pass right through the widget to desktop icons or windows underneath";
+    public string WidgetStudioLockPosition => IsVietnamese ? "Khóa vị trí Widget (Lock Position)" : "Lock Widget Position";
+    public string WidgetStudioLockPositionSub => IsVietnamese ? "Cố định widget trên màn hình, vô hiệu hóa việc kéo chuột di chuyển" : "Lock widget in place on desktop, disable dragging";
     public string WidgetStudio4DayForecast => IsVietnamese ? "Dự báo 4 ngày" : "4-Day Forecast";
     public string WidgetStudioAqiGood => IsVietnamese ? "AQI Chuẩn" : "AQI Good";
     public string WidgetStudioControlsHeader => IsVietnamese ? "Tùy Biến & Điều Khiển Widget" : "Widget Controls & Customization";

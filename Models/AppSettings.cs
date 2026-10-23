@@ -51,6 +51,11 @@ public class AppSettings
     public int WidgetLastY { get; set; } = -1;
     public bool WidgetAlwaysOnTop { get; set; } = true;
     public bool WidgetGhostClickThrough { get; set; } = false;
+    public bool WidgetLockPosition { get; set; } = false;
+
+    // Tùy biến thời trang OOTD cá nhân
+    public string PreferredCommuteMethod { get; set; } = "Motorbike"; // "Motorbike", "Car", "Bus", "Walk"
+    public string PreferredThermalSensitivity { get; set; } = "Normal"; // "ColdSensitive", "Normal", "HeatSensitive"
 
     // 9. Cấu hình Hình nền Thành phố (City Picture)
     public bool EnableCityBackground { get; set; } = true;

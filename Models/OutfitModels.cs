@@ -38,6 +38,9 @@ public class OutfitAdvice
     public string OccasionTitle { get; set; } = "Công sở / Đi làm";
     public string GenderStyle { get; set; } = "All"; // "All", "Men", "Women"
     public string GenderStyleTitle { get; set; } = "Tự do / Unisex";
+    public string CommuteMethod { get; set; } = "Motorbike"; // "Motorbike", "Car", "Bus", "Walk"
+    public string CommuteMethodTitle { get; set; } = "Xe máy";
+    public string ThermalPreference { get; set; } = "Normal"; // "ColdSensitive", "Normal", "HeatSensitive"
     public string Headline { get; set; } = string.Empty;
     public string FashionStyleTag { get; set; } = "Smart Casual";
     public string ThermalComfortNotice { get; set; } = string.Empty;

@@ -1502,6 +1502,70 @@
                         </Grid>
                     </Border>
                 </Grid>
+
+                <!-- ==================== 18. MINI OOTD CAPSULE (v3.7.1 FASHION GLANCE) ==================== -->
+                <Grid x:Name="OotdCapsuleView" Visibility="Collapsed" Padding="3">
+                    <Border CornerRadius="18" BorderThickness="1.2" Padding="12,10"
+                            PointerPressed="WidgetRoot_PointerPressed">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#F00B132B" Offset="0.0"/>
+                                <GradientStop Color="#F01C2541" Offset="0.55"/>
+                                <GradientStop Color="#F01F1B38" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.BorderBrush>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#5538BDF8" Offset="0.0"/>
+                                <GradientStop Color="#33FFFFFF" Offset="0.5"/>
+                                <GradientStop Color="#55A855F7" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" VerticalAlignment="Center">
+                            <!-- Left: Weather Icon + Temp + Commute Pill -->
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="2">
+                                <Grid Width="34" Height="34" HorizontalAlignment="Center">
+                                    <Ellipse Fill="#2038BDF8"/>
+                                    <FontIcon x:Name="OotdCapsuleWeatherIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="18" Foreground="#38BDF8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                                <TextBlock x:Name="OotdCapsuleTempText" Text="28°C" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                <Border x:Name="OotdCapsuleCommutePill" Background="#2638BDF8" BorderBrush="#4438BDF8" BorderThickness="1" CornerRadius="8" Padding="5,1" HorizontalAlignment="Center">
+                                    <TextBlock x:Name="OotdCapsuleCommuteText" Text="🏍️ Xe máy" FontSize="8.5" FontWeight="SemiBold" Foreground="#38BDF8"/>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- Right: OOTD Advice + Accessories -->
+                            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" RowSpacing="3" VerticalAlignment="Center">
+                                <!-- Row 0: Header with city & style tag -->
+                                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                        <TextBlock Text="🧥 OOTD" FontSize="9.5" FontWeight="Bold" Foreground="#F59E0B" CharacterSpacing="20"/>
+                                        <TextBlock Text="•" FontSize="9" Foreground="#64748B"/>
+                                        <TextBlock x:Name="OotdCapsuleCityText" Text="HÀ NỘI" FontSize="9.5" FontWeight="SemiBold" Foreground="#94A3B8" MaxWidth="110" TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="#2010B981" BorderBrush="#4410B981" BorderThickness="1" CornerRadius="6" Padding="5,1">
+                                        <TextBlock x:Name="OotdCapsuleTagText" Text="Smart Casual" FontSize="8" FontWeight="Bold" Foreground="#34D399"/>
+                                    </Border>
+                                </Grid>
+
+                                <!-- Row 1: Outfit recommendation text -->
+                                <TextBlock Grid.Row="1" x:Name="OotdCapsuleAdviceText" Text="Sơ mi mỏng thoáng + Quần âu mát" FontSize="11.5" FontWeight="SemiBold" Foreground="White" TextTrimming="CharacterEllipsis" MaxLines="1"/>
+
+                                <!-- Row 2: Crucial accessory tag + Notice -->
+                                <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="6" VerticalAlignment="Center" Margin="0,1,0,0">
+                                    <Border x:Name="OotdCapsuleAccessoryBadge" Background="#28F59E0B" BorderBrush="#55F59E0B" BorderThickness="1" CornerRadius="6" Padding="5,1">
+                                        <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                            <FontIcon x:Name="OotdCapsuleAccessoryIcon" FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0e9;" FontSize="9" Foreground="#FBBF24"/>
+                                            <TextBlock x:Name="OotdCapsuleAccessoryText" Text="Mang ô gập" FontSize="8.5" FontWeight="SemiBold" Foreground="#FDE68A"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" x:Name="OotdCapsuleSubNoticeText" Text="Thoáng khí 92% • UPF 50+" FontSize="8.5" Foreground="#94A3B8" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
             </Grid>
         </Border>
     </Grid>

@@ -103,7 +103,7 @@ public partial class MainViewModel : ObservableObject
     public bool IsFluent2Design => !IsNothingDesign;
     public bool IsSpatialGlassDesign => string.Equals(SelectedDesignLanguage, "SpatialGlass", StringComparison.OrdinalIgnoreCase);
     public bool IsPureFluent2Design => !IsNothingDesign && !IsSpatialGlassDesign;
-    public string DesignBadgeText => IsNothingDesign ? "NDOT // 3.7" : (IsSpatialGlassDesign ? "SPATIAL // 3.7" : "v3.7.0");
+    public string DesignBadgeText => IsNothingDesign ? "NDOT // 3.7.1" : (IsSpatialGlassDesign ? "SPATIAL // 3.7.1" : "v3.7.1");
 
     [ObservableProperty]
     private bool _feedbackSubmitted;
@@ -172,6 +172,12 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string _selectedOutfitTimeSlot = "live";
 
+    [ObservableProperty]
+    private string _selectedOutfitCommuteMethod = "Motorbike"; // "Motorbike", "Car", "Bus", "Walk"
+
+    [ObservableProperty]
+    private string _selectedOutfitThermalPreference = "Normal"; // "ColdSensitive", "Normal", "HeatSensitive"
+
     public bool IsWorkOccasionSelected => SelectedOutfitOccasion == "Work";
     public bool IsSchoolOccasionSelected => SelectedOutfitOccasion == "School";
     public bool IsCasualOccasionSelected => SelectedOutfitOccasion == "Casual";
@@ -182,12 +188,17 @@ public partial class MainViewModel : ObservableObject
     public bool IsGenderMenSelected => SelectedOutfitGender == "Men";
     public bool IsGenderWomenSelected => SelectedOutfitGender == "Women";
 
+    public bool IsCommuteMotorbikeSelected => SelectedOutfitCommuteMethod == "Motorbike";
+    public bool IsCommuteCarSelected => SelectedOutfitCommuteMethod == "Car";
+    public bool IsCommuteBusSelected => SelectedOutfitCommuteMethod == "Bus";
+    public bool IsCommuteWalkSelected => SelectedOutfitCommuteMethod == "Walk";
+
     // Tính năng mới v3.0.1: Kiểm tra cập nhật GitHub & Quản lý tiết kiệm pin Laptop
     private readonly UpdateCheckService _updateCheckService = new();
     private readonly PowerManagementService _powerService = new();
 
     [ObservableProperty]
-    private string _appVersionDisplay = "v3.7.0 Official";
+    private string _appVersionDisplay = "v3.7.1 Official";
     private readonly Dictionary<string, (OpenMeteoResponse Data, AirQualityData Aqi, DateTime Timestamp)> _cityWeatherCache = new();
     private static string GetCityCacheKey(double lat, double lon) => $"{lat:F2}_{lon:F2}";
 
@@ -532,6 +543,14 @@ public partial class MainViewModel : ObservableObject
         {
             SelectedOutfitGender = Settings.SelectedOutfitGender;
         }
+        if (!string.IsNullOrWhiteSpace(Settings.PreferredCommuteMethod))
+        {
+            SelectedOutfitCommuteMethod = Settings.PreferredCommuteMethod;
+        }
+        if (!string.IsNullOrWhiteSpace(Settings.PreferredThermalSensitivity))
+        {
+            SelectedOutfitThermalPreference = Settings.PreferredThermalSensitivity;
+        }
 
         ZenClockStyle = Settings.ZenClockStyle;
         ZenShowSeconds = Settings.ZenShowSeconds;
@@ -866,7 +885,13 @@ public partial class MainViewModel : ObservableObject
         if (CurrentWeather == null) return;
         try
         {
-            CurrentOutfitAdvice = _outfitService.GenerateOutfitAdvice(CurrentWeather, _lastRawWeatherData, SelectedOutfitOccasion, SelectedOutfitGender);
+            CurrentOutfitAdvice = _outfitService.GenerateOutfitAdvice(
+                CurrentWeather,
+                _lastRawWeatherData,
+                SelectedOutfitOccasion,
+                SelectedOutfitGender,
+                SelectedOutfitCommuteMethod,
+                SelectedOutfitThermalPreference);
         }
         catch (Exception ex)
         {
@@ -899,6 +924,30 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(IsGenderAllSelected));
         OnPropertyChanged(nameof(IsGenderMenSelected));
         OnPropertyChanged(nameof(IsGenderWomenSelected));
+        UpdateOutfitAdvice();
+    }
+
+    [RelayCommand]
+    public void SelectOutfitCommuteMethod(string method)
+    {
+        if (string.IsNullOrWhiteSpace(method)) return;
+        SelectedOutfitCommuteMethod = method;
+        Settings.PreferredCommuteMethod = method;
+        _settingsService.SaveSettings(Settings);
+        OnPropertyChanged(nameof(IsCommuteMotorbikeSelected));
+        OnPropertyChanged(nameof(IsCommuteCarSelected));
+        OnPropertyChanged(nameof(IsCommuteBusSelected));
+        OnPropertyChanged(nameof(IsCommuteWalkSelected));
+        UpdateOutfitAdvice();
+    }
+
+    [RelayCommand]
+    public void SelectOutfitThermalPreference(string pref)
+    {
+        if (string.IsNullOrWhiteSpace(pref)) return;
+        SelectedOutfitThermalPreference = pref;
+        Settings.PreferredThermalSensitivity = pref;
+        _settingsService.SaveSettings(Settings);
         UpdateOutfitAdvice();
     }
 

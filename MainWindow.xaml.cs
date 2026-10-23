@@ -73,6 +73,7 @@ public sealed partial class MainWindow : Window
             {
                 args.Cancel = true;
                 AppWindow.Hide();
+                WeatherApp.Helpers.MemoryOptimizer.DeepCleanup();
             }
         };
 
@@ -89,6 +90,7 @@ public sealed partial class MainWindow : Window
                     if (s.MinimizeToTray)
                     {
                         AppWindow.Hide();
+                        WeatherApp.Helpers.MemoryOptimizer.DeepCleanup();
                     }
                 }
             }

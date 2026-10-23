@@ -39,7 +39,7 @@
             </Border>
 
             <!-- ==================== BỘ SƯU TẬP KIỂU DÁNG WIDGET TRỰC QUAN ==================== -->
-            <Grid x:Name="GalleryGrid" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="16">
+            <Grid x:Name="GalleryGrid" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="16">
                 <!-- 1. BRYAN C DYNAMIC CARD -->
                 <Border x:Name="CardWidgetBryanC" Grid.Row="0" Grid.Column="0"
                         PointerPressed="CardWidgetBryanC_PointerPressed"
@@ -770,6 +770,55 @@
                         <TextBlock Text="Khối kính không gian Spatial Vision 3.7 kèm viền phản quang Specular và đường cong dự báo 12h Bezier Spline trực tiếp trên Desktop." FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
                     </StackPanel>
                 </Border>
+
+                <!-- 17. MINI OOTD CAPSULE (v3.7.1 FASHION GLANCE) -->
+                <Border x:Name="CardWidgetOotdCapsule" Grid.Row="9" Grid.Column="0"
+                        PointerPressed="CardWidgetOotdCapsule_PointerPressed"
+                        PointerEntered="Card_PointerEntered"
+                        PointerExited="Card_PointerExited"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="16">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="🧥 Mini OOTD Capsule (v3.7.1)" FontWeight="Bold" FontSize="14"/>
+                            </StackPanel>
+                            <Border x:Name="BadgeWidgetOotdCapsule" Grid.Column="1" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="10" Padding="8,2" Visibility="Collapsed">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioSelected, Mode=OneWay}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                            </Border>
+                        </Grid>
+
+                        <Border Height="124" CornerRadius="14" BorderBrush="#55F59E0B" BorderThickness="1.5" Padding="14,10">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#F00B132B" Offset="0.0"/>
+                                    <GradientStop Color="#F01C2541" Offset="0.55"/>
+                                    <GradientStop Color="#F01F1B38" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="2">
+                                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf185;" FontSize="22" Foreground="#38BDF8" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentWeather.TemperatureText, Mode=OneWay}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                    <Border Background="#2638BDF8" BorderBrush="#4438BDF8" BorderThickness="1" CornerRadius="6" Padding="4,1">
+                                        <TextBlock Text="🏍️ Xe máy" FontSize="8.5" FontWeight="Bold" Foreground="#38BDF8"/>
+                                    </Border>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                                    <TextBlock Text="🧥 TRANG PHỤC HÔM NAY" FontSize="9.5" FontWeight="Bold" Foreground="#F59E0B"/>
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentOutfitAdvice.QuickSummary, Mode=OneWay}" FontSize="12" FontWeight="SemiBold" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                    <Border Background="#28F59E0B" BorderBrush="#55F59E0B" BorderThickness="1" CornerRadius="6" Padding="6,1.5" HorizontalAlignment="Left">
+                                        <TextBlock Text="☂️ Mang ô gập che mưa" FontSize="9" FontWeight="SemiBold" Foreground="#FDE68A"/>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <TextBlock Text="Viên nang thời trang Desktop hiển thị gợi ý trang phục thông minh, phương tiện di chuyển và vật dụng thiết yếu hàng ngày." FontSize="11" Opacity="0.7" TextWrapping="Wrap" LineHeight="16"/>
+                    </StackPanel>
+                </Border>
                 <Border Visibility="Collapsed"><StackPanel>
                     </StackPanel>
                 </Border>
@@ -1285,6 +1334,7 @@
                                 <ComboBoxItem Content="🔤 Pure Typography Wallpaper HUD (v3.6.0)" Tag="PureTypoHud"/>
                                 <ComboBoxItem Content="➖ Taskbar Strip Ultra-Slim (v3.7.0)" Tag="TaskbarStrip"/>
                                 <ComboBoxItem Content="✨ Spatial Aurora Glass Cube + 12h Spline (v3.7.0)" Tag="SpatialCube"/>
+                                <ComboBoxItem Content="🧥 Mini OOTD Capsule (v3.7.1)" Tag="OotdCapsule"/>
                             </ComboBox>
                         </StackPanel>
 
@@ -1316,6 +1366,17 @@
                                 <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioGhostModeSub, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
                             </StackPanel>
                             <ToggleSwitch Grid.Column="1" x:Name="GhostModeSwitch" OnContent="" OffContent="" IsOn="False" Toggled="GhostModeSwitch_Toggled" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Hàng 2.6: Lock Position (Khóa Vị Trí — v3.7.1) -->
+                    <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="12" Padding="14,10">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioLockPosition, Mode=OneWay}" FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="{x:Bind ViewModel.Loc.WidgetStudioLockPositionSub, Mode=OneWay}" FontSize="11" Opacity="0.7" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="1" x:Name="LockPositionSwitch" OnContent="" OffContent="" IsOn="False" Toggled="LockPositionSwitch_Toggled" VerticalAlignment="Center"/>
                         </Grid>
                     </Border>
 

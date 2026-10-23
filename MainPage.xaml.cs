@@ -160,105 +160,9 @@ public sealed partial class MainPage : Page
         // Nạp dữ liệu thời tiết
             if (ViewModel != null)
             {
-                await ViewModel.InitializeAsync();
-
-        // Khởi tạo khay hệ thống (System Tray Icon)
-                if (App.MainWindow != null && ViewModel.TrayService == null)
-                {
-                    var trayService = new TrayIconService();
-                    trayService.Initialize(App.MainWindow, ViewModel, () => DesktopWidgetButton_Click(this, new RoutedEventArgs()));
-                    ViewModel.TrayService = trayService;
-                }
-
-                // Tự động hiển thị Changelog nếu vừa cập nhật phiên bản mới
-                CheckAndShowChangelog();
-
-        // Lắng nghe sự kiện đổi chủ đề Mùa/Lễ hội để đồng bộ hạt và ánh sáng Zen Mode
-                ViewModel.SeasonalSkinChanged += (s, skin) =>
-                {
-                    UpdateZenGradientColor();
-                StartZenChromeAutoHideTimer();
-                    UpdateSeasonalThemeButtonStyle();
-                    TabOverview?.UpdateNothingThemeVisuals();
-                    TabRadar?.UpdateNothingVisuals();
-                    TabFlood?.UpdateNothingVisuals();
-                    TabOverview?.UpdateWeatherVisuals();
-                    TabOverview?.RedrawCanvases();
-                    if (_zenEffectRenderer != null && skin != null)
-                    {
-                        _zenEffectRenderer.SetSeasonalParticleType(skin.ParticleType, ViewModel.EnableSeasonalParticles);
-                    }
-                };
-
-
-                // Hỗ trợ kiểm thử skin qua command-line (--skin=tet, midautumn, christmas, halloween, spring, summer, autumn, winter, auto)
+                // Xử lý cờ CLI ngay lập tức trước khi tải mạng để UI phản hồi tức thì
                 try
                 {
-                    var skinArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--skin=", StringComparison.OrdinalIgnoreCase));
-                    if (skinArg != null)
-                    {
-                        string targetSkin = skinArg.Substring(7).Trim();
-                        ViewModel.ChangeSeasonalSkin(targetSkin);
-                    }
-                }
-                catch { }
-
-                // Hỗ trợ kiểm thử Theme qua command-line (--theme=light, dark, system)
-                try
-                {
-                    var themeArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--theme=", StringComparison.OrdinalIgnoreCase));
-                    if (themeArg != null)
-                    {
-                        string targetTheme = themeArg.Substring(8).Trim().ToLowerInvariant();
-                        ViewModel.ChangeTheme(targetTheme);
-                        UpdateSeasonalThemeButtonStyle();
-                    }
-                }
-                catch { }
-
-                // Hỗ trợ cuộn trang qua command-line (--scroll=hourly, bottom)
-                try
-                {
-                    var scrollArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--scroll=", StringComparison.OrdinalIgnoreCase));
-                    if (scrollArg != null)
-                    {
-                        string targetScroll = scrollArg.Substring(9).Trim().ToLowerInvariant();
-                        if (targetScroll == "hourly")
-                        {
-                            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
-                            {
-                                TabOverview?.ScrollToHourlySection();
-                            });
-                        }
-                        else if (targetScroll == "seasonal" || targetScroll == "bottom")
-                        {
-                            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
-                            {
-                                TabOverview?.ScrollToHourlySection();
-                                (FindName(nameof(TabWidgetStudio)) as WidgetStudioTab)?.ScrollToSeasonalSection();
-                            });
-                        }
-                    }
-                }
-                catch { }
-
-                // Hỗ trợ điều hướng Tab qua command-line (--tab=overview, flood, radar, lifestyle, calendar, widget, zen)
-                try
-                {
-                    var tabArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--tab=", StringComparison.OrdinalIgnoreCase));
-                    if (tabArg != null)
-                    {
-                        string targetTab = tabArg.Substring(6).Trim().ToLowerInvariant();
-                        if (targetTab == "zen")
-                        {
-                            ViewModel.ToggleZenModeCommand.Execute(null);
-                        }
-                        else
-                        {
-                            SelectNavigationTabByTag(targetTab);
-                        }
-                    }
-
                     string fullCmd = Environment.CommandLine;
                     if (fullCmd.Contains("--eink", StringComparison.OrdinalIgnoreCase))
                     {
@@ -294,6 +198,89 @@ public sealed partial class MainPage : Page
                         ApplyDesignLanguageVisuals(ViewModel.SelectedDesignLanguage);
                         (App.MainWindow as MainWindow)?.UpdateWindowTheme();
                     }
+                    var skinArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--skin=", StringComparison.OrdinalIgnoreCase));
+                    if (skinArg != null)
+                    {
+                        string targetSkin = skinArg.Substring(7).Trim();
+                        ViewModel.ChangeSeasonalSkin(targetSkin);
+                    }
+                    var tabArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--tab=", StringComparison.OrdinalIgnoreCase));
+                    if (tabArg != null)
+                    {
+                        string targetTab = tabArg.Substring(6).Trim().ToLowerInvariant();
+                        if (targetTab == "zen")
+                        {
+                            ViewModel.ToggleZenModeCommand.Execute(null);
+                        }
+                        else
+                        {
+                            SelectNavigationTabByTag(targetTab);
+                        }
+                    }
+                }
+                catch { }
+
+                // Nạp dữ liệu thời tiết
+                await ViewModel.InitializeAsync();
+
+        // Khởi tạo khay hệ thống (System Tray Icon)
+                if (App.MainWindow != null && ViewModel.TrayService == null)
+                {
+                    var trayService = new TrayIconService();
+                    trayService.Initialize(App.MainWindow, ViewModel, () => DesktopWidgetButton_Click(this, new RoutedEventArgs()));
+                    ViewModel.TrayService = trayService;
+                }
+
+                // Tự động hiển thị Changelog nếu vừa cập nhật phiên bản mới
+                CheckAndShowChangelog();
+
+        // Lắng nghe sự kiện đổi chủ đề Mùa/Lễ hội để đồng bộ hạt và ánh sáng Zen Mode
+                ViewModel.SeasonalSkinChanged += (s, skin) =>
+                {
+                    UpdateZenGradientColor();
+                StartZenChromeAutoHideTimer();
+                    UpdateSeasonalThemeButtonStyle();
+                    TabOverview?.UpdateNothingThemeVisuals();
+                    TabRadar?.UpdateNothingVisuals();
+                    TabFlood?.UpdateNothingVisuals();
+                    TabOverview?.UpdateWeatherVisuals();
+                    TabOverview?.RedrawCanvases();
+                    if (_zenEffectRenderer != null && skin != null)
+                    {
+                        _zenEffectRenderer.SetSeasonalParticleType(skin.ParticleType, ViewModel.EnableSeasonalParticles);
+                    }
+                };
+
+
+                // Hỗ trợ cuộn trang qua command-line (--scroll=hourly, bottom)
+                try
+                {
+                    var scrollArg = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--scroll=", StringComparison.OrdinalIgnoreCase));
+                    if (scrollArg != null)
+                    {
+                        string targetScroll = scrollArg.Substring(9).Trim().ToLowerInvariant();
+                        if (targetScroll == "hourly")
+                        {
+                            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+                            {
+                                TabOverview?.ScrollToHourlySection();
+                            });
+                        }
+                        else if (targetScroll == "seasonal" || targetScroll == "bottom")
+                        {
+                            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+                            {
+                                TabOverview?.ScrollToHourlySection();
+                                (FindName(nameof(TabWidgetStudio)) as WidgetStudioTab)?.ScrollToSeasonalSection();
+                            });
+                        }
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    string fullCmd = Environment.CommandLine;
                     if (fullCmd.Contains("--timemachine=", StringComparison.OrdinalIgnoreCase))
                     {
                         int tmIdx = fullCmd.IndexOf("--timemachine=", StringComparison.OrdinalIgnoreCase);
@@ -725,6 +712,9 @@ public sealed partial class MainPage : Page
     {
         _currentActiveTabTag = targetTab;
         UpdateFloatingDockVisuals(targetTab);
+        ViewModel?.SwitchNav(targetTab);
+        ActivateTab(targetTab);
+
         if (MainNavView == null) return;
         var allItems = MainNavView.MenuItems.OfType<NavigationViewItem>().Concat(MainNavView.FooterMenuItems.OfType<NavigationViewItem>());
         foreach (var item in allItems)
@@ -739,72 +729,90 @@ public sealed partial class MainPage : Page
 
     #region Tab Navigation & Lazy Realization
 
+    private void ActivateTab(string tag)
+    {
+        try
+        {
+            switch (tag)
+            {
+                case "overview":
+                    TabOverview?.UpdateWeatherVisuals();
+                    TabOverview?.StartEffects();
+                    TabOverview?.RedrawCanvases();
+                    TabRadar?.StopRadarSweep();
+                    AnimationHelper.SlideUpFadeIn(TabOverview);
+                    break;
+
+                case "flood":
+                    TabOverview?.StopEffects();
+                    TabRadar?.StopRadarSweep();
+                    var floodTab = FindName(nameof(TabFlood)) as UrbanFloodTab;
+                    floodTab?.RenderTidalSineWave();
+                    AnimationHelper.SlideUpFadeIn(floodTab);
+                    break;
+
+                case "radar":
+                    TabOverview?.StopEffects();
+                    var radarTab = FindName(nameof(TabRadar)) as RadarTab;
+                    radarTab?.StartRadarSweep();
+                    AnimationHelper.SlideUpFadeIn(radarTab);
+                    break;
+
+                case "lifestyle":
+                    TabOverview?.StopEffects();
+                    TabRadar?.StopRadarSweep();
+                    var lifestyleTab = FindName(nameof(TabLifestyle)) as LifestyleTab;
+                    lifestyleTab?.UpdateOccasionButtonsVisual();
+                    lifestyleTab?.UpdateGenderButtonsVisual();
+                    AnimationHelper.SlideUpFadeIn(lifestyleTab);
+                    break;
+
+                case "calendar":
+                    TabOverview?.StopEffects();
+                    TabRadar?.StopRadarSweep();
+                    var calendarTab = FindName(nameof(TabCalendar)) as CalendarTab;
+                    AnimationHelper.SlideUpFadeIn(calendarTab);
+                    break;
+
+                case "widget":
+                    TabOverview?.StopEffects();
+                    TabRadar?.StopRadarSweep();
+                    var widgetTab = FindName(nameof(TabWidgetStudio)) as WidgetStudioTab;
+                    AnimationHelper.SlideUpFadeIn(widgetTab);
+                    break;
+
+                case "settings":
+                    TabOverview?.StopEffects();
+                    TabRadar?.StopRadarSweep();
+                    var settingsTab = FindName(nameof(TabSettings)) as SettingsTab;
+                    AnimationHelper.SlideUpFadeIn(settingsTab);
+                    DispatcherQueue?.TryEnqueue(() => settingsTab?.SyncAllSettings());
+                    break;
+            }
+        }
+        catch { }
+    }
+
     private void MainNavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
         try
         {
-            if (args.SelectedItem is NavigationViewItem item && item.Tag is string tag)
+            string? tag = null;
+            if (args.IsSettingsSelected)
+            {
+                tag = "settings";
+            }
+            else if (args.SelectedItem is NavigationViewItem item && item.Tag is string itemTag)
+            {
+                tag = itemTag;
+            }
+
+            if (!string.IsNullOrEmpty(tag))
             {
                 _currentActiveTabTag = tag;
                 ViewModel?.SwitchNav(tag);
                 UpdateFloatingDockVisuals(tag);
-
-                switch (tag)
-                {
-                    case "overview":
-                        TabOverview?.UpdateWeatherVisuals();
-                        TabOverview?.StartEffects();
-                        TabOverview?.RedrawCanvases();
-                        TabRadar?.StopRadarSweep();
-                        AnimationHelper.SlideUpFadeIn(TabOverview);
-                        break;
-
-                    case "flood":
-                        TabOverview?.StopEffects();
-                        TabRadar?.StopRadarSweep();
-                        var floodTab = FindName(nameof(TabFlood)) as UrbanFloodTab;
-                        floodTab?.RenderTidalSineWave();
-                        AnimationHelper.SlideUpFadeIn(floodTab);
-                        break;
-
-                    case "radar":
-                        TabOverview?.StopEffects();
-                        var radarTab = FindName(nameof(TabRadar)) as RadarTab;
-                        radarTab?.StartRadarSweep();
-                        AnimationHelper.SlideUpFadeIn(radarTab);
-                        break;
-
-                    case "lifestyle":
-                        TabOverview?.StopEffects();
-                        TabRadar?.StopRadarSweep();
-                        var lifestyleTab = FindName(nameof(TabLifestyle)) as LifestyleTab;
-                        lifestyleTab?.UpdateOccasionButtonsVisual();
-                        lifestyleTab?.UpdateGenderButtonsVisual();
-                        AnimationHelper.SlideUpFadeIn(lifestyleTab);
-                        break;
-
-                    case "calendar":
-                        TabOverview?.StopEffects();
-                        TabRadar?.StopRadarSweep();
-                        var calendarTab = FindName(nameof(TabCalendar)) as CalendarTab;
-                        AnimationHelper.SlideUpFadeIn(calendarTab);
-                        break;
-
-                    case "widget":
-                        TabOverview?.StopEffects();
-                        TabRadar?.StopRadarSweep();
-                        var widgetTab = FindName(nameof(TabWidgetStudio)) as WidgetStudioTab;
-                        AnimationHelper.SlideUpFadeIn(widgetTab);
-                        break;
-
-                    case "settings":
-                        TabOverview?.StopEffects();
-                        TabRadar?.StopRadarSweep();
-                        var settingsTab = FindName(nameof(TabSettings)) as SettingsTab;
-                        settingsTab?.SyncAllSettings();
-                        AnimationHelper.SlideUpFadeIn(settingsTab);
-                        break;
-                }
+                ActivateTab(tag);
             }
         }
         catch { }
@@ -850,6 +858,7 @@ public sealed partial class MainPage : Page
             {
                 TabOverview?.StopEffects();
                 TabRadar?.StopRadarSweep();
+                WeatherApp.Helpers.MemoryOptimizer.DeepCleanup();
             }
             else
             {
@@ -1862,7 +1871,7 @@ public sealed partial class MainPage : Page
 
     private void CheckAndShowChangelog()
     {
-        string currentVersion = "3.7.0";
+        string currentVersion = "3.7.1";
         string lastSeen = ViewModel.Settings.LastSeenVersion ?? string.Empty;
 
         if (string.IsNullOrEmpty(lastSeen) || lastSeen != currentVersion)

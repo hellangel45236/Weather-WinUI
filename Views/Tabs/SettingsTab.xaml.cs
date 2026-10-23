@@ -119,6 +119,7 @@ public sealed partial class SettingsTab : UserControl
             }
 
             if (MechanicalSoundToggle != null) MechanicalSoundToggle.IsOn = s.EnableMechanicalSound;
+            if (EInkPaperModeToggle != null && ViewModel != null) EInkPaperModeToggle.IsOn = ViewModel.IsNothingEInkMode;
 
             // Icon Packs
             UpdateIconPackVisuals(s.SelectedIconPack ?? "Meteocons");
@@ -138,9 +139,10 @@ public sealed partial class SettingsTab : UserControl
                     }
                 }
             }
-            PopulatePresetCityImageComboBox();
-            UpdateCityControlsVisibility();
-            UpdateCityPreview();
+            if (PanelCityBg?.Visibility == Visibility.Visible)
+            {
+                EnsureCityBgInitialized();
+            }
 
             // Widget
             if (WidgetStyleComboBox != null)
@@ -230,9 +232,14 @@ public sealed partial class SettingsTab : UserControl
         }
     }
 
+    private string? _lastSyncedLanguage = null;
+
     private void UpdateAllComboBoxLabels()
     {
         bool isVi = LocalizationService.Instance.IsVietnamese;
+        string currentLang = isVi ? "vi" : "en";
+        if (_lastSyncedLanguage == currentLang) return;
+        _lastSyncedLanguage = currentLang;
         
         // City mode
         if (CityImageModeComboBox != null && CityImageModeComboBox.Items.Count >= 3)
@@ -327,6 +334,20 @@ public sealed partial class SettingsTab : UserControl
         ViewModel.ApplySettings();
     }
 
+    private bool _isCityBgInitialized = false;
+
+    private void EnsureCityBgInitialized()
+    {
+        if (_isCityBgInitialized || ViewModel == null) return;
+        _isCityBgInitialized = true;
+        DispatcherQueue?.TryEnqueue(() =>
+        {
+            PopulatePresetCityImageComboBox();
+            UpdateCityControlsVisibility();
+            UpdateCityPreview();
+        });
+    }
+
     private void SettingsNavListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (SettingsNavListView == null) return;
@@ -350,6 +371,11 @@ public sealed partial class SettingsTab : UserControl
             {
                 panel.Visibility = (pTag == tag) ? Visibility.Visible : Visibility.Collapsed;
             }
+        }
+
+        if (tag == "2")
+        {
+            EnsureCityBgInitialized();
         }
     }
 
@@ -388,6 +414,15 @@ public sealed partial class SettingsTab : UserControl
         if (ViewModel.Settings.EnableMechanicalSound)
         {
             Helpers.MechanicalSoundHelper.PlayClick();
+        }
+    }
+
+    private void EInkPaperModeToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_isSyncing || ViewModel == null) return;
+        if (sender is ToggleSwitch ts && ts.IsOn != ViewModel.IsNothingEInkMode)
+        {
+            ViewModel.ToggleNothingEInkMode();
         }
     }
 
@@ -530,9 +565,38 @@ public sealed partial class SettingsTab : UserControl
     {
         if (CityPresetItemsControl == null) return;
 
-        CityPresetItemsControl.Items.Clear();
-        var presets = CityBackgroundHelper.GetAvailablePresets();
         string current = ViewModel?.Settings.SelectedCityImage ?? "";
+        bool isPresetMode = ViewModel?.Settings.CityBackgroundMode == "Preset";
+
+        if (CityPresetItemsControl.Items.Count > 0)
+        {
+            foreach (var item in CityPresetItemsControl.Items)
+            {
+                if (item is Button b && b.Tag is string pStr)
+                {
+                    bool isSel = isPresetMode && string.Equals(current, pStr, StringComparison.OrdinalIgnoreCase);
+                    b.Background = isSel ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(40, 56, 189, 248)) : null;
+                    b.BorderBrush = isSel ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(180, 56, 189, 248)) : null;
+                    b.BorderThickness = new Thickness(isSel ? 1.5 : 1);
+                    if (b.Content is StackPanel sp && sp.Children.Count >= 2)
+                    {
+                        if (sp.Children[0] is FontIcon fi)
+                        {
+                            fi.Glyph = isSel ? "\uf058" : "\uf03e";
+                            fi.Foreground = isSel ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 56, 189, 248)) : new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(180, 255, 255, 255));
+                        }
+                        if (sp.Children[1] is TextBlock tb)
+                        {
+                            tb.FontWeight = isSel ? Microsoft.UI.Text.FontWeights.SemiBold : Microsoft.UI.Text.FontWeights.Normal;
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
+        var presets = CityBackgroundHelper.GetAvailablePresets();
+        current = ViewModel?.Settings.SelectedCityImage ?? "";
 
         foreach (var p in presets)
         {

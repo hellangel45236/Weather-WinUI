@@ -390,8 +390,9 @@ public sealed partial class WidgetWindow : Window
         bool isPureTypo = style == "PureTypoHud";
         bool isTaskbarStrip = style == "TaskbarStrip";
         bool isSpatialCube = style == "SpatialCube";
+        bool isOotdCapsule = style == "OotdCapsule";
 
-        if (!isBryanC && !isIsland && !isCompact && !isGlass && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare && !isNothingCircular && !isNothingPill && !isDynamicIsland && !isTeenageDeck && !isPureTypo && !isTaskbarStrip && !isSpatialCube)
+        if (!isBryanC && !isIsland && !isCompact && !isGlass && !isSeasonal && !isBentoVivid && !isBentoTactical && !isRetroLcd && !isNothingBento && !isNothingSquare && !isNothingCircular && !isNothingPill && !isDynamicIsland && !isTeenageDeck && !isPureTypo && !isTaskbarStrip && !isSpatialCube && !isOotdCapsule)
         {
             isBryanC = true;
             _currentStyle = "BryanCDynamic";
@@ -414,6 +415,7 @@ public sealed partial class WidgetWindow : Window
         if (PureTypoHudView != null) PureTypoHudView.Visibility = isPureTypo ? Visibility.Visible : Visibility.Collapsed;
         if (TaskbarStripView != null) TaskbarStripView.Visibility = isTaskbarStrip ? Visibility.Visible : Visibility.Collapsed;
         if (SpatialCubeView != null) SpatialCubeView.Visibility = isSpatialCube ? Visibility.Visible : Visibility.Collapsed;
+        if (OotdCapsuleView != null) OotdCapsuleView.Visibility = isOotdCapsule ? Visibility.Visible : Visibility.Collapsed;
         if (DynamicIslandExpandedPanel != null) DynamicIslandExpandedPanel.Visibility = Visibility.Collapsed;
 
         int cornerRadiusDip = style switch
@@ -425,6 +427,7 @@ public sealed partial class WidgetWindow : Window
             "PureTypoHud" => 0,
             "TaskbarStrip" => 20,
             "SpatialCube" => 22,
+            "OotdCapsule" => 18,
             "NothingBento" => 24,
             "NothingSquare" => 22,
             "RetroLcd" => 16,
@@ -447,6 +450,7 @@ public sealed partial class WidgetWindow : Window
             "PureTypoHud" => 272,
             "TaskbarStrip" => 236,
             "SpatialCube" => 276,
+            "OotdCapsule" => 310,
             "NothingBento" => 320,
             "NothingSquare" => 190,
             "BentoVivid" or "BentoTactical" => 365,
@@ -467,6 +471,7 @@ public sealed partial class WidgetWindow : Window
             "PureTypoHud" => 136,
             "TaskbarStrip" => 42,
             "SpatialCube" => 220,
+            "OotdCapsule" => 98,
             "NothingBento" => 160,
             "NothingSquare" => 190,
             "BentoVivid" or "BentoTactical" => 175,
@@ -501,7 +506,7 @@ public sealed partial class WidgetWindow : Window
         {
             ApplyBryanCWeatherTheme(_currentWeather.WeatherEffect, _currentWeather.IsDay);
         }
-        else if (isBentoVivid || isBentoTactical || isRetroLcd || isNothingBento || isNothingSquare || isNothingCircular || isNothingPill || isDynamicIsland || isTeenageDeck || isPureTypo || isTaskbarStrip || isSpatialCube)
+        else if (isBentoVivid || isBentoTactical || isRetroLcd || isNothingBento || isNothingSquare || isNothingCircular || isNothingPill || isDynamicIsland || isTeenageDeck || isPureTypo || isTaskbarStrip || isSpatialCube || isOotdCapsule)
         {
             WidgetRoot.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
             WidgetRoot.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0x00, 0x00, 0x00, 0x00));
@@ -540,7 +545,8 @@ public sealed partial class WidgetWindow : Window
             "TeenageDeck" => "PureTypoHud",
             "PureTypoHud" => "TaskbarStrip",
             "TaskbarStrip" => "SpatialCube",
-            "SpatialCube" => "SeasonalCard",
+            "SpatialCube" => "OotdCapsule",
+            "OotdCapsule" => "SeasonalCard",
             _ => "BryanCDynamic"
         };
 
@@ -554,6 +560,11 @@ public sealed partial class WidgetWindow : Window
         }
 
         ApplyWidgetStyle(newStyle);
+    }
+
+    public void SetLockPosition(bool locked)
+    {
+        _settings.WidgetLockPosition = locked;
     }
 
     public void SetGhostClickThrough(bool enabled)
@@ -1144,6 +1155,68 @@ public sealed partial class WidgetWindow : Window
         if (SpatialCubeConditionText != null) SpatialCubeConditionText.Text = _currentWeather.ConditionText;
         if (SpatialCubeRangeText != null) SpatialCubeRangeText.Text = $"{rangeStr} • Ẩm {humVal}%";
         RenderWidgetSpatialCurve();
+
+        // Style 18: Mini OOTD Capsule (v3.7.1)
+        if (OotdCapsuleCityText != null) OotdCapsuleCityText.Text = upperCity;
+        if (OotdCapsuleTempText != null) OotdCapsuleTempText.Text = _currentWeather.TemperatureText;
+        if (OotdCapsuleWeatherIcon != null)
+        {
+            OotdCapsuleWeatherIcon.Glyph = string.IsNullOrEmpty(_currentWeather.IconGlyph) ? "\uf185" : _currentWeather.IconGlyph;
+        }
+
+        string commuteMethod = _settings.PreferredCommuteMethod ?? "Motorbike";
+        if (OotdCapsuleCommuteText != null)
+        {
+            OotdCapsuleCommuteText.Text = commuteMethod switch
+            {
+                "Car" => "🚗 Ô tô",
+                "Bus" => "🚌 Xe buýt",
+                "Walk" => "🚶 Đi bộ",
+                _ => "🏍️ Xe máy"
+            };
+        }
+
+        var advice = _viewModel?.CurrentOutfitAdvice ?? new OutfitAdvisorService().GenerateOutfitAdvice(
+            _currentWeather,
+            null,
+            "Work",
+            "All",
+            commuteMethod,
+            _settings.PreferredThermalSensitivity ?? "Normal");
+
+        if (advice != null)
+        {
+            if (OotdCapsuleTagText != null) OotdCapsuleTagText.Text = string.IsNullOrEmpty(advice.FashionStyleTag) ? "Smart Casual" : advice.FashionStyleTag;
+            if (OotdCapsuleAdviceText != null)
+            {
+                string rec = !string.IsNullOrEmpty(advice.TopClothing) && !string.IsNullOrEmpty(advice.BottomClothing)
+                    ? $"{advice.TopClothing} • {advice.BottomClothing}"
+                    : (string.IsNullOrEmpty(advice.QuickSummary) ? advice.Headline : advice.QuickSummary);
+                OotdCapsuleAdviceText.Text = string.IsNullOrEmpty(rec) ? "Trang phục thoải mái, thoáng mát" : rec;
+            }
+
+            if (OotdCapsuleAccessoryText != null && OotdCapsuleAccessoryIcon != null)
+            {
+                if (advice.Accessories != null && advice.Accessories.Count > 0)
+                {
+                    var acc = advice.Accessories.FirstOrDefault(a => a.IsEssential) ?? advice.Accessories[0];
+                    OotdCapsuleAccessoryText.Text = acc.Name;
+                    OotdCapsuleAccessoryIcon.Glyph = string.IsNullOrEmpty(acc.IconGlyph) ? "\uf0e9" : acc.IconGlyph;
+                }
+                else
+                {
+                    OotdCapsuleAccessoryText.Text = "Mang phụ kiện cơ bản";
+                    OotdCapsuleAccessoryIcon.Glyph = "\uf0e9";
+                }
+            }
+
+            if (OotdCapsuleSubNoticeText != null)
+            {
+                OotdCapsuleSubNoticeText.Text = !string.IsNullOrEmpty(advice.ThermalComfortNotice)
+                    ? advice.ThermalComfortNotice
+                    : $"Thoáng khí {advice.BreathabilityScore}% • {advice.UvDefenseRating}";
+            }
+        }
 
         double windMs = 8.0;
         if (_currentWeather.WindSpeedValue > 0) windMs = _currentWeather.WindSpeedValue / 3.6;
@@ -1755,6 +1828,8 @@ public sealed partial class WidgetWindow : Window
 
     private void WidgetRoot_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
+        if (_settings.WidgetLockPosition) return;
+
         var properties = e.GetCurrentPoint(WidgetRoot).Properties;
         if (properties.IsLeftButtonPressed)
         {
